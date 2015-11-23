@@ -42,7 +42,7 @@ There are different possiblities to obtain your goal. Some of them are:
 ```
 
 If you think version 3 could be the one most pleasant to work with, you might like FunctionalPlus.
-And if you still think the hand-written for loop is easier to understand, also consider what would happen if the loop body (i.e. a corresponding lambda function in the call to `FunctionalPlus::KeepIf`) would be much longer. When reading `KeepIf` you would still know immediately that `odds` can only contain elements that came from `numbers` and were selected by some, possibly complicated, predicate. In the for loop case you have no idea what is happening until you read the whole body loop. The loop version probably would need a comment at the top stating what the use of `KeepIf` would tell at first glance.
+And if you still think the hand-written for loop is easier to understand, also consider what would happen if the loop body (i.e. a corresponding lambda function in the call to `FunctionalPlus::KeepIf`) would be much longer. When reading `KeepIf` you would still immediately know that `odds` can only contain elements that came from `numbers` and were selected by some, possibly complicated, predicate. In the for loop case you have no idea what is happening until you read the whole loop body. The loop version probably would need a comment at the top stating what the use of `KeepIf` would tell at first glance.
 
 
 More examples
