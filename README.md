@@ -166,6 +166,13 @@ In case you would accidentally pass two functions whose "connecting type" does n
 By changing the way you think about programming from "writing your own loops and nested ifs" to "using and composing small functions" you will first perhaps get more errors at compile time, but this will pay out in having fewer errors at runtime and in spending less time debugging.
 
 
+Finding the right functions
+---------------------------
+Library is splitted into several header files. If you for example need a function dividing a sequence at elements with a specific property, just look into `split.h` and you will soon find `FunctionalPlus::SplitBy` doing exactly this: `SplitBy(isEven, true, [1,3,2,2,5,5,3,6,7,9]) == [[1,3],[],[5,5,3],[7,9]]`
+
+If interest in a documentation or something similar arises, I would be happy if you would [tell me what you think could a good approach](https://github.com/Dobiasd/FunctionalPlus/issues).
+
+
 Performance
 -----------
 The basic functions are fast, thanks to C++'s concept of abstraction without overhead. Here are some measurements from the first example, taken on a standard desktop PC, compiled with GCC and the `O3` flag.
