@@ -42,7 +42,7 @@ There are different possiblities to obtain your goal. Some of them are:
 ```
 
 If you think version 3 could be the one most pleasant to work with, you might like FunctionalPlus.
-And if you still think the hand-written for loop is easier to understand, think about what would happen if the loop body (i.e. a corresponding lambda function in the call to `FunctionalPlus::KeepIf`) would be much longer. When reading `KeepIf` you would still know immediately that `odds` can only contain elements that came from `numbers` and were selected by some, possibly complicated, predicate. In the for loop case you have no idea what is happening until you read the whole body loop. The loop version probably would need a comment at the top stating what the use of `KeepIf` would tell at first glance.
+And if you still think the hand-written for loop is easier to understand, also consider what would happen if the loop body (i.e. a corresponding lambda function in the call to `FunctionalPlus::KeepIf`) would be much longer. When reading `KeepIf` you would still know immediately that `odds` can only contain elements that came from `numbers` and were selected by some, possibly complicated, predicate. In the for loop case you have no idea what is happening until you read the whole body loop. The loop version probably would need a comment at the top stating what the use of `KeepIf` would tell at first glance.
 
 
 More examples
@@ -106,7 +106,7 @@ Let's say you have the following function [given](https://gist.github.com/Dobias
 std::list<std::uint64_t> CollatzSeq(std::uint64_t x);
 ```
 
-And you want to create an `std::map<std::uint64_t, std::string>` containing string representations of the [Collatz sequences](https://en.wikipedia.org/wiki/Collatz_conjecture) for all numbers below 30. You can implement this nicely in a purely functional way.
+And you want to create an `std::map<std::uint64_t, std::string>` containing string representations of the [Collatz sequences](https://en.wikipedia.org/wiki/Collatz_conjecture) for all numbers below 30. You can implement this nicely in a functional way.
 
 ```c++
 #include "FunctionalPlus/FunctionalPlus.h"
@@ -163,7 +163,7 @@ FunctionalPlus deduces types for you where possible. Let's take one line of code
 
 In case you would accidentally pass two functions whose "connecting type" does not match, you will get a nice error message telling you exactly that, because FunctionalPlus uses compile time assertions where possible to guard you from the sometimes terribly long error messages compilers like to generate when faced with type errors in function templates.
 
-By changing the way you think about programming from "writing your own loops and nested ifs" to "using and composing small and pure functions" you will first perhaps get more errors at compile time, but this will pay out in having fewer errors at runtime and in spending less time debugging.
+By changing the way you think about programming from "writing your own loops and nested ifs" to "using and composing small functions" you will first perhaps get more errors at compile time, but this will pay out in having fewer errors at runtime and in spending less time debugging.
 
 
 Performance
