@@ -47,7 +47,7 @@ And if you still think the hand-written for loop is easier to understand, also c
 
 More examples
 -------------
-Below you find some more short examples showing nice things you can do with functions and containers using FunctionalPlus.
+Below you find some short examples showing nice things you can do with functions and containers using FunctionalPlus.
 
 ### The same old song
 You can test the content of a container for various properties, e.g.
@@ -106,7 +106,7 @@ Let's say you have the following function [given](https://gist.github.com/Dobias
 std::list<std::uint64_t> CollatzSeq(std::uint64_t x);
 ```
 
-And you want to create an `std::map<std::uint64_t, std::string>` containing string representations of the [Collatz sequences](https://en.wikipedia.org/wiki/Collatz_conjecture) for all numbers below 30. You can implement this nicely in a functional way.
+And you want to create an `std::map<std::uint64_t, std::string>` containing string representations of the [Collatz sequences](https://en.wikipedia.org/wiki/Collatz_conjecture) for all numbers below 30. You can implement this nicely in a functional way too.
 
 ```c++
 #include "FunctionalPlus/FunctionalPlus.h"
@@ -161,7 +161,7 @@ FunctionalPlus deduces types for you where possible. Let's take one line of code
 
 `CollatzSeq` is a Function taking an `uint64_t` and returning a `list<uint64_t>`. `ShowInts` takes a `list<uint64_t>` and returns a `string`. Thanks to making use of `function_traits` [written by kennyim](https://github.com/kennytm/utils/blob/master/traits.hpp) it is possible to automatically deduce the expression `Compose(CollatzSeq, ShowInts)` being a function taking an `uint64_t` and returning a `string`, so you do not have to manually provide type hints to the compiler.
 
-In case you would accidentally pass two functions whose "connecting type" does not match, you will get a nice error message telling you exactly that, because FunctionalPlus uses compile time assertions where possible to guard you from the sometimes terribly long error messages compilers like to generate when faced with type errors in function templates.
+In case you would accidentally pass two functions whose "connecting type" does not match, you will get a nice error message telling you exactly that, because FunctionalPlus uses compile time assertions where feasible to guard you from the sometimes confusingly long error messages compilers like to generate when faced with type errors in function templates.
 
 By changing the way you think about programming from "writing your own loops and nested ifs" to "using and composing small functions" you will first perhaps get more errors at compile time, but this will pay out in having fewer errors at runtime and in spending less time debugging.
 
@@ -180,7 +180,7 @@ The basic functions are fast, thanks to C++'s concept of abstraction without ove
 
 So the compiler seems to do a very good job in optimizing and inlining everthing to basically equal machine code performance-wise.
 
-The more complex functions though can probably be written in a more optimized/optimizable way. Sometimes they are not even in the best possible complexity class. If you use FunctionalPlus in a performance-critical scenario and profiling shows you need a faster version of a function [please let me know](https://github.com/Dobiasd/FunctionalPlus/issues) or [even help improving FunctionalPlus](https://github.com/Dobiasd/FunctionalPlus/pulls)
+The more complex functions though can probably be written in a more optimized/optimizable way. Sometimes they are not even in the best possible time complexity class. If you use FunctionalPlus in a performance-critical scenario and profiling shows you need a faster version of a function [please let me know](https://github.com/Dobiasd/FunctionalPlus/issues) or [even help improving FunctionalPlus](https://github.com/Dobiasd/FunctionalPlus/pulls).
 
 
 Installation/Requirements
