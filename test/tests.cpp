@@ -38,6 +38,10 @@ void Test_Numeric()
     assert(Round(-1.6) == -2);
     assert(Floor(-1.4) == -2);
     assert(Ceil(-1.4) == -1);
+
+    assert(Clamp(2, 6, 5) == 5);
+    assert(Clamp(2, 6, 1) == 2);
+    assert(Clamp(2, 6, 8) == 6);
 }
 
 int APlusTwoTimesBFunc(int a, int b) { return a + 2 * b; }

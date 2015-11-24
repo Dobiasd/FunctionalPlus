@@ -17,9 +17,9 @@ bool IsInRange(const T& low, const T& high, const T& x)
 
 // Puts value into [low, high], i.e. left-closed and right-closed.
 template <typename T>
-bool Clamp(const T& low, const T& high, const T& x)
+T Clamp(const T& low, const T& high, const T& x)
 {
-    return std::max(low, std::max(high, x));
+    return std::max(low, std::min(high, x));
 }
 
 // Checks if x < 0.
