@@ -99,6 +99,7 @@ int main()
         std::cout << "Silent night." << std::endl;
 }
 ```
+`AllBy` is a function that takes a unary predicate and checks if all elements in the container fulfill it. `And` simply combines two unary predicates to one.
 
 ### Transformations, function composition and binding
 Let's say you have the following function [given](https://gist.github.com/Dobiasd/3ca1e75a6f77172fa748).
