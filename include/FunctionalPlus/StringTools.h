@@ -58,7 +58,7 @@ ContainerOut SplitWords(const String& str)
 }
 
 // Splits a string by the found newlines.
-// SplitWords("Hi,\nhow are you?") == ["Hi,", "How are you?"]
+// SplitWords("Hi,\nhow are you?") == ["Hi,", "How are you"]
 template <typename String, typename ContainerOut = std::list<String>>
 ContainerOut SplitLines(const String& str, bool allowEmpty)
 {
