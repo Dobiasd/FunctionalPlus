@@ -155,7 +155,7 @@ The functions shown not only work with default STL containers like `std::vector`
 
 Type deduction and useful errors messages
 -----------------------------------------
-FunctionalPlus deduces types for you where possible. Let's take one line of code from the Collatz example
+FunctionalPlus deduces types for you where possible. Let's take one line of code from the Collatz example:
 ```c++
     auto showCollatsSeq = Compose(CollatzSeq, showInts);
 ```
