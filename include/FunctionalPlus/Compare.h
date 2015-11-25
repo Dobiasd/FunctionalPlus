@@ -63,7 +63,14 @@ void CheckComparePreprocessorsForTypes()
 
 // Identity(x) == x
 template <typename T>
-const T& Identity(const T& x)
+const T Identity(const T& x)
+{
+    return x;
+}
+
+// Always(x, y) == x
+template <typename X, typename Y>
+const X Always(const X& x, const Y&)
 {
     return x;
 }

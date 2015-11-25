@@ -295,6 +295,9 @@ void Test_Compare()
     assert(IsGreaterOrEqual(2, 2));
     assert(!IsGreaterOrEqual(2, 3));
     assert(IsGreaterOrEqual(3, 2));
+
+    assert(Identity(2) == 2);
+    assert(Always(2, 5) == 2);
 }
 
 struct ExplicitFromIntStruct
