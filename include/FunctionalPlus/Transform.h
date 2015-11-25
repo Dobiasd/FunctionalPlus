@@ -12,6 +12,7 @@
 #include "FunctionTraits.h"
 
 #include <algorithm>
+#include <random>
 
 namespace FunctionalPlus
 {
@@ -116,4 +117,16 @@ Container Transpose(const Container& grid2d)
     return result;
 }
 
+// Returns n random elements from xs.
+// n has to be smaller than the number of elements in xs.
+template <typename Container>
+Container Sample(std::size_t n, const Container& xs)
+{
+    assert(n <= Size(xs));
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    Container ys = xs;
+    std::shuffle(begin(ys), end(ys), gen);
+    return GetRange(0, n, ys);
+}
 } // namespace FunctionalPlus

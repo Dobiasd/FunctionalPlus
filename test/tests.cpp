@@ -548,6 +548,8 @@ void Test_ContainerTools()
     assert(Transpose(IntGrid2d({ { 1, 2, 3 }, { 4, 5, 6 } }))
             == IntGrid2d({ { 1, 4 }, { 2, 5 }, { 3, 6 } }));
 
+    assert(Sample(3, xs).size() == 3);
+
     typedef std::vector<ExplicitFromIntStruct> ExplicitFromIntStructs;
     ExplicitFromIntStructs explicitFromIntStructs = {
         ExplicitFromIntStruct(1),
