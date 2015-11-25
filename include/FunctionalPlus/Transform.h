@@ -118,7 +118,7 @@ Container Transpose(const Container& grid2d)
 }
 
 // Returns n random elements from xs.
-// n has to be smaller than the number of elements in xs.
+// n has to be smaller than or equal to the number of elements in xs.
 template <typename Container>
 Container Sample(std::size_t n, const Container& xs)
 {
