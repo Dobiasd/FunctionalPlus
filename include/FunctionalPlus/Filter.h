@@ -31,6 +31,15 @@ Container DropIf(Pred pred, const Container& xs)
     return KeepIf(Not(pred), xs);
 }
 
+// Without(0, [1, 0, 0, 5, 3, 0, 1]) == [1, 5, 3, 1]
+template <typename Container,
+    typename T = typename Container::value_type>
+Container Without(T elem, const Container& xs)
+{
+    auto pred = Bind1of2(IsEqual<T>, elem);
+    return DropIf(pred, xs);
+}
+
 // Predicate takes index and value.
 // All elements fulfilling the predicate are kept.
 template <typename Pred, typename Container>

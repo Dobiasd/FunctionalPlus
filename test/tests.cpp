@@ -348,6 +348,7 @@ void Test_ContainerTools()
     assert(KeepIf(isEven, intList) == IntList({ 2,2,2 }));
     assert(DropIf(isEven, intList) == IntList({ 1,3 }));
     assert(Group(xs) == std::list<IntVector>({IntVector({1}),IntVector({2,2}),IntVector({3}),IntVector({2})}));
+    assert(Without(2, intList) == IntList({ 1,3 }));
 
     assert(TransformConvert<IntList>(squareLambda, xs) == IntList({ 1,4,4,9,4 }));
 
