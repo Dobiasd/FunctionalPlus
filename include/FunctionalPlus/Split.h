@@ -141,7 +141,7 @@ ContainerOut SplitAtIdxs(const ContainerIdxs& idxsIn, const ContainerIn& xs)
 // SplitByToken(", ", "foo, bar, baz") == ["foo", "bar", "baz"]
 template <typename ContainerIn,
         typename ContainerOut = typename std::list<ContainerIn>>
-ContainerOut SplitByToken (const ContainerIn& token,
+ContainerOut SplitByToken(const ContainerIn& token,
         bool allowEmpty, const ContainerIn& xs)
 {
     static_assert(std::is_same<ContainerIn, typename ContainerOut::value_type>::value, "Containers do not match.");
@@ -157,6 +157,19 @@ ContainerOut SplitByToken (const ContainerIn& token,
             *itOut = GetRange(lastEnd, idx, xs);
             lastEnd = idx + Size(token);
         }
+    }
+    return result;
+}
+
+// CountOccurrences([1,2,2,3,2)) == [(1, 1), (2, 3), (3, 1)]
+template <typename ContainerIn,
+        typename MapOut = typename std::map<typename ContainerIn::value_type, std::size_t>>
+MapOut CountOccurrences(const ContainerIn& xs)
+{
+    MapOut result;
+    for (auto& x : xs)
+    {
+        ++result[x];
     }
     return result;
 }
