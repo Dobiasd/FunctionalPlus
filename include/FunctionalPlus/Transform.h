@@ -129,4 +129,5 @@ Container Sample(std::size_t n, const Container& xs)
     std::shuffle(begin(ys), end(ys), gen);
     return GetRange(0, n, ys);
 }
+
 } // namespace FunctionalPlus
