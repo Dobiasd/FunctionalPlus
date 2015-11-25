@@ -13,6 +13,7 @@ namespace FunctionalPlus
 {
 
 // KeepIf(isEven, [1, 2, 3, 2, 4, 5]) == [2, 2, 4]
+// Also known as Filter.
 template <typename Pred, typename Container>
 Container KeepIf(Pred pred, const Container& xs)
 {
@@ -24,6 +25,7 @@ Container KeepIf(Pred pred, const Container& xs)
 }
 
 // DropIf(isEven, [1, 2, 3, 2, 4, 5]) == [1, 3, 5]
+// Also known as Reject.
 template <typename Pred, typename Container>
 Container DropIf(Pred pred, const Container& xs)
 {

@@ -18,6 +18,7 @@ namespace FunctionalPlus
 
 // (a -> b) -> [a] -> [b]
 // Transform((*2), [1, 3, 4]) == [2, 6, 8]
+// Also known as Map.
 template <typename F, typename ContainerIn,
     typename ContainerOut =
         typename SameContNewTFromUnaryF<ContainerIn, F>::type>
