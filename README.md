@@ -23,23 +23,23 @@ int main()
 There are different possiblities to obtain your goal. Some of them are:
 
 1. write a (range based) for loop
-```c++
-    Ints odds;
-    for (int x : numbers)
-        if (IsOdd(x))
-            odds.push_back(x);
-```
+ ```c++
+     Ints odds;
+     for (int x : numbers)
+         if (IsOdd(x))
+             odds.push_back(x);
+ ```
 
 2. use `std::copy_if` from the STL
-```c++
-    Ints odds;
-    copy_if(begin(numbers), end(numbers), back_inserter(odds), IsOdd);
-```
+ ```c++
+     Ints odds;
+     copy_if(begin(numbers), end(numbers), back_inserter(odds), IsOdd);
+ ```
 
 3. use `KeepIf` from `FunctionalPlus`
-```c++
-    auto odds = KeepIf(IsOdd, numbers);
-```
+ ```c++
+     auto odds = KeepIf(IsOdd, numbers);
+ ```
 
 If you think version 3 could be the one most pleasant to work with, you might like FunctionalPlus.
 And if you still think the hand-written for loop is easier to understand, also consider what would happen if the loop body (i.e. a corresponding lambda function in the call to `FunctionalPlus::KeepIf`) would be much longer. When reading `KeepIf` you would still immediately know that `odds` can only contain elements that came from `numbers` and were selected by some, possibly complicated, predicate. In the for loop case you have no idea what is happening until you read the whole loop body. The loop version probably would need a comment at the top stating what the use of `KeepIf` would tell at first glance.
