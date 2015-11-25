@@ -88,14 +88,14 @@ struct Entity
     bool calm_;
     bool bright_;
 };
-bool IsCalm(const Entity& entity) { return entity.calm_; }
-bool IsBright(const Entity& entity) { return entity.bright_; }
 
-int main()
+void Test_example_AllIsCalmAndBright()
 {
     using namespace FunctionalPlus;
+    auto isCalm = [](const Entity& e) { return e.calm_; };
+    auto isBright = [](const Entity& e) { return e.bright_; };
     std::vector<Entity> entities(4);
-    if (AllBy(And(IsCalm, IsBright), entities))
+    if (AllBy(And(isCalm, isBright), entities))
         std::cout << "Silent night." << std::endl;
 }
 ```
