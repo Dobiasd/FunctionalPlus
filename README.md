@@ -198,9 +198,9 @@ Just download FunctionalPlus and tell your compile to use the `include` director
 A ***C++14***-compatible compiler is needed. The tests run successfully on GCC 4.9, Clang 3.6 and Visual C++ 2015.
 
 
-Naming convention or `keep_if` vs. `KeepIf`
------------------
-[`snake_case` is considered more modern by some people](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Rl-camel), while the [Google style guide votes for `CamelCase`](https://google.github.io/styleguide/cppguide.html#Function_Names).
+Naming convention or "`keep_if` vs. `KeepIf`"
+---------------------------------------------
+The [Google style guide votes for `CamelCase`](https://google.github.io/styleguide/cppguide.html#Function_Names) while [`snake_case` is often considered more modern](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Rl-camel).
 I do not think that it is very important as long as you are consistent throughout a project. 
 
 
