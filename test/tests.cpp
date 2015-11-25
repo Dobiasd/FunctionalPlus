@@ -580,6 +580,10 @@ void Test_ContainerTools()
     StringIntMap stringIntMap = {{ "2", 1}, { "53", 4}, { "21", 7}};
     assert(SwapKeysAndValues(intStringMap) == stringIntMap);
 
+    typedef std::vector<std::string> StringVector;
+    assert(GetMapKeys(intStringMap) == IntVector({1, 4, 7}));
+    assert(GetMapValues(intStringMap) == StringVector({"2", "53", "21"}));
+
     typedef std::unordered_map<int, std::string> IntStringUnorderedMap;
     typedef std::unordered_map<std::string, int> StringIntUnorderedMap;
     IntStringUnorderedMap intStringUnorderedMap = { { 1, "2" },{ 4, "53" },{ 7, "21" } };

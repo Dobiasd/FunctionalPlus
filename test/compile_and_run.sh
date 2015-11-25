@@ -6,11 +6,11 @@ clang++-3.6 -O3 -std=c++14 -Wall -Wextra -pedantic -Werror -o ./temp_FunctionalP
 if [ -f ./temp_FunctionalPlus_tests__gcc ];
 then
     ./temp_FunctionalPlus_tests__gcc
-    rm ./temp_FunctionalPlus_tests__gcc
+    #rm ./temp_FunctionalPlus_tests__gcc
 fi
 
 if [ -f ./temp_FunctionalPlus_tests__clang ];
 then
     ./temp_FunctionalPlus_tests__clang
-    rm ./temp_FunctionalPlus_tests__clang
+    #rm ./temp_FunctionalPlus_tests__clang
 fi

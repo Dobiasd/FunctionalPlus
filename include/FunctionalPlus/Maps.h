@@ -24,10 +24,35 @@ MapOut PairsToMap(const ContainerIn& pairs)
 }
 
 // Converts a dictionary into a Container of pairs (key, value).
-template <typename ContainerOut, typename MapTyte>
-ContainerOut MapToPairs(const MapTyte& dict)
+template <typename MapType,
+    typename MapPair = typename MapType::value_type,
+    typename Key = typename std::remove_const_t<typename MapPair::first_type>,
+    typename Val = typename std::remove_const_t<typename MapPair::second_type>,
+    typename OutPair = std::pair<Key, Val>,
+    typename ContainerOut = std::vector<OutPair>>
+ContainerOut MapToPairs(const MapType& dict)
 {
     return Convert<ContainerOut>(dict);
+}
+
+template <typename MapType,
+    typename ContainerOut = std::vector<std::remove_const_t<typename MapType::key_type>>>
+ContainerOut GetMapKeys(const MapType& dict)
+{
+    auto pairs = MapToPairs(dict);
+    typedef typename decltype(pairs)::value_type::first_type FirstType;
+    typedef typename decltype(pairs)::value_type::second_type SecondType;
+    return Transform(Fst<FirstType, SecondType>, MapToPairs(dict));
+}
+
+template <typename MapType,
+    typename ContainerOut = std::vector<std::remove_const_t<typename MapType::mapped_type>>>
+ContainerOut GetMapValues(const MapType& dict)
+{
+    auto pairs = MapToPairs(dict);
+    typedef typename decltype(pairs)::value_type::first_type FirstType;
+    typedef typename decltype(pairs)::value_type::second_type SecondType;
+    return Transform(Snd<FirstType, SecondType>, MapToPairs(dict));
 }
 
 // Swaps keys and Values of a dict:
@@ -41,9 +66,7 @@ template <typename MapIn,
     typename MapOut = typename SameMapTypeNewTypes<MapIn, OutKey, OutVal>::type>
 MapOut SwapKeysAndValues(const MapIn& dict)
 {
-    typedef typename MapIn::value_type InPair;
-    typedef std::vector<InPair> InPairs;
-    auto inAsPairs = MapToPairs<InPairs>(dict);
+    auto inAsPairs = MapToPairs(dict);
     auto outAsPairs = Transform(SwapPairElems<InKey, InVal>, inAsPairs);
     return PairsToMap<MapOut>(outAsPairs);
 }
