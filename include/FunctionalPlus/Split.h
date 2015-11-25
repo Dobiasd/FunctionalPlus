@@ -95,6 +95,26 @@ std::pair<Container, Container> SplitAtIdx
     return make_pair(GetRange(0, idx, xs), GetRange(idx, Size(xs), xs));
 }
 
+// Partition(isEven, [0,1,1,3,7,2,3,4]) == ([0,2,4],[1,1,3,7,3])
+template <typename UnaryPredicate, typename Container>
+std::pair<Container, Container> Partition
+        (UnaryPredicate pred, const Container& xs)
+{
+    CheckUnaryPredicateForContainer<UnaryPredicate, Container>();
+    Container matching;
+    Container notMatching;
+    auto itOutMatching = BackInserter(matching);
+    auto itOutNotMatching = BackInserter(notMatching);
+    for (auto& x : xs)
+    {
+        if (pred(x))
+            *itOutMatching = x;
+        else
+            *itOutNotMatching = x;
+    }
+    return make_pair(matching, notMatching);
+}
+
 // SplitAtIdxs([2,5], [0,1,2,3,4,5,6,7]) == [[0,1],[2,3,4],[5,6,7]]
 template <typename ContainerIdxs, typename ContainerIn,
         typename ContainerOut = std::vector<ContainerIn>>

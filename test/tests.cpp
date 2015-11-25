@@ -601,6 +601,7 @@ void Test_ContainerTools()
 
     typedef std::vector<std::size_t> IdxVector;
     assert(SplitAtIdx(2, xs) == std::make_pair(IntVector({1,2}), IntVector({2,3,2})));
+    assert(Partition(isEven, xs) == std::make_pair(IntVector({2,2,2,}), IntVector({1,3})));
 
     auto splittedAt1And3 = SplitAtIdxs(IdxVector({1,3}), xs);
     IntVectors splittedAt1And3Dest = {IntVector({1}), IntVector({2,2}), IntVector({3,2})};
