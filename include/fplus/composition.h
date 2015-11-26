@@ -9,9 +9,9 @@
 #include <type_traits>
 #include <utility>
 
-#include "FunctionTraits.h"
+#include "function_traits.h"
 
-namespace FunctionalPlus
+namespace fplus
 {
 
 // Bind1of2 : (a -> b -> c) -> a -> (b -> c)

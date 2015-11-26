@@ -5,7 +5,7 @@
 
 #pragma once
 
-namespace FunctionalPlus
+namespace fplus
 {
 
 // Checks if x is in [low, high), i.e. left-closed and right-open.

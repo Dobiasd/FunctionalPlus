@@ -42,7 +42,7 @@ There are different possiblities to obtain your goal. Some of them are:
  ```
 
 If you think version 3 could be the one most pleasant to work with, you might like FunctionalPlus.
-And if you still think the hand-written for loop is easier to understand, also consider what would happen if the loop body (i.e. a corresponding lambda function in the call to `FunctionalPlus::KeepIf`) would be much longer. When reading `KeepIf` you would still immediately know that `odds` can only contain elements that came from `numbers` and were selected by some, possibly complicated, predicate. In the for loop case you have no idea what is happening until you read the whole loop body. The loop version probably would need a comment at the top stating what the use of `KeepIf` would tell at first glance.
+And if you still think the hand-written for loop is easier to understand, also consider what would happen if the loop body (i.e. a corresponding lambda function in the call to `fplus::KeepIf`) would be much longer. When reading `KeepIf` you would still immediately know that `odds` can only contain elements that came from `numbers` and were selected by some, possibly complicated, predicate. In the for loop case you have no idea what is happening until you read the whole loop body. The loop version probably would need a comment at the top stating what the use of `KeepIf` would tell at first glance.
 
 
 More examples
@@ -52,11 +52,11 @@ Below you find some short examples showing nice things you can do with functions
 ### The same old song
 You can test the content of a container for various properties, e.g.
 ```c++
-#include "FunctionalPlus/FunctionalPlus.h"
+#include "fplus.h"
 #include <iostream>
 int main()
 {
-    using namespace FunctionalPlus;
+    using namespace fplus;
     std::list<std::string> things = {"same old", "same old"};
     if (AllTheSame(things))
         std::cout << "All things being equal." << std::endl;
@@ -66,11 +66,11 @@ int main()
 ### The I in our team
 There also are some convenience functions for strings.
 ```c++
-#include "FunctionalPlus/FunctionalPlus.h"
+#include "fplus.h"
 #include <iostream>
 int main()
 {
-    using namespace FunctionalPlus;
+    using namespace fplus;
     std::string team = "Our team is great. I love everybody.";
     if (Contains("I", SplitWords(team)))
         std::cout << "There actually is an I in team." << std::endl;
@@ -80,7 +80,7 @@ int main()
 ### Silent Night
 Predicates can be combined logically in a functional way.
 ```c++
-#include "FunctionalPlus/FunctionalPlus.h"
+#include "fplus.h"
 #include <iostream>
 struct Entity
 {
@@ -91,7 +91,7 @@ struct Entity
 
 void Test_example_AllIsCalmAndBright()
 {
-    using namespace FunctionalPlus;
+    using namespace fplus;
     auto isCalm = [](const Entity& e) { return e.calm_; };
     auto isBright = [](const Entity& e) { return e.bright_; };
     std::vector<Entity> entities(4);
@@ -110,14 +110,14 @@ std::list<std::uint64_t> CollatzSeq(std::uint64_t x);
 And you want to create an `std::map<std::uint64_t, std::string>` containing string representations of the [Collatz sequences](https://en.wikipedia.org/wiki/Collatz_conjecture) for all numbers below 30. You can implement this nicely in a functional way too.
 
 ```c++
-#include "FunctionalPlus/FunctionalPlus.h"
+#include "fplus.h"
 #include <iostream>
 
 // std::list<std::uint64_t> CollatzSeq(std::uint64_t x) { ... }
 
 int main()
 {
-    using namespace FunctionalPlus;
+    using namespace fplus;
     using namespace std;
 
     typedef list<uint64_t> Ints;
@@ -169,7 +169,7 @@ By changing the way you think about programming from "writing your own loops and
 
 Finding the right functions
 ---------------------------
-Library is splitted into several header files. If you for example need a function dividing a sequence at elements with a specific property, just look into `split.h` and you will soon find `FunctionalPlus::SplitBy` doing exactly this: `SplitBy(isEven, true, [1,3,2,2,5,5,3,6,7,9]) == [[1,3],[],[5,5,3],[7,9]]`
+Library is splitted into several header files. If you for example need a function dividing a sequence at elements with a specific property, just look into `split.h` and you will soon find `fplus::SplitBy` doing exactly this: `SplitBy(isEven, true, [1,3,2,2,5,5,3,6,7,9]) == [[1,3],[],[5,5,3],[7,9]]`
 
 If interest in a documentation or something similar arises, I would be happy if you would [tell me what you think could a good approach](https://github.com/Dobiasd/FunctionalPlus/issues).
 
@@ -181,7 +181,7 @@ The basic functions are fast, thanks to C++'s concept of abstraction without ove
 10000 random numbers, keep odd ones, 1000 consecutive runs accumulated
 ----------------------------------------------------------------------
 
-| Hand-written for loop | std::copy_if | FunctionalPlus::KeepIf |
+| Hand-written for loop | std::copy_if | fplus::KeepIf |
 |-----------------------|--------------|------------------------|
 |               0.468 s |      0.475 s |                0.463 s |
 ```

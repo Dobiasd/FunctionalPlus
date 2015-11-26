@@ -7,13 +7,13 @@
 
 #include <algorithm>
 
-#include "ContainerCommon.h"
-#include "Composition.h"
-#include "Generate.h"
-#include "Maybe.h"
+#include "container_common.h"
+#include "composition.h"
+#include "generate.h"
+#include "maybe.h"
 
 
-namespace FunctionalPlus
+namespace fplus
 {
 
 // FindFirstBy(isEven, [1, 3, 4, 6, 9]) == Just(4)
@@ -167,4 +167,4 @@ ContainerOut FindAllInstancesOfNonOverlapping
     return result;
 }
 
-} // namespace FunctionalPlus
+} // namespace fplus

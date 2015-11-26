@@ -5,13 +5,13 @@
 
 #pragma once
 
-#include "Replace.h"
-#include "Split.h"
-#include "Transform.h"
+#include "replace.h"
+#include "split.h"
+#include "transform.h"
 
 #include <string>
 
-namespace FunctionalPlus
+namespace fplus
 {
 
 // Is character alphanumerical?
@@ -86,4 +86,4 @@ String TrimWhitespace(const String& str)
     return Trim(IsWhitespace<String>, str);
 }
 
-} // namespace FunctionalPlus
+} // namespace fplus

@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include "FunctionTraits.h"
+#include "function_traits.h"
 
-namespace FunctionalPlus
+namespace fplus
 {
 
 template <typename UnaryPredicate, typename T>
@@ -212,4 +212,4 @@ bool IsGreaterOrEqual(const T& x, const T& y)
     return IsGreaterOrEqualBy(Identity<T>, x, y);
 }
 
-} // namespace FunctionalPlus
+} // namespace fplus

@@ -5,11 +5,11 @@
 
 #pragma once
 
-#include "ContainerCommon.h"
-#include "Search.h"
-#include "Pairs.h"
+#include "container_common.h"
+#include "search.h"
+#include "pairs.h"
 
-namespace FunctionalPlus
+namespace fplus
 {
 
 // ContainerOut is not deduced to
@@ -206,4 +206,4 @@ Container DropWhile(UnaryPredicate pred, const Container& xs)
     return Drop(WithDefault<std::size_t>(Size(xs), maybeIdx), xs);
 }
 
-} // namespace FunctionalPlus
+} // namespace fplus

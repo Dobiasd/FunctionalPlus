@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include "ContainerCommon.h"
+#include "container_common.h"
 
-namespace FunctionalPlus
+namespace fplus
 {
 
 // Generate(f, 3) == [f(), f(), f()]
@@ -96,4 +96,4 @@ ContainerOut Infixes(std::size_t length, ContainerIn& xs)
     return result;
 }
 
-} // namespace FunctionalPlus
+} // namespace fplus

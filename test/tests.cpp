@@ -3,7 +3,7 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include "FunctionalPlus/FunctionalPlus.h"
+#include "fplus.h"
 
 #include <cassert>
 #include <chrono>
@@ -17,7 +17,7 @@
 
 void Test_Numeric()
 {
-    using namespace FunctionalPlus;
+    using namespace fplus;
 
     assert(IsInRange(1, 3, 1) == true);
     assert(IsInRange(1, 3, 2) == true);
@@ -84,7 +84,7 @@ template <typename IntCont, typename IntContCont>
 void Test_Composition()
 {
 
-    using namespace FunctionalPlus;
+    using namespace fplus;
     auto square = [](int x){ return x*x; };
 
     typedef IntCont Row;
@@ -225,7 +225,7 @@ void Test_FunctionTraits()
 
 void Test_Maybe()
 {
-    using namespace FunctionalPlus;
+    using namespace fplus;
     using namespace std;
     auto square = [](int x){ return x*x; };
     auto sqrtToMaybe = [](float x) {
@@ -274,7 +274,7 @@ void Test_Maybe()
 
 void Test_Compare()
 {
-    using namespace FunctionalPlus;
+    using namespace fplus;
     assert(IsEqual(2, 2));
     assert(!IsEqual(2, 3));
     assert(!IsNotEqual(2, 2));
@@ -319,7 +319,7 @@ struct squareStruct
 
 void Test_ContainerTools()
 {
-    using namespace FunctionalPlus;
+    using namespace fplus;
     using namespace std;
 
     auto squareLambda = [](int x) { return x*x; };
@@ -629,7 +629,7 @@ void Test_ContainerTools()
 
 void Test_StringTools()
 {
-    using namespace FunctionalPlus;
+    using namespace fplus;
     std::string untrimmed = "  \n \t   foo  ";
     assert(TrimWhitespaceLeft(untrimmed) == "foo  ");
     assert(TrimWhitespaceRight(untrimmed) == "  \n \t   foo");
@@ -665,7 +665,7 @@ bool IsOdd(int x) { return x % 2 == 1; }
 void Test_example_KeepIf()
 {
     using namespace std;
-    using namespace FunctionalPlus;
+    using namespace fplus;
 
     typedef vector<int> Ints;
     Ints numbers = { 24, 11, 65, 44, 80, 18, 73, 90, 69, 18 };
@@ -706,7 +706,7 @@ void run_n_times(std::function<std::list<int>(std::list<int>)> f,
 void Test_example_KeepIf_performance()
 {
     using namespace std;
-    using namespace FunctionalPlus;
+    using namespace fplus;
 
     typedef list<int> Ints;
     auto run_loop = [&](const Ints numbers)
@@ -745,7 +745,7 @@ void Test_example_KeepIf_performance()
 
 void Test_example_SameOldSameOld()
 {
-    using namespace FunctionalPlus;
+    using namespace fplus;
     std::list<std::string> things = {"same old", "same old"};
     if (AllTheSame(things))
         std::cout << "All things being equal." << std::endl;
@@ -753,7 +753,7 @@ void Test_example_SameOldSameOld()
 
 void Test_example_IInTeam()
 {
-    using namespace FunctionalPlus;
+    using namespace fplus;
     std::string team = "Our team is great. I love everybody.";
     if (Contains("I", SplitWords(team)))
         std::cout << "There actually is an I in team." << std::endl;
@@ -768,7 +768,7 @@ struct Entity
 
 void Test_example_AllIsCalmAndBright()
 {
-    using namespace FunctionalPlus;
+    using namespace fplus;
     auto isCalm = [](const Entity& e) { return e.calm_; };
     auto isBright = [](const Entity& e) { return e.bright_; };
     std::vector<Entity> entities(4);
@@ -793,7 +793,7 @@ std::list<std::uint64_t> CollatzSeq(std::uint64_t x)
 
 void Test_example_CollatzSequence()
 {
-    using namespace FunctionalPlus;
+    using namespace fplus;
     using namespace std;
 
     typedef list<uint64_t> Ints;

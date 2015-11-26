@@ -5,11 +5,11 @@
 
 #pragma once
 
-#include "ContainerCommon.h"
-#include "Compare.h"
-#include "Split.h"
+#include "container_common.h"
+#include "compare.h"
+#include "split.h"
 
-namespace FunctionalPlus
+namespace fplus
 {
 
 // ReplaceIf(isEven, 0, [1, 3, 4, 6, 7]) == [1, 3, 0, 0, 7]
@@ -45,4 +45,4 @@ Container ReplaceTokens
     return Join(dest, splitted);
 }
 
-} // namespace FunctionalPlus
+} // namespace fplus

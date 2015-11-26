@@ -5,15 +5,15 @@
 
 #pragma once
 
-#include "Composition.h"
-#include "ContainerCommon.h"
-#include "Transform.h"
-#include "Pairs.h"
+#include "composition.h"
+#include "container_common.h"
+#include "transform.h"
+#include "pairs.h"
 
 #include <map>
 #include <unordered_map>
 
-namespace FunctionalPlus
+namespace fplus
 {
 
 // Converts a Container of pairs (key, value) into a dictionary.
@@ -126,4 +126,4 @@ bool MapContains(const MapType& map, const Key& key)
     return it != std::end(map);
 }
 
-} // namespace FunctionalPlus
+} // namespace fplus

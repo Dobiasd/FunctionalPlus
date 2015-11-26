@@ -5,13 +5,13 @@
 
 #pragma once
 
-#include "ContainerCommon.h"
-#include "Transform.h"
+#include "container_common.h"
+#include "transform.h"
 
 #include <sstream>
 #include <string>
 
-namespace FunctionalPlus
+namespace fplus
 {
 
 // 42 -> "42"
@@ -53,4 +53,4 @@ std::string ShowCont(const Container& xs)
 }
 
 
-} // namespace FunctionalPlus
+} // namespace fplus

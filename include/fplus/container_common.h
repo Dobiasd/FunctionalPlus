@@ -5,15 +5,15 @@
 
 #pragma once
 
-#include "ContainerTraits.h"
-#include "Maybe.h"
-#include "Compare.h"
+#include "container_traits.h"
+#include "maybe.h"
+#include "compare.h"
 
 #include <algorithm>
 #include <cassert>
 #include <iterator>
 
-namespace FunctionalPlus
+namespace fplus
 {
 
 template <typename UnaryPredicate, typename Container>
@@ -447,4 +447,4 @@ Container Nub(const Container& xs)
     return NubBy(pred, xs);
 }
 
-} // namespace FunctionalPlus
+} // namespace fplus

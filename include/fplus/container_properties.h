@@ -7,14 +7,14 @@
 
 #include <algorithm>
 
-#include "ContainerCommon.h"
-#include "Compare.h"
-#include "Generate.h"
-#include "Maybe.h"
-#include "Search.h"
-#include "Composition.h"
+#include "container_common.h"
+#include "compare.h"
+#include "generate.h"
+#include "maybe.h"
+#include "search.h"
+#include "composition.h"
 
-namespace FunctionalPlus
+namespace fplus
 {
 
 // AllBy(isEven, [2, 4, 6]) == true
@@ -290,4 +290,4 @@ std::size_t Count
     return Size(FindAllIdxsOf(x, xs));
 }
 
-} // namespace FunctionalPlus
+} // namespace fplus

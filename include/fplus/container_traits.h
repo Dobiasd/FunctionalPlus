@@ -16,7 +16,7 @@
 #include <stack>
 #include <vector>
 
-namespace FunctionalPlus
+namespace fplus
 {
 
 template<class T> struct has_order : public std::false_type {};
@@ -63,4 +63,4 @@ struct SameContNewTFromBinaryF
     typedef ContOut type;
 };
 
-} // namespace FunctionalPlus
+} // namespace fplus

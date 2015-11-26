@@ -5,16 +5,16 @@
 
 #pragma once
 
-#include "ContainerCommon.h"
-#include "Filter.h"
-#include "Maybe.h"
-#include "Composition.h"
-#include "FunctionTraits.h"
+#include "container_common.h"
+#include "filter.h"
+#include "maybe.h"
+#include "composition.h"
+#include "function_traits.h"
 
 #include <algorithm>
 #include <random>
 
-namespace FunctionalPlus
+namespace fplus
 {
 
 // (a -> b) -> [a] -> [b]
@@ -130,4 +130,4 @@ Container Sample(std::size_t n, const Container& xs)
     return GetRange(0, n, ys);
 }
 
-} // namespace FunctionalPlus
+} // namespace fplus

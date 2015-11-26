@@ -5,12 +5,12 @@
 
 #pragma once
 
-#include "ContainerCommon.h"
-#include "FunctionTraits.h"
+#include "container_common.h"
+#include "function_traits.h"
 
 #include <utility>
 
-namespace FunctionalPlus
+namespace fplus
 {
 
 // ZipWith((+), [1, 2, 3], [5, 6]) == [6, 8]
@@ -145,4 +145,4 @@ ContainerOut OverlappingPairs(const Container& xs)
     return result;
 }
 
-} // namespace FunctionalPlus
+} // namespace fplus

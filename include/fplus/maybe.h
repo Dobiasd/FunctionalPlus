@@ -5,13 +5,13 @@
 
 #pragma once
 
-#include "FunctionTraits.h"
+#include "function_traits.h"
 
 #include <cassert>
 #include <functional>
 #include <memory>
 
-namespace FunctionalPlus
+namespace fplus
 {
 
 // Can hold a value of type T or nothing.
@@ -133,4 +133,4 @@ std::function<Maybe<C>(const FIn&)> AndThen(F f, G g) {
     };
 }
 
-} // namespace FunctionalPlus
+} // namespace fplus

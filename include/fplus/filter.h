@@ -5,11 +5,11 @@
 
 #pragma once
 
-#include "Maybe.h"
+#include "maybe.h"
 
 #include <algorithm>
 
-namespace FunctionalPlus
+namespace fplus
 {
 
 // KeepIf(isEven, [1, 2, 3, 2, 4, 5]) == [2, 2, 4]
@@ -136,4 +136,4 @@ Container Trim(UnaryPredicate p, const Container& xs)
     return TrimRight(p, TrimLeft(p, xs));
 }
 
-} // namespace FunctionalPlus
+} // namespace fplus
