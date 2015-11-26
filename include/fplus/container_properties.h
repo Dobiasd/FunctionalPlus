@@ -17,7 +17,7 @@
 namespace fplus
 {
 
-// all_by(isEven, [2, 4, 6]) == true
+// all_by(is_even, [2, 4, 6]) == true
 // Returns true for empty containers.
 template <typename UnaryPredicate, typename Container>
 bool all_by(UnaryPredicate p, const Container& xs)
@@ -35,7 +35,7 @@ bool all(const Container& xs)
     return all_by(identity<T>, xs);
 }
 
-// any_by(isOdd, [2, 4, 6]) == false
+// any_by(is_odd, [2, 4, 6]) == false
 template <typename UnaryPredicate, typename Container>
 bool any_by(UnaryPredicate p, const Container& xs)
 {
@@ -51,7 +51,7 @@ bool any(const Container& xs)
     return any_by(identity<T>, xs);
 }
 
-// none_by(isEven, [3, 4, 5]) == false
+// none_by(is_even, [3, 4, 5]) == false
 template <typename UnaryPredicate, typename Container>
 bool none_by(UnaryPredicate p, const Container& xs)
 {
@@ -274,7 +274,7 @@ bool is_subsequence_of(const Container& token, Container& xs)
     return false;
 }
 
-// count_if(isEven, [1, 2, 3, 5, 7, 8]) == 2
+// count_if(is_even, [1, 2, 3, 5, 7, 8]) == 2
 template <typename UnaryPredicate, typename Container>
 std::size_t count_if(UnaryPredicate p, const Container& xs)
 {

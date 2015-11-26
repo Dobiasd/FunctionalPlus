@@ -16,8 +16,8 @@
 namespace fplus
 {
 
-// find_first_by(isEven, [1, 3, 4, 6, 9]) == Just(4)
-// find_first_by(isEven, [1, 3, 5, 7, 9]) == Nothing
+// find_first_by(is_even, [1, 3, 4, 6, 9]) == Just(4)
+// find_first_by(is_even, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container, typename UnaryPredicate,
     typename T = typename Container::value_type>
 maybe<T> find_first_by(UnaryPredicate pred, const Container& xs)
@@ -29,8 +29,8 @@ maybe<T> find_first_by(UnaryPredicate pred, const Container& xs)
     return just<T>(*it);
 }
 
-// find_last_by(isEven, [1, 3, 4, 6, 9]) == Just(6)
-// find_last_by(isEven, [1, 3, 5, 7, 9]) == Nothing
+// find_last_by(is_even, [1, 3, 4, 6, 9]) == Just(6)
+// find_last_by(is_even, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container, typename UnaryPredicate,
     typename T = typename Container::value_type>
 maybe<T> find_last_by(UnaryPredicate pred, const Container& xs)
@@ -39,8 +39,8 @@ maybe<T> find_last_by(UnaryPredicate pred, const Container& xs)
     return find_first_by(pred, reverse(xs));
 }
 
-// find_first_idx_by(isEven, [1, 3, 4, 6, 9]) == Just(2)
-// find_first_idx_by(isEven, [1, 3, 5, 7, 9]) == Nothing
+// find_first_idx_by(is_even, [1, 3, 4, 6, 9]) == Just(2)
+// find_first_idx_by(is_even, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container, typename UnaryPredicate>
 maybe<std::size_t> find_first_idx_by
         (UnaryPredicate pred, const Container& xs)
@@ -52,8 +52,8 @@ maybe<std::size_t> find_first_idx_by
     return just<std::size_t>(std::distance(std::begin(xs), it));
 }
 
-// find_last_idx_by(isEven, [1, 3, 4, 6, 9]) == Just(3)
-// find_last_idx_by(isEven, [1, 3, 5, 7, 9]) == Nothing
+// find_last_idx_by(is_even, [1, 3, 4, 6, 9]) == Just(3)
+// find_last_idx_by(is_even, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container, typename UnaryPredicate>
 maybe<std::size_t> find_last_idx_by
         (UnaryPredicate pred, const Container& xs)
@@ -88,7 +88,7 @@ maybe<std::size_t> find_last_idx
     return find_last_idx_by(pred, xs);
 }
 
-// find_all_idxs_by(isEven, [1, 3, 4, 6, 9]) == [2, 3]
+// find_all_idxs_by(is_even, [1, 3, 4, 6, 9]) == [2, 3]
 template <typename ContainerOut = std::list<std::size_t>,
         typename UnaryPredicate, typename Container>
 ContainerOut find_all_idxs_by(UnaryPredicate p, const Container& xs)

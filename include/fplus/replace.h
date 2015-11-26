@@ -12,7 +12,7 @@
 namespace fplus
 {
 
-// replace_if(isEven, 0, [1, 3, 4, 6, 7]) == [1, 3, 0, 0, 7]
+// replace_if(is_even, 0, [1, 3, 4, 6, 7]) == [1, 3, 0, 0, 7]
 template <typename UnaryPredicate, typename Container>
 Container replace_if(UnaryPredicate p,
         const typename Container::value_type& dest, const Container& xs)

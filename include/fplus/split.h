@@ -49,7 +49,7 @@ ContainerOut group(ContainerIn& xs)
     return group_by(pred, xs);
 }
 
-// split_by(isEven, true, [1,3,2,2,5,5,3,6,7,9]) == [[1,3],[],[5,5,3],[7,9]]
+// split_by(is_even, true, [1,3,2,2,5,5,3,6,7,9]) == [[1,3],[],[5,5,3],[7,9]]
 template <typename UnaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::list<ContainerIn>>
 ContainerOut split_by
@@ -95,7 +95,7 @@ std::pair<Container, Container> split_at_idx
     return make_pair(get_range(0, idx, xs), get_range(idx, size_of_cont(xs), xs));
 }
 
-// partition(isEven, [0,1,1,3,7,2,3,4]) == ([0,2,4],[1,1,3,7,3])
+// partition(is_even, [0,1,1,3,7,2,3,4]) == ([0,2,4],[1,1,3,7,3])
 template <typename UnaryPredicate, typename Container>
 std::pair<Container, Container> partition
         (UnaryPredicate pred, const Container& xs)
@@ -190,7 +190,7 @@ Container drop(std::size_t amount, const Container& xs)
     return get_range(amount, size_of_cont(xs), xs);
 }
 
-// take_while(isEven, [0,2,4,5,6,7,8]) == [0,2,4]
+// take_while(is_even, [0,2,4,5,6,7,8]) == [0,2,4]
 template <typename Container, typename UnaryPredicate>
 Container take_while(UnaryPredicate pred, const Container& xs)
 {
@@ -198,7 +198,7 @@ Container take_while(UnaryPredicate pred, const Container& xs)
     return take(with_default<std::size_t>(size_of_cont(xs), maybeIdx), xs);
 }
 
-// drop_while(isEven, [0,2,4,5,6,7,8]) == [5,6,7,8]
+// drop_while(is_even, [0,2,4,5,6,7,8]) == [5,6,7,8]
 template <typename Container, typename UnaryPredicate>
 Container drop_while(UnaryPredicate pred, const Container& xs)
 {

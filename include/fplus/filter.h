@@ -12,7 +12,7 @@
 namespace fplus
 {
 
-// keep_if(isEven, [1, 2, 3, 2, 4, 5]) == [2, 2, 4]
+// keep_if(is_even, [1, 2, 3, 2, 4, 5]) == [2, 2, 4]
 // Also known as Filter.
 template <typename Pred, typename Container>
 Container keep_if(Pred pred, const Container& xs)
@@ -24,7 +24,7 @@ Container keep_if(Pred pred, const Container& xs)
     return result;
 }
 
-// drop_if(isEven, [1, 2, 3, 2, 4, 5]) == [1, 3, 5]
+// drop_if(is_even, [1, 2, 3, 2, 4, 5]) == [1, 3, 5]
 // Also known as Reject.
 template <typename Pred, typename Container>
 Container drop_if(Pred pred, const Container& xs)
@@ -109,7 +109,7 @@ ContainerOut justs(const ContainerIn& xs)
     return ys;
 }
 
-// trim_left(isEven, [0,2,4,5,6,7,8,6,4]) == [5,6,7,8,6,4]
+// trim_left(is_even, [0,2,4,5,6,7,8,6,4]) == [5,6,7,8,6,4]
 template <typename Container, typename UnaryPredicate>
 Container trim_left(UnaryPredicate p, const Container& xs)
 {
@@ -120,7 +120,7 @@ Container trim_left(UnaryPredicate p, const Container& xs)
     return Container(itFirstNot, std::end(xs));
 }
 
-// trim_right(isEven, [0,2,4,5,6,7,8,6,4]) == [0,2,4,5,6,7]
+// trim_right(is_even, [0,2,4,5,6,7,8,6,4]) == [0,2,4,5,6,7]
 template <typename Container, typename UnaryPredicate>
 Container trim_right(UnaryPredicate p, const Container& xs)
 {
@@ -128,7 +128,7 @@ Container trim_right(UnaryPredicate p, const Container& xs)
     return reverse(trim_left(p, reverse(xs)));
 }
 
-// trim(isEven, [0,2,4,5,6,7,8,6,4]) == [5,6,7]
+// trim(is_even, [0,2,4,5,6,7,8,6,4]) == [5,6,7]
 template <typename Container, typename UnaryPredicate>
 Container trim(UnaryPredicate p, const Container& xs)
 {

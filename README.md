@@ -165,7 +165,7 @@ By changing the way you think about programming from "writing your own loops and
 
 Finding the right functions
 ---------------------------
-The library is splitted into several header files, but all functions live in `namespace fplus`. If you for example need a function splitting a sequence at elements with a specific property, use your IDE to auto-complete `fplus::split...` or just look into `split.h` and you will soon find `fplus::split_by` doing exactly this: `SplitBy(isEven, true, [1,3,2,2,5,5,3,6,7,9]) == [[1,3],[],[5,5,3],[7,9]]`
+The library is splitted into several header files, but all functions live in `namespace fplus`. If you for example need a function splitting a sequence at elements with a specific property, use your IDE to auto-complete `fplus::split...` or just look into `split.h` and you will soon find `fplus::split_by` doing exactly this: `split_by(is_even, true, [1,3,2,2,5,5,3,6,7,9]) == [[1,3],[],[5,5,3],[7,9]]`
 
 
 Performance
