@@ -196,7 +196,7 @@ Installation/Requirements
 -------------------------
 Just download FunctionalPlus and tell your compile to use the `include` directory.
 
-A ***C++14***-compatible compiler is needed. The tests run successfully on GCC 4.9, Clang 3.6 and Visual C++ 2015.
+A ***C++11***-compatible compiler is needed. The tests run successfully on GCC 4.9, Clang 3.6 and Visual C++ 2015.
 
 
 Disclaimer

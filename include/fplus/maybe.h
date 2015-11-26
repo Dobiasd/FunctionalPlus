@@ -21,9 +21,9 @@ class maybe
 public:
     maybe() {}
     maybe(const maybe<T>& other) :
-        ptr_(other.get() ? std::make_unique<T>(*other.get()) : ptr_t())
+        ptr_(other.get() ? ptr_t( new T(*other.get())) : ptr_t())
         {}
-    explicit maybe(const T& val) : ptr_(std::make_unique<T>(val)) {}
+    explicit maybe(const T& val) : ptr_(new T(val)) {}
     bool is_just() const { return static_cast<bool>(get()); }
     const T& unsafe_get_just() const { assert(is_just()); return *get(); }
     typedef T type;
@@ -98,10 +98,10 @@ bool operator != (const maybe<T>& x, const maybe<T>& y)
 // now can convert a Maybe<int> into a Maybe<string>.
 // A nothings stays a nothing, regardless of the conversion.
 template <typename F,
-    typename A = typename std::remove_const_t<typename std::remove_reference_t<
-        typename utils::function_traits<F>::template arg<0>::type>>,
-    typename B = typename std::remove_const_t<typename std::remove_reference_t<
-        typename utils::function_traits<F>::result_type>>>
+    typename A = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename B = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::result_type>::type>::type>
 std::function<maybe<B>(const maybe<A>&)> lift(F f)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
@@ -119,18 +119,18 @@ std::function<maybe<B>(const maybe<A>&)> lift(F f)
 // is extracted and shoved into the second function.
 // If the first functions returns a nothing, it stays a nothing.
 template <typename F, typename G,
-    typename FIn = typename std::remove_const_t<
-        typename std::remove_reference_t<
-            typename utils::function_traits<F>::template arg<0>::type>>,
-    typename FOut = typename std::remove_const_t<
-        typename std::remove_reference_t<
-            typename utils::function_traits<F>::result_type>>,
-    typename GIn = typename std::remove_const_t<
-        typename std::remove_reference_t<
-            typename utils::function_traits<G>::template arg<0>::type>>,
-    typename GOut = typename std::remove_const_t<
-        typename std::remove_reference_t<
-            typename utils::function_traits<G>::result_type>>,
+    typename FIn = typename std::remove_const<
+        typename std::remove_reference<
+            typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename FOut = typename std::remove_const<
+        typename std::remove_reference<
+            typename utils::function_traits<F>::result_type>::type>::type,
+    typename GIn = typename std::remove_const<
+        typename std::remove_reference<
+            typename utils::function_traits<G>::template arg<0>::type>::type>::type,
+    typename GOut = typename std::remove_const<
+        typename std::remove_reference<
+            typename utils::function_traits<G>::result_type>::type>::type,
     typename C = typename GOut::type>
 std::function<maybe<C>(const FIn&)> and_then(F f, G g) {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");

@@ -23,7 +23,7 @@ std::function<FOut(FIn1)> bind_1_of_2(F f, T x)
 {
     static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
     static_assert(std::is_convertible<T, FIn0>::value, "Function can not take bound parameter type.");
-    return [f = std::forward<F>(f), x = std::forward<T>(x)]
+    return [f, x]
            (FIn1 y)
            { return f(x, y); };
 }
@@ -38,7 +38,7 @@ std::function<FOut(FIn1, FIn2)> bind_1_of_3(F f, X x)
 {
     static_assert(utils::function_traits<F>::arity == 3, "Wrong arity.");
     static_assert(std::is_convertible<X, FIn0>::value, "Function can not take bound parameter type.");
-    return [f = std::forward<F>(f), x = std::forward<X>(x)]
+    return [f, x]
            (FIn1 y, FIn2 z)
            { return f(x, y, z); };
 }
@@ -54,9 +54,7 @@ std::function<FOut(FIn2)> bind_2_of_3(F f, X x, Y y)
     static_assert(utils::function_traits<F>::arity == 3, "Wrong arity.");
     static_assert(std::is_convertible<X, FIn0>::value, "Function can not take first bound parameter type.");
     static_assert(std::is_convertible<Y, FIn1>::value, "Function can not take second bound parameter type.");
-    return [f = std::forward<F>(f),
-            x = std::forward<X>(x),
-            y = std::forward<Y>(y)]
+    return [f, x, y]
            (FIn2 z)
            { return f(x, y, z); };
 }
@@ -67,7 +65,7 @@ template <typename F,
     typename A = typename utils::function_traits<F>::template arg<0>::type,
     typename B = typename utils::function_traits<F>::template arg<1>::type,
     typename C = typename utils::function_traits<F>::result_type>
-auto flip(F f)
+std::function<C(B, A)> flip(F f)
 {
     static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
     return [f](B y, A x) { return f(x, y); };
@@ -92,7 +90,7 @@ template <typename F, typename G,
     typename FOut = typename utils::function_traits<F>::result_type,
     typename GIn = typename utils::function_traits<G>::template arg<0>::type,
     typename GOut = typename utils::function_traits<G>::result_type>
-auto compose(F f, G g)
+std::function<GOut(FIn)> compose(F f, G g)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
@@ -108,7 +106,7 @@ template <typename F, typename G, typename H,
     typename GOut = typename utils::function_traits<G>::result_type,
     typename HIn = typename utils::function_traits<H>::template arg<0>::type,
     typename HOut = typename utils::function_traits<H>::result_type>
-auto compose(F f, G g, H h)
+std::function<HOut(FIn)> compose(F f, G g, H h)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
@@ -128,7 +126,7 @@ template <typename F, typename G, typename H, typename I,
     typename HOut = typename utils::function_traits<H>::result_type,
     typename IIn = typename utils::function_traits<I>::template arg<0>::type,
     typename IOut = typename utils::function_traits<I>::result_type>
-auto compose(F f, G g, H h, I i)
+std::function<IOut(FIn)> compose(F f, G g, H h, I i)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
@@ -152,7 +150,7 @@ template <typename F, typename G, typename H, typename I, typename J,
     typename IOut = typename utils::function_traits<I>::result_type,
     typename JIn = typename utils::function_traits<I>::template arg<0>::type,
     typename JOut = typename utils::function_traits<I>::result_type>
-auto compose(F f, G g, H h, I i, J j)
+std::function<JOut(FIn)> compose(F f, G g, H h, I i, J j)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");

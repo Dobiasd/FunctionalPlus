@@ -26,8 +26,8 @@ MapOut pairs_to_map(const ContainerIn& pairs)
 // Converts a dictionary into a Container of pairs (key, value).
 template <typename MapType,
     typename MapPair = typename MapType::value_type,
-    typename Key = typename std::remove_const_t<typename MapPair::first_type>,
-    typename Val = typename std::remove_const_t<typename MapPair::second_type>,
+    typename Key = typename std::remove_const<typename MapPair::first_type>::type,
+    typename Val = typename std::remove_const<typename MapPair::second_type>::type,
     typename OutPair = std::pair<Key, Val>,
     typename ContainerOut = std::vector<OutPair>>
 ContainerOut map_to_pairs(const MapType& dict)
@@ -37,7 +37,7 @@ ContainerOut map_to_pairs(const MapType& dict)
 
 template <typename MapType,
     typename ContainerOut =
-        std::vector<std::remove_const_t<typename MapType::key_type>>>
+        std::vector<typename std::remove_const<typename MapType::key_type>::type>>
 ContainerOut get_map_keys(const MapType& dict)
 {
     auto pairs = map_to_pairs(dict);
@@ -48,7 +48,7 @@ ContainerOut get_map_keys(const MapType& dict)
 
 template <typename MapType,
     typename ContainerOut =
-        std::vector<std::remove_const_t<typename MapType::mapped_type>>>
+        std::vector<typename std::remove_const<typename MapType::mapped_type>::type>>
 ContainerOut get_map_values(const MapType& dict)
 {
     auto pairs = map_to_pairs(dict);
@@ -64,7 +64,7 @@ template <typename MapIn,
     typename InKey = typename MapInPair::first_type,
     typename InVal = typename MapInPair::second_type,
     typename OutKey = InVal,
-    typename OutVal = std::remove_const_t<InKey>,
+    typename OutVal = typename std::remove_const<InKey>::type,
     typename MapOut = typename SameMapTypeNewTypes<MapIn, OutKey, OutVal>::type>
 MapOut swap_keys_and_values(const MapIn& dict)
 {
@@ -75,8 +75,8 @@ MapOut swap_keys_and_values(const MapIn& dict)
 
 // create_map([1,2,3], ["one", "two"]) == { {1,"one"}, {2,"two"} }
 template <typename ContainerIn1, typename ContainerIn2,
-    typename Key = std::remove_const_t<typename ContainerIn1::value_type>,
-    typename Val = std::remove_const_t<typename ContainerIn2::value_type>,
+    typename Key = typename std::remove_const<typename ContainerIn1::value_type>::type,
+    typename Val = typename std::remove_const<typename ContainerIn2::value_type>::type,
     typename MapOut = std::map<Key, Val>>
 MapOut create_map(const ContainerIn1& keys, const ContainerIn2& values)
 {
@@ -86,8 +86,8 @@ MapOut create_map(const ContainerIn1& keys, const ContainerIn2& values)
 
 // create_unordered_map([1,2,3], ["one", "two"]) == { {1,"one"}, {2,"two"} }
 template <typename ContainerIn1, typename ContainerIn2,
-    typename Key = std::remove_const_t<typename ContainerIn1::value_type>,
-    typename Val = std::remove_const_t<typename ContainerIn2::value_type>,
+    typename Key = typename std::remove_const<typename ContainerIn1::value_type>::type,
+    typename Val = typename std::remove_const<typename ContainerIn2::value_type>::type,
     typename MapOut = std::unordered_map<Key, Val >>
 MapOut create_unordered_map(
     const ContainerIn1& keys,
