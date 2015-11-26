@@ -112,8 +112,7 @@ template <typename NewT, typename ContainerIn,
     typename ContainerOut = typename same_cont_new_t<ContainerIn, NewT>::type>
 ContainerOut convert_elems(const ContainerIn& xs)
 {
-    static_assert(std::is_constructible<NewT,
-        typename ContainerIn::value_type>::value, "Elements not convertible.");
+    static_assert(std::is_constructible<NewT, typename ContainerIn::value_type>::value, "Elements not convertible.");
     ContainerOut ys;
     prepare_container(ys, size_of_cont(xs));
     auto it = get_back_inserter<ContainerOut>(ys);
@@ -149,8 +148,7 @@ ContainerOut convert_container(const ContainerIn& xs)
 template <typename ContainerOut, typename ContainerIn>
 ContainerOut convert(const ContainerIn& xs)
 {
-    static_assert(std::is_convertible<typename ContainerIn::value_type,
-        typename ContainerOut::value_type>::value, "Elements not convertible.");
+    static_assert(std::is_convertible<typename ContainerIn::value_type, typename ContainerOut::value_type>::value, "Elements not convertible.");
     typedef typename ContainerOut::value_type DestElem;
     ContainerOut ys;
     prepare_container(ys, size_of_cont(xs));
@@ -403,7 +401,7 @@ Container intersperse(const X& value, const Container& xs)
     if (size_of_cont(xs) == 1)
         return xs;
     Container result;
-    prepare_container(result, std::max<std::size_t>(0, size_of_cont(xs)*2 - 1));
+    prepare_container(result, std::max<std::size_t>(0, size_of_cont(xs)*2-1));
     auto it = get_back_inserter(result);
     for_each(std::begin(xs), --std::end(xs), [&value, &it](const X& x)
     {

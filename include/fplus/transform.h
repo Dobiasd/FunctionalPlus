@@ -21,8 +21,7 @@ namespace fplus
 // transform((*2), [1, 3, 4]) == [2, 6, 8]
 // Also known as Map.
 template <typename F, typename ContainerIn,
-    typename ContainerOut =
-        typename same_cont_new_t_from_unary_f<ContainerIn, F>::type>
+    typename ContainerOut = typename same_cont_new_t_from_unary_f<ContainerIn, F>::type>
 ContainerOut transform(F f, const ContainerIn& xs)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
@@ -49,10 +48,7 @@ ContainerOut transform_convert(F f, const ContainerIn& xs)
 // (size_t -> a -> b) -> [a] -> [b]
 // transform_with_idx(f, [6, 4, 7]) == [f(0, 6), f(1, 4), f(2, 7)]
 template <typename F, typename ContainerIn,
-    typename ContainerOut =
-        typename same_cont_new_t_from_binary_f<
-            ContainerIn, F, std::size_t,
-            typename ContainerIn::value_type>::type>
+    typename ContainerOut = typename same_cont_new_t_from_binary_f< ContainerIn, F, std::size_t, typename ContainerIn::value_type>::type>
 ContainerOut transform_with_idx(F f, const ContainerIn& xs)
 {
     static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
@@ -70,8 +66,7 @@ ContainerOut transform_with_idx(F f, const ContainerIn& xs)
 // (a -> Maybe b) -> [a] -> [b]
 template <typename F, typename ContainerIn,
     typename FOut = typename utils::function_traits<F>::result_type,
-    typename ContainerOut =
-        typename same_cont_new_t<ContainerIn, typename FOut::type>::type>
+    typename ContainerOut = typename same_cont_new_t<ContainerIn, typename FOut::type>::type>
 ContainerOut transform_and_keep_justs(F f, const ContainerIn& xs)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
@@ -81,8 +76,7 @@ ContainerOut transform_and_keep_justs(F f, const ContainerIn& xs)
 
 // (a -> [b]) -> [a] -> [b]
 template <typename F, typename ContainerIn,
-    typename ContainerOut =
-        typename same_cont_new_t_from_unary_f<ContainerIn, F>::type::value_type>
+    typename ContainerOut = typename same_cont_new_t_from_unary_f<ContainerIn, F>::type::value_type>
 ContainerOut transform_and_concat(F f, const ContainerIn& xs)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");

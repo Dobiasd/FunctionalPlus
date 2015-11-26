@@ -18,8 +18,7 @@ template <typename ContainerIn1, typename ContainerIn2, typename F,
     typename X = typename ContainerIn1::value_type,
     typename Y = typename ContainerIn2::value_type,
     typename TOut = typename utils::function_traits<F>::result_type,
-    typename ContainerOut =
-        typename same_cont_new_t<ContainerIn1, TOut>::type>
+    typename ContainerOut = typename same_cont_new_t<ContainerIn1, TOut>::type>
 ContainerOut zip_with(const F& f,
         const ContainerIn1& xs, const ContainerIn2& ys)
 {

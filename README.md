@@ -22,12 +22,16 @@ int main()
 
 There are different possiblities to obtain your goal. Some of them are:
 
-1. write a (range based) for loop (ommitting the curly braces)
+1. write a (range based) for loop
  ```c++
      Ints odds;
      for (int x : numbers)
+     {
          if (is_odd(x))
+         {
              odds.push_back(x);
+         }
+     }
  ```
 
 2. use `std::copy_if` from the STL

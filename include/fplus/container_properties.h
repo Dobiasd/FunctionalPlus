@@ -109,7 +109,7 @@ template <typename Container>
 typename Container::value_type sum(const Container& xs)
 {
     typedef typename Container::value_type X;
-    return fold_left([](const X& acc, const X& x) { return acc + x; }, X(), xs);
+    return fold_left([](const X& acc, const X& x) { return acc+x; }, X(), xs);
 }
 
 // mean([1, 4, 4]) == 3

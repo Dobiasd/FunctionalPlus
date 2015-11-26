@@ -62,8 +62,7 @@ ContainerOut split_by
     typedef typename ContainerIn::value_type T;
     typedef typename ContainerOut::value_type ContainerOutInner;
     check_unary_predicate_for_container<UnaryPredicate, ContainerIn>();
-    static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value, "Containers do not match.");
+    static_assert(std::is_same<ContainerIn, typename ContainerOut::value_type>::value, "Containers do not match.");
     ContainerOut result;
     auto itOut = get_back_inserter(result);
     ContainerOutInner current;
@@ -126,8 +125,7 @@ template <typename ContainerIdxs, typename ContainerIn,
         typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut split_at_idxs(const ContainerIdxs& idxsIn, const ContainerIn& xs)
 {
-    static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value, "Containers do not match.");
+    static_assert(std::is_same<ContainerIn, typename ContainerOut::value_type>::value, "Containers do not match.");
     ContainerIdxs idxStartC = {0};
     ContainerIdxs idxEndC = {size_of_cont(xs)};
     std::vector<ContainerIdxs> containerIdxss = {idxStartC, idxsIn, idxEndC};
@@ -151,8 +149,7 @@ template <typename ContainerIn,
 ContainerOut split_by_token(const ContainerIn& token,
         bool allowEmpty, const ContainerIn& xs)
 {
-    static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value, "Containers do not match.");
+    static_assert(std::is_same<ContainerIn, typename ContainerOut::value_type>::value, "Containers do not match.");
     auto instances = find_all_instances_of_non_overlapping(token, xs);
     *get_back_inserter(instances) = size_of_cont(xs);
     std::list<ContainerIn> result;
@@ -171,8 +168,7 @@ ContainerOut split_by_token(const ContainerIn& token,
 
 // count_occurrences([1,2,2,3,2)) == [(1, 1), (2, 3), (3, 1)]
 template <typename ContainerIn,
-        typename MapOut =
-            typename std::map<typename ContainerIn::value_type, std::size_t>>
+        typename MapOut = typename std::map<typename ContainerIn::value_type, std::size_t>>
 MapOut count_occurrences(const ContainerIn& xs)
 {
     MapOut result;
