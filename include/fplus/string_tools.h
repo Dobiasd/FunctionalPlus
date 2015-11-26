@@ -16,74 +16,74 @@ namespace fplus
 
 // Is character alphanumerical?
 template <typename String>
-bool IsLetterOrDigit(const typename String::value_type& c)
+bool is_letter_or_digit(const typename String::value_type& c)
 {
     typedef typename String::value_type C;
-    auto IsDigit = Bind2of3(IsInRange<C>, 48, 58);
-    auto IsLowerLetter = Bind2of3(IsInRange<C>, 65, 91);
-    auto IsUpperLetter = Bind2of3(IsInRange<C>, 97, 123);
-    auto IsLetter = Or(IsLowerLetter, IsUpperLetter);
+    auto IsDigit = bind_2_of_3(is_in_rage<C>, 48, 58);
+    auto IsLowerLetter = bind_2_of_3(is_in_rage<C>, 65, 91);
+    auto IsUpperLetter = bind_2_of_3(is_in_rage<C>, 97, 123);
+    auto IsLetter = logical_or(IsLowerLetter, IsUpperLetter);
     return IsDigit(c) || IsLetter(c);
 }
 
 // Is character a whitespace.
 template <typename String>
-bool IsWhitespace(const typename String::value_type& c)
+bool is_whitespace(const typename String::value_type& c)
 {
     typedef typename String::value_type C;
-    return (c == 32 || IsInRange<C>(9, 14, c));
+    return (c == 32 || is_in_rage<C>(9, 14, c));
 }
 
 // Newline character ('\n')?
 template <typename String>
-bool IsLineBreak(const typename String::value_type& c)
+bool is_line_break(const typename String::value_type& c)
 {
     return c == '\n';
 }
 
 // Replaces windows and mac newlines with linux newlines.
 template <typename String>
-String CleanNewlines(const String& str)
+String clean_newlines(const String& str)
 {
-    return ReplaceElems('\r', '\n',
-        ReplaceTokens(String("\r\n"), String("\n"), str));
+    return replace_elems('\r', '\n',
+        replace_tokens(String("\r\n"), String("\n"), str));
 }
 
 // Splits a string by the found whitespace characters.
-// SplitWords("How are you?") == ["How", "are", "you?"]
+// split_words("How are you?") == ["How", "are", "you?"]
 template <typename String, typename ContainerOut = std::list<String>>
-ContainerOut SplitWords(const String& str)
+ContainerOut split_words(const String& str)
 {
-    return SplitBy(Not(IsLetterOrDigit<String>), false, str);
+    return split_by(logical_not(is_letter_or_digit<String>), false, str);
 }
 
 // Splits a string by the found newlines.
-// SplitWords("Hi,\nhow are you?") == ["Hi,", "How are you"]
+// split_lines("Hi,\nhow are you?") == ["Hi,", "How are you"]
 template <typename String, typename ContainerOut = std::list<String>>
-ContainerOut SplitLines(const String& str, bool allowEmpty)
+ContainerOut split_lines(const String& str, bool allowEmpty)
 {
-    return SplitBy(IsLineBreak<String>, allowEmpty, CleanNewlines(str));
+    return split_by(is_line_break<String>, allowEmpty, clean_newlines(str));
 }
 
-// TrimWhitespaceLeft("    text  ") == "text  "
+// trim_whitespace_left("    text  ") == "text  "
 template <typename String>
-String TrimWhitespaceLeft(const String& str)
+String trim_whitespace_left(const String& str)
 {
-    return TrimLeft(IsWhitespace<String>, str);
+    return trim_left(is_whitespace<String>, str);
 }
 
-// TrimWhitespaceLeft("    text  ") == "    text"
+// trim_whitespace_right("    text  ") == "    text"
 template <typename String>
-String TrimWhitespaceRight(const String& str)
+String trim_whitespace_right(const String& str)
 {
-    return TrimRight(IsWhitespace<String>, str);
+    return trim_right(is_whitespace<String>, str);
 }
 
-// TrimWhitespaceLeft("    text  ") == "text"
+// trim_whitespace("    text  ") == "text"
 template <typename String>
-String TrimWhitespace(const String& str)
+String trim_whitespace(const String& str)
 {
-    return Trim(IsWhitespace<String>, str);
+    return trim(is_whitespace<String>, str);
 }
 
 } // namespace fplus

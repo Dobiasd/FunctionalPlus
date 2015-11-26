@@ -16,40 +16,40 @@ namespace fplus
 
 // 42 -> "42"
 template <typename T>
-std::string Show(const T& x)
+std::string show(const T& x)
 {
     std::ostringstream ss;
     ss << x;
     return ss.str();
 }
 
-// ShowContWith (" => ", [1, 2, 3], "{", "}") == "{1 => 2 => 3}"
+// show_cont_with_frame (" => ", [1, 2, 3], "{", "}") == "{1 => 2 => 3}"
 template <typename Container>
-std::string ShowContWithFrame(
+std::string show_cont_with_frame(
     const std::string& separator,
     const std::string& prefix, const std::string& sufix,
     const Container& xs)
 {
     typedef typename Container::value_type T;
     typedef std::vector<std::string> Strings;
-    typedef decltype(Show<T>) ShowType;
-    auto showT = Show<T>;
-    auto mapped = Transform<ShowType, Container, Strings>(showT, xs);
-    return prefix + Join(separator, mapped) + sufix;
+    typedef decltype(show<T>) ShowType;
+    auto showT = show<T>;
+    auto mapped = transform<ShowType, Container, Strings>(showT, xs);
+    return prefix + join(separator, mapped) + sufix;
 }
 
-// ShowContWith( " - ", [1, 2, 3]) == "[1 - 2 - 3]"
+// show_cont_with( " - ", [1, 2, 3]) == "[1 - 2 - 3]"
 template <typename Container>
-std::string ShowContWith(const std::string& separator, const Container& xs)
+std::string show_cont_with(const std::string& separator, const Container& xs)
 {
-    return ShowContWithFrame(separator, "[", "]", xs);
+    return show_cont_with_frame(separator, "[", "]", xs);
 }
 
-// ShowCont [1, 2, 3] -> "[1, 2, 3]"
+// show_cont [1, 2, 3] -> "[1, 2, 3]"
 template <typename Container>
-std::string ShowCont(const Container& xs)
+std::string show_cont(const Container& xs)
 {
-    return ShowContWith(", ", xs);
+    return show_cont_with(", ", xs);
 }
 
 

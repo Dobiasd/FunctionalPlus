@@ -19,29 +19,29 @@ void Test_Numeric()
 {
     using namespace fplus;
 
-    assert(IsInRange(1, 3, 1) == true);
-    assert(IsInRange(1, 3, 2) == true);
-    assert(IsInRange(1, 3, 0) == false);
-    assert(IsInRange(1, 3, 3) == false);
+    assert(is_in_rage(1, 3, 1) == true);
+    assert(is_in_rage(1, 3, 2) == true);
+    assert(is_in_rage(1, 3, 0) == false);
+    assert(is_in_rage(1, 3, 3) == false);
 
-    assert(IsNegative(0.1) == false);
-    assert(IsPositive(0.1) == true);
-    assert(IsNegative(-0.1) == true);
-    assert(IsPositive(-0.1) == false);
+    assert(is_negative(0.1) == false);
+    assert(is_positive(0.1) == true);
+    assert(is_negative(-0.1) == true);
+    assert(is_positive(-0.1) == false);
 
-    assert(Round(1.4) == 1);
-    assert(Round(1.6) == 2);
-    assert(Floor(1.4) == 1);
-    assert(Ceil(1.4) == 2);
+    assert(round(1.4) == 1);
+    assert(round(1.6) == 2);
+    assert(floor(1.4) == 1);
+    assert(ceil(1.4) == 2);
 
-    assert(Round(-1.4) == -1);
-    assert(Round(-1.6) == -2);
-    assert(Floor(-1.4) == -2);
-    assert(Ceil(-1.4) == -1);
+    assert(round(-1.4) == -1);
+    assert(round(-1.6) == -2);
+    assert(floor(-1.4) == -2);
+    assert(ceil(-1.4) == -1);
 
-    assert(Clamp(2, 6, 5) == 5);
-    assert(Clamp(2, 6, 1) == 2);
-    assert(Clamp(2, 6, 8) == 6);
+    assert(clamp(2, 6, 5) == 5);
+    assert(clamp(2, 6, 1) == 2);
+    assert(clamp(2, 6, 8) == 6);
 }
 
 int APlusTwoTimesBFunc(int a, int b) { return a + 2 * b; }
@@ -92,37 +92,37 @@ void Test_Composition()
 
     typedef IntContCont Mat;
     Mat mat;
-    auto squareRowElems = Bind1of2(Transform<decltype(square), Row>,
+    auto squareRowElems = bind_1_of_2(transform<decltype(square), Row>,
             square);
     Row squaredRow = squareRowElems(row);
     assert(squaredRow == Row({1,4,9}));
 
-    assert((Compose(square, square)(2)) == 16);
-    assert((Compose(square, square, square)(2)) == 256);
-    assert((Compose(square, square, square, square)(2)) == 65536);
-    assert((Compose(square, square, square, square, square)(1)) == 1);
+    assert((compose(square, square)(2)) == 16);
+    assert((compose(square, square, square)(2)) == 256);
+    assert((compose(square, square, square, square)(2)) == 65536);
+    assert((compose(square, square, square, square, square)(1)) == 1);
     auto add3 = [](int x, int y, int z) { return x + y + z; };
-    assert(Bind2of3(add3, 3, 5)(7) == 15);
+    assert(bind_2_of_3(add3, 3, 5)(7) == 15);
     auto APlusTwoTimesB = [](int a, int b) { return a + 2 * b; };
     auto TwoTimesAPlusB = [](int a, int b) { return 2 * a + b; };
-    assert((Flip(APlusTwoTimesB)(2, 1)) == 5);
-    assert((Flip(TwoTimesAPlusB)(1, 2)) == 5);
+    assert((flip(APlusTwoTimesB)(2, 1)) == 5);
+    assert((flip(TwoTimesAPlusB)(1, 2)) == 5);
     auto is1 = [](int x) { return x == 1; };
     auto is2 = [](int x) { return x == 2; };
-    assert((Not(is1)(1)) == false);
-    assert((Not(is1)(2)) == true);
+    assert((logical_not(is1)(1)) == false);
+    assert((logical_not(is1)(2)) == true);
 
-    assert((Or(is1, is2)(1)) == true);
-    assert((Or(is1, is2)(2)) == true);
-    assert((Or(is1, is2)(3)) == false);
-    assert((And(is1, is2)(1)) == false);
-    assert((And(is1, is1)(1)) == true);
-    assert((Xor(is1, is1)(1)) == false);
-    assert((Xor(is2, is1)(1)) == true);
-    assert((Xor(is2, is2)(1)) == false);
+    assert((logical_or(is1, is2)(1)) == true);
+    assert((logical_or(is1, is2)(2)) == true);
+    assert((logical_or(is1, is2)(3)) == false);
+    assert((logical_and(is1, is2)(1)) == false);
+    assert((logical_and(is1, is1)(1)) == true);
+    assert((logical_xor(is1, is1)(1)) == false);
+    assert((logical_xor(is2, is1)(1)) == true);
+    assert((logical_xor(is2, is2)(1)) == false);
 
-    assert((ApplyToPair(APlusTwoTimesB, std::make_pair(1, 2))) == 5);
-    assert((ApplyToPair(APlusTwoTimesBFunc, std::make_pair(1, 2))) == 5);
+    assert((apply_to_pair(APlusTwoTimesB, std::make_pair(1, 2))) == 5);
+    assert((apply_to_pair(APlusTwoTimesBFunc, std::make_pair(1, 2))) == 5);
 
     State state(1);
     assert(state.Get() == 1);
@@ -226,78 +226,76 @@ void Test_FunctionTraits()
 void Test_Maybe()
 {
     using namespace fplus;
-    using namespace std;
     auto square = [](int x){ return x*x; };
     auto sqrtToMaybe = [](float x) {
-        return x < 0.0f ? Nothing<float>() :
-                Just(sqrt(static_cast<float>(x)));
+        return x < 0.0f ? nothing<float>() :
+                just(static_cast<float>(sqrt(static_cast<float>(x))));
     };
     auto sqrtToMaybeInt = [](int x) {
-        return x < 0.0f ? Nothing<int>() :
-                Just(Round(sqrt(static_cast<float>(x))));
+        return x < 0 ? nothing<int>() :
+                just(fplus::round(sqrt(static_cast<float>(x))));
     };
     auto IntToFloat = [](const int& x) { return static_cast<float>(x); };
 
-    Maybe<int> x(2);
-    Maybe<int> y = Nothing<int>();
-    auto Or42 = Bind1of2(WithDefault<int>, 42);
-    auto SquareAndSquare = Compose(square, square);
+    maybe<int> x(2);
+    maybe<int> y = nothing<int>();
+    auto Or42 = bind_1_of_2(with_default<int>, 42);
+    auto SquareAndSquare = compose(square, square);
     assert(Or42(x) == 2);
     assert(Or42(y) == 42);
-    auto squareMaybe = Lift(square);
-    auto sqrtAndSqrt = AndThen(sqrtToMaybe, sqrtToMaybe);
-    assert(squareMaybe(x) == Just(4));
-    assert(squareMaybe(y) == Nothing<int>());
-    assert((Lift(SquareAndSquare))(x) == Just(16));
-    auto LiftedIntToFloat = Lift(IntToFloat);
-    auto JustInt = Just<int>;
-    auto IntToMaybeFloat = Compose(JustInt, LiftedIntToFloat);
-    auto IntToFloatAndSqrtAndSqrt = AndThen(IntToMaybeFloat, sqrtAndSqrt);
-    assert(IsInRange(1.41f, 1.42f, UnsafeGetJust<float>
+    auto squareMaybe = lift(square);
+    auto sqrtAndSqrt = and_then(sqrtToMaybe, sqrtToMaybe);
+    assert(squareMaybe(x) == just(4));
+    assert(squareMaybe(y) == nothing<int>());
+    assert((lift(SquareAndSquare))(x) == just(16));
+    auto LiftedIntToFloat = lift(IntToFloat);
+    auto JustInt = just<int>;
+    auto IntToMaybeFloat = compose(JustInt, LiftedIntToFloat);
+    auto IntToFloatAndSqrtAndSqrt = and_then(IntToMaybeFloat, sqrtAndSqrt);
+    assert(is_in_rage(1.41f, 1.42f, unsafe_get_just<float>
             (IntToFloatAndSqrtAndSqrt(4))));
-    typedef vector<Maybe<int>> IntMaybes;
-    typedef vector<int> Ints;
-    IntMaybes maybes = {Just(1), Nothing<int>(), Just(2)};
-    Ints justs = {1,2};
-    assert(Justs(maybes) == justs);
-    assert(Just(1) == Just(1));
-    assert(Just(1) != Just(2));
-    assert(Just(1) != Nothing<int>());
-    assert(Nothing<int>() == Nothing<int>());
+    typedef std::vector<maybe<int>> IntMaybes;
+    typedef std::vector<int> Ints;
+    IntMaybes maybes = {just(1), nothing<int>(), just(2)};
+    assert(justs(maybes) == Ints({ 1,2 }));
+    assert(just(1) == just(1));
+    assert(just(1) != just(2));
+    assert(just(1) != nothing<int>());
+    assert(nothing<int>() == nothing<int>());
 
     Ints wholeNumbers = { -3, 4, 16, -1 };
-    assert(TransformAndKeepJusts(sqrtToMaybeInt, wholeNumbers)
+    assert(transform_and_keep_justs(sqrtToMaybeInt, wholeNumbers)
             == Ints({2,4}));
-    assert(TransformAndConcat(Bind1of2(Replicate<Ints>, 3), Ints{ 1,2 })
+    assert(transform_and_concat(bind_1_of_2(replicate<Ints>, 3), Ints{ 1,2 })
             == Ints({ 1,1,1,2,2,2 }));
 }
 
 void Test_Compare()
 {
     using namespace fplus;
-    assert(IsEqual(2, 2));
-    assert(!IsEqual(2, 3));
-    assert(!IsNotEqual(2, 2));
-    assert(IsNotEqual(2, 3));
+    assert(is_equal(2, 2));
+    assert(!is_equal(2, 3));
+    assert(!is_not_equal(2, 2));
+    assert(is_not_equal(2, 3));
 
-    assert(!IsLess(2, 2));
-    assert(IsLess(2, 3));
-    assert(!IsLess(3, 2));
+    assert(!is_less(2, 2));
+    assert(is_less(2, 3));
+    assert(!is_less(3, 2));
 
-    assert(IsLessOrEqual(2, 2));
-    assert(IsLessOrEqual(2, 3));
-    assert(!IsLessOrEqual(3, 2));
+    assert(is_less_or_equal(2, 2));
+    assert(is_less_or_equal(2, 3));
+    assert(!is_less_or_equal(3, 2));
 
-    assert(!IsGreater(2, 2));
-    assert(!IsGreater(2, 3));
-    assert(IsGreater(3, 2));
+    assert(!is_greater(2, 2));
+    assert(!is_greater(2, 3));
+    assert(is_greater(3, 2));
 
-    assert(IsGreaterOrEqual(2, 2));
-    assert(!IsGreaterOrEqual(2, 3));
-    assert(IsGreaterOrEqual(3, 2));
+    assert(is_greater_or_equal(2, 2));
+    assert(!is_greater_or_equal(2, 3));
+    assert(is_greater_or_equal(3, 2));
 
-    assert(Identity(2) == 2);
-    assert(Always(2, 5) == 2);
+    assert(identity(2) == 2);
+    assert(always(2, 5) == 2);
 }
 
 struct ExplicitFromIntStruct
@@ -320,235 +318,234 @@ struct squareStruct
 void Test_ContainerTools()
 {
     using namespace fplus;
-    using namespace std;
 
     auto squareLambda = [](int x) { return x*x; };
     std::function<int(int)> squareStdFunction = squareLambda;
 
     auto isEven = [](int x){ return x % 2 == 0; };
-    auto isOdd = [](int x){ return x % 2 == 1; };
-    typedef pair<int, int> IntPair;
-    typedef vector<int> IntVector;
-    typedef vector<IntVector> IntVectors;
-    typedef vector<bool> BoolVector;
+    auto is_odd = [](int x){ return x % 2 == 1; };
+    typedef std::pair<int, int> IntPair;
+    typedef std::vector<int> IntVector;
+    typedef std::vector<IntVector> IntVectors;
+    typedef std::vector<bool> BoolVector;
     IntVector xs = {1,2,2,3,2};
     IntVector xsSorted = {1,2,2,2,3};
-    string xsShown("[1, 2, 2, 3, 2]");
+    std::string xsShown("[1, 2, 2, 3, 2]");
     IntVector xs2Times = {1,2,2,3,2,1,2,2,3,2};
 
-    typedef list<int> IntList;
-    typedef list<IntList> IntLists;
+    typedef std::list<int> IntList;
+    typedef std::list<IntList> IntLists;
     IntList intList = { 1,2,2,3,2 };
     IntLists intLists = { { 1 },{ 2,2 },{ 3 },{ 2 } };
-    assert(Group(intList) == intLists);
+    assert(group(intList) == intLists);
 
-    typedef list<std::size_t> IdxList;
+    typedef std::list<std::size_t> IdxList;
 
-    assert(Transform(squareLambda, xs) == IntVector({1,4,4,9,4}));
-    assert(KeepIf(isEven, xs) == IntVector({2,2,2}));
-    assert(DropIf(isEven, xs) == IntVector({1,3}));
-    assert(Transform(squareLambda, intList) == IntList({ 1,4,4,9,4 }));
-    assert(KeepIf(isEven, intList) == IntList({ 2,2,2 }));
-    assert(DropIf(isEven, intList) == IntList({ 1,3 }));
-    assert(Group(xs) == std::list<IntVector>({IntVector({1}),IntVector({2,2}),IntVector({3}),IntVector({2})}));
-    assert(Without(2, intList) == IntList({ 1,3 }));
+    assert(transform(squareLambda, xs) == IntVector({1,4,4,9,4}));
+    assert(keep_if(isEven, xs) == IntVector({2,2,2}));
+    assert(drop_if(isEven, xs) == IntVector({1,3}));
+    assert(transform(squareLambda, intList) == IntList({ 1,4,4,9,4 }));
+    assert(keep_if(isEven, intList) == IntList({ 2,2,2 }));
+    assert(drop_if(isEven, intList) == IntList({ 1,3 }));
+    assert(group(xs) == std::list<IntVector>({IntVector({1}),IntVector({2,2}),IntVector({3}),IntVector({2})}));
+    assert(without(2, intList) == IntList({ 1,3 }));
 
-    assert(TransformConvert<IntList>(squareLambda, xs) == IntList({ 1,4,4,9,4 }));
+    assert(transform_convert<IntList>(squareLambda, xs) == IntList({ 1,4,4,9,4 }));
 
-    assert(IsEqualByAndBy(isEven, isEven, 2, 4) == true);
-    assert(IsEqualByAndBy(isEven, isEven, 1, 2) == false);
-    assert(IsEqualByAndBy(isOdd, isEven, 1, 2) == true);
-    assert(IsEqual(2, 2) == true);
-    assert(IsEqual(1, 2) == false);
+    assert(is_equal_by_and_by(isEven, isEven, 2, 4) == true);
+    assert(is_equal_by_and_by(isEven, isEven, 1, 2) == false);
+    assert(is_equal_by_and_by(is_odd, isEven, 1, 2) == true);
+    assert(is_equal(2, 2) == true);
+    assert(is_equal(1, 2) == false);
 
-    assert(IsEmpty(xs) == false);
-    assert(IsEmpty(IntVector()) == true);
-    assert(IsNotEmpty(xs) == true);
-    assert(IsNotEmpty(IntVector()) == false);
-    assert(ConvertContainer<IntList>(xs) == intList);
-    assert(Append(xs, xs) == xs2Times);
+    assert(is_empty(xs) == false);
+    assert(is_empty(IntVector()) == true);
+    assert(is_not_empty(xs) == true);
+    assert(is_not_empty(IntVector()) == false);
+    assert(convert_container<IntList>(xs) == intList);
+    assert(append(xs, xs) == xs2Times);
 
     typedef std::vector<float> FloatVector;
-    assert(ConvertElems<float>(xs) == FloatVector({ 1.0f,2.0f,2.0f,3.0f,2.0f }));
+    assert(convert_elems<float>(xs) == FloatVector({ 1.0f,2.0f,2.0f,3.0f,2.0f }));
 
-    assert(Concat(intLists) == intList);
-    assert(Concat(IntVectors(2, xs)) == xs2Times);
-    assert(Repeat(2, xs) == xs2Times);
-    assert(Intersperse(0, xs) == IntVector({1,0,2,0,2,0,3,0,2}));
-    assert(Foldl(std::plus<int>(), 100, xs) == 110);
-    assert(Foldr(std::plus<int>(), 100, xs) == 110);
+    assert(concat(intLists) == intList);
+    assert(concat(IntVectors(2, xs)) == xs2Times);
+    assert(repeat(2, xs) == xs2Times);
+    assert(intersperse(0, xs) == IntVector({1,0,2,0,2,0,3,0,2}));
+    assert(fold_left(std::plus<int>(), 100, xs) == 110);
+    assert(fold_right(std::plus<int>(), 100, xs) == 110);
     auto appendXToStrForFoldL = [](const std::string& str, int x) { return str + std::to_string(x); };
     auto appendXToStrForFoldR = [](int x, const std::string& str) { return str + std::to_string(x); };
     std::string emptyString;
-    assert(Foldl(appendXToStrForFoldL, emptyString, xs) == "12232");
-    assert(Foldr(appendXToStrForFoldR, emptyString, xs) == "23221");
+    assert(fold_left(appendXToStrForFoldL, emptyString, xs) == "12232");
+    assert(fold_right(appendXToStrForFoldR, emptyString, xs) == "23221");
 
-    assert(Scanl(std::plus<int>(), 20, xs) == IntVector({ 20,21,23,25,28,30 }));
-    assert(Scanr(std::plus<int>(), 20, xs) == IntVector({ 30,29,27,25,22,20 }));
+    assert(scan_left(std::plus<int>(), 20, xs) == IntVector({ 20,21,23,25,28,30 }));
+    assert(scan_right(std::plus<int>(), 20, xs) == IntVector({ 30,29,27,25,22,20 }));
 
-    assert(Join(IntList({0}), intLists)
+    assert(join(IntList({0}), intLists)
             == IntList({1,0,2,2,0,3,0,2}));
-    assert(ShowCont(xs) == xsShown);
-    assert(ShowContWith(", ", xs) == xsShown);
-    assert(Show<int>(1) == "1");
+    assert(show_cont(xs) == xsShown);
+    assert(show_cont_with(", ", xs) == xsShown);
+    assert(show<int>(1) == "1");
     auto multiply = [](int x, int y){ return x * y; };
-    assert(ZipWith(multiply, xs, xs)
-            == Transform(squareLambda, xs));
+    assert(zip_with(multiply, xs, xs)
+            == transform(squareLambda, xs));
 
-    auto xsZippedWithXs = Zip(xs, xs);
-    assert(Unzip(xsZippedWithXs).first == xs);
-    assert(All(BoolVector()) == true);
-    assert(All(BoolVector({true})) == true);
-    assert(All(BoolVector({false})) == false);
-    assert(All(BoolVector({true, true})) == true);
-    assert(All(BoolVector({true, false})) == false);
+    auto xsZippedWithXs = zip(xs, xs);
+    assert(unzip(xsZippedWithXs).first == xs);
+    assert(all(BoolVector()) == true);
+    assert(all(BoolVector({true})) == true);
+    assert(all(BoolVector({false})) == false);
+    assert(all(BoolVector({true, true})) == true);
+    assert(all(BoolVector({true, false})) == false);
 
-    assert(AllBy(isEven, IntVector()) == true);
-    assert(AllBy(isEven, IntVector({2})) == true);
-    assert(AllBy(isEven, IntVector({1})) == false);
-    assert(AllBy(isEven, IntVector({2, 2})) == true);
-    assert(AllBy(isEven, IntVector({2, 1})) == false);
+    assert(all_by(isEven, IntVector()) == true);
+    assert(all_by(isEven, IntVector({2})) == true);
+    assert(all_by(isEven, IntVector({1})) == false);
+    assert(all_by(isEven, IntVector({2, 2})) == true);
+    assert(all_by(isEven, IntVector({2, 1})) == false);
 
-    assert(Any(BoolVector()) == false);
-    assert(Any(BoolVector({true})) == true);
-    assert(Any(BoolVector({false})) == false);
-    assert(Any(BoolVector({false, false})) == false);
-    assert(Any(BoolVector({true, false})) == true);
+    assert(any(BoolVector()) == false);
+    assert(any(BoolVector({true})) == true);
+    assert(any(BoolVector({false})) == false);
+    assert(any(BoolVector({false, false})) == false);
+    assert(any(BoolVector({true, false})) == true);
 
-    assert(AnyBy(isEven, IntVector()) == false);
-    assert(AnyBy(isEven, IntVector({2})) == true);
-    assert(AnyBy(isEven, IntVector({1})) == false);
-    assert(AnyBy(isEven, IntVector({1, 1})) == false);
-    assert(AnyBy(isEven, IntVector({2, 1})) == true);
+    assert(any_by(isEven, IntVector()) == false);
+    assert(any_by(isEven, IntVector({2})) == true);
+    assert(any_by(isEven, IntVector({1})) == false);
+    assert(any_by(isEven, IntVector({1, 1})) == false);
+    assert(any_by(isEven, IntVector({2, 1})) == true);
 
-    assert(None(BoolVector()) == true);
-    assert(None(BoolVector({true})) == false);
-    assert(None(BoolVector({false})) == true);
-    assert(None(BoolVector({false, false})) == true);
-    assert(None(BoolVector({true, false})) == false);
+    assert(none(BoolVector()) == true);
+    assert(none(BoolVector({true})) == false);
+    assert(none(BoolVector({false})) == true);
+    assert(none(BoolVector({false, false})) == true);
+    assert(none(BoolVector({true, false})) == false);
 
-    assert(NoneBy(isEven, IntVector()) == true);
-    assert(NoneBy(isEven, IntVector({2})) == false);
-    assert(NoneBy(isEven, IntVector({1})) == true);
-    assert(NoneBy(isEven, IntVector({1, 1})) == true);
-    assert(NoneBy(isEven, IntVector({2, 1})) == false);
+    assert(none_by(isEven, IntVector()) == true);
+    assert(none_by(isEven, IntVector({2})) == false);
+    assert(none_by(isEven, IntVector({1})) == true);
+    assert(none_by(isEven, IntVector({1, 1})) == true);
+    assert(none_by(isEven, IntVector({2, 1})) == false);
 
-    assert(Minimum(xs) == 1);
-    assert(Maximum(xs) == 3);
+    assert(minimum(xs) == 1);
+    assert(maximum(xs) == 3);
 
-    assert(MinimumBy(greater<int>(), xs) == 3);
-    assert(MaximumBy(greater<int>(), xs) == 1);
+    assert(minimum_by(std::greater<int>(), xs) == 3);
+    assert(maximum_by(std::greater<int>(), xs) == 1);
 
-    assert(Size(xs) == 5);
-    assert(Size(IntVector()) == 0);
-    assert(IsNotEmpty(xs) == true);
+    assert(fplus::size_of_cont(xs) == 5);
+    assert(fplus::size_of_cont(IntVector()) == 0);
+    assert(is_not_empty(xs) == true);
 
 
-    assert(Sum(xs) == 10);
-    assert(Mean<int>(xs) == 2);
-    assert(Median(IntVector({ 3 })) == 3);
-    assert(Median(IntVector({ 3, 5 })) == 4);
-    assert(Median(IntVector({ 3, 9, 5 })) == 5);
-    assert(Median(xs) == 2);
-    assert(Sort(Reverse(xs)) == xsSorted);
-    assert(SortBy(greater<int>(), xs) == Reverse(xsSorted));
-    assert(Unique(xs) == IntVector({1,2,3,2}));
+    assert(sum(xs) == 10);
+    assert(mean<int>(xs) == 2);
+    assert(median(IntVector({ 3 })) == 3);
+    assert(median(IntVector({ 3, 5 })) == 4);
+    assert(median(IntVector({ 3, 9, 5 })) == 5);
+    assert(median(xs) == 2);
+    assert(sort(reverse(xs)) == xsSorted);
+    assert(sort_by(std::greater<int>(), xs) == reverse(xsSorted));
+    assert(unique(xs) == IntVector({1,2,3,2}));
     auto IsEqualByIsEven = [&](int a, int b)
             { return isEven(a) == isEven(b); };
-    assert(UniqueBy(IsEqualByIsEven, xs) == IntVector({1,2,3,2}));
+    assert(unique_by(IsEqualByIsEven, xs) == IntVector({1,2,3,2}));
 
-    assert(AllTheSame(IntVector()) == true);
-    assert(AllTheSame(IntVector({1})) == true);
-    assert(AllTheSame(IntVector({1,1,1})) == true);
-    assert(AllTheSame(IntVector({1,2,1})) == false);
+    assert(all_the_same(IntVector()) == true);
+    assert(all_the_same(IntVector({1})) == true);
+    assert(all_the_same(IntVector({1,1,1})) == true);
+    assert(all_the_same(IntVector({1,2,1})) == false);
 
-    assert(AllUniqueEq(IntVector()) == true);
-    assert(AllUniqueEq(IntVector({1})) == true);
-    assert(AllUniqueEq(IntVector({1,2,1})) == false);
-    assert(AllUniqueEq(IntVector({1,2,3})) == true);
+    assert(all_unique_eq(IntVector()) == true);
+    assert(all_unique_eq(IntVector({1})) == true);
+    assert(all_unique_eq(IntVector({1,2,1})) == false);
+    assert(all_unique_eq(IntVector({1,2,3})) == true);
 
-    assert(AllUniqueLess(IntVector()) == true);
-    assert(AllUniqueLess(IntVector({ 1 })) == true);
-    assert(AllUniqueLess(IntVector({ 1,2,1 })) == false);
-    assert(AllUniqueLess(IntVector({ 1,2,3 })) == true);
+    assert(all_unique_less(IntVector()) == true);
+    assert(all_unique_less(IntVector({ 1 })) == true);
+    assert(all_unique_less(IntVector({ 1,2,1 })) == false);
+    assert(all_unique_less(IntVector({ 1,2,3 })) == true);
 
-    assert(IsSorted(IntVector()) == true);
-    assert(IsSorted(IntVector({1})) == true);
-    assert(IsSorted(IntVector({1,2,3})) == true);
-    assert(IsSorted(IntVector({1,2,2})) == true);
-    assert(IsSorted(IntVector({1,2,1})) == false);
+    assert(is_sorted(IntVector()) == true);
+    assert(is_sorted(IntVector({1})) == true);
+    assert(is_sorted(IntVector({1,2,3})) == true);
+    assert(is_sorted(IntVector({1,2,2})) == true);
+    assert(is_sorted(IntVector({1,2,1})) == false);
 
-    auto is2 = Bind1of2(IsEqual<int>, 2);
-    auto is3 = Bind1of2(IsEqual<int>, 3);
-    auto is4 = Bind1of2(IsEqual<int>, 4);
+    auto is2 = bind_1_of_2(is_equal<int>, 2);
+    auto is3 = bind_1_of_2(is_equal<int>, 3);
+    auto is4 = bind_1_of_2(is_equal<int>, 4);
 
-    assert(FindFirstBy(is3, xs) == Just(3));
-    assert(FindFirstBy(is4, xs) == Nothing<int>());
-    assert(FindFirstIdxBy(is2, xs) == Just<size_t>(1));
-    assert(FindFirstIdxBy(is4, xs) == Nothing<size_t>());
-    assert(FindFirstIdx(2, xs) == Just<size_t>(1));
-    assert(FindFirstIdx(4, xs) == Nothing<size_t>());
+    assert(find_first_by(is3, xs) == just(3));
+    assert(find_first_by(is4, xs) == nothing<int>());
+    assert(find_first_idx_by(is2, xs) == just<size_t>(1));
+    assert(find_first_idx_by(is4, xs) == nothing<size_t>());
+    assert(find_first_idx(2, xs) == just<size_t>(1));
+    assert(find_first_idx(4, xs) == nothing<size_t>());
 
-    assert(FindLastBy(is3, xs) == Just(3));
-    assert(FindLastBy(is4, xs) == Nothing<int>());
-    assert(FindLastIdxBy(is2, xs) == Just<size_t>(4));
-    assert(FindLastIdxBy(is4, xs) == Nothing<size_t>());
-    assert(FindLastIdx(2, xs) == Just<size_t>(4));
-    assert(FindLastIdx(4, xs) == Nothing<size_t>());
+    assert(find_last_by(is3, xs) == just(3));
+    assert(find_last_by(is4, xs) == nothing<int>());
+    assert(find_last_idx_by(is2, xs) == just<size_t>(4));
+    assert(find_last_idx_by(is4, xs) == nothing<size_t>());
+    assert(find_last_idx(2, xs) == just<size_t>(4));
+    assert(find_last_idx(4, xs) == nothing<size_t>());
 
-    assert(NthElement(2, xs) == 2);
+    assert(nth_element(2, xs) == 2);
 
-    IntPair intPair = make_pair(2, 3);
-    assert(Fst(intPair) == 2);
-    assert(Snd(intPair) == 3);
-    assert(SwapPairElems(intPair) == make_pair(3, 2));
-    assert(TransformFst(squareLambda, intPair) == make_pair(4, 3));
-    assert(TransformSnd(squareLambda, intPair) == make_pair(2, 9));
+    IntPair intPair = std::make_pair(2, 3);
+    assert(fst(intPair) == 2);
+    assert(snd(intPair) == 3);
+    assert(swap_pair_elems(intPair) == std::make_pair(3, 2));
+    assert(transform_fst(squareLambda, intPair) == std::make_pair(4, 3));
+    assert(transform_snd(squareLambda, intPair) == std::make_pair(2, 9));
 
-    assert(Contains(2, xs) == true);
-    assert(Contains(4, xs) == false);
+    assert(contains(2, xs) == true);
+    assert(contains(4, xs) == false);
 
-    assert(FindAllInstancesOf(string("Plus"),
-        string("C Plus Plus is a nice language,") +
-        string(" and FunctionalPlus makes it even nicer."))
+    assert(find_all_instances_of(std::string("Plus"),
+        std::string("C Plus Plus is a nice language,") +
+        std::string(" and FunctionalPlus makes it even nicer."))
         == std::list<std::size_t>({ 2, 7, 46 }));
-    assert(FindAllInstancesOf(string("xx"), string("bxxxxc"))
+    assert(find_all_instances_of(std::string("xx"), std::string("bxxxxc"))
         == std::list<std::size_t>({ 1, 2, 3 }));
 
     IntList v789 = { 7,8,9 };
-    assert(SetRange(1, v789, intList) == IntList({ 1,7,8,9,2 }));
-    assert(GetRange(1, 4, intList) == IntList({ 2,2,3 }));
-    assert(ReplaceElems(2, 5, xs) == IntVector({1,5,5,3,5}));
-    assert(ReplaceTokens(std::string("123"), std::string("_"),
+    assert(set_range(1, v789, intList) == IntList({ 1,7,8,9,2 }));
+    assert(get_range(1, 4, intList) == IntList({ 2,2,3 }));
+    assert(replace_elems(2, 5, xs) == IntVector({1,5,5,3,5}));
+    assert(replace_tokens(std::string("123"), std::string("_"),
             std::string("--123----123123")) == std::string("--_----__"));
-    assert(Take(2, xs) == IntVector({ 1,2 }));
-    assert(Drop(2, xs) == IntVector({ 2,3,2 }));
-    assert(TakeWhile(isOdd, xs) == IntVector({ 1 }));
-    assert(DropWhile(isOdd, xs) == IntVector({ 2,2,3,2 }));
-    assert(KeepIf(is2, xs) == IntVector({ 2,2,2 }));
-    assert(KeepIf(is3, xs) == IntVector({ 3 }));
-    assert(KeepIf(is4, xs) == IntVector());
-    assert(FindAllIdxsOf(2, xs) == IdxList({ 1,2,4 }));
-    assert(Count(2, xs) == 3);
-    assert(IsInfixOf(IntVector({2,3}), xs) == true);
-    assert(IsInfixOf(IntVector({2,1}), xs) == false);
-    assert(IsPrefixOf(IntVector({ 1,2 }), xs) == true);
-    assert(IsPrefixOf(IntVector({ 2,2 }), xs) == false);
-    assert(isSuffixOf(IntVector({ 3,2 }), xs) == true);
-    assert(isSuffixOf(IntVector({ 2,2 }), xs) == false);
-    assert(IsSubsequenceOf(IntVector({ 1,3 }), xs) == true);
-    assert(IsSubsequenceOf(IntVector({ 3,1 }), xs) == false);
-    assert(IsSubsequenceOf(IntVector({ 3,1 }), xs) == false);
+    assert(take(2, xs) == IntVector({ 1,2 }));
+    assert(drop(2, xs) == IntVector({ 2,3,2 }));
+    assert(take_while(is_odd, xs) == IntVector({ 1 }));
+    assert(drop_while(is_odd, xs) == IntVector({ 2,2,3,2 }));
+    assert(keep_if(is2, xs) == IntVector({ 2,2,2 }));
+    assert(keep_if(is3, xs) == IntVector({ 3 }));
+    assert(keep_if(is4, xs) == IntVector());
+    assert(find_all_idxs_of(2, xs) == IdxList({ 1,2,4 }));
+    assert(count(2, xs) == 3);
+    assert(is_infix_of(IntVector({2,3}), xs) == true);
+    assert(is_infix_of(IntVector({2,1}), xs) == false);
+    assert(is_prefix_of(IntVector({ 1,2 }), xs) == true);
+    assert(is_prefix_of(IntVector({ 2,2 }), xs) == false);
+    assert(is_suffix_of(IntVector({ 3,2 }), xs) == true);
+    assert(is_suffix_of(IntVector({ 2,2 }), xs) == false);
+    assert(is_subsequence_of(IntVector({ 1,3 }), xs) == true);
+    assert(is_subsequence_of(IntVector({ 3,1 }), xs) == false);
+    assert(is_subsequence_of(IntVector({ 3,1 }), xs) == false);
     typedef std::vector<IntVector> IntGrid2d;
-    assert(Transpose(IntGrid2d({})) == IntGrid2d({}));
-    assert(Transpose(IntGrid2d({ { 1, 2 } }))
+    assert(transpose(IntGrid2d({})) == IntGrid2d({}));
+    assert(transpose(IntGrid2d({ { 1, 2 } }))
             == IntGrid2d({ { 1 }, { 2 } }));
-    assert(Transpose(IntGrid2d({ { 1, 2 }, { 3, 4 } }))
+    assert(transpose(IntGrid2d({ { 1, 2 }, { 3, 4 } }))
             == IntGrid2d({ { 1, 3 }, { 2, 4 } }));
-    assert(Transpose(IntGrid2d({ { 1, 2, 3 }, { 4, 5, 6 } }))
+    assert(transpose(IntGrid2d({ { 1, 2, 3 }, { 4, 5, 6 } }))
             == IntGrid2d({ { 1, 4 }, { 2, 5 }, { 3, 6 } }));
 
-    assert(Sample(3, xs).size() == 3);
+    assert(sample(3, xs).size() == 3);
 
     typedef std::vector<ExplicitFromIntStruct> ExplicitFromIntStructs;
     ExplicitFromIntStructs explicitFromIntStructs = {
@@ -559,81 +556,81 @@ void Test_ContainerTools()
         ExplicitFromIntStruct(2)
     };
 
-    assert(ConvertElems<ExplicitFromIntStruct>(xs) == explicitFromIntStructs);
+    assert(convert_elems<ExplicitFromIntStruct>(xs) == explicitFromIntStructs);
 
-    assert(TransformWithIdx(std::plus<int>(), xs) == IntVector({1+0,2+1,2+2,3+3,2+4}));
+    assert(transform_with_idx(std::plus<int>(), xs) == IntVector({1+0,2+1,2+2,3+3,2+4}));
 
     int countUpCounter = 0;
     auto countUp = [countUpCounter]() mutable { return countUpCounter++; };
-    assert(Generate<IntVector>(countUp, 3) == IntVector({ 0,1,2 }));
-    assert(GenerateByIdx<IntVector>(squareLambda, 3) == IntVector({ 0,1,4 }));
+    assert(generate<IntVector>(countUp, 3) == IntVector({ 0,1,2 }));
+    assert(generate_by_idx<IntVector>(squareLambda, 3) == IntVector({ 0,1,4 }));
 
     auto sumIsEven = [&](std::size_t x, int y) { return isEven(x + y); };
-    assert(KeepByIdx(isEven, xs) == IntVector({ 1,2,2 }));
-    assert(KeepIfWithIdx(sumIsEven, xs) == IntVector({ 2,3,2 }));
+    assert(keep_by_idx(isEven, xs) == IntVector({ 1,2,2 }));
+    assert(keep_if_with_idx(sumIsEven, xs) == IntVector({ 2,3,2 }));
 
-    assert(Nub(xs) == IntVector({ 1,2,3 }));
-    auto bothEven = Bind1of3(IsEqualBy<decltype(isEven), int>, isEven);
-    assert(NubBy(bothEven, xs) == IntVector({ 1,2 }));
+    assert(nub(xs) == IntVector({ 1,2,3 }));
+    auto bothEven = bind_1_of_3(is_equal_by<decltype(isEven), int>, isEven);
+    assert(nub_by(bothEven, xs) == IntVector({ 1,2 }));
 
     typedef std::map<int, std::string> IntStringMap;
     typedef std::map<std::string, int> StringIntMap;
     IntStringMap intStringMap = {{1, "2"}, {4, "53"}, {7, "21"}};
     StringIntMap stringIntMap = {{ "2", 1}, { "53", 4}, { "21", 7}};
-    assert(SwapKeysAndValues(intStringMap) == stringIntMap);
+    assert(swap_keys_and_values(intStringMap) == stringIntMap);
 
     typedef std::vector<std::string> StringVector;
-    assert(GetMapKeys(intStringMap) == IntVector({1, 4, 7}));
-    assert(GetMapValues(intStringMap) == StringVector({"2", "53", "21"}));
+    assert(get_map_keys(intStringMap) == IntVector({1, 4, 7}));
+    assert(get_map_values(intStringMap) == StringVector({"2", "53", "21"}));
 
     typedef std::unordered_map<int, std::string> IntStringUnorderedMap;
     typedef std::unordered_map<std::string, int> StringIntUnorderedMap;
     IntStringUnorderedMap intStringUnorderedMap = { { 1, "2" },{ 4, "53" },{ 7, "21" } };
     StringIntUnorderedMap stringIntUnorderedMapSwapped = { { "2", 1 },{ "53", 4 },{ "21", 7 } };
-    assert(SwapKeysAndValues(intStringUnorderedMap) == stringIntUnorderedMapSwapped);
-    assert(ConvertContainer<IntStringUnorderedMap>(intStringMap) == intStringUnorderedMap);
-    assert(ConvertContainer<IntStringMap>(intStringUnorderedMap) == intStringMap);
+    assert(swap_keys_and_values(intStringUnorderedMap) == stringIntUnorderedMapSwapped);
+    assert(convert_container<IntStringUnorderedMap>(intStringMap) == intStringUnorderedMap);
+    assert(convert_container<IntStringMap>(intStringUnorderedMap) == intStringMap);
 
     std::vector<int> mapInts = { 1, 4, 7 };
     std::vector<std::string> mapStrings = { "2", "53", "21" };
-    assert(CreateMap(mapInts, mapStrings) == intStringMap);
-    assert(CreateUnorderedMap(mapInts, mapStrings) == intStringUnorderedMap);
+    assert(create_map(mapInts, mapStrings) == intStringMap);
+    assert(create_unordered_map(mapInts, mapStrings) == intStringUnorderedMap);
 
     typedef std::map<std::string, std::string> StringStringMap;
     StringStringMap stringStringMap = { { "1", "2" },{ "16", "53" },{ "49", "21" } };
 
-    assert(GetFromMap(intStringMap, 1) == Just<std::string>("2"));
-    assert(GetFromMap(intStringMap, 9) == Nothing<std::string>());
-    assert(GetFromMapWithDef(intStringMap, std::string("n/a"), 1) == "2");
-    assert(GetFromMapWithDef(intStringMap, std::string("n/a"), 9) == "n/a");
-    assert(MapContains(intStringMap, 1) == true);
-    assert(MapContains(intStringMap, 9) == false);
+    assert(get_from_map(intStringMap, 1) == just<std::string>("2"));
+    assert(get_from_map(intStringMap, 9) == nothing<std::string>());
+    assert(get_from_map_with_def(intStringMap, std::string("n/a"), 1) == "2");
+    assert(get_from_map_with_def(intStringMap, std::string("n/a"), 9) == "n/a");
+    assert(map_contains(intStringMap, 1) == true);
+    assert(map_contains(intStringMap, 9) == false);
 
     typedef std::vector<std::size_t> IdxVector;
-    assert(SplitAtIdx(2, xs) == std::make_pair(IntVector({1,2}), IntVector({2,3,2})));
-    assert(Partition(isEven, xs) == std::make_pair(IntVector({2,2,2,}), IntVector({1,3})));
+    assert(split_at_idx(2, xs) == std::make_pair(IntVector({1,2}), IntVector({2,3,2})));
+    assert(partition(isEven, xs) == std::make_pair(IntVector({2,2,2,}), IntVector({1,3})));
 
-    auto splittedAt1And3 = SplitAtIdxs(IdxVector({1,3}), xs);
+    auto splittedAt1And3 = split_at_idxs(IdxVector({1,3}), xs);
     IntVectors splittedAt1And3Dest = {IntVector({1}), IntVector({2,2}), IntVector({3,2})};
     assert(splittedAt1And3 == splittedAt1And3Dest);
-    assert(SplitBy(isEven, true, IntList({1,3,2,2,5,5,3,6,7,9})) == IntLists({{1,3},{},{5,5,3},{7,9}}));
+    assert(split_by(isEven, true, IntList({1,3,2,2,5,5,3,6,7,9})) == IntLists({{1,3},{},{5,5,3},{7,9}}));
     typedef std::map<int, std::size_t> IntSizeTMap;
     IntSizeTMap OccurrencesResult = {{1, 1}, {2, 3}, {3, 1}};
-    assert(CountOccurrences(xs) == OccurrencesResult);
+    assert(count_occurrences(xs) == OccurrencesResult);
 
-    assert(ReplaceRange(2, IntVector({8,9}), xs) == IntVector({1,2,8,9,2}));
-    assert(InsertAt(2, IntVector({8,9}), xs) == IntVector({1,2,8,9,2,3,2}));
+    assert(replace_range(2, IntVector({8,9}), xs) == IntVector({1,2,8,9,2}));
+    assert(insert_at(2, IntVector({8,9}), xs) == IntVector({1,2,8,9,2,3,2}));
 
-    assert(Sum(Convert<std::vector<int>>(string("hello"))) == 532);
+    assert(sum(convert<std::vector<int>>(std::string("hello"))) == 532);
 }
 
 void Test_StringTools()
 {
     using namespace fplus;
     std::string untrimmed = "  \n \t   foo  ";
-    assert(TrimWhitespaceLeft(untrimmed) == "foo  ");
-    assert(TrimWhitespaceRight(untrimmed) == "  \n \t   foo");
-    assert(TrimWhitespace(untrimmed) == "foo");
+    assert(trim_whitespace_left(untrimmed) == "foo  ");
+    assert(trim_whitespace_right(untrimmed) == "  \n \t   foo");
+    assert(trim_whitespace(untrimmed) == "foo");
     std::string text = "Hi,\nI am a\r\n***strange***\n\rstring.";
     std::list<std::string> textAsLinesWithEmty = {
         std::string("Hi,"),
@@ -654,77 +651,74 @@ void Test_StringTools()
         std::string("strange"),
         std::string("string") };
 
-    assert(SplitLines(text, true)
+    assert(split_lines(text, true)
             == textAsLinesWithEmty);
-    assert(SplitLines(text, false)
+    assert(split_lines(text, false)
             == textAsLinesWithoutEmpty);
-    assert(SplitWords(text) == textAsWords);
+    assert(split_words(text) == textAsWords);
 }
 
-bool IsOdd(int x) { return x % 2 == 1; }
+bool is_odd(int x) { return x % 2 == 1; }
 void Test_example_KeepIf()
 {
-    using namespace std;
-    using namespace fplus;
-
-    typedef vector<int> Ints;
+    typedef std::vector<int> Ints;
     Ints numbers = { 24, 11, 65, 44, 80, 18, 73, 90, 69, 18 };
 
     { // Version 1: hand written range based for loop
-        Ints odds;
-        for (int x : numbers)
-            if (IsOdd(x))
-                odds.push_back(x);
+    Ints odds;
+    for (int x : numbers)
+        if (is_odd(x))
+            odds.push_back(x);
     }
 
     { // Version 2: STL
-        Ints odds;
-        copy_if(begin(numbers), end(numbers), back_inserter(odds), IsOdd);
+    Ints odds;
+    std::copy_if(std::begin(numbers), std::end(numbers),
+            std::back_inserter(odds), is_odd);
     }
 
     { // Version : FunctionalPlus
-        auto odds = KeepIf(IsOdd, numbers);
+    auto odds = fplus::keep_if(is_odd, numbers);
     }
 }
 
 void run_n_times(std::function<std::list<int>(std::list<int>)> f,
     std::size_t n, const std::string& name, const std::list<int>& inList)
 {
-    using namespace std;
-    typedef chrono::time_point<std::chrono::system_clock> Time;
-    Time startTime = chrono::system_clock::now();
+    typedef std::chrono::time_point<std::chrono::system_clock> Time;
+    Time startTime = std::chrono::system_clock::now();
     size_t lengthSum = 0;
     for (size_t i = 0; i < n; ++i)
     {
         lengthSum += f(inList).size();
     }
-    Time endTime = chrono::system_clock::now();
-    chrono::duration<double> elapsed_seconds = endTime - startTime;
-    cout << name << "(check: " << lengthSum << "), elapsed time: " << elapsed_seconds.count() << "s\n";
+    Time endTime = std::chrono::system_clock::now();
+	std::chrono::duration<double> elapsed_seconds = endTime - startTime;
+    std::cout << name << "(check: " << lengthSum << "), elapsed time: " << elapsed_seconds.count() << "s\n";
 }
 
 void Test_example_KeepIf_performance()
 {
-    using namespace std;
     using namespace fplus;
 
-    typedef list<int> Ints;
+    typedef std::list<int> Ints;
     auto run_loop = [&](const Ints numbers)
     {
         Ints odds;
         for (int x : numbers)
-            if (IsOdd(x))
+            if (is_odd(x))
                 odds.push_back(x);
         return odds;
     };
     auto run_stl = [&](const Ints numbers)
     {
         Ints odds;
-        copy_if(begin(numbers), end(numbers), back_inserter(odds), IsOdd);
+            std::copy_if(std::begin(numbers), std::end(numbers),
+                    std::back_inserter(odds), is_odd);
         return odds;
     };
     auto run_FunctionalPlus = [&](const Ints numbers)
-        { return KeepIf(IsOdd, numbers); };
+        { return keep_if(is_odd, numbers); };
 
     // make debug runs faster
     std::size_t numRuns = 1000;
@@ -735,27 +729,25 @@ void Test_example_KeepIf_performance()
     numRuns = 10;
 #endif
 
-    Ints numbers = Generate<Ints>(rand, 10000);
+    Ints numbers = generate<Ints>(rand, 10000);
     run_n_times(run_loop, numRuns, "Hand-written for loop", numbers);
     run_n_times(run_stl, numRuns, "std::copy_if", numbers);
-    run_n_times(run_FunctionalPlus, numRuns, "FunctionalPlus::KeepIf", numbers);
+    run_n_times(run_FunctionalPlus, numRuns, "FunctionalPlus::keep_if", numbers);
 }
 
 
 
 void Test_example_SameOldSameOld()
 {
-    using namespace fplus;
     std::list<std::string> things = {"same old", "same old"};
-    if (AllTheSame(things))
+    if (fplus::all_the_same(things))
         std::cout << "All things being equal." << std::endl;
 }
 
 void Test_example_IInTeam()
 {
-    using namespace fplus;
     std::string team = "Our team is great. I love everybody.";
-    if (Contains("I", SplitWords(team)))
+    if (fplus::contains("I", fplus::split_words(team)))
         std::cout << "There actually is an I in team." << std::endl;
 }
 
@@ -768,15 +760,14 @@ struct Entity
 
 void Test_example_AllIsCalmAndBright()
 {
-    using namespace fplus;
     auto isCalm = [](const Entity& e) { return e.calm_; };
     auto isBright = [](const Entity& e) { return e.bright_; };
     std::vector<Entity> entities(4);
-    if (AllBy(And(isCalm, isBright), entities))
+    if (fplus::all_by(fplus::logical_and(isCalm, isBright), entities))
         std::cout << "Silent night." << std::endl;
 }
 
-std::list<std::uint64_t> CollatzSeq(std::uint64_t x)
+std::list<std::uint64_t> collatz_seq(std::uint64_t x)
 {
     std::list<std::uint64_t> result;
     while (x > 1)
@@ -793,80 +784,76 @@ std::list<std::uint64_t> CollatzSeq(std::uint64_t x)
 
 void Test_example_CollatzSequence()
 {
-    using namespace fplus;
-    using namespace std;
-
-    typedef list<uint64_t> Ints;
+    typedef std::list<uint64_t> Ints;
 
     // [1, 2, 3 ... 29]
-    auto numbers = GenerateIntegralRange<Ints>(1, 30);
+    auto numbers = fplus::generate_integral_range<Ints>(1, 30);
 
     // A function that does [1, 2, 3, 4, 5] -> "[1 => 2 => 3 => 4 => 5]"
-    auto ShowInts = Bind1of2(ShowContWith<Ints>, " => ");
+    auto show_ints = fplus::bind_1_of_2(fplus::show_cont_with<Ints>, " => ");
 
     // A composed function that calculates a Collatz sequence and shows it.
-    auto ShowCollatsSeq = Compose(CollatzSeq, ShowInts);
+    auto show_collats_seq = fplus::compose(collatz_seq, show_ints);
 
     // Apply it to all our numbers.
-    auto seqStrs = Transform(ShowCollatsSeq, numbers);
+    auto seq_strs = fplus::transform(show_collats_seq, numbers);
 
     // Combine the numbers and their sequence representations into a map.
-    auto collatzDict = CreateMap(numbers, seqStrs);
+    auto collatz_dict = fplus::create_map(numbers, seq_strs);
 
     // Print some of the sequences.
-    cout << collatzDict[13] << endl;
-    cout << collatzDict[17] << endl;
+    std::cout << collatz_dict[13] << std::endl;
+    std::cout << collatz_dict[17] << std::endl;
 }
 
 int main()
 {
-    using namespace std;
-    cout << "Running all tests." << endl;
+    std::cout << "Running all tests." << std::endl;
 
-    cout << "Testing Numeric." << endl;
+    std::cout << "Testing Numeric." << std::endl;
         Test_Numeric();
-    cout << "Numeric OK." << endl;
+    std::cout << "Numeric OK." << std::endl;
 
-    cout << "Testing FunctionTraits." << endl;
+    std::cout << "Testing FunctionTraits." << std::endl;
     Test_FunctionTraits();
-    cout << "FunctionTraits OK." << endl;
+    std::cout << "FunctionTraits OK." << std::endl;
 
-    cout << "Testing Composition." << endl;
-    typedef vector<int> IntVec;
-    typedef vector<IntVec> IntVecVec;
-    typedef list<int> IntList;
-    typedef list<IntList> IntListList;
-    typedef deque<int> IntDeq;
-    typedef deque<IntDeq> IntDeqDeq;
+    std::cout << "Testing Composition." << std::endl;
+    typedef std::vector<int> IntVec;
+    typedef std::vector<IntVec> IntVecVec;
+    typedef std::list<int> IntList;
+    typedef std::list<IntList> IntListList;
+    typedef std::deque<int> IntDeq;
+    typedef std::deque<IntDeq> IntDeqDeq;
     Test_Composition<IntVec, IntVecVec>();
     Test_Composition<IntList, IntListList>();
     Test_Composition<IntDeq, IntDeqDeq>();
-    cout << "Composition OK." << endl;
+    std::cout << "Composition OK." << std::endl;
 
-    cout << "Testing Maybe." << endl;
+    std::cout << "Testing Maybe." << std::endl;
     Test_Maybe();
-    cout << "Maybe OK." << endl;
+    std::cout << "Maybe OK." << std::endl;
 
-    cout << "Testing Compare." << endl;
+    std::cout << "Testing Compare." << std::endl;
     Test_Compare();
-    cout << "Compare OK." << endl;
+    std::cout << "Compare OK." << std::endl;
 
-    cout << "Testing ContainerTools." << endl;
+    std::cout << "Testing ContainerTools." << std::endl;
     Test_ContainerTools();
-    cout << "ContainerTools OK." << endl;
+    std::cout << "ContainerTools OK." << std::endl;
 
-    cout << "Testing StringTools." << endl;
+    std::cout << "Testing StringTools." << std::endl;
     Test_StringTools();
-    cout << "StringTools OK." << endl;
+    std::cout << "StringTools OK." << std::endl;
 
-    cout << "Testing Applications." << endl;
+    std::cout << "Testing Applications." << std::endl;
     Test_example_KeepIf();
     Test_example_KeepIf_performance();
     Test_example_SameOldSameOld();
     Test_example_IInTeam();
     Test_example_AllIsCalmAndBright();
     Test_example_CollatzSequence();
-    cout << "Applications OK." << endl;
+    std::cout << "Applications OK." << std::endl;
 
-    cout << "All OK." << endl;
+    std::cout << "All OK." << std::endl;
 }

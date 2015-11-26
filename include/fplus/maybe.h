@@ -16,77 +16,77 @@ namespace fplus
 
 // Can hold a value of type T or nothing.
 template <typename T>
-class Maybe
+class maybe
 {
 public:
-    Maybe() {}
-    Maybe(const Maybe<T>& other) : ptr_(other.Get() ? std::make_unique<T>(*other.Get()) : Ptr()) {}
-    explicit Maybe(const T& val) : ptr_(std::make_unique<T>(val)) {}
-    bool IsJust() const { return static_cast<bool>(Get()); }
-    const T& UnsafeGetJust() const { assert(IsJust()); return *Get(); }
+    maybe() {}
+    maybe(const maybe<T>& other) : ptr_(other.get() ? std::make_unique<T>(*other.get()) : ptr_t()) {}
+    explicit maybe(const T& val) : ptr_(std::make_unique<T>(val)) {}
+    bool is_just() const { return static_cast<bool>(get()); }
+    const T& unsafe_get_just() const { assert(is_just()); return *get(); }
     typedef T type;
 private:
-    typedef std::unique_ptr<T> Ptr;
-    const Ptr& Get() const { return ptr_; }
-    Ptr ptr_;
+    typedef std::unique_ptr<T> ptr_t;
+    const ptr_t& get() const { return ptr_; }
+    ptr_t ptr_;
 };
 
 // Is not nothing?
 template <typename T>
-bool IsJust(const Maybe<T>& maybe)
+bool is_just(const maybe<T>& maybe)
 {
-    return maybe.IsJust();
+    return maybe.is_just();
 }
 
 // Has no value?
 template <typename T>
-bool IsNothing(const Maybe<T>& maybe)
+bool is_nothing(const maybe<T>& maybe)
 {
-    return !IsJust(maybe);
+    return !is_just(maybe);
 }
 
 // Crashes if maybe is nothing!
 template <typename T>
-T UnsafeGetJust(const Maybe<T>& maybe)
+T unsafe_get_just(const maybe<T>& maybe)
 {
-    return maybe.UnsafeGetJust();
+    return maybe.unsafe_get_just();
 }
 
 // Get the value from a maybe or the default in case it is nothing.
 template <typename T>
-T WithDefault(const T& defaultValue, const Maybe<T>& maybe)
+T with_default(const T& defaultValue, const maybe<T>& maybe)
 {
-    if (IsJust(maybe))
-        return UnsafeGetJust(maybe);
+    if (is_just(maybe))
+        return unsafe_get_just(maybe);
     return defaultValue;
 }
 
 // Wrap a value in a Maybe as a Just.
 template <typename T>
-Maybe<T> Just(const T& val)
+maybe<T> just(const T& val)
 {
-    return Maybe<T>(val);
+    return maybe<T>(val);
 }
 
 // Construct a nothing of a certain Maybe type.
 template <typename T>
-Maybe<T> Nothing()
+maybe<T> nothing()
 {
-    return Maybe<T>();
+    return maybe<T>();
 }
 
 // True if just values are the same or if both are nothing.
 template <typename T>
-bool operator == (const Maybe<T>& x, const Maybe<T>& y)
+bool operator == (const maybe<T>& x, const maybe<T>& y)
 {
-    if (IsJust(x) && IsJust(y))
-        return UnsafeGetJust(x) == UnsafeGetJust(y);
-    return IsJust(x) == IsJust(y);
+    if (is_just(x) && is_just(y))
+        return unsafe_get_just(x) == unsafe_get_just(y);
+    return is_just(x) == is_just(y);
 }
 
 // False if just values are the same or if both are nothing.
 template <typename T>
-bool operator != (const Maybe<T>& x, const Maybe<T>& y)
+bool operator != (const maybe<T>& x, const maybe<T>& y)
 {
     return !(x == y);
 }
@@ -98,14 +98,14 @@ bool operator != (const Maybe<T>& x, const Maybe<T>& y)
 template <typename F,
     typename A = typename std::remove_const_t<typename std::remove_reference_t<typename utils::function_traits<F>::template arg<0>::type>>,
     typename B = typename std::remove_const_t<typename std::remove_reference_t<typename utils::function_traits<F>::result_type>>>
-std::function<Maybe<B>(const Maybe<A>&)> Lift(F f)
+std::function<maybe<B>(const maybe<A>&)> lift(F f)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return [f](const Maybe<A>& maybe)
+    return [f](const maybe<A>& m)
     {
-        if (IsJust(maybe))
-            return Maybe<B>(f(UnsafeGetJust(maybe)));
-        return Nothing<B>();
+        if (is_just(m))
+            return maybe<B>(f(unsafe_get_just(m)));
+        return nothing<B>();
     };
 }
 
@@ -120,16 +120,16 @@ template <typename F, typename G,
     typename GIn = typename std::remove_const_t<typename std::remove_reference_t<typename utils::function_traits<G>::template arg<0>::type>>,
     typename GOut = typename std::remove_const_t<typename std::remove_reference_t<typename utils::function_traits<G>::result_type>>,
     typename C = typename GOut::type>
-std::function<Maybe<C>(const FIn&)> AndThen(F f, G g) {
+std::function<maybe<C>(const FIn&)> and_then(F f, G g) {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
     static_assert(std::is_convertible<typename FOut::type,GIn>::value, "Function parameter types do not match");
     return [f, g](const FIn& x)
     {
         auto maybeB = f(x);
-        if (IsJust(maybeB))
-            return g(UnsafeGetJust(maybeB));
-        return Nothing<C>();
+        if (is_just(maybeB))
+            return g(unsafe_get_just(maybeB));
+        return nothing<C>();
     };
 }
 

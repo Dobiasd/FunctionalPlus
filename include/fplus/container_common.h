@@ -17,27 +17,27 @@ namespace fplus
 {
 
 template <typename UnaryPredicate, typename Container>
-void CheckUnaryPredicateForContainer()
+void check_unary_predicate_for_container()
 {
-    CheckUnaryPredicateForType<UnaryPredicate, typename Container::value_type>();
+    check_unary_predicate_for_type<UnaryPredicate, typename Container::value_type>();
 }
 
 template <typename UnaryPredicate, typename Container>
-void CheckIndexWithTypePredicateForContainer()
+void check_index_with_type_predicate_for_container()
 {
-    CheckIndexWithTypePredicateForType<UnaryPredicate, typename Container::value_type>();
+    check_index_with_type_predicate_for_type<UnaryPredicate, typename Container::value_type>();
 }
 
 template <typename Compare, typename Container>
-void CheckCompareForContainer()
+void check_compare_for_container()
 {
-    CheckCompareForType<Compare, typename Container::value_type>();
+    check_compare_for_type<Compare, typename Container::value_type>();
 }
 
 template <typename BinaryPredicate, typename Container>
-void CheckBinaryPredicateForContainer()
+void check_binary_predicate_for_container()
 {
-    CheckBinaryPredicateForType<BinaryPredicate, typename Container::value_type>();
+    check_binary_predicate_for_type<BinaryPredicate, typename Container::value_type>();
 }
 
 // PrepareContainer and BackInserter are overloaded
@@ -48,71 +48,71 @@ void CheckBinaryPredicateForContainer()
 // this leads to an increase in performance of about a factor of 3
 // for Transform.
 template <typename C>
-void PrepareContainer(const std::basic_string<C, std::char_traits<C>,
+void prepare_container(const std::basic_string<C, std::char_traits<C>,
     std::allocator<C> >& ys, std::size_t size)
 {
     ys.reserve(size);
 }
 
 template <typename Y>
-void PrepareContainer(std::vector<Y>& ys, std::size_t size)
+void prepare_container(std::vector<Y>& ys, std::size_t size)
 {
     ys.reserve(size);
 }
 
 template <typename Container>
-void PrepareContainer(Container&, std::size_t)
+void prepare_container(Container&, std::size_t)
 {
 }
 
 template <typename Container, typename Y>
-std::back_insert_iterator<Container> BackInserter(std::string& ys)
+std::back_insert_iterator<Container> get_back_inserter(std::string& ys)
 {
     return std::back_inserter(ys);
 }
 
 template <typename Container, typename Y>
-std::back_insert_iterator<Container> BackInserter(std::vector<Y>& ys)
+std::back_insert_iterator<Container> get_back_inserter(std::vector<Y>& ys)
 {
     return std::back_inserter(ys);
 }
 
 template <typename Container>
-std::insert_iterator<Container> BackInserter(Container& ys)
+std::insert_iterator<Container> get_back_inserter(Container& ys)
 {
     return std::inserter(ys, std::end(ys));
 }
 
-// IsEmpty([1, 2]) == false
+// is_empty([1, 2]) == false
 template <typename Container>
-bool IsEmpty(const Container& xs)
+bool is_empty(const Container& xs)
 {
     return xs.empty();
 }
 
-// IsEmpty([1, 2]) == true
+// is_not_empty([1, 2]) == true
 template <typename Container>
-bool IsNotEmpty(const Container& xs)
+bool is_not_empty(const Container& xs)
 {
-    return !IsEmpty(xs);
+    return !is_empty(xs);
 }
 
-// Size([3, 4]) == 2
+// size_of_cont([3, 4]) == 2
 template <typename Container>
-std::size_t Size(const Container& xs)
+std::size_t size_of_cont(const Container& xs)
 {
     return xs.size();
 }
 
-// ConvertElems<NewT>([1, 2, 3]) == [NewT(1), NewT(2), NewT(3)]
+// convert_elems<NewT>([1, 2, 3]) == [NewT(1), NewT(2), NewT(3)]
 template <typename NewT, typename ContainerIn,
-    typename ContainerOut = typename SameContNewT<ContainerIn, NewT>::type>
-ContainerOut ConvertElems(const ContainerIn& xs)
+    typename ContainerOut = typename same_cont_new_t<ContainerIn, NewT>::type>
+ContainerOut convert_elems(const ContainerIn& xs)
 {
     static_assert(std::is_constructible<NewT, typename ContainerIn::value_type>::value, "Elements not convertible.");
     ContainerOut ys;
-    PrepareContainer(ys, Size(xs));
-    auto it = BackInserter<ContainerOut>(ys);
+    prepare_container(ys, size_of_cont(xs));
+    auto it = get_back_inserter<ContainerOut>(ys);
     // using 'for (const auto& x ...)' is even for ints as fast as
     // using 'for (int x ...)' (GCC, O3), so there is no need to
     // check if the type is fundamental and then dispatch accordingly.
@@ -123,33 +123,33 @@ ContainerOut ConvertElems(const ContainerIn& xs)
     return ys;
 }
 
-// ConvertContainer([1, 2, 3]) == [1, 2, 3]
+// convert_container([1, 2, 3]) == [1, 2, 3]
 // Useful for example if you want to convert an std::list to an std::vector.
 template <typename ContainerOut, typename ContainerIn>
-ContainerOut ConvertContainer(const ContainerIn& xs)
+ContainerOut convert_container(const ContainerIn& xs)
 {
     typedef typename ContainerIn::value_type SourceElem;
     typedef typename ContainerOut::value_type DestElem;
     static_assert(std::is_same<DestElem, SourceElem>::value,
         "ConvertContainer: Source and dest container must have the same value_type");
     ContainerOut ys;
-    PrepareContainer(ys, Size(xs));
-    auto itOut = BackInserter<ContainerOut>(ys);
+    prepare_container(ys, size_of_cont(xs));
+    auto itOut = get_back_inserter<ContainerOut>(ys);
     std::copy(std::begin(xs), std::end(xs), itOut);
     return ys;
 }
 
 // Converts between different containers and elements.
 // Dest elements are allowed to have explicit constructors.
-// Convert([1, 2, 3]) == [1, 2, 3]
+// convert([1, 2, 3]) == [1, 2, 3]
 template <typename ContainerOut, typename ContainerIn>
-ContainerOut Convert(const ContainerIn& xs)
+ContainerOut convert(const ContainerIn& xs)
 {
     static_assert(std::is_convertible<typename ContainerIn::value_type, typename ContainerOut::value_type>::value, "Elements not convertible.");
     typedef typename ContainerOut::value_type DestElem;
     ContainerOut ys;
-    PrepareContainer(ys, Size(xs));
-    auto it = BackInserter<ContainerOut>(ys);
+    prepare_container(ys, size_of_cont(xs));
+    auto it = get_back_inserter<ContainerOut>(ys);
     for (const auto& x : xs)
     {
         *it = DestElem(x);
@@ -157,28 +157,28 @@ ContainerOut Convert(const ContainerIn& xs)
     return ys;
 }
 
-// GetRange(2, 5, [0,1,2,3,4,5,6,7,8]) == [2,3,4]
+// get_range(2, 5, [0,1,2,3,4,5,6,7,8]) == [2,3,4]
 template <typename Container>
-Container GetRange
+Container get_range
         (std::size_t idxBegin, std::size_t idxEnd, const Container& xs)
 {
     assert(idxBegin <= idxEnd);
-    assert(idxEnd <= Size(xs));
+    assert(idxEnd <= size_of_cont(xs));
     Container result;
     auto itBegin = std::begin(xs);
     std::advance(itBegin, idxBegin);
     auto itEnd = itBegin;
     std::advance(itEnd, idxEnd - idxBegin);
-    std::copy(itBegin, itEnd, BackInserter(result));
+    std::copy(itBegin, itEnd, get_back_inserter(result));
     return result;
 }
 
-// SetRange(2, [9,9,9], [0,1,2,3,4,5,6,7,8]) == [0,1,9,9,9,5,6,7,8]
+// set_range(2, [9,9,9], [0,1,2,3,4,5,6,7,8]) == [0,1,9,9,9,5,6,7,8]
 template <typename Container>
-Container SetRange
+Container set_range
         (std::size_t idxBegin, Container& token, const Container& xs)
 {
-    assert(idxBegin + Size(token) < Size(xs));
+    assert(idxBegin + size_of_cont(token) < size_of_cont(xs));
     Container result = xs;
     auto itBegin = std::begin(result);
     std::advance(itBegin, idxBegin);
@@ -186,69 +186,69 @@ Container SetRange
     return result;
 }
 
-// RemoveRange(2, 3, [0,1,2,3,4,5,6,7]) == [0,1,5,6,7]
+// remove_range(2, 3, [0,1,2,3,4,5,6,7]) == [0,1,5,6,7]
 template <typename Container>
-Container RemoveRange
+Container remove_range
         (std::size_t idxBegin, std::size_t idxEnd, const Container& xs)
 {
     assert(idxBegin <= idxEnd);
-    assert(idxEnd <= Size(xs));
+    assert(idxEnd <= size_of_cont(xs));
 
     Container result;
     std::size_t length = idxEnd - idxBegin;
-    PrepareContainer(result, Size(xs) - length);
+    prepare_container(result, size_of_cont(xs) - length);
 
     auto firstBreakIt = std::begin(xs);
     std::advance(firstBreakIt, idxBegin);
-    std::copy(std::begin(xs), firstBreakIt, BackInserter(result));
+    std::copy(std::begin(xs), firstBreakIt, get_back_inserter(result));
 
     auto secondBreakIt = firstBreakIt;
     std::advance(secondBreakIt, length);
-    std::copy(secondBreakIt, std::end(xs), BackInserter(result));
+    std::copy(secondBreakIt, std::end(xs), get_back_inserter(result));
 
     return result;
 }
 
-// InsertAt(2, [8,9], [0,1,2,3,4]) == [0,1,8,9,2,3,4]
+// insert_at(2, [8,9], [0,1,2,3,4]) == [0,1,8,9,2,3,4]
 template <typename Container>
-Container InsertAt(std::size_t idxBegin,
+Container insert_at(std::size_t idxBegin,
         const Container& token, const Container& xs)
 {
-    assert(idxBegin <= Size(xs));
+    assert(idxBegin <= size_of_cont(xs));
 
     Container result;
-    PrepareContainer(result, Size(xs) + Size(token));
+    prepare_container(result, size_of_cont(xs) + size_of_cont(token));
 
     auto breakIt = std::begin(xs);
     std::advance(breakIt, idxBegin);
-    std::copy(std::begin(xs), breakIt, BackInserter(result));
-    std::copy(std::begin(token), std::end(token), BackInserter(result));
-    std::copy(breakIt, std::end(xs), BackInserter(result));
+    std::copy(std::begin(xs), breakIt, get_back_inserter(result));
+    std::copy(std::begin(token), std::end(token), get_back_inserter(result));
+    std::copy(breakIt, std::end(xs), get_back_inserter(result));
 
     return result;
 }
 
-// ReplaceRange(2, [8,9], [0,1,2,3,4]) == [0,1,8,9,4]
+// replace_range(2, [8,9], [0,1,2,3,4]) == [0,1,8,9,4]
 template <typename Container>
-Container ReplaceRange(std::size_t idxBegin,
+Container replace_range(std::size_t idxBegin,
         const Container& token, const Container& xs)
 {
-    std::size_t idxEnd = idxBegin + Size(token);
-    return InsertAt(idxBegin, token, RemoveRange(idxBegin, idxEnd, xs));
+    std::size_t idxEnd = idxBegin + size_of_cont(token);
+    return insert_at(idxBegin, token, remove_range(idxBegin, idxEnd, xs));
 }
 
-// NthElement(2, [5,6,7,8]) == 7
+// nth_element(2, [5,6,7,8]) == 7
 template <typename Container>
-typename Container::value_type NthElement
+typename Container::value_type nth_element
         (const std::size_t n, const Container& xs)
 {
-    assert(Size(xs) > n);
+    assert(size_of_cont(xs) > n);
     return xs[n];
 }
 
-// Reverse([0,4,2,6]) == [6,2,4,0]
+// reverse([0,4,2,6]) == [6,2,4,0]
 template <typename Container>
-Container Reverse(const Container& xs)
+Container reverse(const Container& xs)
 {
     static_assert(has_order<Container>::value, "Reverse: Container has no order.");
     Container ys = xs;
@@ -256,12 +256,12 @@ Container Reverse(const Container& xs)
     return ys;
 }
 
-// Foldl((+), 0, [1, 2, 3]) = ((0+1)+2)+3 = 6
+// fold_left((+), 0, [1, 2, 3]) == ((0+1)+2)+3 == 6
 // (a -> b -> a) -> a -> [b] -> a
 // Takes the second argument and the first item of the list and applies the function to them, then feeds the function with this result and the second argument and so on.
 template <typename F, typename Container,
     typename Acc = typename utils::function_traits<F>::template arg<0>::type>
-Acc Foldl(F f, const Acc& init, const Container& xs)
+Acc fold_left(F f, const Acc& init, const Container& xs)
 {
     Acc acc = init;
     for (const auto& x : xs)
@@ -271,27 +271,27 @@ Acc Foldl(F f, const Acc& init, const Container& xs)
     return acc;
 }
 
-// Foldr((+), 0, [1, 2, 3]) = 1+(2+(3+0)) = 6
+// fold_right((+), 0, [1, 2, 3]) == 1+(2+(3+0)) == 6
 // (a -> b -> b) -> b -> [a] -> b
 // Takes the second argument and the last item of the list and applies the function, then it takes the penultimate item from the end and the result, and so on.
 template <typename F, typename Container,
     typename Acc = typename utils::function_traits<F>::template arg<1>::type>
-Acc Foldr(F f, const Acc& init, const Container& xs)
+Acc fold_right(F f, const Acc& init, const Container& xs)
 {
-    return Foldl(Flip(f), init, Reverse(xs));
+    return fold_left(flip(f), init, reverse(xs));
 }
 
-// Scanl((+), 0, [1, 2, 3]) = [0, 1, 3, 6]
+// scan_left((+), 0, [1, 2, 3]) == [0, 1, 3, 6]
 // (a -> b -> a) -> a -> [b] -> [a]
 // Takes the second argument and the first item of the list and applies the function to them, then feeds the function with this result and the second argument and so on. It returns the list of intermediate and final results.
 template <typename F, typename ContainerIn,
     typename Acc = typename utils::function_traits<F>::template arg<0>::type,
-    typename ContainerOut = typename SameContNewT<ContainerIn, Acc>::type>
-ContainerOut Scanl(F f, const Acc& init, const ContainerIn& xs)
+    typename ContainerOut = typename same_cont_new_t<ContainerIn, Acc>::type>
+ContainerOut scan_left(F f, const Acc& init, const ContainerIn& xs)
 {
     ContainerOut result;
-    PrepareContainer(result, Size(xs));
-    auto itOut = BackInserter(result);
+    prepare_container(result, size_of_cont(xs));
+    auto itOut = get_back_inserter(result);
     Acc acc = init;
     *itOut = acc;
     for (const auto& x : xs)
@@ -302,45 +302,46 @@ ContainerOut Scanl(F f, const Acc& init, const ContainerIn& xs)
     return result;
 }
 
-// Scanr((+), 0, [1, 2, 3]) = [6, 5, 3, 0]
+// scan_right((+), 0, [1, 2, 3]) == [6, 5, 3, 0]
 // (a -> b -> b) -> b -> [a] -> [b]
 // Takes the second argument and the last item of the list and applies the function, then it takes the penultimate item from the end and the result, and so on. It returns the list of intermediate and final results.
 template <typename F, typename ContainerIn,
     typename Acc = typename utils::function_traits<F>::template arg<1>::type,
-    typename ContainerOut = typename SameContNewT<ContainerIn, Acc>::type>
-ContainerOut Scanr(F f, const Acc& init, const ContainerIn& xs)
+    typename ContainerOut = typename same_cont_new_t<ContainerIn, Acc>::type>
+ContainerOut scan_right(F f, const Acc& init, const ContainerIn& xs)
 {
-    return Reverse(Scanl(Flip(f), init, Reverse(xs)));
+    return reverse(scan_left(flip(f), init, reverse(xs)));
 }
 
-// [1, 2] -> [3, 4] -> [1, 2, 3, 4]
+// append([1, 2], [3, 4, 5]) == [1, 2, 3, 4, 5]
 template <typename Container>
-Container Append(const Container& xs, const Container& ys)
+Container append(const Container& xs, const Container& ys)
 {
     Container result;
-    PrepareContainer(result, Size(xs) + Size(ys));
+    prepare_container(result, size_of_cont(xs) + size_of_cont(ys));
     std::copy(std::begin(xs), std::end(xs),
-        BackInserter(result));
+        get_back_inserter(result));
     std::copy(std::begin(ys), std::end(ys),
-        BackInserter(result));
+        get_back_inserter(result));
     return result;
 }
 
-// [[1, 2], [], [3]] -> [1, 2, 3], also known as flatten
+// concat([[1, 2], [], [3]]) == [1, 2, 3]
+// also known as flatten
 template <typename ContainerIn,
     typename ContainerOut = typename ContainerIn::value_type>
-ContainerOut Concat(const ContainerIn& xss)
+ContainerOut concat(const ContainerIn& xss)
 {
-    auto append = [](
+    auto append_one = [](
             const ContainerOut& acc,
             const typename ContainerIn::value_type& xs)
-        { return Append<ContainerOut>(acc, xs); };
-    return Foldl<decltype(append)>(append, ContainerOut(), xss);
+        { return append(acc, xs); };
+    return fold_left(append_one, ContainerOut(), xss);
 }
 
 // sort by std::less
 template <typename Container>
-Container Sort(const Container& xs)
+Container sort(const Container& xs)
 {
     auto result = xs;
     std::sort(std::begin(result), std::end(result));
@@ -349,16 +350,16 @@ Container Sort(const Container& xs)
 
 // sort by given less comparator
 template <typename Compare, typename Container>
-Container SortBy(Compare comp, const Container& xs)
+Container sort_by(Compare comp, const Container& xs)
 {
     auto result = xs;
     std::sort(std::begin(result), std::end(result), comp);
     return result;
 }
 
-// Unique [1,2,2,3,2] -> [1,2,3,2]
+// unique([1,2,2,3,2]) == [1,2,3,2]
 template <typename Container>
-Container Unique(const Container& xs)
+Container unique(const Container& xs)
 {
     auto result = xs;
     auto last = std::unique(std::begin(result), std::end(result));
@@ -368,7 +369,7 @@ Container Unique(const Container& xs)
 
 // Like Unique but with user supplied equality predicate.
 template <typename Container, typename BinaryPredicate>
-Container UniqueBy(BinaryPredicate p, const Container& xs)
+Container unique_by(BinaryPredicate p, const Container& xs)
 {
     auto result = xs;
     auto last = std::unique(std::begin(result), std::end(result), p);
@@ -376,18 +377,18 @@ Container UniqueBy(BinaryPredicate p, const Container& xs)
     return result;
 }
 
-// Intersperse(0, [1, 2, 3]) == [1, 0, 2, 0, 3]
+// intersperse(0, [1, 2, 3]) == [1, 0, 2, 0, 3]
 template <typename Container,
     typename X = typename Container::value_type>
-Container Intersperse(const X& value, const Container& xs)
+Container intersperse(const X& value, const Container& xs)
 {
     if (xs.empty())
         return Container();
-    if (Size(xs) == 1)
+    if (size_of_cont(xs) == 1)
         return xs;
     Container result;
-    PrepareContainer(result, std::max<std::size_t>(0, Size(xs) * 2 - 1));
-    auto it = BackInserter(result);
+    prepare_container(result, std::max<std::size_t>(0, size_of_cont(xs) * 2 - 1));
+    auto it = get_back_inserter(result);
     for_each(std::begin(xs), --std::end(xs), [&value, &it](const X& x)
     {
         *it = x;
@@ -398,40 +399,40 @@ Container Intersperse(const X& value, const Container& xs)
 }
 
 // Also known as Intercalate.
-// Join([0, 0] -> [[1], [2], [3, 4]] -> [1, 0, 0, 2, 0, 0, 3, 4]
+// join([0, 0], [[1], [2], [3, 4]]) == [1, 0, 0, 2, 0, 0, 3, 4]
 template <typename Container,
     typename X = typename Container::value_type>
-X Join(const X& separator, const Container& xs)
+X join(const X& separator, const Container& xs)
 {
-    return Concat(Intersperse(separator, xs));
+    return concat(intersperse(separator, xs));
 }
 
-// ContainsBy((==), [1,2,3]) == true
+// contains_by((==), [1,2,3]) == true
 template <typename BinaryPredicate, typename Container>
-bool ContainsBy(BinaryPredicate pred, const Container& xs)
+bool contains_by(BinaryPredicate pred, const Container& xs)
 {
     return std::find_if(std::begin(xs), std::end(xs), pred) != std::end(xs);
 }
 
-// Contains(2, [1,2,3]) == true
+// contains(2, [1,2,3]) == true
 template <typename Container>
-bool Contains(const typename Container::value_type& x, const Container& xs)
+bool contains(const typename Container::value_type& x, const Container& xs)
 {
     typedef typename Container::value_type T;
-    auto pred = Bind1of2(IsEqual<T>, x);
-    return ContainsBy(pred, xs);
+    auto pred = bind_1_of_2(is_equal<T>, x);
+    return contains_by(pred, xs);
 }
 
-// NubBy((==), [1,2,2,3,2]) == [1,2,3]
+// nub_by((==), [1,2,2,3,2]) == [1,2,3]
 template <typename Container, typename BinaryPredicate>
-Container NubBy(BinaryPredicate p, const Container& xs)
+Container nub_by(BinaryPredicate p, const Container& xs)
 {
     Container result;
-    auto itOut = BackInserter(result);
+    auto itOut = get_back_inserter(result);
     for (const auto &x : xs)
     {
-        auto eqToX = Bind1of2(p, x);
-        if (!ContainsBy(eqToX, result))
+        auto eqToX = bind_1_of_2(p, x);
+        if (!contains_by(eqToX, result))
         {
             *itOut = x;
         }
@@ -439,12 +440,12 @@ Container NubBy(BinaryPredicate p, const Container& xs)
     return result;
 }
 
-// Nub([1,2,2,3,2]) == [1,2,3]
+// nub([1,2,2,3,2]) == [1,2,3]
 template <typename Container>
-Container Nub(const Container& xs)
+Container nub(const Container& xs)
 {
-    auto pred = IsEqual<typename Container::value_type>;
-    return NubBy(pred, xs);
+    auto pred = is_equal<typename Container::value_type>;
+    return nub_by(pred, xs);
 }
 
 } // namespace fplus

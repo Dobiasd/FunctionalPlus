@@ -11,7 +11,7 @@ FunctionalPlus is a small header-only library supporting you in reducing code no
 
 Say you have a list of numbers and are interested in the odd ones only.
 ```c++
-bool IsOdd(int x) { return x % 2 == 1; }
+bool is_odd(int x) { return x % 2 == 1; }
 int main()
 {
     typedef list<int> Ints;
@@ -22,27 +22,28 @@ int main()
 
 There are different possiblities to obtain your goal. Some of them are:
 
-1. write a (range based) for loop
+1. write a (range based) for loop (ommitting the curly braces)
  ```c++
      Ints odds;
      for (int x : numbers)
-         if (IsOdd(x))
+         if (is_odd(x))
              odds.push_back(x);
  ```
 
 2. use `std::copy_if` from the STL
  ```c++
      Ints odds;
-     copy_if(begin(numbers), end(numbers), back_inserter(odds), IsOdd);
+     std::copy_if(std::begin(numbers), std::end(numbers),
+             std::back_inserter(odds), is_odd);
  ```
 
-3. use `KeepIf` from `FunctionalPlus`
+3. use `keep_if` from `FunctionalPlus`
  ```c++
-     auto odds = KeepIf(IsOdd, numbers);
+     auto odds = fplus::keep_if(is_odd, numbers);
  ```
 
 If you think version 3 could be the one most pleasant to work with, you might like FunctionalPlus.
-And if you still think the hand-written for loop is easier to understand, also consider what would happen if the loop body (i.e. a corresponding lambda function in the call to `fplus::KeepIf`) would be much longer. When reading `KeepIf` you would still immediately know that `odds` can only contain elements that came from `numbers` and were selected by some, possibly complicated, predicate. In the for loop case you have no idea what is happening until you read the whole loop body. The loop version probably would need a comment at the top stating what the use of `KeepIf` would tell at first glance.
+And if you still think the hand-written for loop is easier to understand, also consider what would happen if the loop body (i.e. a corresponding lambda function in the call to `fplus::keep_if`) would be much longer. When reading `keep_if` you would still immediately know that `odds` can only contain elements that came from `numbers` and were selected by some, possibly complicated, predicate. In the for loop case you have no idea what is happening until you read the whole loop body. The loop version probably would need a comment at the top stating what the use of `keep_if` would tell at first glance.
 
 
 More examples
@@ -56,9 +57,8 @@ You can test the content of a container for various properties, e.g.
 #include <iostream>
 int main()
 {
-    using namespace fplus;
     std::list<std::string> things = {"same old", "same old"};
-    if (AllTheSame(things))
+    if (fplus::all_the_same(things))
         std::cout << "All things being equal." << std::endl;
 }
 ```
@@ -70,9 +70,8 @@ There also are some convenience functions for strings.
 #include <iostream>
 int main()
 {
-    using namespace fplus;
     std::string team = "Our team is great. I love everybody.";
-    if (Contains("I", SplitWords(team)))
+    if (fplus::contains("I", fplus::split_words(team)))
         std::cout << "There actually is an I in team." << std::endl;
 }
 ```
@@ -89,22 +88,22 @@ struct Entity
     bool bright_;
 };
 
-void Test_example_AllIsCalmAndBright()
+int main()
 {
-    using namespace fplus;
     auto isCalm = [](const Entity& e) { return e.calm_; };
     auto isBright = [](const Entity& e) { return e.bright_; };
     std::vector<Entity> entities(4);
-    if (AllBy(And(isCalm, isBright), entities))
+    if (fplus::all_by(fplus::logical_and(isCalm, isBright), entities))
         std::cout << "Silent night." << std::endl;
 }
 ```
-`AllBy` is a function that takes a unary predicate and checks if all elements in the container fulfill it. `And` simply combines two unary predicates to one.
+
+`all_by` is a function that takes a unary predicate and checks if all elements in the container fulfill it. `logical_and` simply combines two unary predicates to one.
 
 ### Transformations, function composition and binding
-Let's say you have the following function [given](https://gist.github.com/Dobiasd/3ca1e75a6f77172fa748).
+Let's say you have the following function [given](https://gist.github.com/Dobiasd/77587769cbc0e13ed582).
 ```c++
-std::list<std::uint64_t> CollatzSeq(std::uint64_t x);
+std::list<std::uint64_t> collatz_seq(std::uint64_t x);
 ```
 
 And you want to create an `std::map<std::uint64_t, std::string>` containing string representations of the [Collatz sequences](https://en.wikipedia.org/wiki/Collatz_conjecture) for all numbers below 30. You can implement this nicely in a functional way too.
@@ -113,33 +112,30 @@ And you want to create an `std::map<std::uint64_t, std::string>` containing stri
 #include "fplus.h"
 #include <iostream>
 
-// std::list<std::uint64_t> CollatzSeq(std::uint64_t x) { ... }
+// std::list<std::uint64_t> collatz_seq(std::uint64_t x) { ... }
 
 int main()
 {
-    using namespace fplus;
-    using namespace std;
-
-    typedef list<uint64_t> Ints;
+    typedef std::list<uint64_t> Ints;
 
     // [1, 2, 3 ... 29]
-    auto numbers = GenerateIntegralRange<Ints>(1, 30);
+    auto numbers = fplus::generate_integral_range<Ints>(1, 30);
 
     // A function that does [1, 2, 3, 4, 5] -> "[1 => 2 => 3 => 4 => 5]"
-    auto ShowInts = Bind1of2(ShowContWith<Ints>, " => ");
+    auto show_ints = fplus::bind_1_of_2(fplus::show_cont_with<Ints>, " => ");
 
     // A composed function that calculates a Collatz sequence and shows it.
-    auto ShowCollatsSeq = Compose(CollatzSeq, ShowInts);
+    auto show_collats_seq = fplus::compose(collatz_seq, show_ints);
 
     // Apply it to all our numbers.
-    auto seqStrs = Transform(ShowCollatsSeq, numbers);
+    auto seq_strs = fplus::transform(show_collats_seq, numbers);
 
     // Combine the numbers and their sequence representations into a map.
-    auto collatzDict = CreateMap(numbers, seqStrs);
+    auto collatz_dict = fplus::create_map(numbers, seq_strs);
 
     // Print some of the sequences.
-    cout << collatzDict[13] << endl;
-    cout << collatzDict[17] << endl;
+    std::cout << collatz_dict[13] << std::endl;
+    std::cout << collatz_dict[17] << std::endl;
 }
 ```
 
@@ -157,10 +153,10 @@ Type deduction and useful errors messages
 -----------------------------------------
 FunctionalPlus deduces types for you where possible. Let's take one line of code from the Collatz example:
 ```c++
-    auto showCollatsSeq = Compose(CollatzSeq, showInts);
+    auto show_collats_seq = fplus::compose(collatz_seq, show_ints);
 ```
 
-`CollatzSeq` is a Function taking an `uint64_t` and returning a `list<uint64_t>`. `ShowInts` takes a `list<uint64_t>` and returns a `string`. Thanks to making use of `function_traits` [written by kennyim](https://github.com/kennytm/utils/blob/master/traits.hpp) it is possible to automatically deduce the expression `Compose(CollatzSeq, ShowInts)` being a function taking an `uint64_t` and returning a `string`, so you do not have to manually provide type hints to the compiler.
+`collatz_seq` is a Function taking an `uint64_t` and returning a `list<uint64_t>`. `show_ints` takes a `list<uint64_t>` and returns a `string`. Thanks to making use of `function_traits` [written by kennyim](https://github.com/kennytm/utils/blob/master/traits.hpp) it is possible to automatically deduce the expression `fplus::compose(collatz_seq, show_ints)` being a function taking an `uint64_t` and returning a `string`, so you do not have to manually provide type hints to the compiler.
 
 In case you would accidentally pass two functions whose "connecting type" does not match, you will get a nice error message telling you exactly that, because FunctionalPlus uses compile time assertions where feasible to guard you from the sometimes confusingly long error messages compilers like to generate when faced with type errors in function templates.
 
@@ -169,7 +165,7 @@ By changing the way you think about programming from "writing your own loops and
 
 Finding the right functions
 ---------------------------
-Library is splitted into several header files. If you for example need a function dividing a sequence at elements with a specific property, just look into `split.h` and you will soon find `fplus::SplitBy` doing exactly this: `SplitBy(isEven, true, [1,3,2,2,5,5,3,6,7,9]) == [[1,3],[],[5,5,3],[7,9]]`
+Library is splitted into several header files. If you for example need a function dividing a sequence at elements with a specific property, just look into `split.h` and you will soon find `fplus::split_by` doing exactly this: `SplitBy(isEven, true, [1,3,2,2,5,5,3,6,7,9]) == [[1,3],[],[5,5,3],[7,9]]`
 
 If interest in a documentation or something similar arises, I would be happy if you would [tell me what you think could a good approach](https://github.com/Dobiasd/FunctionalPlus/issues).
 
@@ -181,7 +177,7 @@ The basic functions are fast, thanks to C++'s concept of abstraction without ove
 10000 random numbers, keep odd ones, 1000 consecutive runs accumulated
 ----------------------------------------------------------------------
 
-| Hand-written for loop | std::copy_if | fplus::KeepIf |
+| Hand-written for loop | std::copy_if | fplus::keep_if |
 |-----------------------|--------------|------------------------|
 |               0.468 s |      0.475 s |                0.463 s |
 ```
@@ -196,12 +192,6 @@ Installation/Requirements
 Just download FunctionalPlus and tell your compile to use the `include` directory.
 
 A ***C++14***-compatible compiler is needed. The tests run successfully on GCC 4.9, Clang 3.6 and Visual C++ 2015.
-
-
-Naming convention or "`keep_if` vs. `KeepIf`"
----------------------------------------------
-The [Google style guide votes for `CamelCase`](https://google.github.io/styleguide/cppguide.html#Function_Names) while [`snake_case` is often considered more modern](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Rl-camel).
-I do not think that it is very important as long as you are consistent throughout a project. 
 
 
 Disclaimer

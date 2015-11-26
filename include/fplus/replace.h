@@ -12,15 +12,15 @@
 namespace fplus
 {
 
-// ReplaceIf(isEven, 0, [1, 3, 4, 6, 7]) == [1, 3, 0, 0, 7]
+// replace_if(isEven, 0, [1, 3, 4, 6, 7]) == [1, 3, 0, 0, 7]
 template <typename UnaryPredicate, typename Container>
-Container ReplaceIf(UnaryPredicate p,
+Container replace_if(UnaryPredicate p,
         const typename Container::value_type& dest, const Container& xs)
 {
-    CheckUnaryPredicateForContainer<UnaryPredicate, Container>();
+    check_unary_predicate_for_container<UnaryPredicate, Container>();
     Container result;
-    PrepareContainer(result, Size(xs));
-    auto itOut = BackInserter(result);
+    prepare_container(result, size_of_cont(xs));
+    auto itOut = get_back_inserter(result);
     for (const auto& x : xs)
     {
         *itOut = p(x) ? dest : x;
@@ -28,21 +28,21 @@ Container ReplaceIf(UnaryPredicate p,
     return result;
 }
 
-// ReplaceElems(4, 0, [1, 3, 4, 4, 7]) == [1, 3, 0, 0, 7]
+// replace_elems(4, 0, [1, 3, 4, 4, 7]) == [1, 3, 0, 0, 7]
 template <typename Container,
         typename T = typename Container::value_type>
-Container ReplaceElems(const T& source, const T& dest, const Container& xs)
+Container replace_elems(const T& source, const T& dest, const Container& xs)
 {
-    return ReplaceIf(Bind1of2(IsEqual<T>, source), dest, xs);
+    return replace_if(bind_1_of_2(is_equal<T>, source), dest, xs);
 }
 
-// ReplaceTokens("haha", "hihi", "oh, hahaha!") == "oh, hihiha!"
+// replace_tokens("haha", "hihi", "oh, hahaha!") == "oh, hihiha!"
 template <typename Container>
-Container ReplaceTokens
+Container replace_tokens
         (const Container& source, const Container& dest, const Container& xs)
 {
-    auto splitted = SplitByToken(source, true, xs);
-    return Join(dest, splitted);
+    auto splitted = split_by_token(source, true, xs);
+    return join(dest, splitted);
 }
 
 } // namespace fplus

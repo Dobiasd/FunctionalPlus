@@ -11,7 +11,7 @@ namespace fplus
 {
 
 template <typename UnaryPredicate, typename T>
-void CheckUnaryPredicateForType()
+void check_unary_predicate_for_type()
 {
     static_assert(utils::function_traits<UnaryPredicate>::arity == 1, "Wrong arity.");
     static_assert(std::is_convertible<T, typename utils::function_traits<UnaryPredicate>::template arg<0>::type>::value, "Unary predicate can not take these values.");
@@ -19,7 +19,7 @@ void CheckUnaryPredicateForType()
 }
 
 template <typename F, typename T>
-void CheckIndexWithTypePredicateForType()
+void check_index_with_type_predicate_for_type()
 {
     static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
     typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
@@ -30,7 +30,7 @@ void CheckIndexWithTypePredicateForType()
 }
 
 template <typename BinaryPredicate, typename T>
-void CheckBinaryPredicateForType()
+void check_binary_predicate_for_type()
 {
     static_assert(utils::function_traits<BinaryPredicate>::arity == 2, "Wrong arity.");
     typedef typename utils::function_traits<BinaryPredicate>::template arg<0>::type FIn;
@@ -41,7 +41,7 @@ void CheckBinaryPredicateForType()
 }
 
 template <typename Compare, typename T>
-void CheckCompareForType()
+void check_compare_for_type()
 {
     static_assert(utils::function_traits<Compare>::arity == 2, "Wrong arity.");
     typedef typename utils::function_traits<Compare>::template arg<0>::type FIn;
@@ -52,7 +52,7 @@ void CheckCompareForType()
 }
 
 template <typename F, typename G, typename X, typename Y>
-void CheckComparePreprocessorsForTypes()
+void check_compare_preprocessors_for_types()
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
@@ -61,155 +61,155 @@ void CheckComparePreprocessorsForTypes()
     static_assert(std::is_same<typename utils::function_traits<F>::result_type, typename utils::function_traits<G>::result_type>::value, "Both functions must return same type.");
 }
 
-// Identity(x) == x
+// identity(x) == x
 template <typename T>
-const T Identity(const T& x)
+const T identity(const T& x)
 {
     return x;
 }
 
-// Always(x, y) == x
+// always(x, y) == x
 template <typename X, typename Y>
-const X Always(const X& x, const Y&)
+const X always(const X& x, const Y&)
 {
     return x;
 }
 
 // f(x) == g(y)
 template <typename F, typename G, typename X, typename Y>
-bool IsEqualByAndBy(F f, G g, const X& x, const Y& y)
+bool is_equal_by_and_by(F f, G g, const X& x, const Y& y)
 {
-    CheckComparePreprocessorsForTypes<F, G, X, Y>();
+    check_compare_preprocessors_for_types<F, G, X, Y>();
     return f(x) == g(y);
 }
 
 // f(x) == f(y)
 template <typename F, typename T>
-bool IsEqualBy(F f, const T& x, const T& y)
+bool is_equal_by(F f, const T& x, const T& y)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return IsEqualByAndBy(f, f, x, y);
+    return is_equal_by_and_by(f, f, x, y);
 }
 // x == y
 template <typename T>
-bool IsEqual(const T& x, const T& y)
+bool is_equal(const T& x, const T& y)
 {
-    return IsEqualBy(Identity<T>, x, y);
+    return is_equal_by(identity<T>, x, y);
 }
 
 // f(x) != g(y)
 template <typename F, typename G, typename X, typename Y>
-bool IsNotEqualByAndBy(F f, G g, const X& x, const Y& y)
+bool is_not_equal_by_and_by(F f, G g, const X& x, const Y& y)
 {
-    CheckComparePreprocessorsForTypes<F, G, X, Y>();
+    check_compare_preprocessors_for_types<F, G, X, Y>();
     return f(x) != g(y);
 }
 
 // f(x) != f(y)
 template <typename F, typename T>
-bool IsNotEqualBy(F f, const T& x, const T& y)
+bool is_not_equal_by(F f, const T& x, const T& y)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return IsNotEqualByAndBy(f, f, x, y);
+    return is_not_equal_by_and_by(f, f, x, y);
 }
 
 // x != y
 template <typename T>
-bool IsNotEqual(const T& x, const T& y)
+bool is_not_equal(const T& x, const T& y)
 {
-    return IsNotEqualBy(Identity<T>, x, y);
+    return is_not_equal_by(identity<T>, x, y);
 }
 
 // f(x) < g(y)
 template <typename F, typename G, typename X, typename Y>
-bool IsLessByAndBy(F f, G g, const X& x, const Y& y)
+bool is_less_by_and_by(F f, G g, const X& x, const Y& y)
 {
-    CheckComparePreprocessorsForTypes<F, G, X, Y>();
+    check_compare_preprocessors_for_types<F, G, X, Y>();
     return f(x) < g(y);
 }
 
 // f(x) < f(y)
 template <typename F, typename T>
-bool IsLessBy(F f, const T& x, const T& y)
+bool is_less_by(F f, const T& x, const T& y)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return IsLessByAndBy(f, f, x, y);
+    return is_less_by_and_by(f, f, x, y);
 }
 
 // x < y
 template <typename T>
-bool IsLess(const T& x, const T& y)
+bool is_less(const T& x, const T& y)
 {
-    return IsLessBy(Identity<T>, x, y);
+    return is_less_by(identity<T>, x, y);
 }
 
 // f(x) <= g(y)
 template <typename F, typename G, typename X, typename Y>
-bool IsLessOrEqualByAndBy(F f, G g, const X& x, const Y& y)
+bool is_less_or_equal_by_and_by(F f, G g, const X& x, const Y& y)
 {
-    CheckComparePreprocessorsForTypes<F, G, X, Y>();
+    check_compare_preprocessors_for_types<F, G, X, Y>();
     return f(x) <= g(y);
 }
 
 // f(x) <= f(y)
 template <typename F, typename T>
-bool IsLessOrEqualBy(F f, const T& x, const T& y)
+bool is_less_or_equal_by(F f, const T& x, const T& y)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return IsLessOrEqualByAndBy(f, f, x, y);
+    return is_less_or_equal_by_and_by(f, f, x, y);
 }
 
 // x <= y
 template <typename T>
-bool IsLessOrEqual(const T& x, const T& y)
+bool is_less_or_equal(const T& x, const T& y)
 {
-    return IsLessOrEqualBy(Identity<T>, x, y);
+    return is_less_or_equal_by(identity<T>, x, y);
 }
 
 // f(x) > g(y)
 template <typename F, typename G, typename X, typename Y>
-bool IsGreaterByAndBy(F f, G g, const X& x, const Y& y)
+bool is_greater_by_and_by(F f, G g, const X& x, const Y& y)
 {
-    CheckComparePreprocessorsForTypes<F, G, X, Y>();
+    check_compare_preprocessors_for_types<F, G, X, Y>();
     return f(x) > g(y);
 }
 
 // f(x) > f(y)
 template <typename F, typename T>
-bool IsGreaterBy(F f, const T& x, const T& y)
+bool is_greater_by(F f, const T& x, const T& y)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return IsGreaterByAndBy(f, f, x, y);
+    return is_greater_by_and_by(f, f, x, y);
 }
 
 // x > y
 template <typename T>
-bool IsGreater(const T& x, const T& y)
+bool is_greater(const T& x, const T& y)
 {
-    return IsGreaterBy(Identity<T>, x, y);
+    return is_greater_by(identity<T>, x, y);
 }
 
 // f(x) >= g(y)
 template <typename F, typename G, typename X, typename Y>
-bool IsGreaterOrEqualByAndBy(F f, G g, const X& x, const Y& y)
+bool is_greater_or_equal_by_and_by(F f, G g, const X& x, const Y& y)
 {
-    CheckComparePreprocessorsForTypes<F, G, X, Y>();
+    check_compare_preprocessors_for_types<F, G, X, Y>();
     return f(x) >= g(y);
 }
 
 // f(x) >= f(y)
 template <typename F, typename T>
-bool IsGreaterOrEqualBy(F f, const T& x, const T& y)
+bool is_greater_or_equal_by(F f, const T& x, const T& y)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return IsGreaterOrEqualByAndBy(f, f, x, y);
+    return is_greater_or_equal_by_and_by(f, f, x, y);
 }
 
 // x >= y
 template <typename T>
-bool IsGreaterOrEqual(const T& x, const T& y)
+bool is_greater_or_equal(const T& x, const T& y)
 {
-    return IsGreaterOrEqualBy(Identity<T>, x, y);
+    return is_greater_or_equal_by(identity<T>, x, y);
 }
 
 } // namespace fplus

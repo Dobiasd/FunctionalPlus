@@ -32,9 +32,9 @@ template<class CharT, class Traits, class Alloc> struct has_order<std::basic_str
 
 //http://stackoverflow.com/a/33828321/1866775
 template <class T, class NewP>
-struct SameContNewT;
+struct same_cont_new_t;
 template <template <class...> class T, class... TPs, class NewP>
-struct SameContNewT<T<TPs...>, NewP> {
+struct same_cont_new_t<T<TPs...>, NewP> {
     using type = T<NewP>;
 };
 
@@ -46,8 +46,8 @@ template<
     typename ContIn,
     typename F,
     typename T = typename ContIn::value_type,
-    typename ContOut = typename SameContNewT<ContIn, typename std::result_of_t<F&(T)>>::type>
-struct SameContNewTFromUnaryF
+    typename ContOut = typename same_cont_new_t<ContIn, typename std::result_of_t<F&(T)>>::type>
+struct same_cont_new_t_from_unary_f
 {
     typedef ContOut type;
 };
@@ -57,8 +57,8 @@ template<
     typename F,
     typename T1,
     typename T2,
-    typename ContOut = typename SameContNewT<ContIn, typename std::result_of_t<F&(T1, T2)>>::type>
-struct SameContNewTFromBinaryF
+    typename ContOut = typename same_cont_new_t<ContIn, typename std::result_of_t<F&(T1, T2)>>::type>
+struct same_cont_new_t_from_binary_f
 {
     typedef ContOut type;
 };

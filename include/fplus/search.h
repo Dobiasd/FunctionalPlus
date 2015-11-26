@@ -16,87 +16,87 @@
 namespace fplus
 {
 
-// FindFirstBy(isEven, [1, 3, 4, 6, 9]) == Just(4)
-// FindFirstBy(isEven, [1, 3, 5, 7, 9]) == Nothing
+// find_first_by(isEven, [1, 3, 4, 6, 9]) == Just(4)
+// find_first_by(isEven, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container, typename UnaryPredicate,
     typename T = typename Container::value_type>
-Maybe<T> FindFirstBy(UnaryPredicate pred, const Container& xs)
+maybe<T> find_first_by(UnaryPredicate pred, const Container& xs)
 {
-    CheckUnaryPredicateForContainer<UnaryPredicate, Container>();
+    check_unary_predicate_for_container<UnaryPredicate, Container>();
     auto it = std::find_if(std::begin(xs), std::end(xs), pred);
     if (it == std::end(xs))
-        return Nothing<T>();
-    return Just<T>(*it);
+        return nothing<T>();
+    return just<T>(*it);
 }
 
-// FindLastBy(isEven, [1, 3, 4, 6, 9]) == Just(6)
-// FindLastBy(isEven, [1, 3, 5, 7, 9]) == Nothing
+// find_last_by(isEven, [1, 3, 4, 6, 9]) == Just(6)
+// find_last_by(isEven, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container, typename UnaryPredicate,
     typename T = typename Container::value_type>
-Maybe<T> FindLastBy(UnaryPredicate pred, const Container& xs)
+maybe<T> find_last_by(UnaryPredicate pred, const Container& xs)
 {
-    CheckUnaryPredicateForContainer<UnaryPredicate, Container>();
-    return FindFirstBy(pred, Reverse(xs));
+    check_unary_predicate_for_container<UnaryPredicate, Container>();
+    return find_first_by(pred, reverse(xs));
 }
 
-// FindFirstIdxBy(isEven, [1, 3, 4, 6, 9]) == Just(2)
-// FindFirstIdxBy(isEven, [1, 3, 5, 7, 9]) == Nothing
+// find_first_idx_by(isEven, [1, 3, 4, 6, 9]) == Just(2)
+// find_first_idx_by(isEven, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container, typename UnaryPredicate>
-Maybe<std::size_t> FindFirstIdxBy
+maybe<std::size_t> find_first_idx_by
         (UnaryPredicate pred, const Container& xs)
 {
-    CheckUnaryPredicateForContainer<UnaryPredicate, Container>();
+    check_unary_predicate_for_container<UnaryPredicate, Container>();
     auto it = std::find_if(std::begin(xs), std::end(xs), pred);
     if (it == std::end(xs))
-        return Nothing<std::size_t>();
-    return Just<std::size_t>(std::distance(std::begin(xs), it));
+        return nothing<std::size_t>();
+    return just<std::size_t>(std::distance(std::begin(xs), it));
 }
 
-// FindLastIdxBy(isEven, [1, 3, 4, 6, 9]) == Just(3)
-// FindLastIdxBy(isEven, [1, 3, 5, 7, 9]) == Nothing
+// find_last_idx_by(isEven, [1, 3, 4, 6, 9]) == Just(3)
+// find_last_idx_by(isEven, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container, typename UnaryPredicate>
-Maybe<std::size_t> FindLastIdxBy
+maybe<std::size_t> find_last_idx_by
         (UnaryPredicate pred, const Container& xs)
 {
-    CheckUnaryPredicateForContainer<UnaryPredicate, Container>();
+    check_unary_predicate_for_container<UnaryPredicate, Container>();
     auto calcRevIdx = [&](std::size_t idx) {
-        return Size(xs) - (idx + 1);
+        return size_of_cont(xs) - (idx + 1);
     };
-    return Lift(calcRevIdx)
-            (FindFirstIdxBy(pred, Reverse(xs)));
+    return lift(calcRevIdx)
+            (find_first_idx_by(pred, reverse(xs)));
 }
 
-// FindFirstIdx(4, [1, 3, 4, 4, 9]) == Just(2)
-// FindFirstIdx(4, [1, 3, 5, 7, 9]) == Nothing
+// find_first_idx(4, [1, 3, 4, 4, 9]) == Just(2)
+// find_first_idx(4, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container>
-Maybe<std::size_t> FindFirstIdx
+maybe<std::size_t> find_first_idx
         (const typename Container::value_type& x, const Container& xs)
 {
     typedef typename Container::value_type T;
-    auto pred = Bind1of2(IsEqual<T>, x);
-    return FindFirstIdxBy(pred, xs);
+    auto pred = bind_1_of_2(is_equal<T>, x);
+    return find_first_idx_by(pred, xs);
 }
 
-// FindFirstIdx(4, [1, 3, 4, 4, 9]) == Just(3)
-// FindFirstIdx(4, [1, 3, 5, 7, 9]) == Nothing
+// find_last_idx(4, [1, 3, 4, 4, 9]) == Just(3)
+// find_last_idx(4, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container>
-Maybe<std::size_t> FindLastIdx
+maybe<std::size_t> find_last_idx
         (const typename Container::value_type& x, const Container& xs)
 {
     typedef typename Container::value_type T;
-    auto pred = Bind1of2(IsEqual<T>, x);
-    return FindLastIdxBy(pred, xs);
+    auto pred = bind_1_of_2(is_equal<T>, x);
+    return find_last_idx_by(pred, xs);
 }
 
-// FindAllIdxsBy(isEven, [1, 3, 4, 6, 9]) == [2, 3]
+// find_all_idxs_by(isEven, [1, 3, 4, 6, 9]) == [2, 3]
 template <typename ContainerOut = std::list<std::size_t>,
         typename UnaryPredicate, typename Container>
-ContainerOut FindAllIdxsBy(UnaryPredicate p, const Container& xs)
+ContainerOut find_all_idxs_by(UnaryPredicate p, const Container& xs)
 {
-    CheckUnaryPredicateForContainer<UnaryPredicate, Container>();
+    check_unary_predicate_for_container<UnaryPredicate, Container>();
     std::size_t idx = 0;
     ContainerOut result;
-    auto itOut = BackInserter(result);
+    auto itOut = get_back_inserter(result);
     for (const auto& x : xs)
     {
         if (p(x))
@@ -106,25 +106,25 @@ ContainerOut FindAllIdxsBy(UnaryPredicate p, const Container& xs)
     return result;
 }
 
-// FindAllIdxsOf(4, [1, 3, 4, 4, 9]) == [2, 3]
+// find_all_idxs_of(4, [1, 3, 4, 4, 9]) == [2, 3]
 template <typename ContainerOut = std::list<std::size_t>, typename Container>
-ContainerOut FindAllIdxsOf
+ContainerOut find_all_idxs_of
         (const typename Container::value_type& x, const Container& xs)
 {
     typedef typename Container::value_type T;
-    auto pred = Bind1of2(IsEqual<T>, x);
-    return FindAllIdxsBy(pred, xs);
+    auto pred = bind_1_of_2(is_equal<T>, x);
+    return find_all_idxs_by(pred, xs);
 }
 
-// FindAllInstancesOf("haha", "oh, hahaha!") == [4, 6]
+// find_all_instances_of("haha", "oh, hahaha!") == [4, 6]
 template <typename ContainerOut = std::list<std::size_t>, typename Container>
-ContainerOut FindAllInstancesOf(const Container& token, const Container& xs)
+ContainerOut find_all_instances_of(const Container& token, const Container& xs)
 {
     typedef std::vector<Container> Containers;
-    auto candidates = Infixes<Containers>(Size(token), xs);
+    auto candidates = infixes<Containers>(size_of_cont(token), xs);
     ContainerOut result;
     std::size_t idx = 0;
-    auto outIt = BackInserter(result);
+    auto outIt = get_back_inserter(result);
     for (const auto& candidate : candidates)
     {
         if (candidate == token)
@@ -134,27 +134,27 @@ ContainerOut FindAllInstancesOf(const Container& token, const Container& xs)
     return result;
 }
 
-// FindAllInstancesOfNonOverlapping("haha", "oh, hahaha!") == [4]
+// find_all_instances_of_non_overlapping("haha", "oh, hahaha!") == [4]
 template <typename ContainerOut = std::list<std::size_t>, typename Container>
-ContainerOut FindAllInstancesOfNonOverlapping
+ContainerOut find_all_instances_of_non_overlapping
         (const Container& token, const Container& xs)
 {
     ContainerOut result;
-    if (IsEmpty(token))
+    if (is_empty(token))
         return result;
     typedef typename Container::value_type T;
-    auto tokenAsList = Convert<std::list<T>>(token);
+    auto tokenAsList = convert<std::list<T>>(token);
     auto tokenRemaining = tokenAsList;
     std::size_t idx = 0;
-    auto itOut = BackInserter(result);
+    auto itOut = get_back_inserter(result);
     for (const T& x : xs)
     {
         if (x == tokenRemaining.front())
         {
             tokenRemaining.pop_front();
-            if (IsEmpty(tokenRemaining))
+            if (is_empty(tokenRemaining))
             {
-                *itOut = idx - (Size(token) - 1);
+                *itOut = idx - (size_of_cont(token) - 1);
                 tokenRemaining = tokenAsList;
             }
         }

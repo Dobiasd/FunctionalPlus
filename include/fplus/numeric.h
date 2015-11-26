@@ -10,55 +10,55 @@ namespace fplus
 
 // Checks if x is in [low, high), i.e. left-closed and right-open.
 template <typename T>
-bool IsInRange(const T& low, const T& high, const T& x)
+bool is_in_rage(const T& low, const T& high, const T& x)
 {
     return (low <= x) && (x < high);
 }
 
 // Puts value into [low, high], i.e. left-closed and right-closed.
 template <typename T>
-T Clamp(const T& low, const T& high, const T& x)
+T clamp(const T& low, const T& high, const T& x)
 {
     return std::max(low, std::min(high, x));
 }
 
 // Checks if x < 0.
 template <typename X>
-bool IsNegative(X x)
+bool is_negative(X x)
 {
     return x < 0;
 }
 
 // Checks if x is not negative.
 template <typename X>
-bool IsPositive(X x)
+bool is_positive(X x)
 {
-    return !IsNegative(x);
+    return !is_negative(x);
 }
 
 // Converts a value to the nearest integer.
 template <typename X>
-int Round(X x)
+int round(X x)
 {
-    if (IsNegative(x))
+    if (is_negative(x))
         x -= 1;
     return static_cast<int>(x + 0.5f);
 }
 
 // Converts a value to the nearest smaller integer.
 template <typename X>
-int Floor(X x)
+int floor(X x)
 {
-    if (IsNegative(x))
+    if (is_negative(x))
         x -= 1;
     return static_cast<int>(x);
 }
 
 // Converts a value to the nearest greater integer.
 template <typename X>
-int Ceil(X x)
+int ceil(X x)
 {
-    return Floor(x) + 1;
+    return floor(x) + 1;
 }
 
 }

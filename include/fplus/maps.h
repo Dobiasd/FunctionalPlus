@@ -18,9 +18,9 @@ namespace fplus
 
 // Converts a Container of pairs (key, value) into a dictionary.
 template <typename MapOut, typename ContainerIn>
-MapOut PairsToMap(const ContainerIn& pairs)
+MapOut pairs_to_map(const ContainerIn& pairs)
 {
-    return Convert<MapOut>(pairs);
+    return convert<MapOut>(pairs);
 }
 
 // Converts a dictionary into a Container of pairs (key, value).
@@ -30,33 +30,33 @@ template <typename MapType,
     typename Val = typename std::remove_const_t<typename MapPair::second_type>,
     typename OutPair = std::pair<Key, Val>,
     typename ContainerOut = std::vector<OutPair>>
-ContainerOut MapToPairs(const MapType& dict)
+ContainerOut map_to_pairs(const MapType& dict)
 {
-    return Convert<ContainerOut>(dict);
+    return convert<ContainerOut>(dict);
 }
 
 template <typename MapType,
     typename ContainerOut = std::vector<std::remove_const_t<typename MapType::key_type>>>
-ContainerOut GetMapKeys(const MapType& dict)
+ContainerOut get_map_keys(const MapType& dict)
 {
-    auto pairs = MapToPairs(dict);
+    auto pairs = map_to_pairs(dict);
     typedef typename decltype(pairs)::value_type::first_type FirstType;
     typedef typename decltype(pairs)::value_type::second_type SecondType;
-    return Transform(Fst<FirstType, SecondType>, MapToPairs(dict));
+    return transform(fst<FirstType, SecondType>, map_to_pairs(dict));
 }
 
 template <typename MapType,
     typename ContainerOut = std::vector<std::remove_const_t<typename MapType::mapped_type>>>
-ContainerOut GetMapValues(const MapType& dict)
+ContainerOut get_map_values(const MapType& dict)
 {
-    auto pairs = MapToPairs(dict);
+    auto pairs = map_to_pairs(dict);
     typedef typename decltype(pairs)::value_type::first_type FirstType;
     typedef typename decltype(pairs)::value_type::second_type SecondType;
-    return Transform(Snd<FirstType, SecondType>, MapToPairs(dict));
+    return transform(snd<FirstType, SecondType>, map_to_pairs(dict));
 }
 
 // Swaps keys and Values of a dict:
-// SwapKeysAndValues({(1, "a"), (2, "b")}) == {("a", 1), ("b", 2)}
+// swap_keys_and_values({(1, "a"), (2, "b")}) == {("a", 1), ("b", 2)}
 template <typename MapIn,
     typename MapInPair = typename MapIn::value_type,
     typename InKey = typename MapInPair::first_type,
@@ -64,35 +64,35 @@ template <typename MapIn,
     typename OutKey = InVal,
     typename OutVal = std::remove_const_t<InKey>,
     typename MapOut = typename SameMapTypeNewTypes<MapIn, OutKey, OutVal>::type>
-MapOut SwapKeysAndValues(const MapIn& dict)
+MapOut swap_keys_and_values(const MapIn& dict)
 {
-    auto inAsPairs = MapToPairs(dict);
-    auto outAsPairs = Transform(SwapPairElems<InKey, InVal>, inAsPairs);
-    return PairsToMap<MapOut>(outAsPairs);
+    auto inAsPairs = map_to_pairs(dict);
+    auto outAsPairs = transform(swap_pair_elems<InKey, InVal>, inAsPairs);
+    return pairs_to_map<MapOut>(outAsPairs);
 }
 
-// CreateMap([1,2,3], ["one", "two"]) == { {1,"one"}, {2,"two"} }
+// create_map([1,2,3], ["one", "two"]) == { {1,"one"}, {2,"two"} }
 template <typename ContainerIn1, typename ContainerIn2,
     typename Key = std::remove_const_t<typename ContainerIn1::value_type>,
     typename Val = std::remove_const_t<typename ContainerIn2::value_type>,
     typename MapOut = std::map<Key, Val>>
-MapOut CreateMap(const ContainerIn1& keys, const ContainerIn2& values)
+MapOut create_map(const ContainerIn1& keys, const ContainerIn2& values)
 {
-    auto pairs = Zip(keys, values);
-    return PairsToMap<MapOut>(pairs);
+    auto pairs = zip(keys, values);
+    return pairs_to_map<MapOut>(pairs);
 }
 
-// CreateMapUnorderedMap([1,2,3], ["one", "two"]) == { {1,"one"}, {2,"two"} }
+// create_unordered_map([1,2,3], ["one", "two"]) == { {1,"one"}, {2,"two"} }
 template <typename ContainerIn1, typename ContainerIn2,
     typename Key = std::remove_const_t<typename ContainerIn1::value_type>,
     typename Val = std::remove_const_t<typename ContainerIn2::value_type>,
     typename MapOut = std::unordered_map<Key, Val >>
-MapOut CreateUnorderedMap(
+MapOut create_unordered_map(
     const ContainerIn1& keys,
     const ContainerIn2& values)
 {
-    auto pairs = Zip(keys, values);
-    return PairsToMap<MapOut>(pairs);
+    auto pairs = zip(keys, values);
+    return pairs_to_map<MapOut>(pairs);
 }
 
 // Returns just the value of a key if key is present.
@@ -100,12 +100,12 @@ MapOut CreateUnorderedMap(
 template <typename MapType,
     typename Key = typename MapType::key_type,
     typename Val = typename MapType::mapped_type>
-Maybe<Val> GetFromMap(const MapType& map, const Key& key)
+maybe<Val> get_from_map(const MapType& map, const Key& key)
 {
     auto it = map.find(key);
     if (it == std::end(map))
-        return Nothing<Val>();
-    return Just(it->second);
+        return nothing<Val>();
+    return just(it->second);
 }
 
 // Returns the value of a key if key is present.
@@ -113,14 +113,14 @@ Maybe<Val> GetFromMap(const MapType& map, const Key& key)
 template <typename MapType,
     typename Key = typename MapType::key_type,
     typename Val = typename MapType::mapped_type>
-Val GetFromMapWithDef(const MapType& map, const Val& defVal, const Key& key)
+Val get_from_map_with_def(const MapType& map, const Val& defVal, const Key& key)
 {
-    return WithDefault(defVal, GetFromMap(map, key));
+    return with_default(defVal, get_from_map(map, key));
 }
 
 // Checks if a map contains a key.
 template <typename MapType, typename Key = typename MapType::key_type>
-bool MapContains(const MapType& map, const Key& key)
+bool map_contains(const MapType& map, const Key& key)
 {
     auto it = map.find(key);
     return it != std::end(map);
