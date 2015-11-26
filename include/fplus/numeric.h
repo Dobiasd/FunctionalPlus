@@ -10,7 +10,7 @@ namespace fplus
 
 // Checks if x is in [low, high), i.e. left-closed and right-open.
 template <typename T>
-bool is_in_rage(const T& low, const T& high, const T& x)
+bool is_in_range(const T& low, const T& high, const T& x)
 {
     return (low <= x) && (x < high);
 }

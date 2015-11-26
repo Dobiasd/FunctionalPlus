@@ -19,10 +19,10 @@ void Test_Numeric()
 {
     using namespace fplus;
 
-    assert(is_in_rage(1, 3, 1) == true);
-    assert(is_in_rage(1, 3, 2) == true);
-    assert(is_in_rage(1, 3, 0) == false);
-    assert(is_in_rage(1, 3, 3) == false);
+    assert(is_in_range(1, 3, 1) == true);
+    assert(is_in_range(1, 3, 2) == true);
+    assert(is_in_range(1, 3, 0) == false);
+    assert(is_in_range(1, 3, 3) == false);
 
     assert(is_negative(0.1) == false);
     assert(is_positive(0.1) == true);
@@ -252,7 +252,7 @@ void Test_Maybe()
     auto JustInt = just<int>;
     auto IntToMaybeFloat = compose(JustInt, LiftedIntToFloat);
     auto IntToFloatAndSqrtAndSqrt = and_then(IntToMaybeFloat, sqrtAndSqrt);
-    assert(is_in_rage(1.41f, 1.42f, unsafe_get_just<float>
+    assert(is_in_range(1.41f, 1.42f, unsafe_get_just<float>
             (IntToFloatAndSqrtAndSqrt(4))));
     typedef std::vector<maybe<int>> IntMaybes;
     typedef std::vector<int> Ints;
