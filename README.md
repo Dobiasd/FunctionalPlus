@@ -176,8 +176,8 @@ The basic functions are fast, thanks to C++'s concept of abstraction without ove
 ----------------------------------------------------------------------
 
 | Hand-written for loop | std::copy_if | fplus::keep_if |
-|-----------------------|--------------|------------------------|
-|               0.468 s |      0.475 s |                0.463 s |
+|-----------------------|--------------|----------------|
+|               0.468 s |      0.475 s |        0.463 s |
 ```
 
 So the compiler seems to do a very good job in optimizing and inlining everthing to basically equal machine code performance-wise.
