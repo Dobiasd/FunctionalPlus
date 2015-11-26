@@ -231,7 +231,8 @@ bool is_sorted(const Container& xs)
 template <typename Container>
 bool is_infix_of(const Container& token, Container& xs)
 {
-    return contains(token, infixes<std::vector<Container>>(size_of_cont(token), xs));
+    return contains(token,
+        infixes<std::vector<Container>>(size_of_cont(token), xs));
 }
 
 // is_prefix_of("Fun", "FunctionalPlus") == true
@@ -249,7 +250,8 @@ bool is_suffix_of(const Container& token, Container& xs)
 {
     if (size_of_cont(token) > size_of_cont(xs))
         return false;
-    return get_range(size_of_cont(xs) - size_of_cont(token), size_of_cont(xs), xs) == token;
+    return get_range(size_of_cont(xs) - size_of_cont(token),
+        size_of_cont(xs), xs) == token;
 }
 
 // is_subsequence_of("Final", "FunctionalPlus") == true

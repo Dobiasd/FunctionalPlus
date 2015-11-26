@@ -36,7 +36,8 @@ ContainerOut map_to_pairs(const MapType& dict)
 }
 
 template <typename MapType,
-    typename ContainerOut = std::vector<std::remove_const_t<typename MapType::key_type>>>
+    typename ContainerOut =
+        std::vector<std::remove_const_t<typename MapType::key_type>>>
 ContainerOut get_map_keys(const MapType& dict)
 {
     auto pairs = map_to_pairs(dict);
@@ -46,7 +47,8 @@ ContainerOut get_map_keys(const MapType& dict)
 }
 
 template <typename MapType,
-    typename ContainerOut = std::vector<std::remove_const_t<typename MapType::mapped_type>>>
+    typename ContainerOut =
+        std::vector<std::remove_const_t<typename MapType::mapped_type>>>
 ContainerOut get_map_values(const MapType& dict)
 {
     auto pairs = map_to_pairs(dict);

@@ -13,7 +13,7 @@ namespace fplus
 template <typename UnaryPredicate, typename T>
 void check_unary_predicate_for_type()
 {
-    static_assert(utils::function_traits<UnaryPredicate>::arity == 1, "Wrong arity.");
+    static_assert(utils::function_traits<UnaryPredicate>::arity == 1,"Wrong arity.");
     static_assert(std::is_convertible<T, typename utils::function_traits<UnaryPredicate>::template arg<0>::type>::value, "Unary predicate can not take these values.");
     static_assert(std::is_convertible<typename utils::function_traits<UnaryPredicate>::result_type, bool>::value, "Predicate must return bool.");
 }

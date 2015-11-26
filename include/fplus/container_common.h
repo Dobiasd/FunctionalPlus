@@ -19,13 +19,15 @@ namespace fplus
 template <typename UnaryPredicate, typename Container>
 void check_unary_predicate_for_container()
 {
-    check_unary_predicate_for_type<UnaryPredicate, typename Container::value_type>();
+    check_unary_predicate_for_type<UnaryPredicate,
+     typename Container::value_type>();
 }
 
 template <typename UnaryPredicate, typename Container>
 void check_index_with_type_predicate_for_container()
 {
-    check_index_with_type_predicate_for_type<UnaryPredicate, typename Container::value_type>();
+    check_index_with_type_predicate_for_type<UnaryPredicate,
+        typename Container::value_type>();
 }
 
 template <typename Compare, typename Container>
@@ -37,7 +39,8 @@ void check_compare_for_container()
 template <typename BinaryPredicate, typename Container>
 void check_binary_predicate_for_container()
 {
-    check_binary_predicate_for_type<BinaryPredicate, typename Container::value_type>();
+    check_binary_predicate_for_type<BinaryPredicate,
+        typename Container::value_type>();
 }
 
 // PrepareContainer and BackInserter are overloaded
@@ -109,7 +112,8 @@ template <typename NewT, typename ContainerIn,
     typename ContainerOut = typename same_cont_new_t<ContainerIn, NewT>::type>
 ContainerOut convert_elems(const ContainerIn& xs)
 {
-    static_assert(std::is_constructible<NewT, typename ContainerIn::value_type>::value, "Elements not convertible.");
+    static_assert(std::is_constructible<NewT,
+        typename ContainerIn::value_type>::value, "Elements not convertible.");
     ContainerOut ys;
     prepare_container(ys, size_of_cont(xs));
     auto it = get_back_inserter<ContainerOut>(ys);
@@ -131,7 +135,7 @@ ContainerOut convert_container(const ContainerIn& xs)
     typedef typename ContainerIn::value_type SourceElem;
     typedef typename ContainerOut::value_type DestElem;
     static_assert(std::is_same<DestElem, SourceElem>::value,
-        "ConvertContainer: Source and dest container must have the same value_type");
+        "Source and dest container must have the same value_type");
     ContainerOut ys;
     prepare_container(ys, size_of_cont(xs));
     auto itOut = get_back_inserter<ContainerOut>(ys);
@@ -145,7 +149,8 @@ ContainerOut convert_container(const ContainerIn& xs)
 template <typename ContainerOut, typename ContainerIn>
 ContainerOut convert(const ContainerIn& xs)
 {
-    static_assert(std::is_convertible<typename ContainerIn::value_type, typename ContainerOut::value_type>::value, "Elements not convertible.");
+    static_assert(std::is_convertible<typename ContainerIn::value_type,
+        typename ContainerOut::value_type>::value, "Elements not convertible.");
     typedef typename ContainerOut::value_type DestElem;
     ContainerOut ys;
     prepare_container(ys, size_of_cont(xs));
@@ -250,7 +255,8 @@ typename Container::value_type nth_element
 template <typename Container>
 Container reverse(const Container& xs)
 {
-    static_assert(has_order<Container>::value, "Reverse: Container has no order.");
+    static_assert(has_order<Container>::value,
+        "Reverse: Container has no order.");
     Container ys = xs;
     std::reverse(std::begin(ys), std::end(ys));
     return ys;
@@ -258,7 +264,9 @@ Container reverse(const Container& xs)
 
 // fold_left((+), 0, [1, 2, 3]) == ((0+1)+2)+3 == 6
 // (a -> b -> a) -> a -> [b] -> a
-// Takes the second argument and the first item of the list and applies the function to them, then feeds the function with this result and the second argument and so on.
+// Takes the second argument and the first item of the list
+// and applies the function to them,
+// then feeds the function with this result and the second argument and so on.
 template <typename F, typename Container,
     typename Acc = typename utils::function_traits<F>::template arg<0>::type>
 Acc fold_left(F f, const Acc& init, const Container& xs)
@@ -273,7 +281,9 @@ Acc fold_left(F f, const Acc& init, const Container& xs)
 
 // fold_right((+), 0, [1, 2, 3]) == 1+(2+(3+0)) == 6
 // (a -> b -> b) -> b -> [a] -> b
-// Takes the second argument and the last item of the list and applies the function, then it takes the penultimate item from the end and the result, and so on.
+// Takes the second argument and the last item of the list
+// and applies the function,
+// then it takes the penultimate item from the end and the result, and so on.
 template <typename F, typename Container,
     typename Acc = typename utils::function_traits<F>::template arg<1>::type>
 Acc fold_right(F f, const Acc& init, const Container& xs)
@@ -283,7 +293,10 @@ Acc fold_right(F f, const Acc& init, const Container& xs)
 
 // scan_left((+), 0, [1, 2, 3]) == [0, 1, 3, 6]
 // (a -> b -> a) -> a -> [b] -> [a]
-// Takes the second argument and the first item of the list and applies the function to them, then feeds the function with this result and the second argument and so on. It returns the list of intermediate and final results.
+// Takes the second argument and the first item of the list
+// and applies the function to them,
+// then feeds the function with this result and the second argument and so on.
+// It returns the list of intermediate and final results.
 template <typename F, typename ContainerIn,
     typename Acc = typename utils::function_traits<F>::template arg<0>::type,
     typename ContainerOut = typename same_cont_new_t<ContainerIn, Acc>::type>
@@ -304,7 +317,10 @@ ContainerOut scan_left(F f, const Acc& init, const ContainerIn& xs)
 
 // scan_right((+), 0, [1, 2, 3]) == [6, 5, 3, 0]
 // (a -> b -> b) -> b -> [a] -> [b]
-// Takes the second argument and the last item of the list and applies the function, then it takes the penultimate item from the end and the result, and so on. It returns the list of intermediate and final results.
+// Takes the second argument and the last item of the list
+// and applies the function,
+// then it takes the penultimate item from the end and the result, and so on.
+// It returns the list of intermediate and final results.
 template <typename F, typename ContainerIn,
     typename Acc = typename utils::function_traits<F>::template arg<1>::type,
     typename ContainerOut = typename same_cont_new_t<ContainerIn, Acc>::type>
@@ -387,7 +403,7 @@ Container intersperse(const X& value, const Container& xs)
     if (size_of_cont(xs) == 1)
         return xs;
     Container result;
-    prepare_container(result, std::max<std::size_t>(0, size_of_cont(xs) * 2 - 1));
+    prepare_container(result, std::max<std::size_t>(0, size_of_cont(xs)*2 - 1));
     auto it = get_back_inserter(result);
     for_each(std::begin(xs), --std::end(xs), [&value, &it](const X& x)
     {

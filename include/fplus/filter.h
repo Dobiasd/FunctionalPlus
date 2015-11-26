@@ -96,7 +96,8 @@ Container drop_by_idx(UnaryPredicate pred, const Container& xs)
 // and the values inside the justs are returned in a new container.
 template <typename ContainerIn,
     typename ContainerOut =
-        typename same_cont_new_t<ContainerIn, typename ContainerIn::value_type::type>::type>
+        typename same_cont_new_t<ContainerIn,
+            typename ContainerIn::value_type::type>::type>
 ContainerOut justs(const ContainerIn& xs)
 {
     typedef typename ContainerIn::value_type::type T;
