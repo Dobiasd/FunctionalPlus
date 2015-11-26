@@ -322,7 +322,7 @@ void Test_ContainerTools()
     auto squareLambda = [](int x) { return x*x; };
     std::function<int(int)> squareStdFunction = squareLambda;
 
-    auto isEven = [](int x){ return x % 2 == 0; };
+    auto is_even = [](int x){ return x % 2 == 0; };
     auto is_odd = [](int x){ return x % 2 == 1; };
     typedef std::pair<int, int> IntPair;
     typedef std::vector<int> IntVector;
@@ -342,19 +342,19 @@ void Test_ContainerTools()
     typedef std::list<std::size_t> IdxList;
 
     assert(transform(squareLambda, xs) == IntVector({1,4,4,9,4}));
-    assert(keep_if(isEven, xs) == IntVector({2,2,2}));
-    assert(drop_if(isEven, xs) == IntVector({1,3}));
+    assert(keep_if(is_even, xs) == IntVector({2,2,2}));
+    assert(drop_if(is_even, xs) == IntVector({1,3}));
     assert(transform(squareLambda, intList) == IntList({ 1,4,4,9,4 }));
-    assert(keep_if(isEven, intList) == IntList({ 2,2,2 }));
-    assert(drop_if(isEven, intList) == IntList({ 1,3 }));
+    assert(keep_if(is_even, intList) == IntList({ 2,2,2 }));
+    assert(drop_if(is_even, intList) == IntList({ 1,3 }));
     assert(group(xs) == std::list<IntVector>({IntVector({1}),IntVector({2,2}),IntVector({3}),IntVector({2})}));
     assert(without(2, intList) == IntList({ 1,3 }));
 
     assert(transform_convert<IntList>(squareLambda, xs) == IntList({ 1,4,4,9,4 }));
 
-    assert(is_equal_by_and_by(isEven, isEven, 2, 4) == true);
-    assert(is_equal_by_and_by(isEven, isEven, 1, 2) == false);
-    assert(is_equal_by_and_by(is_odd, isEven, 1, 2) == true);
+    assert(is_equal_by_and_by(is_even, is_even, 2, 4) == true);
+    assert(is_equal_by_and_by(is_even, is_even, 1, 2) == false);
+    assert(is_equal_by_and_by(is_odd, is_even, 1, 2) == true);
     assert(is_equal(2, 2) == true);
     assert(is_equal(1, 2) == false);
 
@@ -400,11 +400,11 @@ void Test_ContainerTools()
     assert(all(BoolVector({true, true})) == true);
     assert(all(BoolVector({true, false})) == false);
 
-    assert(all_by(isEven, IntVector()) == true);
-    assert(all_by(isEven, IntVector({2})) == true);
-    assert(all_by(isEven, IntVector({1})) == false);
-    assert(all_by(isEven, IntVector({2, 2})) == true);
-    assert(all_by(isEven, IntVector({2, 1})) == false);
+    assert(all_by(is_even, IntVector()) == true);
+    assert(all_by(is_even, IntVector({2})) == true);
+    assert(all_by(is_even, IntVector({1})) == false);
+    assert(all_by(is_even, IntVector({2, 2})) == true);
+    assert(all_by(is_even, IntVector({2, 1})) == false);
 
     assert(any(BoolVector()) == false);
     assert(any(BoolVector({true})) == true);
@@ -412,11 +412,11 @@ void Test_ContainerTools()
     assert(any(BoolVector({false, false})) == false);
     assert(any(BoolVector({true, false})) == true);
 
-    assert(any_by(isEven, IntVector()) == false);
-    assert(any_by(isEven, IntVector({2})) == true);
-    assert(any_by(isEven, IntVector({1})) == false);
-    assert(any_by(isEven, IntVector({1, 1})) == false);
-    assert(any_by(isEven, IntVector({2, 1})) == true);
+    assert(any_by(is_even, IntVector()) == false);
+    assert(any_by(is_even, IntVector({2})) == true);
+    assert(any_by(is_even, IntVector({1})) == false);
+    assert(any_by(is_even, IntVector({1, 1})) == false);
+    assert(any_by(is_even, IntVector({2, 1})) == true);
 
     assert(none(BoolVector()) == true);
     assert(none(BoolVector({true})) == false);
@@ -424,11 +424,11 @@ void Test_ContainerTools()
     assert(none(BoolVector({false, false})) == true);
     assert(none(BoolVector({true, false})) == false);
 
-    assert(none_by(isEven, IntVector()) == true);
-    assert(none_by(isEven, IntVector({2})) == false);
-    assert(none_by(isEven, IntVector({1})) == true);
-    assert(none_by(isEven, IntVector({1, 1})) == true);
-    assert(none_by(isEven, IntVector({2, 1})) == false);
+    assert(none_by(is_even, IntVector()) == true);
+    assert(none_by(is_even, IntVector({2})) == false);
+    assert(none_by(is_even, IntVector({1})) == true);
+    assert(none_by(is_even, IntVector({1, 1})) == true);
+    assert(none_by(is_even, IntVector({2, 1})) == false);
 
     assert(minimum(xs) == 1);
     assert(maximum(xs) == 3);
@@ -450,9 +450,9 @@ void Test_ContainerTools()
     assert(sort(reverse(xs)) == xsSorted);
     assert(sort_by(std::greater<int>(), xs) == reverse(xsSorted));
     assert(unique(xs) == IntVector({1,2,3,2}));
-    auto IsEqualByIsEven = [&](int a, int b)
-            { return isEven(a) == isEven(b); };
-    assert(unique_by(IsEqualByIsEven, xs) == IntVector({1,2,3,2}));
+    auto IsEqualByis_even = [&](int a, int b)
+            { return is_even(a) == is_even(b); };
+    assert(unique_by(IsEqualByis_even, xs) == IntVector({1,2,3,2}));
 
     assert(all_the_same(IntVector()) == true);
     assert(all_the_same(IntVector({1})) == true);
@@ -565,12 +565,12 @@ void Test_ContainerTools()
     assert(generate<IntVector>(countUp, 3) == IntVector({ 0,1,2 }));
     assert(generate_by_idx<IntVector>(squareLambda, 3) == IntVector({ 0,1,4 }));
 
-    auto sumIsEven = [&](std::size_t x, int y) { return isEven(x + y); };
-    assert(keep_by_idx(isEven, xs) == IntVector({ 1,2,2 }));
-    assert(keep_if_with_idx(sumIsEven, xs) == IntVector({ 2,3,2 }));
+    auto sumis_even = [&](std::size_t x, int y) { return is_even(x + y); };
+    assert(keep_by_idx(is_even, xs) == IntVector({ 1,2,2 }));
+    assert(keep_if_with_idx(sumis_even, xs) == IntVector({ 2,3,2 }));
 
     assert(nub(xs) == IntVector({ 1,2,3 }));
-    auto bothEven = bind_1_of_3(is_equal_by<decltype(isEven), int>, isEven);
+    auto bothEven = bind_1_of_3(is_equal_by<decltype(is_even), int>, is_even);
     assert(nub_by(bothEven, xs) == IntVector({ 1,2 }));
 
     typedef std::map<int, std::string> IntStringMap;
@@ -608,12 +608,12 @@ void Test_ContainerTools()
 
     typedef std::vector<std::size_t> IdxVector;
     assert(split_at_idx(2, xs) == std::make_pair(IntVector({1,2}), IntVector({2,3,2})));
-    assert(partition(isEven, xs) == std::make_pair(IntVector({2,2,2,}), IntVector({1,3})));
+    assert(partition(is_even, xs) == std::make_pair(IntVector({2,2,2,}), IntVector({1,3})));
 
     auto splittedAt1And3 = split_at_idxs(IdxVector({1,3}), xs);
     IntVectors splittedAt1And3Dest = {IntVector({1}), IntVector({2,2}), IntVector({3,2})};
     assert(splittedAt1And3 == splittedAt1And3Dest);
-    assert(split_by(isEven, true, IntList({1,3,2,2,5,5,3,6,7,9})) == IntLists({{1,3},{},{5,5,3},{7,9}}));
+    assert(split_by(is_even, true, IntList({1,3,2,2,5,5,3,6,7,9})) == IntLists({{1,3},{},{5,5,3},{7,9}}));
     typedef std::map<int, std::size_t> IntSizeTMap;
     IntSizeTMap OccurrencesResult = {{1, 1}, {2, 3}, {3, 1}};
     assert(count_occurrences(xs) == OccurrencesResult);
