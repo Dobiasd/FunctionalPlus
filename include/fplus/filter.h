@@ -38,7 +38,7 @@ template <typename Container,
     typename T = typename Container::value_type>
 Container without(T elem, const Container& xs)
 {
-    auto pred = bind_1_of_2(is_equal<T>, elem);
+    auto pred = bind_1st_of_2(is_equal<T>, elem);
     return drop_if(pred, xs);
 }
 

@@ -19,9 +19,9 @@ template <typename String>
 bool is_letter_or_digit(const typename String::value_type& c)
 {
     typedef typename String::value_type C;
-    auto IsDigit = bind_2_of_3(is_in_range<C>, 48, 58);
-    auto IsLowerLetter = bind_2_of_3(is_in_range<C>, 65, 91);
-    auto IsUpperLetter = bind_2_of_3(is_in_range<C>, 97, 123);
+    auto IsDigit = bind_1st_and_2nd_of_3(is_in_range<C>, 48, 58);
+    auto IsLowerLetter = bind_1st_and_2nd_of_3(is_in_range<C>, 65, 91);
+    auto IsUpperLetter = bind_1st_and_2nd_of_3(is_in_range<C>, 97, 123);
     auto IsLetter = logical_or(IsLowerLetter, IsUpperLetter);
     return IsDigit(c) || IsLetter(c);
 }

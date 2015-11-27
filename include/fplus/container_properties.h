@@ -150,7 +150,7 @@ bool all_the_same_by(BinaryPredicate p, const Container& xs)
     check_binary_predicate_for_container<BinaryPredicate, Container>();
     if (size_of_cont(xs) < 2)
         return true;
-    auto unaryPredicate = bind_1_of_2(p, xs.front());
+    auto unaryPredicate = bind_1st_of_2(p, xs.front());
     return all_by(unaryPredicate, xs);
 }
 

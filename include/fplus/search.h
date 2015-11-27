@@ -73,7 +73,7 @@ maybe<std::size_t> find_first_idx
         (const typename Container::value_type& x, const Container& xs)
 {
     typedef typename Container::value_type T;
-    auto pred = bind_1_of_2(is_equal<T>, x);
+    auto pred = bind_1st_of_2(is_equal<T>, x);
     return find_first_idx_by(pred, xs);
 }
 
@@ -84,7 +84,7 @@ maybe<std::size_t> find_last_idx
         (const typename Container::value_type& x, const Container& xs)
 {
     typedef typename Container::value_type T;
-    auto pred = bind_1_of_2(is_equal<T>, x);
+    auto pred = bind_1st_of_2(is_equal<T>, x);
     return find_last_idx_by(pred, xs);
 }
 
@@ -112,7 +112,7 @@ ContainerOut find_all_idxs_of
         (const typename Container::value_type& x, const Container& xs)
 {
     typedef typename Container::value_type T;
-    auto pred = bind_1_of_2(is_equal<T>, x);
+    auto pred = bind_1st_of_2(is_equal<T>, x);
     return find_all_idxs_by(pred, xs);
 }
 

@@ -33,7 +33,7 @@ template <typename Container,
         typename T = typename Container::value_type>
 Container replace_elems(const T& source, const T& dest, const Container& xs)
 {
-    return replace_if(bind_1_of_2(is_equal<T>, source), dest, xs);
+    return replace_if(bind_1st_of_2(is_equal<T>, source), dest, xs);
 }
 
 // replace_tokens("haha", "hihi", "oh, hahaha!") == "oh, hihiha!"

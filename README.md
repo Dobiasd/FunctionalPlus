@@ -126,7 +126,7 @@ int main()
     auto numbers = fplus::generate_integral_range<Ints>(1, 30);
 
     // A function that does [1, 2, 3, 4, 5] -> "[1 => 2 => 3 => 4 => 5]"
-    auto show_ints = fplus::bind_1_of_2(fplus::show_cont_with<Ints>, " => ");
+    auto show_ints = fplus::bind_1st_of_2(fplus::show_cont_with<Ints>, " => ");
 
     // A composed function that calculates a Collatz sequence and shows it.
     auto show_collats_seq = fplus::compose(collatz_seq, show_ints);

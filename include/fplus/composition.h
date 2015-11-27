@@ -14,12 +14,12 @@
 namespace fplus
 {
 
-// bind_1_of_2 : (a -> b -> c) -> a -> (b -> c)
+// bind_1st_of_2 : (a -> b -> c) -> a -> (b -> c)
 template <typename F, typename T,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
     typename FOut = typename utils::function_traits<F>::result_type>
-std::function<FOut(FIn1)> bind_1_of_2(F f, T x)
+std::function<FOut(FIn1)> bind_1st_of_2(F f, T x)
 {
     static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
     static_assert(std::is_convertible<T, FIn0>::value, "Function can not take bound parameter type.");
@@ -28,13 +28,13 @@ std::function<FOut(FIn1)> bind_1_of_2(F f, T x)
            { return f(x, y); };
 }
 
-// bind_1_of_3 : (a -> b -> c -> d) -> a -> (b -> c -> d)
+// bind_1st_of_3 : (a -> b -> c -> d) -> a -> (b -> c -> d)
 template <typename F, typename X,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
     typename FIn2 = typename utils::function_traits<F>::template arg<2>::type,
     typename FOut = typename utils::function_traits<F>::result_type>
-std::function<FOut(FIn1, FIn2)> bind_1_of_3(F f, X x)
+std::function<FOut(FIn1, FIn2)> bind_1st_of_3(F f, X x)
 {
     static_assert(utils::function_traits<F>::arity == 3, "Wrong arity.");
     static_assert(std::is_convertible<X, FIn0>::value, "Function can not take bound parameter type.");
@@ -43,13 +43,13 @@ std::function<FOut(FIn1, FIn2)> bind_1_of_3(F f, X x)
            { return f(x, y, z); };
 }
 
-// bind_2_of_3 : (a -> b -> c -> d) -> a -> b -> (c -> d)
+// bind_1st_and_2nd_of_3 : (a -> b -> c -> d) -> a -> b -> (c -> d)
 template <typename F, typename X, typename Y,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
     typename FIn2 = typename utils::function_traits<F>::template arg<2>::type,
     typename FOut = typename utils::function_traits<F>::result_type>
-std::function<FOut(FIn2)> bind_2_of_3(F f, X x, Y y)
+std::function<FOut(FIn2)> bind_1st_and_2nd_of_3(F f, X x, Y y)
 {
     static_assert(utils::function_traits<F>::arity == 3, "Wrong arity.");
     static_assert(std::is_convertible<X, FIn0>::value, "Function can not take first bound parameter type.");

@@ -92,7 +92,7 @@ void Test_Composition()
 
     typedef IntContCont Mat;
     Mat mat;
-    auto squareRowElems = bind_1_of_2(transform<decltype(square), Row>,
+    auto squareRowElems = bind_1st_of_2(transform<decltype(square), Row>,
             square);
     Row squaredRow = squareRowElems(row);
     assert(squaredRow == Row({1,4,9}));
@@ -102,7 +102,7 @@ void Test_Composition()
     assert((compose(square, square, square, square)(2)) == 65536);
     assert((compose(square, square, square, square, square)(1)) == 1);
     auto add3 = [](int x, int y, int z) { return x + y + z; };
-    assert(bind_2_of_3(add3, 3, 5)(7) == 15);
+    assert(bind_1st_and_2nd_of_3(add3, 3, 5)(7) == 15);
     auto APlusTwoTimesB = [](int a, int b) { return a + 2 * b; };
     auto TwoTimesAPlusB = [](int a, int b) { return 2 * a + b; };
     assert((flip(APlusTwoTimesB)(2, 1)) == 5);
@@ -239,7 +239,7 @@ void Test_Maybe()
 
     maybe<int> x(2);
     maybe<int> y = nothing<int>();
-    auto Or42 = bind_1_of_2(with_default<int>, 42);
+    auto Or42 = bind_1st_of_2(with_default<int>, 42);
     auto SquareAndSquare = compose(square, square);
     assert(Or42(x) == 2);
     assert(Or42(y) == 42);
@@ -266,7 +266,7 @@ void Test_Maybe()
     Ints wholeNumbers = { -3, 4, 16, -1 };
     assert(transform_and_keep_justs(sqrtToMaybeInt, wholeNumbers)
             == Ints({2,4}));
-    assert(transform_and_concat(bind_1_of_2(replicate<Ints>, 3), Ints{ 1,2 })
+    assert(transform_and_concat(bind_1st_of_2(replicate<Ints>, 3), Ints{ 1,2 })
             == Ints({ 1,1,1,2,2,2 }));
 }
 
@@ -475,9 +475,9 @@ void Test_ContainerTools()
     assert(is_sorted(IntVector({1,2,2})) == true);
     assert(is_sorted(IntVector({1,2,1})) == false);
 
-    auto is2 = bind_1_of_2(is_equal<int>, 2);
-    auto is3 = bind_1_of_2(is_equal<int>, 3);
-    auto is4 = bind_1_of_2(is_equal<int>, 4);
+    auto is2 = bind_1st_of_2(is_equal<int>, 2);
+    auto is3 = bind_1st_of_2(is_equal<int>, 3);
+    auto is4 = bind_1st_of_2(is_equal<int>, 4);
 
     assert(find_first_by(is3, xs) == just(3));
     assert(find_first_by(is4, xs) == nothing<int>());
@@ -570,7 +570,7 @@ void Test_ContainerTools()
     assert(keep_if_with_idx(sumis_even, xs) == IntVector({ 2,3,2 }));
 
     assert(nub(xs) == IntVector({ 1,2,3 }));
-    auto bothEven = bind_1_of_3(is_equal_by<decltype(is_even), int>, is_even);
+    auto bothEven = bind_1st_of_3(is_equal_by<decltype(is_even), int>, is_even);
     assert(nub_by(bothEven, xs) == IntVector({ 1,2 }));
 
     typedef std::map<int, std::string> IntStringMap;
@@ -790,7 +790,7 @@ void Test_example_CollatzSequence()
     auto numbers = fplus::generate_integral_range<Ints>(1, 30);
 
     // A function that does [1, 2, 3, 4, 5] -> "[1 => 2 => 3 => 4 => 5]"
-    auto show_ints = fplus::bind_1_of_2(fplus::show_cont_with<Ints>, " => ");
+    auto show_ints = fplus::bind_1st_of_2(fplus::show_cont_with<Ints>, " => ");
 
     // A composed function that calculates a Collatz sequence and shows it.
     auto show_collats_seq = fplus::compose(collatz_seq, show_ints);

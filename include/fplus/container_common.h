@@ -433,7 +433,7 @@ template <typename Container>
 bool contains(const typename Container::value_type& x, const Container& xs)
 {
     typedef typename Container::value_type T;
-    auto pred = bind_1_of_2(is_equal<T>, x);
+    auto pred = bind_1st_of_2(is_equal<T>, x);
     return contains_by(pred, xs);
 }
 
@@ -445,7 +445,7 @@ Container nub_by(BinaryPredicate p, const Container& xs)
     auto itOut = get_back_inserter(result);
     for (const auto &x : xs)
     {
-        auto eqToX = bind_1_of_2(p, x);
+        auto eqToX = bind_1st_of_2(p, x);
         if (!contains_by(eqToX, result))
         {
             *itOut = x;
