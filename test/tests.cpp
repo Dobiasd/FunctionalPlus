@@ -381,7 +381,9 @@ void Test_ContainerTools()
     assert(repeat(2, xs) == xs2Times);
     assert(intersperse(0, xs) == IntVector({1,0,2,0,2,0,3,0,2}));
     assert(fold_left(std::plus<int>(), 100, xs) == 110);
+    assert(fold_left_1(std::plus<int>(), xs) == 10);
     assert(fold_right(std::plus<int>(), 100, xs) == 110);
+    assert(fold_right_1(std::plus<int>(), xs) == 10);
     auto appendXToStrForFoldL = [](const std::string& str, int x) { return str + std::to_string(x); };
     auto appendXToStrForFoldR = [](int x, const std::string& str) { return str + std::to_string(x); };
     std::string emptyString;
@@ -390,6 +392,8 @@ void Test_ContainerTools()
 
     assert(scan_left(std::plus<int>(), 20, xs) == IntVector({ 20,21,23,25,28,30 }));
     assert(scan_right(std::plus<int>(), 20, xs) == IntVector({ 30,29,27,25,22,20 }));
+    assert(scan_left_1(std::plus<int>(), xs) == IntVector({ 1,3,5,8,10 }));
+    assert(scan_right_1(std::plus<int>(), xs) == IntVector({ 10,9,7,5,2 }));
 
     assert(join(IntList({0}), intLists)
             == IntList({1,0,2,2,0,3,0,2}));

@@ -260,6 +260,22 @@ Container reverse(const Container& xs)
     return ys;
 }
 
+// take(3, [0,1,2,3,4,5,6,7]) == [0,1,2]
+template <typename Container>
+Container take(std::size_t amount, const Container& xs)
+{
+    assert(amount <= size_of_cont(xs));
+    return get_range(0, amount, xs);
+}
+
+// drop(3, [0,1,2,3,4,5,6,7]) == [3,4,5,6,7]
+template <typename Container>
+Container drop(std::size_t amount, const Container& xs)
+{
+    assert(amount <= size_of_cont(xs));
+    return get_range(amount, size_of_cont(xs), xs);
+}
+
 // fold_left((+), 0, [1, 2, 3]) == ((0+1)+2)+3 == 6
 // (a -> b -> a) -> a -> [b] -> a
 // Takes the second argument and the first item of the list
@@ -277,6 +293,18 @@ Acc fold_left(F f, const Acc& init, const Container& xs)
     return acc;
 }
 
+// fold_left_1((+), [1, 2, 3]) == (1+2)+3 == 6
+// (a -> a -> a) -> [a] -> a
+// Takes the first 2 items of the list and applies the function to them,
+// then feeds the function with this result and the third argument and so on.
+template <typename F, typename Container,
+    typename Acc = typename Container::value_type>
+Acc fold_left_1(F f, const Container& xs)
+{
+    assert(!xs.empty());
+    return fold_left(f, xs.front(), drop(1, xs));
+}
+
 // fold_right((+), 0, [1, 2, 3]) == 1+(2+(3+0)) == 6
 // (a -> b -> b) -> b -> [a] -> b
 // Takes the second argument and the last item of the list
@@ -287,6 +315,17 @@ template <typename F, typename Container,
 Acc fold_right(F f, const Acc& init, const Container& xs)
 {
     return fold_left(flip(f), init, reverse(xs));
+}
+
+// fold_right_1((+), [1, 2, 3]) == 1+(2+3)) == 6
+// (a -> a -> a) -> [a] -> a
+// Takes the last two items of the list and applies the function,
+// then it takes the third item from the end and the result, and so on.
+template <typename F, typename Container,
+    typename Acc = typename Container::value_type>
+Acc fold_right_1(F f, const Container& xs)
+{
+    return fold_left_1(flip(f), reverse(xs));
 }
 
 // scan_left((+), 0, [1, 2, 3]) == [0, 1, 3, 6]
@@ -313,6 +352,20 @@ ContainerOut scan_left(F f, const Acc& init, const ContainerIn& xs)
     return result;
 }
 
+// scan_left_1((+), [1, 2, 3]) == [1, 3, 6]
+// (a -> a -> a) -> [a] -> [a]
+// Takes the first 2 items of the list and applies the function to them,
+// then feeds the function with this result and the third argument and so on.
+// It returns the list of intermediate and final results.
+template <typename F, typename ContainerIn,
+    typename Acc = typename ContainerIn::value_type,
+    typename ContainerOut = typename same_cont_new_t<ContainerIn, Acc>::type>
+ContainerOut scan_left_1(F f, const ContainerIn& xs)
+{
+    assert(!xs.empty());
+    return scan_left(f, xs.front(), drop(1, xs));
+}
+
 // scan_right((+), 0, [1, 2, 3]) == [6, 5, 3, 0]
 // (a -> b -> b) -> b -> [a] -> [b]
 // Takes the second argument and the last item of the list
@@ -325,6 +378,19 @@ template <typename F, typename ContainerIn,
 ContainerOut scan_right(F f, const Acc& init, const ContainerIn& xs)
 {
     return reverse(scan_left(flip(f), init, reverse(xs)));
+}
+
+// scan_right_1((+), [1, 2, 3]) == [1, 3, 6]
+// (a -> a -> a) -> [a] -> [a]
+// Takes the last two items of the list and applies the function,
+// then it takes the third item from the end and the result, and so on.
+// It returns the list of inntermediate and final results.
+template <typename F, typename ContainerIn,
+    typename Acc = typename ContainerIn::value_type,
+    typename ContainerOut = typename same_cont_new_t<ContainerIn, Acc>::type>
+ContainerOut scan_right_1(F f, const ContainerIn& xs)
+{
+    return reverse(scan_left_1(flip(f), reverse(xs)));
 }
 
 // append([1, 2], [3, 4, 5]) == [1, 2, 3, 4, 5]

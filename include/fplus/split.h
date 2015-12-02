@@ -179,22 +179,6 @@ MapOut count_occurrences(const ContainerIn& xs)
     return result;
 }
 
-// take(3, [0,1,2,3,4,5,6,7]) == [0,1,2]
-template <typename Container>
-Container take(std::size_t amount, const Container& xs)
-{
-    assert(amount <= size_of_cont(xs));
-    return get_range(0, amount, xs);
-}
-
-// drop(3, [0,1,2,3,4,5,6,7]) == [3,4,5,6,7]
-template <typename Container>
-Container drop(std::size_t amount, const Container& xs)
-{
-    assert(amount <= size_of_cont(xs));
-    return get_range(amount, size_of_cont(xs), xs);
-}
-
 // take_while(is_even, [0,2,4,5,6,7,8]) == [0,2,4]
 template <typename Container, typename UnaryPredicate>
 Container take_while(UnaryPredicate pred, const Container& xs)
