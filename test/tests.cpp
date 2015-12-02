@@ -328,6 +328,7 @@ void Test_ContainerTools()
     typedef std::vector<int> IntVector;
     typedef std::vector<IntVector> IntVectors;
     typedef std::vector<bool> BoolVector;
+    typedef std::vector<std::size_t> IdxVector;
     IntVector xs = {1,2,2,3,2};
     IntVector xsSorted = {1,2,2,2,3};
     std::string xsShown("[1, 2, 2, 3, 2]");
@@ -349,6 +350,13 @@ void Test_ContainerTools()
     assert(drop_if(is_even, intList) == IntList({ 1,3 }));
     assert(group(xs) == std::list<IntVector>({IntVector({1}),IntVector({2,2}),IntVector({3}),IntVector({2})}));
     assert(without(2, intList) == IntList({ 1,3 }));
+
+    assert(keep_idxs(IdxVector({1, 3}), xs) == IntVector({2,3}));
+    assert(keep_idxs(IdxVector({3, 1}), xs) == IntVector({2,3}));
+    assert(keep_idxs(IdxVector({1, 1, 3}), xs) == IntVector({2,3}));
+    assert(keep_idxs(IdxVector({1, 3, 7}), xs) == IntVector({2,3}));
+
+    assert(drop_idxs(IdxVector({1, 3}), xs) == IntVector({1,2,2}));
 
     assert(transform_convert<IntList>(squareLambda, xs) == IntList({ 1,4,4,9,4 }));
 
@@ -606,7 +614,6 @@ void Test_ContainerTools()
     assert(map_contains(intStringMap, 1) == true);
     assert(map_contains(intStringMap, 9) == false);
 
-    typedef std::vector<std::size_t> IdxVector;
     assert(split_at_idx(2, xs) == std::make_pair(IntVector({1,2}), IntVector({2,3,2})));
     assert(partition(is_even, xs) == std::make_pair(IntVector({2,2,2,}), IntVector({1,3})));
 

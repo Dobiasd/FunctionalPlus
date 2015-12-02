@@ -92,6 +92,52 @@ Container drop_by_idx(UnaryPredicate pred, const Container& xs)
     return keep_by_idx(logical_not(pred), xs);
 }
 
+// keep_idxs([2,5], [1,2,3,4,5,6,7]) == [3,6]
+template <typename ContainerIdxs, typename Container>
+Container keep_idxs(const ContainerIdxs& idxs_to_keep, const Container& xs)
+{
+    auto idxs_left = convert_container<std::list<std::size_t>>(
+        unique(sort(idxs_to_keep)));
+    Container ys;
+    auto it = get_back_inserter<Container>(ys);
+    std::size_t idx = 0;
+    for (const auto& x : xs)
+    {
+        if (!idxs_left.empty() && idxs_left.front() == idx)
+        {
+            idxs_left.pop_front();
+            *it = x;
+        }
+        ++idx;
+    }
+    return ys;
+}
+
+// drop_idxs([2,5], [1,2,3,4,5,6,7]) == [1,2,4,5,7]
+template <typename ContainerIdxs, typename Container>
+Container drop_idxs(const ContainerIdxs& idxs_to_drop, const Container& xs)
+{
+    auto idxs_left = convert_container<std::list<std::size_t>>(
+        unique(sort(idxs_to_drop)));
+    Container ys;
+    auto it = get_back_inserter<Container>(ys);
+    std::size_t idx = 0;
+    for (const auto& x : xs)
+    {
+        if (idxs_left.empty() || idxs_left.front() != idx)
+        {
+            *it = x;
+        }
+        else
+        {
+            if (!idxs_left.empty())
+                idxs_left.pop_front();
+        }
+        ++idx;
+    }
+    return ys;
+}
+
 // From a Container filled with Maybe<T> the nothings are dropped
 // and the values inside the justs are returned in a new container.
 template <typename ContainerIn,
