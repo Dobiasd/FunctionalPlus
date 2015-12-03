@@ -18,7 +18,7 @@ template <typename ContainerIn1, typename ContainerIn2, typename F,
     typename X = typename ContainerIn1::value_type,
     typename Y = typename ContainerIn2::value_type,
     typename TOut = typename utils::function_traits<F>::result_type,
-    typename ContainerOut = typename same_cont_new_t<ContainerIn1, TOut>::type>
+    typename ContainerOut = typename std::vector<TOut>>
 ContainerOut zip_with(const F& f,
         const ContainerIn1& xs, const ContainerIn2& ys)
 {
@@ -53,8 +53,7 @@ template <typename ContainerIn1, typename ContainerIn2,
     typename X = typename ContainerIn1::value_type,
     typename Y = typename ContainerIn2::value_type,
     typename TOut = std::pair<X, Y>,
-    typename ContainerOut =
-        typename same_cont_new_t<ContainerIn1, TOut>::type>
+    typename ContainerOut = typename std::vector<TOut>>
 ContainerOut zip(const ContainerIn1& xs, const ContainerIn2& ys)
 {
     auto MakePair = [](const X& x, const Y& y)
