@@ -14,12 +14,17 @@
 namespace fplus
 {
 
+template <typename T>
+class maybe;
+
+template <typename T>
+maybe<T> nothing();
+
 // Can hold a value of type T or nothing.
 template <typename T>
 class maybe
 {
 public:
-    maybe() {}
     maybe(const maybe<T>& other) :
         ptr_(other.get() ? ptr_t( new T(*other.get())) : ptr_t())
         {}
@@ -28,6 +33,8 @@ public:
     const T& unsafe_get_just() const { assert(is_just()); return *get(); }
     typedef T type;
 private:
+    maybe() {}
+    friend maybe<T> nothing<T>();
     typedef std::unique_ptr<T> ptr_t;
     const ptr_t& get() const { return ptr_; }
     ptr_t ptr_;
