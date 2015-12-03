@@ -16,7 +16,7 @@ namespace fplus
 // SameContNewType(ContainerIn, ContainerIn)
 // here, since ContainerIn could be a std::string.
 
-// group_by((==), [1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2],[3],[2,2],4,[5,5]]
+// group_by((==), [1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2],[3],[2,2],[4],[5,5]]
 template <typename BinaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::list<ContainerIn>>
 ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
@@ -40,7 +40,7 @@ ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
     return result;
 }
 
-// group([1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2],[3],[2,2],4,[5,5]]
+// group([1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2],[3],[2,2],[4],[5,5]]
 template <typename ContainerIn,
         typename ContainerOut = typename std::list<ContainerIn>>
 ContainerOut group(ContainerIn& xs)
@@ -164,6 +164,50 @@ ContainerOut split_by_token(const ContainerIn& token,
         }
     }
     return result;
+}
+
+// group_global_by((==), [1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2,2,2],[3],[4],[5,5]]
+template <typename BinaryPredicate, typename ContainerIn,
+        typename ContainerOut = typename std::list<ContainerIn>>
+ContainerOut group_global_by(BinaryPredicate p, const ContainerIn& xs)
+{
+    check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
+    static_assert(std::is_same<ContainerIn,
+        typename ContainerOut::value_type>::value,
+        "Containers do not match.");
+    typedef typename ContainerOut::value_type InnerContainerOut;
+    ContainerOut result;
+    for (const auto& x : xs)
+    {
+        bool found = false;
+        for (auto& ys : result)
+        {
+            if (p(x, ys.front()))
+            {
+                *get_back_inserter(ys) = x;
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+        {
+            *get_back_inserter(result) = InnerContainerOut(1, x);
+        }
+    }
+    return result;
+}
+
+// group_global([1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2,2,2],[3],[4],[5,5]]
+template <typename ContainerIn,
+        typename ContainerOut = typename std::list<ContainerIn>>
+ContainerOut group_global(ContainerIn& xs)
+{
+    static_assert(std::is_same<ContainerIn,
+        typename ContainerOut::value_type>::value,
+        "Containers do not match.");
+    typedef typename ContainerIn::value_type T;
+    auto pred = [](const T& x, const T& y) { return x == y; };
+    return group_global_by(pred, xs);
 }
 
 // count_occurrences([1,2,2,3,2)) == [(1, 1), (2, 3), (3, 1)]

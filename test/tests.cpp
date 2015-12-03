@@ -349,6 +349,7 @@ void Test_ContainerTools()
     assert(keep_if(is_even, intList) == IntList({ 2,2,2 }));
     assert(drop_if(is_even, intList) == IntList({ 1,3 }));
     assert(group(xs) == std::list<IntVector>({IntVector({1}),IntVector({2,2}),IntVector({3}),IntVector({2})}));
+    assert(group_global(xs) == std::list<IntVector>({IntVector({1}),IntVector({2,2,2}),IntVector({3}),}));
     assert(without(2, intList) == IntList({ 1,3 }));
 
     assert(keep_idxs(IdxVector({1, 3}), xs) == IntVector({2,3}));
