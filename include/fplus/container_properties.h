@@ -190,7 +190,7 @@ bool all_unique_by_less(Compare comp, const Container& xs)
     check_compare_for_container<Compare, Container>();
     if (size_of_cont(xs) < 2)
         return true;
-    return size_of_cont(unique(sort_by(comp, xs))) == size_of_cont(xs);
+    return size_of_cont(unique_eq(sort_by(comp, xs))) == size_of_cont(xs);
 }
 
 // Returns true for empty containers.

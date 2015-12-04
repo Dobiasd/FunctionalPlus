@@ -43,7 +43,7 @@ ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
 // group([1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2],[3],[2,2],[4],[5,5]]
 template <typename ContainerIn,
         typename ContainerOut = typename std::list<ContainerIn>>
-ContainerOut group(ContainerIn& xs)
+ContainerOut group(const ContainerIn& xs)
 {
     static_assert(std::is_same<ContainerIn,
         typename ContainerOut::value_type>::value,
@@ -51,6 +51,98 @@ ContainerOut group(ContainerIn& xs)
     typedef typename ContainerIn::value_type T;
     auto pred = [](const T& x, const T& y) { return x == y; };
     return group_by(pred, xs);
+}
+
+// group_globally_by_eq((==), [1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2,2,2],[3],[4],[5,5]]
+// O(n^2)
+template <typename BinaryPredicate, typename ContainerIn,
+        typename ContainerOut = typename std::list<ContainerIn>>
+ContainerOut group_globally_by_eq(BinaryPredicate p, const ContainerIn& xs)
+{
+    check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
+    static_assert(std::is_same<ContainerIn,
+        typename ContainerOut::value_type>::value,
+        "Containers do not match.");
+    typedef typename ContainerOut::value_type InnerContainerOut;
+    ContainerOut result;
+    for (const auto& x : xs)
+    {
+        bool found = false;
+        for (auto& ys : result)
+        {
+            if (p(x, ys.front()))
+            {
+                *get_back_inserter(ys) = x;
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+        {
+            *get_back_inserter(result) = InnerContainerOut(1, x);
+        }
+    }
+    return result;
+}
+
+// group_globally_eq([1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2,2,2],[3],[4],[5,5]]
+// O(n^2)
+template <typename ContainerIn,
+        typename ContainerOut = typename std::list<ContainerIn>>
+ContainerOut group_globally_eq(const ContainerIn& xs)
+{
+    static_assert(std::is_same<ContainerIn,
+        typename ContainerOut::value_type>::value,
+        "Containers do not match.");
+    typedef typename ContainerIn::value_type T;
+    auto pred = [](const T& x, const T& y) { return x == y; };
+    return group_globally_by_eq(pred, xs);
+}
+
+// group_globally_by_less((<), [2,2,2,3,2,2,4,5,5,1]) == [[1],[2,2,2,2,2],[3],[4],[5,5]]
+// O(n*log(n))
+template <typename Compare, typename ContainerIn,
+        typename ContainerOut = typename std::list<ContainerIn>>
+ContainerOut group_globally_by_less(Compare comp, const ContainerIn& xs)
+{
+    check_binary_predicate_for_container<Compare, ContainerIn>();
+    static_assert(std::is_same<ContainerIn,
+        typename ContainerOut::value_type>::value,
+        "Containers do not match.");
+    typedef typename ContainerIn::value_type T;
+    typedef typename ContainerOut::value_type InnerContainerOut;
+    auto eq_pred = [comp](const T& a, const T&b)
+    {
+        return !comp(a, b) && !comp(b, a);
+    };
+    auto xs_sorted = sort_by(comp, xs);
+    ContainerOut result;
+    for(const auto& x : xs_sorted)
+    {
+        if (is_empty(result) || !eq_pred(x, result.back().back()))
+        {
+            *get_back_inserter(result) = InnerContainerOut(1, x);
+        }
+        else
+        {
+            *get_back_inserter(result.back()) = x;
+        }
+    }
+    return result;
+}
+
+// group_globally_less([2,2,2,3,2,2,4,5,5,1]) == [[1],[2,2,2,2,2],[3],[4],[5,5]]
+// O(n*log(n))
+template <typename ContainerIn,
+        typename ContainerOut = typename std::list<ContainerIn>>
+ContainerOut group_globally_less(const ContainerIn& xs)
+{
+    static_assert(std::is_same<ContainerIn,
+        typename ContainerOut::value_type>::value,
+        "Containers do not match.");
+    typedef typename ContainerIn::value_type T;
+    auto comp = [](const T& x, const T& y) { return x < y; };
+    return group_globally_by_less(comp, xs);
 }
 
 // split_by(is_even, true, [1,3,2,2,5,5,3,6,7,9]) == [[1,3],[],[5,5,3],[7,9]]
@@ -130,7 +222,7 @@ ContainerOut split_at_idxs(const ContainerIdxs& idxsIn, const ContainerIn& xs)
     ContainerIdxs idxEndC = {size_of_cont(xs)};
     std::vector<ContainerIdxs> containerIdxss = {idxStartC, idxsIn, idxEndC};
     auto idxs = concat(containerIdxss);
-    auto idxsClean = unique(sort(idxs));
+    auto idxsClean = unique_eq(sort(idxs));
     ContainerOut result;
     prepare_container(result, size_of_cont(idxsClean) + 1);
     auto itOut = get_back_inserter(result);
@@ -164,50 +256,6 @@ ContainerOut split_by_token(const ContainerIn& token,
         }
     }
     return result;
-}
-
-// group_global_by((==), [1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2,2,2],[3],[4],[5,5]]
-template <typename BinaryPredicate, typename ContainerIn,
-        typename ContainerOut = typename std::list<ContainerIn>>
-ContainerOut group_global_by(BinaryPredicate p, const ContainerIn& xs)
-{
-    check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
-    static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
-        "Containers do not match.");
-    typedef typename ContainerOut::value_type InnerContainerOut;
-    ContainerOut result;
-    for (const auto& x : xs)
-    {
-        bool found = false;
-        for (auto& ys : result)
-        {
-            if (p(x, ys.front()))
-            {
-                *get_back_inserter(ys) = x;
-                found = true;
-                break;
-            }
-        }
-        if (!found)
-        {
-            *get_back_inserter(result) = InnerContainerOut(1, x);
-        }
-    }
-    return result;
-}
-
-// group_global([1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2,2,2],[3],[4],[5,5]]
-template <typename ContainerIn,
-        typename ContainerOut = typename std::list<ContainerIn>>
-ContainerOut group_global(ContainerIn& xs)
-{
-    static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
-        "Containers do not match.");
-    typedef typename ContainerIn::value_type T;
-    auto pred = [](const T& x, const T& y) { return x == y; };
-    return group_global_by(pred, xs);
 }
 
 // count_occurrences([1,2,2,3,2)) == [(1, 1), (2, 3), (3, 1)]

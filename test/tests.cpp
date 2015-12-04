@@ -337,7 +337,7 @@ void Test_ContainerTools()
     typedef std::list<int> IntList;
     typedef std::list<IntList> IntLists;
     IntList intList = { 1,2,2,3,2 };
-    IntLists intLists = { { 1 },{ 2,2 },{ 3 },{ 2 } };
+    IntLists intLists = { { 1 },{ 2, 2 },{ 3 },{ 2 } };
     assert(group(intList) == intLists);
 
     typedef std::list<std::size_t> IdxList;
@@ -349,7 +349,9 @@ void Test_ContainerTools()
     assert(keep_if(is_even, intList) == IntList({ 2,2,2 }));
     assert(drop_if(is_even, intList) == IntList({ 1,3 }));
     assert(group(xs) == std::list<IntVector>({IntVector({1}),IntVector({2,2}),IntVector({3}),IntVector({2})}));
-    assert(group_global(xs) == std::list<IntVector>({IntVector({1}),IntVector({2,2,2}),IntVector({3}),}));
+    assert(group_globally_eq(xs) == std::list<IntVector>({IntVector({1}),IntVector({2,2,2}),IntVector({3})}));
+
+    assert(group_globally_less(IntVector({2,2,1,2})) == std::list<IntVector>({IntVector({1}),IntVector({2,2,2})}));
     assert(without(2, intList) == IntList({ 1,3 }));
 
     assert(keep_idxs(IdxVector({1, 3}), xs) == IntVector({2,3}));
@@ -462,10 +464,10 @@ void Test_ContainerTools()
     assert(median(xs) == 2);
     assert(sort(reverse(xs)) == xsSorted);
     assert(sort_by(std::greater<int>(), xs) == reverse(xsSorted));
-    assert(unique(xs) == IntVector({1,2,3,2}));
+    assert(unique_eq(xs) == IntVector({1,2,3,2}));
     auto IsEqualByis_even = [&](int a, int b)
             { return is_even(a) == is_even(b); };
-    assert(unique_by(IsEqualByis_even, xs) == IntVector({1,2,3,2}));
+    assert(unique_by_eq(IsEqualByis_even, xs) == IntVector({1,2,3,2}));
 
     assert(all_the_same(IntVector()) == true);
     assert(all_the_same(IntVector({1})) == true);
