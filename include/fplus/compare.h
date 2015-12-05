@@ -212,4 +212,75 @@ bool is_greater_or_equal(const T& x, const T& y)
     return is_greater_or_equal_by(identity<T>, x, y);
 }
 
+template <typename T>
+bool xor_bools(const T& x, const T& y)
+{
+    static_assert(std::is_convertible<T, bool>::value, "Type must be convertible to bool.");
+    return (x && !y) || (!x && y);
+}
+
+// ord_to_eq((<)) == (==)
+template <typename Compare,
+    typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
+    typename FIn1 = typename utils::function_traits<Compare>::template arg<1>::type,
+    typename FOut = typename utils::function_traits<Compare>::result_type>
+std::function<FOut(FIn0, FIn1)> ord_to_eq(Compare comp)
+{
+    static_assert(utils::function_traits<Compare>::arity == 2, "Wrong arity.");
+    static_assert(std::is_same<FOut, bool>::value, "Function must return bool.");
+    static_assert(std::is_same<FIn0, FIn1>::value, "Function must take two equal types.");
+    return [comp]
+           (FIn0 x, FIn1 y)
+           { return !comp(x, y) && !comp(y, x); };
+}
+
+// ord_to_not_eq((<)) == (!=)
+template <typename Compare,
+    typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
+    typename FIn1 = typename utils::function_traits<Compare>::template arg<1>::type,
+    typename FOut = typename utils::function_traits<Compare>::result_type>
+std::function<FOut(FIn0, FIn1)> ord_to_not_eq(Compare comp)
+{
+    static_assert(utils::function_traits<Compare>::arity == 2, "Wrong arity.");
+    static_assert(std::is_same<FOut, bool>::value, "Function must return bool.");
+    static_assert(std::is_same<FIn0, FIn1>::value, "Function must take two equal types.");
+    return [comp]
+           (FIn0 x, FIn1 y)
+           { return comp(x, y) || comp(y, x); };
+}
+
+// ord_eq_to_eq((<=)) == (==)
+template <typename Compare,
+    typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
+    typename FIn1 = typename utils::function_traits<Compare>::template arg<1>::type,
+    typename FOut = typename utils::function_traits<Compare>::result_type>
+std::function<FOut(FIn0, FIn1)> ord_eq_to_eq(Compare comp)
+{
+    static_assert(utils::function_traits<Compare>::arity == 2, "Wrong arity.");
+    static_assert(std::is_same<FOut, bool>::value, "Function must return bool.");
+    static_assert(std::is_same<FIn0, FIn1>::value, "Function must take two equal types.");
+    return [comp]
+           (FIn0 x, FIn1 y)
+           { return comp(x, y) && comp(y, x); };
+}
+
+// ord_eq_to_not_eq((<=)) == (!=)
+template <typename Compare,
+    typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
+    typename FIn1 = typename utils::function_traits<Compare>::template arg<1>::type,
+    typename FOut = typename utils::function_traits<Compare>::result_type>
+std::function<FOut(FIn0, FIn1)> ord_eq_to_not_eq(Compare comp)
+{
+    static_assert(utils::function_traits<Compare>::arity == 2, "Wrong arity.");
+    static_assert(std::is_same<FOut, bool>::value, "Function must return bool.");
+    static_assert(std::is_same<FIn0, FIn1>::value, "Function must take two equal types.");
+    return [comp]
+           (FIn0 x, FIn1 y)
+           {
+                bool a = comp(x, y);
+                bool b = comp(y, x);
+                return (a && !b) || (!a && b);
+           };
+}
+
 } // namespace fplus

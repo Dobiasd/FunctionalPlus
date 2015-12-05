@@ -437,9 +437,9 @@ Container sort_by(Compare comp, const Container& xs)
     return result;
 }
 
-// Like Unique but with user supplied equality predicate.
+// Like unique but with user supplied equality predicate.
 template <typename Container, typename BinaryPredicate>
-Container unique_by_eq(BinaryPredicate p, const Container& xs)
+Container unique_by(BinaryPredicate p, const Container& xs)
 {
     check_binary_predicate_for_container<BinaryPredicate, Container>();
     auto result = xs;
@@ -448,45 +448,14 @@ Container unique_by_eq(BinaryPredicate p, const Container& xs)
     return result;
 }
 
-// unique_eq([1,2,2,3,2]) == [1,2,3,2]
+// unique([1,2,2,3,2]) == [1,2,3,2]
 template <typename Container>
-Container unique_eq(const Container& xs)
+Container unique(const Container& xs)
 {
     auto result = xs;
     auto last = std::unique(std::begin(result), std::end(result));
     result.erase(last, std::end(result));
     return result;
-}
-
-// Like Unique but with user supplied equality predicate.
-template <typename Container, typename Compare>
-Container unique_by_less(Compare comp, const Container& xs)
-{
-    check_binary_predicate_for_container<Compare, Container>();
-    typedef typename Container::value_type T;
-    auto not_eq_pred = [comp](const T& a, const T&b)
-    {
-        return !comp(a, b) && !comp(b, a);
-    };
-    Container result;
-    auto itOut = get_back_inserter(result);
-    for(const auto& x : xs)
-    {
-        if (is_empty(result) || not_eq_pred(x, result.back()))
-        {
-            *itOut = x;
-        }
-    }
-    return result;
-}
-
-// unique_less([1,2,2,3,2]) == [1,2,3,2]
-template <typename Container>
-Container unique_less(const Container& xs)
-{
-    typedef typename Container::value_type T;
-    auto pred = [](const T& x, const T& y) { return x < y; };
-    return unique_by_less(pred, xs);
 }
 
 // intersperse(0, [1, 2, 3]) == [1, 0, 2, 0, 3]

@@ -97,7 +97,7 @@ template <typename ContainerIdxs, typename Container>
 Container keep_idxs(const ContainerIdxs& idxs_to_keep, const Container& xs)
 {
     auto idxs_left = convert_container<std::list<std::size_t>>(
-        unique_eq(sort(idxs_to_keep)));
+        unique(sort(idxs_to_keep)));
     Container ys;
     auto it = get_back_inserter<Container>(ys);
     std::size_t idx = 0;
@@ -118,7 +118,7 @@ template <typename ContainerIdxs, typename Container>
 Container drop_idxs(const ContainerIdxs& idxs_to_drop, const Container& xs)
 {
     auto idxs_left = convert_container<std::list<std::size_t>>(
-        unique_eq(sort(idxs_to_drop)));
+        unique(sort(idxs_to_drop)));
     Container ys;
     auto it = get_back_inserter<Container>(ys);
     std::size_t idx = 0;

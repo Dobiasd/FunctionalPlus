@@ -83,7 +83,6 @@ private:
 template <typename IntCont, typename IntContCont>
 void Test_Composition()
 {
-
     using namespace fplus;
     auto square = [](int x){ return x*x; };
 
@@ -296,6 +295,26 @@ void Test_Compare()
 
     assert(identity(2) == 2);
     assert(always(2, 5) == 2);
+
+    assert(xor_bools(false, false) == false);
+    assert(xor_bools(true, false) == true);
+    assert(xor_bools(false, true) == true);
+    assert(xor_bools(true, true) == false);
+
+    auto int_less = [](int x, int y) { return x < y; };
+    auto int_less_eq = [](int x, int y) { return x <= y; };
+    assert(ord_to_eq(int_less)(1, 2) == false);
+    assert(ord_to_eq(int_less)(2, 2) == true);
+    assert(ord_to_eq(int_less)(2, 1) == false);
+    assert(ord_to_not_eq(int_less)(1, 2) == true);
+    assert(ord_to_not_eq(int_less)(2, 2) == false);
+    assert(ord_to_not_eq(int_less)(2, 1) == true);
+    assert(ord_eq_to_eq(int_less_eq)(1, 2) == false);
+    assert(ord_eq_to_eq(int_less_eq)(2, 2) == true);
+    assert(ord_eq_to_eq(int_less_eq)(2, 1) == false);
+    assert(ord_eq_to_not_eq(int_less_eq)(1, 2) == true);
+    assert(ord_eq_to_not_eq(int_less_eq)(2, 2) == false);
+    assert(ord_eq_to_not_eq(int_less_eq)(2, 1) == true);
 }
 
 struct ExplicitFromIntStruct
@@ -349,9 +368,8 @@ void Test_ContainerTools()
     assert(keep_if(is_even, intList) == IntList({ 2,2,2 }));
     assert(drop_if(is_even, intList) == IntList({ 1,3 }));
     assert(group(xs) == std::list<IntVector>({IntVector({1}),IntVector({2,2}),IntVector({3}),IntVector({2})}));
-    assert(group_globally_eq(xs) == std::list<IntVector>({IntVector({1}),IntVector({2,2,2}),IntVector({3})}));
+    assert(group_globally(xs) == std::list<IntVector>({IntVector({1}),IntVector({2,2,2}),IntVector({3})}));
 
-    assert(group_globally_less(IntVector({2,2,1,2})) == std::list<IntVector>({IntVector({1}),IntVector({2,2,2})}));
     assert(without(2, intList) == IntList({ 1,3 }));
 
     assert(keep_idxs(IdxVector({1, 3}), xs) == IntVector({2,3}));
@@ -464,20 +482,20 @@ void Test_ContainerTools()
     assert(median(xs) == 2);
     assert(sort(reverse(xs)) == xsSorted);
     assert(sort_by(std::greater<int>(), xs) == reverse(xsSorted));
-    assert(unique_eq(xs) == IntVector({1,2,3,2}));
+    assert(unique(xs) == IntVector({1,2,3,2}));
     auto IsEqualByis_even = [&](int a, int b)
             { return is_even(a) == is_even(b); };
-    assert(unique_by_eq(IsEqualByis_even, xs) == IntVector({1,2,3,2}));
+    assert(unique_by(IsEqualByis_even, xs) == IntVector({1,2,3,2}));
 
     assert(all_the_same(IntVector()) == true);
     assert(all_the_same(IntVector({1})) == true);
     assert(all_the_same(IntVector({1,1,1})) == true);
     assert(all_the_same(IntVector({1,2,1})) == false);
 
-    assert(all_unique_eq(IntVector()) == true);
-    assert(all_unique_eq(IntVector({1})) == true);
-    assert(all_unique_eq(IntVector({1,2,1})) == false);
-    assert(all_unique_eq(IntVector({1,2,3})) == true);
+    assert(all_unique(IntVector()) == true);
+    assert(all_unique(IntVector({1})) == true);
+    assert(all_unique(IntVector({1,2,1})) == false);
+    assert(all_unique(IntVector({1,2,3})) == true);
 
     assert(all_unique_less(IntVector()) == true);
     assert(all_unique_less(IntVector({ 1 })) == true);

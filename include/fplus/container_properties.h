@@ -175,7 +175,7 @@ bool all_unique_by_eq(BinaryPredicate p, const Container& xs)
 // Returns true for empty containers.
 // O(n^2)
 template <typename Container>
-bool all_unique_eq(const Container& xs)
+bool all_unique(const Container& xs)
 {
     typedef typename Container::value_type T;
     auto comp = std::equal_to<T>();
@@ -190,7 +190,7 @@ bool all_unique_by_less(Compare comp, const Container& xs)
     check_compare_for_container<Compare, Container>();
     if (size_of_cont(xs) < 2)
         return true;
-    return size_of_cont(unique_eq(sort_by(comp, xs))) == size_of_cont(xs);
+    return size_of_cont(unique(sort_by(comp, xs))) == size_of_cont(xs);
 }
 
 // Returns true for empty containers.
