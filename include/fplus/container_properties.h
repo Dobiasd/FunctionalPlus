@@ -232,7 +232,7 @@ template <typename Container>
 bool is_infix_of(const Container& token, Container& xs)
 {
     return contains(token,
-        infixes<std::vector<Container>>(size_of_cont(token), xs));
+        infixes(size_of_cont(token), xs));
 }
 
 // is_prefix_of("Fun", "FunctionalPlus") == true

@@ -79,17 +79,18 @@ ContainerOut replicate(size_t n, const typename ContainerOut::value_type& x)
 }
 
 // infixes(3, [1,2,3,4,5,6]) == [[1,2,3], [2,3,4], [3,4,5], [4,5,6]]
-template <typename ContainerOut, typename ContainerIn>
-ContainerOut infixes(std::size_t length, ContainerIn& xs)
+template <typename ContainerIn,
+    typename ContainerOut = std::vector<ContainerIn>>
+ContainerOut infixes(std::size_t length, const ContainerIn& xs)
 {
+    assert(length > 0);
     static_assert(std::is_convertible<ContainerIn, typename ContainerOut::value_type>::value, "ContainerOut can not take values of type ContainerIn as elements.");
     ContainerOut result;
     if (size_of_cont(xs) < length)
         return result;
     prepare_container(result, size_of_cont(xs) - length);
     auto itOut = get_back_inserter(result);
-    std::size_t idx = 0;
-    for (;idx < size_of_cont(xs) - length; ++idx)
+    for (std::size_t idx = 0; idx <= size_of_cont(xs) - length; ++idx)
     {
         *itOut = get_range(idx, idx + length, xs);
     }

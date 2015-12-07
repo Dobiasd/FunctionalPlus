@@ -399,6 +399,10 @@ void Test_ContainerTools()
     assert(concat(intLists) == intList);
     assert(concat(IntVectors(2, xs)) == xs2Times);
     assert(repeat(2, xs) == xs2Times);
+    assert(infixes(3, xs) == IntVectors({
+        IntVector({1, 2, 2}),
+        IntVector({2, 2, 3}),
+        IntVector({2, 3, 2})}));
     assert(intersperse(0, xs) == IntVector({1,0,2,0,2,0,3,0,2}));
     assert(fold_left(std::plus<int>(), 100, xs) == 110);
     assert(fold_left_1(std::plus<int>(), xs) == 10);
