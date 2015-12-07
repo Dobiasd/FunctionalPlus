@@ -73,7 +73,7 @@ struct CcI2SStrct {
 
 class State {
 public:
-    State(int x) : x_(x) {}
+    explicit State(int x) : x_(x) {}
     void Add(int y) { x_ += y; }
     int Get() const { return x_; }
 private:
@@ -339,7 +339,6 @@ void Test_ContainerTools()
     using namespace fplus;
 
     auto squareLambda = [](int x) { return x*x; };
-    std::function<int(int)> squareStdFunction = squareLambda;
 
     auto is_even = [](int x){ return x % 2 == 0; };
     auto is_odd = [](int x){ return x % 2 == 1; };
@@ -629,9 +628,6 @@ void Test_ContainerTools()
     assert(create_map(mapInts, mapStrings) == intStringMap);
     assert(create_unordered_map(mapInts, mapStrings) == intStringUnorderedMap);
 
-    typedef std::map<std::string, std::string> StringStringMap;
-    StringStringMap stringStringMap = { { "1", "2" },{ "16", "53" },{ "49", "21" } };
-
     assert(get_from_map(intStringMap, 1) == just<std::string>("2"));
     assert(get_from_map(intStringMap, 9) == nothing<std::string>());
     assert(get_from_map_with_def(intStringMap, std::string("n/a"), 1) == "2");
@@ -753,12 +749,10 @@ void Test_example_KeepIf_performance()
         { return keep_if(is_odd, numbers); };
 
     // make debug runs faster
+#if defined NDEBUG || defined _DEBUG
+    std::size_t numRuns = 10;
+#else
     std::size_t numRuns = 1000;
-#ifdef NDEBUG
-    numRuns = 10;
-#endif
-#ifdef _DEBUG
-    numRuns = 10;
 #endif
 
     Ints numbers = generate<Ints>(rand, 10000);
@@ -766,7 +760,6 @@ void Test_example_KeepIf_performance()
     run_n_times(run_stl, numRuns, "std::copy_if", numbers);
     run_n_times(run_FunctionalPlus, numRuns, "FunctionalPlus::keep_if", numbers);
 }
-
 
 
 void Test_example_SameOldSameOld()
