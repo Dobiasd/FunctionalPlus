@@ -369,6 +369,15 @@ void Test_ContainerTools()
     assert(group(xs) == std::list<IntVector>({IntVector({1}),IntVector({2,2}),IntVector({3}),IntVector({2})}));
     assert(group_globally(xs) == std::list<IntVector>({IntVector({1}),IntVector({2,2,2}),IntVector({3})}));
 
+    typedef std::pair<std::size_t, int> rle_pair_int;
+    typedef std::list<rle_pair_int> rle_list_int;
+    assert(run_length_encoding(IntVector({1,2,2,2,2,3,3,2})) ==
+        rle_list_int({
+            std::make_pair(1, 1),
+            std::make_pair(4, 2),
+            std::make_pair(2, 3),
+            std::make_pair(1, 2)}));
+
     assert(without(2, intList) == IntList({ 1,3 }));
 
     assert(keep_idxs(IdxVector({1, 3}), xs) == IntVector({2,3}));

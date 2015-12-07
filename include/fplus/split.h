@@ -225,6 +225,32 @@ MapOut count_occurrences(const ContainerIn& xs)
     return result;
 }
 
+// run_length_encoding_by((==),[1,2,2,2,2,3,3,2)) == [(1,1),(4,2),(2,3),(1,2)]
+template <typename BinaryPredicate,
+        typename ContainerIn,
+        typename T = typename ContainerIn::value_type,
+        typename ContainerOut = typename std::list<std::pair<std::size_t, T>>>
+ContainerOut run_length_encoding_by(BinaryPredicate pred, const ContainerIn& xs)
+{
+    check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
+    ContainerOut result;
+    auto groups = group_by(pred, xs);
+    auto group_to_pair = [](const ContainerIn& group )
+    {
+        return std::make_pair(size_of_cont(group), group.front());
+    };
+    return transform(group_to_pair, groups);
+}
+
+// run_length_encoding([1,2,2,2,2,3,3,2)) == [(1,1),(4,2),(2,3),(1,2)]
+template <typename ContainerIn,
+        typename T = typename ContainerIn::value_type,
+        typename ContainerOut = typename std::list<std::pair<std::size_t, T>>>
+ContainerOut run_length_encoding(const ContainerIn& xs)
+{
+    return run_length_encoding_by(is_equal<T>, xs);
+}
+
 // take_while(is_even, [0,2,4,5,6,7,8]) == [0,2,4]
 template <typename Container, typename UnaryPredicate>
 Container take_while(UnaryPredicate pred, const Container& xs)
