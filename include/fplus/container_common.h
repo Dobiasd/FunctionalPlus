@@ -189,7 +189,7 @@ Container set_range
     return result;
 }
 
-// remove_range(2, 3, [0,1,2,3,4,5,6,7]) == [0,1,5,6,7]
+// remove_range(2, 5, [0,1,2,3,4,5,6,7]) == [0,1,5,6,7]
 template <typename Container>
 Container remove_range
         (std::size_t idxBegin, std::size_t idxEnd, const Container& xs)
