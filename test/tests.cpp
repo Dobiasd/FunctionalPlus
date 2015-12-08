@@ -562,6 +562,10 @@ void Test_ContainerTools()
         == std::list<std::size_t>({ 0 }));
     assert(find_all_instances_of(std::string("xy"), std::string("aaaxy"))
         == std::list<std::size_t>({ 3 }));
+    assert(find_all_instances_of(std::string("xx"), std::string("xxxxx"))
+        == std::list<std::size_t>({ 0, 1, 2, 3 }));
+    assert(find_all_instances_of_non_overlapping(std::string("xx"), std::string("xxxx"))
+        == std::list<std::size_t>({ 0, 2 }));
 
     IntList v789 = { 7,8,9 };
     assert(set_range(1, v789, intList) == IntList({ 1,7,8,9,2 }));
