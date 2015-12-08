@@ -154,30 +154,16 @@ template <typename ContainerOut = std::list<std::size_t>, typename Container>
 ContainerOut find_all_instances_of_non_overlapping
         (const Container& token, const Container& xs)
 {
+    auto overlapping_instances = find_all_instances_of<ContainerOut>(token, xs);
     ContainerOut result;
-    if (is_empty(token))
-        return result;
-    typedef typename Container::value_type T;
-    auto tokenAsList = convert<std::list<T>>(token);
-    auto tokenRemaining = tokenAsList;
-    std::size_t idx = 0;
-    auto itOut = get_back_inserter(result);
-    for (const T& x : xs)
+    auto outIt = get_back_inserter(result);
+    std::size_t token_size = size_of_cont(token);
+    for (const auto idx : overlapping_instances)
     {
-        if (x == tokenRemaining.front())
+        if (result.empty() || result.back() + token_size <= idx)
         {
-            tokenRemaining.pop_front();
-            if (is_empty(tokenRemaining))
-            {
-                *itOut = idx - (size_of_cont(token) - 1);
-                tokenRemaining = tokenAsList;
-            }
+            *outIt = idx;
         }
-        else
-        {
-            tokenRemaining = tokenAsList;
-        }
-        ++idx;
     }
     return result;
 }
