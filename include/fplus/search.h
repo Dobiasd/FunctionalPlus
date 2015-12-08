@@ -120,16 +120,32 @@ ContainerOut find_all_idxs_of
 template <typename ContainerOut = std::list<std::size_t>, typename Container>
 ContainerOut find_all_instances_of(const Container& token, const Container& xs)
 {
-    auto candidates = infixes(size_of_cont(token), xs);
-    ContainerOut result;
+    if (size_of_cont(token) > size_of_cont(xs))
+        return ContainerOut();
+
+    auto itInBegin = std::begin(xs);
+    auto itInEnd = itInBegin;
+    std::advance(itInEnd, size_of_cont(token));
     std::size_t idx = 0;
+    ContainerOut result;
     auto outIt = get_back_inserter(result);
-    for (const auto& candidate : candidates)
+    std::size_t last_possible_idx = size_of_cont(xs) - size_of_cont(token);
+    auto check_and_push = [&]()
     {
-        if (candidate == token)
+        if (std::equal(itInBegin, itInEnd,
+            std::begin(token)))
+        {
             *outIt = idx;
+        }
+    };
+    while (idx != last_possible_idx)
+    {
+        check_and_push();
+        ++itInBegin;
+        ++itInEnd;
         ++idx;
     }
+    check_and_push();
     return result;
 }
 

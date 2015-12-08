@@ -558,6 +558,10 @@ void Test_ContainerTools()
         == std::list<std::size_t>({ 2, 7, 46 }));
     assert(find_all_instances_of(std::string("xx"), std::string("bxxxxc"))
         == std::list<std::size_t>({ 1, 2, 3 }));
+    assert(find_all_instances_of(std::string("xy"), std::string("xyaaa"))
+        == std::list<std::size_t>({ 0 }));
+    assert(find_all_instances_of(std::string("xy"), std::string("aaaxy"))
+        == std::list<std::size_t>({ 3 }));
 
     IntList v789 = { 7,8,9 };
     assert(set_range(1, v789, intList) == IntList({ 1,7,8,9,2 }));
