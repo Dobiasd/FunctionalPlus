@@ -120,8 +120,8 @@ void Test_Composition()
     assert((logical_xor(is2, is1)(1)) == true);
     assert((logical_xor(is2, is2)(1)) == false);
 
-    assert((apply_to_pair(APlusTwoTimesB, std::make_pair(1, 2))) == 5);
-    assert((apply_to_pair(APlusTwoTimesBFunc, std::make_pair(1, 2))) == 5);
+    assert((apply_to_pair(APlusTwoTimesB)(std::make_pair(1, 2))) == 5);
+    assert((apply_to_pair(APlusTwoTimesBFunc)(std::make_pair(1, 2))) == 5);
 
     State state(1);
     assert(state.Get() == 1);
@@ -371,12 +371,14 @@ void Test_ContainerTools()
 
     typedef std::pair<std::size_t, int> rle_pair_int;
     typedef std::list<rle_pair_int> rle_list_int;
-    assert(run_length_encoding(IntVector({1,2,2,2,2,3,3,2})) ==
-        rle_list_int({
+    IntVector rle_input = {1,2,2,2,2,3,3,2};
+    rle_list_int rle_result = {
             std::make_pair(1, 1),
             std::make_pair(4, 2),
             std::make_pair(2, 3),
-            std::make_pair(1, 2)}));
+            std::make_pair(1, 2)};
+    assert(run_length_encode(rle_input) == rle_result);
+    assert(run_length_decode(rle_result) == rle_input);
 
     assert(without(2, intList) == IntList({ 1,3 }));
 

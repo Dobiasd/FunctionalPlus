@@ -50,7 +50,7 @@ ContainerOut group(const ContainerIn& xs)
         "Containers do not match.");
     typedef typename ContainerIn::value_type T;
     auto pred = [](const T& x, const T& y) { return x == y; };
-    return group_by(pred, xs);
+    return group_by<decltype(pred), ContainerIn, ContainerOut>(pred, xs);
 }
 
 // group_globally_by((==), [1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2,2,2],[3],[4],[5,5]]
@@ -225,12 +225,12 @@ MapOut count_occurrences(const ContainerIn& xs)
     return result;
 }
 
-// run_length_encoding_by((==),[1,2,2,2,2,3,3,2)) == [(1,1),(4,2),(2,3),(1,2)]
+// run_length_encode_by((==),[1,2,2,2,2,3,3,2)) == [(1,1),(4,2),(2,3),(1,2)]
 template <typename BinaryPredicate,
         typename ContainerIn,
         typename T = typename ContainerIn::value_type,
         typename ContainerOut = typename std::list<std::pair<std::size_t, T>>>
-ContainerOut run_length_encoding_by(BinaryPredicate pred, const ContainerIn& xs)
+ContainerOut run_length_encode_by(BinaryPredicate pred, const ContainerIn& xs)
 {
     check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
     ContainerOut result;
@@ -242,13 +242,26 @@ ContainerOut run_length_encoding_by(BinaryPredicate pred, const ContainerIn& xs)
     return transform(group_to_pair, groups);
 }
 
-// run_length_encoding([1,2,2,2,2,3,3,2)) == [(1,1),(4,2),(2,3),(1,2)]
+// run_length_encode([1,2,2,2,2,3,3,2)) == [(1,1),(4,2),(2,3),(1,2)]
 template <typename ContainerIn,
         typename T = typename ContainerIn::value_type,
         typename ContainerOut = typename std::list<std::pair<std::size_t, T>>>
-ContainerOut run_length_encoding(const ContainerIn& xs)
+ContainerOut run_length_encode(const ContainerIn& xs)
 {
-    return run_length_encoding_by(is_equal<T>, xs);
+    return run_length_encode_by(is_equal<T>, xs);
+}
+
+// run_length_decode([(1,1),(4,2),(2,3),(1,2)]) == [1,2,2,2,2,3,3,2)
+template <typename ContainerIn,
+        typename Pair = typename ContainerIn::value_type,
+        typename Cnt = typename Pair::first_type,
+        typename T = typename Pair::second_type,
+        typename ContainerOut = typename std::vector<T>>
+ContainerOut run_length_decode(const ContainerIn& pairs)
+{
+    static_assert(std::is_convertible<Cnt, std::size_t>::value, "Count type must be convertible to std::size_t.");
+    auto pair_to_vec = apply_to_pair(replicate<std::vector<T>>);
+    return concat(transform(pair_to_vec, pairs));
 }
 
 // take_while(is_even, [0,2,4,5,6,7,8]) == [0,2,4]

@@ -72,16 +72,18 @@ std::function<C(B, A)> flip(F f)
 }
 
 // apply_to_pair : (a -> b -> c) -> (a, b) -> c
-template <typename F, typename Pair,
+template <typename F,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
-    typename Res = typename utils::function_traits<F>::result_type>
-Res apply_to_pair(F f, const Pair& pair)
+    typename FuncRes = typename utils::function_traits<F>::result_type,
+    typename ResFunc = typename std::function<FuncRes(const std::pair<FIn0, FIn1>&)>>
+ResFunc apply_to_pair(F f)
 {
     static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
-    static_assert(std::is_convertible<typename Pair::second_type, FIn0>::value, "Function can not take first bound parameter type.");
-    static_assert(std::is_convertible<typename Pair::first_type, FIn1>::value, "Function can not take second bound parameter type.");
-    return f(pair.first, pair.second);
+    return [f](const std::pair<FIn0, FIn1>& pair)
+    {
+        return f(pair.first, pair.second);
+    };
 }
 
 // Forward composition: compose(f, g)(x) = g(f(x))
