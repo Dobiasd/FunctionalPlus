@@ -231,8 +231,7 @@ bool is_sorted(const Container& xs)
 template <typename Container>
 bool is_infix_of(const Container& token, Container& xs)
 {
-    return contains(token,
-        infixes(size_of_cont(token), xs));
+    return is_not_empty(find_all_instances_of(token, xs));
 }
 
 // is_prefix_of("Fun", "FunctionalPlus") == true
