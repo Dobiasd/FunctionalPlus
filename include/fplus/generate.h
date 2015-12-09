@@ -114,8 +114,7 @@ Container fill_right(const T& x, std::size_t size, const Container& xs)
 {
     if (size <= size_of_cont(xs))
         return xs;
-    return append(xs,
-        reverse(replicate<Container>(size - size_of_cont(xs), x)));
+    return append(xs, replicate<Container>(size - size_of_cont(xs), x));
 }
 
 } // namespace fplus
