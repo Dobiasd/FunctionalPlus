@@ -97,4 +97,25 @@ ContainerOut infixes(std::size_t length, const ContainerIn& xs)
     return result;
 }
 
+//fill_left(0, 6, [1,2,3,4]) == [0,0,1,2,3,4]
+template <typename Container,
+        typename T = typename Container::value_type>
+Container fill_left(const T& x, std::size_t size, const Container& xs)
+{
+    if (size <= size_of_cont(xs))
+        return xs;
+    return append(replicate<Container>(size - size_of_cont(xs), x), xs);
+}
+
+//fill_right(0, 6, [1,2,3,4]) == [1,2,3,4,0,0]
+template <typename Container,
+        typename T = typename Container::value_type>
+Container fill_right(const T& x, std::size_t size, const Container& xs)
+{
+    if (size <= size_of_cont(xs))
+        return xs;
+    return append(xs,
+        reverse(replicate<Container>(size - size_of_cont(xs), x)));
+}
+
 } // namespace fplus

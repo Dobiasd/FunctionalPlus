@@ -422,6 +422,9 @@ void Test_ContainerTools()
         IntVector({1, 2, 2}),
         IntVector({2, 2, 3}),
         IntVector({2, 3, 2})}));
+    assert(fill_left(0, 6, IntVector({1,2,3,4})) == IntVector({0,0,1,2,3,4}));
+    assert(fill_right(0, 6, IntList({1,2,3,4})) == IntList({1,2,3,4,0,0}));
+    assert(fill_left(' ', 6, std::string("12")) == std::string("    12"));
     assert(intersperse(0, xs) == IntVector({1,0,2,0,2,0,3,0,2}));
     assert(fold_left(std::plus<int>(), 100, xs) == 110);
     assert(fold_left_1(std::plus<int>(), xs) == 10);
