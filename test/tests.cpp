@@ -369,6 +369,13 @@ void Test_ContainerTools()
     assert(drop_if(is_even, intList) == IntList({ 1,3 }));
     assert(group(xs) == std::list<IntVector>({IntVector({1}),IntVector({2,2}),IntVector({3}),IntVector({2})}));
     assert(group_globally(xs) == std::list<IntVector>({IntVector({1}),IntVector({2,2,2}),IntVector({3})}));
+    assert(trim_left(1, intList) == IntList({2,2,3,2}));
+    assert(trim_right(2, intList) == IntList({1,2,2,3}));
+    assert(trim(0, IntVector({0,2,4,5,6,7,8,0,0})) == IntVector({2,4,5,6,7,8}));
+    assert(trim_token_left(IntVector({1,2}), xs) == IntVector({2,3,2}));
+    assert(trim_token_left(IntVector({0,1,2}), IntVector({0,1,2,0,1,2,7,5,9})) == IntVector({7,5,9}));
+    assert(trim_token_right(IntVector({3,2}), xs) == IntVector({1,2,2}));
+    assert(trim_token(IntVector({0,1}), IntVector({0,1,7,8,9,0,1})) == IntVector({7,8,9}));
 
     typedef std::pair<std::size_t, int> rle_pair_int;
     typedef std::list<rle_pair_int> rle_list_int;

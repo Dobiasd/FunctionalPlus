@@ -69,21 +69,21 @@ ContainerOut split_lines(const String& str, bool allowEmpty)
 template <typename String>
 String trim_whitespace_left(const String& str)
 {
-    return trim_left(is_whitespace<String>, str);
+    return trim_left_by(is_whitespace<String>, str);
 }
 
 // trim_whitespace_right("    text  ") == "    text"
 template <typename String>
 String trim_whitespace_right(const String& str)
 {
-    return trim_right(is_whitespace<String>, str);
+    return trim_right_by(is_whitespace<String>, str);
 }
 
 // trim_whitespace("    text  ") == "text"
 template <typename String>
 String trim_whitespace(const String& str)
 {
-    return trim(is_whitespace<String>, str);
+    return trim_by(is_whitespace<String>, str);
 }
 
 } // namespace fplus

@@ -156,9 +156,9 @@ ContainerOut justs(const ContainerIn& xs)
     return ys;
 }
 
-// trim_left(is_even, [0,2,4,5,6,7,8,6,4]) == [5,6,7,8,6,4]
+// trim_left_by(is_even, [0,2,4,5,6,7,8,6,4]) == [5,6,7,8,6,4]
 template <typename Container, typename UnaryPredicate>
-Container trim_left(UnaryPredicate p, const Container& xs)
+Container trim_left_by(UnaryPredicate p, const Container& xs)
 {
     check_unary_predicate_for_container<UnaryPredicate, Container>();
     auto itFirstNot = std::find_if_not(std::begin(xs), std::end(xs), p);
@@ -167,20 +167,70 @@ Container trim_left(UnaryPredicate p, const Container& xs)
     return Container(itFirstNot, std::end(xs));
 }
 
-// trim_right(is_even, [0,2,4,5,6,7,8,6,4]) == [0,2,4,5,6,7]
-template <typename Container, typename UnaryPredicate>
-Container trim_right(UnaryPredicate p, const Container& xs)
+// trim_left(0, [0,0,0,5,6,7,8,6,4]) == [5,6,7,8,6,4]
+template <typename Container,
+        typename T = typename Container::value_type>
+Container trim_left(const T& x, const Container& xs)
 {
-    check_unary_predicate_for_container<UnaryPredicate, Container>();
-    return reverse(trim_left(p, reverse(xs)));
+    return trim_left_by(bind_1st_of_2(is_equal<T>, x), xs);
 }
 
-// trim(is_even, [0,2,4,5,6,7,8,6,4]) == [5,6,7]
+// trim_token_left([0,1,2], [0,1,2,0,1,2,7,5,9]) == [7,5,9]
+template <typename Container>
+Container trim_token_left(const Container& token, const Container& xs)
+{
+    auto result = xs;
+    while (is_prefix_of(token, result))
+    {
+        result = get_range(size_of_cont(token), size_of_cont(result), result);
+    }
+    return result;
+}
+
+// trim_right_by(is_even, [0,2,4,5,6,7,8,6,4]) == [0,2,4,5,6,7]
 template <typename Container, typename UnaryPredicate>
-Container trim(UnaryPredicate p, const Container& xs)
+Container trim_right_by(UnaryPredicate p, const Container& xs)
 {
     check_unary_predicate_for_container<UnaryPredicate, Container>();
-    return trim_right(p, trim_left(p, xs));
+    return reverse(trim_left_by(p, reverse(xs)));
+}
+
+// trim_right(4, [0,2,4,5,6,7,8,4,4]) == [0,2,4,5,6,7,8]
+template <typename Container,
+        typename T = typename Container::value_type>
+Container trim_right(const T& x, const Container& xs)
+{
+    return trim_right_by(bind_1st_of_2(is_equal<T>, x), xs);
+}
+
+// trim_token_right([0,1,2], [7,5,9,0,1,2,0,1,2]) == [7,5,9]
+template <typename Container>
+Container trim_token_right(const Container& token, const Container& xs)
+{
+    return reverse(trim_token_left(reverse(token), reverse(xs)));
+}
+
+// trim_by(is_even, [0,2,4,5,6,7,8,6,4]) == [5,6,7]
+template <typename Container, typename UnaryPredicate>
+Container trim_by(UnaryPredicate p, const Container& xs)
+{
+    check_unary_predicate_for_container<UnaryPredicate, Container>();
+    return trim_right_by(p, trim_left_by(p, xs));
+}
+
+// trim(0, [0,2,4,5,6,7,8,0,0]) == [2,4,5,6,7,8]
+template <typename Container,
+        typename T = typename Container::value_type>
+Container trim(const T& x, const Container& xs)
+{
+    return trim_right(x, trim_left(x, xs));
+}
+
+// trim_token([0,1], [0,1,7,8,9,0,1]) == [7,8,9]
+template <typename Container>
+Container trim_token(const Container& token, const Container& xs)
+{
+    return trim_token_right(token, trim_token_left(token, xs));
 }
 
 } // namespace fplus
