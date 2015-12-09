@@ -355,6 +355,7 @@ void Test_ContainerTools()
     typedef std::list<int> IntList;
     typedef std::list<IntList> IntLists;
     IntList intList = { 1,2,2,3,2 };
+    IntList intListSorted = { 1,2,2,2,3 };
     IntLists intLists = { { 1 },{ 2, 2 },{ 3 },{ 2 } };
     assert(group(intList) == intLists);
 
@@ -495,6 +496,7 @@ void Test_ContainerTools()
     assert(median(IntVector({ 3, 9, 5 })) == 5);
     assert(median(xs) == 2);
     assert(sort(reverse(xs)) == xsSorted);
+    assert(sort(reverse(intList)) == intListSorted);
     assert(sort_by(std::greater<int>(), xs) == reverse(xsSorted));
     assert(unique(xs) == IntVector({1,2,3,2}));
     auto IsEqualByis_even = [&](int a, int b)

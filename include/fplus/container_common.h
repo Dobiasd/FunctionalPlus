@@ -419,12 +419,12 @@ ContainerOut concat(const ContainerIn& xss)
     return fold_left(append_one, ContainerOut(), xss);
 }
 
-// sort by std::less
-template <typename Container>
-Container sort(const Container& xs)
+// sort by given less comparator
+template <typename Compare, typename T>
+std::list<T> sort_by(Compare comp, const std::list<T>& xs)
 {
     auto result = xs;
-    std::sort(std::begin(result), std::end(result));
+    result.sort(comp);
     return result;
 }
 
@@ -435,6 +435,14 @@ Container sort_by(Compare comp, const Container& xs)
     auto result = xs;
     std::sort(std::begin(result), std::end(result), comp);
     return result;
+}
+
+// sort by std::less
+template <typename Container>
+Container sort(const Container& xs)
+{
+    typedef typename Container::value_type T;
+    return sort_by(std::less<T>(), xs);
 }
 
 // Like unique but with user supplied equality predicate.
