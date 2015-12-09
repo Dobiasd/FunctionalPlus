@@ -231,7 +231,7 @@ bool is_sorted(const Container& xs)
 template <typename Container>
 bool is_infix_of(const Container& token, Container& xs)
 {
-    return is_not_empty(find_all_instances_of(token, xs));
+    return is_just(find_first_instance_of_token(token, xs));
 }
 
 // is_prefix_of("Fun", "FunctionalPlus") == true
@@ -255,14 +255,14 @@ bool is_suffix_of(const Container& token, Container& xs)
 
 // is_subsequence_of("Final", "FunctionalPlus") == true
 template <typename Container>
-bool is_subsequence_of(const Container& token, Container& xs)
+bool is_subsequence_of(const Container& seq, Container& xs)
 {
-    if (is_empty(token))
+    if (is_empty(seq))
         return true;
-    if (size_of_cont(token) > size_of_cont(xs))
+    if (size_of_cont(seq) > size_of_cont(xs))
         return false;
     typedef typename Container::value_type T;
-    auto remaining = convert<std::list<T>>(token);
+    auto remaining = convert<std::list<T>>(seq);
     for (const auto& x : xs)
     {
         if (x == remaining.front())

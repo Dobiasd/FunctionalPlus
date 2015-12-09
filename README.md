@@ -75,7 +75,7 @@ There also are some convenience functions for strings.
 int main()
 {
     std::string team = "Our team is great. I love everybody.";
-    if (fplus::contains("I", fplus::split_words(team)))
+    if (fplus::is_elem_of("I", fplus::split_words(team)))
         std::cout << "There actually is an I in team." << std::endl;
 }
 ```
@@ -190,7 +190,7 @@ The more complex functions though can probably be written in a more optimized/op
 
 Additionally keep in mind that FunctionalPlus always produces copies and never operates in place. For example in the code for "The I in our team" there is this line:
 ```c++
-if (fplus::contains("I", fplus::split_words(team)))
+if (fplus::is_elem_of("I", fplus::split_words(team)))
 ```
 
 It first splits the whole `string` `team` into words and only then checks if it contains an `"I"`. A hand-written version could be faster, because it could stop the splitting as soon as it encounters the word it is looking for. But since in my experience even in performance-critical software the vast majority of parts is not relevant for the overall performance, I think it is a good idea to strive for developer productivity and readability of code as the default. In many cases one can easily switch to something else later if it turns out to be needed.

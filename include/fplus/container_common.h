@@ -496,20 +496,20 @@ X join(const X& separator, const Container& xs)
     return concat(intersperse(separator, xs));
 }
 
-// contains_by((==), [1,2,3]) == true
+// is_elem_of_by((==), [1,2,3]) == true
 template <typename BinaryPredicate, typename Container>
-bool contains_by(BinaryPredicate pred, const Container& xs)
+bool is_elem_of_by(BinaryPredicate pred, const Container& xs)
 {
     return std::find_if(std::begin(xs), std::end(xs), pred) != std::end(xs);
 }
 
-// contains(2, [1,2,3]) == true
+// is_elem_of(2, [1,2,3]) == true
 template <typename Container>
-bool contains(const typename Container::value_type& x, const Container& xs)
+bool is_elem_of(const typename Container::value_type& x, const Container& xs)
 {
     typedef typename Container::value_type T;
     auto pred = bind_1st_of_2(is_equal<T>, x);
-    return contains_by(pred, xs);
+    return is_elem_of_by(pred, xs);
 }
 
 // nub_by((==), [1,2,2,3,2]) == [1,2,3]
@@ -521,7 +521,7 @@ Container nub_by(BinaryPredicate p, const Container& xs)
     for (const auto &x : xs)
     {
         auto eqToX = bind_1st_of_2(p, x);
-        if (!contains_by(eqToX, result))
+        if (!is_elem_of_by(eqToX, result))
         {
             *itOut = x;
         }

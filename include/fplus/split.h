@@ -205,7 +205,7 @@ ContainerOut split_by_token(const ContainerIn& token,
         bool allowEmpty, const ContainerIn& xs)
 {
     static_assert(std::is_same<ContainerIn, typename ContainerOut::value_type>::value, "Containers do not match.");
-    auto instances = find_all_instances_of_non_overlapping(token, xs);
+    auto instances = find_all_instances_of_token_non_overlapping(token, xs);
     *get_back_inserter(instances) = size_of_cont(xs);
     std::list<ContainerIn> result;
     auto itOut = get_back_inserter(result);

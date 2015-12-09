@@ -107,18 +107,20 @@ ContainerOut find_all_idxs_by(UnaryPredicate p, const Container& xs)
 }
 
 // find_all_idxs_of(4, [1, 3, 4, 4, 9]) == [2, 3]
-template <typename ContainerOut = std::list<std::size_t>, typename Container>
+template <typename ContainerOut = std::list<std::size_t>,
+        typename Container,
+        typename T = typename Container::value_type>
 ContainerOut find_all_idxs_of
-        (const typename Container::value_type& x, const Container& xs)
+        (const T& x, const Container& xs)
 {
-    typedef typename Container::value_type T;
     auto pred = bind_1st_of_2(is_equal<T>, x);
     return find_all_idxs_by(pred, xs);
 }
 
-// find_all_instances_of("haha", "oh, hahaha!") == [4, 6]
+// find_all_instances_of_token("haha", "oh, hahaha!") == [4, 6]
 template <typename ContainerOut = std::list<std::size_t>, typename Container>
-ContainerOut find_all_instances_of(const Container& token, const Container& xs)
+ContainerOut find_all_instances_of_token(const Container& token,
+        const Container& xs)
 {
     if (size_of_cont(token) > size_of_cont(xs))
         return ContainerOut();
@@ -149,12 +151,13 @@ ContainerOut find_all_instances_of(const Container& token, const Container& xs)
     return result;
 }
 
-// find_all_instances_of_non_overlapping("haha", "oh, hahaha!") == [4]
+// find_all_instances_of_token_non_overlapping("haha", "oh, hahaha!") == [4]
 template <typename ContainerOut = std::list<std::size_t>, typename Container>
-ContainerOut find_all_instances_of_non_overlapping
+ContainerOut find_all_instances_of_token_non_overlapping
         (const Container& token, const Container& xs)
 {
-    auto overlapping_instances = find_all_instances_of<ContainerOut>(token, xs);
+    auto overlapping_instances = find_all_instances_of_token<ContainerOut>(
+            token, xs);
     ContainerOut result;
     auto outIt = get_back_inserter(result);
     std::size_t token_size = size_of_cont(token);
@@ -166,6 +169,36 @@ ContainerOut find_all_instances_of_non_overlapping
         }
     }
     return result;
+}
+
+// find_first_instance_of_token("haha", "oh, hahaha!") == just 4
+template <typename Container>
+maybe<std::size_t> find_first_instance_of_token
+        (const Container& token, const Container& xs)
+{
+    if (size_of_cont(token) > size_of_cont(xs))
+        return nothing<std::size_t>();
+
+    auto itInBegin = std::begin(xs);
+    auto itInEnd = itInBegin;
+    std::advance(itInEnd, size_of_cont(token));
+    std::size_t idx = 0;
+    std::size_t last_possible_idx = size_of_cont(xs) - size_of_cont(token);
+    while (idx != last_possible_idx)
+    {
+        if (std::equal(itInBegin, itInEnd, std::begin(token)))
+        {
+            return just(idx);
+        }
+        ++itInBegin;
+        ++itInEnd;
+        ++idx;
+    }
+    if (std::equal(itInBegin, itInEnd, std::begin(token)))
+    {
+        return just(idx);
+    }
+    return nothing<std::size_t>();
 }
 
 } // namespace fplus

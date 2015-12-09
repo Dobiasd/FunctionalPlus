@@ -561,23 +561,27 @@ void Test_ContainerTools()
     assert(transform_fst(squareLambda, intPair) == std::make_pair(4, 3));
     assert(transform_snd(squareLambda, intPair) == std::make_pair(2, 9));
 
-    assert(contains(2, xs) == true);
-    assert(contains(4, xs) == false);
+    assert(is_elem_of(2, xs) == true);
+    assert(is_elem_of(4, xs) == false);
 
-    assert(find_all_instances_of(std::string("Plus"),
+    assert(find_all_instances_of_token(std::string("Plus"),
         std::string("C Plus Plus is a nice language,") +
         std::string(" and FunctionalPlus makes it even nicer."))
         == std::list<std::size_t>({ 2, 7, 46 }));
-    assert(find_all_instances_of(std::string("xx"), std::string("bxxxxc"))
+    assert(find_all_instances_of_token(std::string("xx"), std::string("bxxxxc"))
         == std::list<std::size_t>({ 1, 2, 3 }));
-    assert(find_all_instances_of(std::string("xy"), std::string("xyaaa"))
+    assert(find_all_instances_of_token(std::string("xy"), std::string("xyaaa"))
         == std::list<std::size_t>({ 0 }));
-    assert(find_all_instances_of(std::string("xy"), std::string("aaaxy"))
+    assert(find_all_instances_of_token(std::string("xy"), std::string("aaaxy"))
         == std::list<std::size_t>({ 3 }));
-    assert(find_all_instances_of(std::string("xx"), std::string("xxxxx"))
+    assert(find_all_instances_of_token(std::string("xx"), std::string("xxxxx"))
         == std::list<std::size_t>({ 0, 1, 2, 3 }));
-    assert(find_all_instances_of_non_overlapping(std::string("xx"), std::string("xxxx"))
+    assert(find_all_instances_of_token_non_overlapping(std::string("xx"), std::string("xxxx"))
         == std::list<std::size_t>({ 0, 2 }));
+    assert(find_all_idxs_of('h', std::string("oh, ha!"))
+        == std::list<std::size_t>({ 1, 4 }));
+    assert(find_first_instance_of_token(std::string("haha"), std::string("oh, hahaha!"))
+        == just<std::size_t>(4));
 
     IntList v789 = { 7,8,9 };
     assert(set_range(1, v789, intList) == IntList({ 1,7,8,9,2 }));
@@ -809,7 +813,7 @@ void Test_example_SameOldSameOld()
 void Test_example_IInTeam()
 {
     std::string team = "Our team is great. I love everybody.";
-    if (fplus::contains("I", fplus::split_words(team)))
+    if (fplus::is_elem_of("I", fplus::split_words(team)))
         std::cout << "There actually is an I in team." << std::endl;
 }
 
