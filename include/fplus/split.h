@@ -136,6 +136,15 @@ ContainerOut split_by
     return result;
 }
 
+// split(0, [1,3,2,0,0,6,0,7,5]) == [[1,3,2],[],[6],[7,5]]
+template <typename ContainerIn,
+        typename T = typename ContainerIn::value_type,
+        typename ContainerOut = typename std::list<ContainerIn>>
+ContainerOut split (const T& x, bool allowEmpty, const ContainerIn& xs)
+{
+    return split_by(bind_1st_of_2(is_equal<T>, x), allowEmpty, xs);
+}
+
 // split_at_idx(2, [0,1,2,3,4]) == ([0,1],[2,3,4])
 template <typename Container>
 std::pair<Container, Container> split_at_idx
