@@ -60,7 +60,7 @@ ContainerOut generate_range_step
 template <typename ContainerOut, typename T>
 ContainerOut generate_range(const T start, const T end)
 {
-    return generate_range_step<ContainerOut>(start, end, 1);
+    return generate_range_step<ContainerOut, T>(start, end, 1);
 }
 
 // repeat(3, [1, 2]) == [1, 2, 1, 2, 1, 2]
