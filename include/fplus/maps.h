@@ -20,7 +20,7 @@ namespace fplus
 template <typename MapOut, typename ContainerIn>
 MapOut pairs_to_map(const ContainerIn& pairs)
 {
-    return convert<MapOut>(pairs);
+    return convert_container_and_elems<MapOut>(pairs);
 }
 
 // Converts a dictionary into a Container of pairs (key, value).
@@ -32,7 +32,7 @@ template <typename MapType,
     typename ContainerOut = std::vector<OutPair>>
 ContainerOut map_to_pairs(const MapType& dict)
 {
-    return convert<ContainerOut>(dict);
+    return convert_container_and_elems<ContainerOut>(dict);
 }
 
 template <typename MapType,

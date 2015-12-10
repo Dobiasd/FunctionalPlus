@@ -690,7 +690,7 @@ void Test_ContainerTools()
     assert(replace_range(2, IntVector({8,9}), xs) == IntVector({1,2,8,9,2}));
     assert(insert_at(2, IntVector({8,9}), xs) == IntVector({1,2,8,9,2,3,2}));
 
-    assert(sum(convert<std::vector<int>>(std::string("hello"))) == 532);
+    assert(sum(convert_container_and_elems<std::vector<int>>(std::string("hello"))) == 532);
 }
 
 void Test_StringTools()

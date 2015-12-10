@@ -262,7 +262,7 @@ bool is_subsequence_of(const Container& seq, Container& xs)
     if (size_of_cont(seq) > size_of_cont(xs))
         return false;
     typedef typename Container::value_type T;
-    auto remaining = convert<std::list<T>>(seq);
+    auto remaining = convert_container_and_elems<std::list<T>>(seq);
     for (const auto& x : xs)
     {
         if (x == remaining.front())

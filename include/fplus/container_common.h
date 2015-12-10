@@ -107,6 +107,13 @@ std::size_t size_of_cont(const Container& xs)
     return xs.size();
 }
 
+// Converts one type of element to another.
+template <typename Dest, typename Source>
+Dest convert(const Source& x)
+{
+    return Dest(x);
+}
+
 // convert_elems<NewT>([1, 2, 3]) == [NewT(1), NewT(2), NewT(3)]
 template <typename NewT, typename ContainerIn,
     typename ContainerOut = typename same_cont_new_t<ContainerIn, NewT>::type>
@@ -121,7 +128,7 @@ ContainerOut convert_elems(const ContainerIn& xs)
     // check if the type is fundamental and then dispatch accordingly.
     for (const auto& x : xs)
     {
-        *it = NewT(x);
+        *it = convert<NewT>(x);
     }
     return ys;
 }
@@ -146,7 +153,7 @@ ContainerOut convert_container(const ContainerIn& xs)
 // Dest elements are allowed to have explicit constructors.
 // convert([1, 2, 3]) == [1, 2, 3]
 template <typename ContainerOut, typename ContainerIn>
-ContainerOut convert(const ContainerIn& xs)
+ContainerOut convert_container_and_elems(const ContainerIn& xs)
 {
     static_assert(std::is_convertible<typename ContainerIn::value_type, typename ContainerOut::value_type>::value, "Elements not convertible.");
     typedef typename ContainerOut::value_type DestElem;
@@ -155,7 +162,7 @@ ContainerOut convert(const ContainerIn& xs)
     auto it = get_back_inserter<ContainerOut>(ys);
     for (const auto& x : xs)
     {
-        *it = DestElem(x);
+        *it = convert<DestElem>(x);
     }
     return ys;
 }
