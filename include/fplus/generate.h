@@ -42,9 +42,9 @@ ContainerOut generate_by_idx(F f, std::size_t amount)
     return ys;
 }
 
-// generate_integral_range_step(2, 9, 2) == [2, 4, 6, 8]
+// generate_range_step(2, 9, 2) == [2, 4, 6, 8]
 template <typename ContainerOut, typename T>
-ContainerOut generate_integral_range_step
+ContainerOut generate_range_step
         (const T start, const T end, const T step)
 {
     ContainerOut result;
@@ -56,11 +56,11 @@ ContainerOut generate_integral_range_step
     return result;
 }
 
-// generate_integral_range(2, 8, 2) == [2, 3, 4, 5, 6, 7, 8]
+// generate_range(2, 8, 2) == [2, 3, 4, 5, 6, 7, 8]
 template <typename ContainerOut, typename T>
-ContainerOut generate_integral_range(const T start, const T end)
+ContainerOut generate_range(const T start, const T end)
 {
-    return generate_integral_range_step<ContainerOut>(start, end, 1);
+    return generate_range_step<ContainerOut>(start, end, 1);
 }
 
 // repeat(3, [1, 2]) == [1, 2, 1, 2, 1, 2]

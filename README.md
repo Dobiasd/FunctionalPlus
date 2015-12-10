@@ -123,7 +123,7 @@ int main()
     typedef std::list<uint64_t> Ints;
 
     // [1, 2, 3 ... 29]
-    auto numbers = fplus::generate_integral_range<Ints>(1, 30);
+    auto numbers = fplus::generate_range<Ints>(1, 30);
 
     // A function that does [1, 2, 3, 4, 5] -> "[1 => 2 => 3 => 4 => 5]"
     auto show_ints = fplus::bind_1st_of_2(fplus::show_cont_with<Ints>, " => ");
