@@ -725,6 +725,8 @@ void Test_StringTools()
     assert(split_lines(text, false)
             == textAsLinesWithoutEmpty);
     assert(split_words(text) == textAsWords);
+    assert(to_string_fill_left('0', 5, 42) == std::string("00042") );
+    assert(to_string_fill_right(' ', 5, 42) == std::string("42   ") );
 }
 
 bool is_odd(int x) { return x % 2 == 1; }

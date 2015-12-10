@@ -86,4 +86,20 @@ String trim_whitespace(const String& str)
     return trim_by(is_whitespace<String>, str);
 }
 
+// to_string_fill_left('0', 5, 42) == "00042"
+template <typename T>
+std::string to_string_fill_left( const std::string::value_type& filler,
+        std::size_t min_size, const T& x)
+{
+    return fill_left(filler, min_size, std::to_string(x));
+}
+
+// to_string_fill_right(' ', 5, 42) == "42   "
+template <typename T>
+std::string to_string_fill_right( const std::string::value_type& filler,
+        std::size_t min_size, const T& x)
+{
+    return fill_right(filler, min_size, std::to_string(x));
+}
+
 } // namespace fplus
