@@ -18,10 +18,9 @@ namespace fplus
 template <typename String>
 bool is_letter_or_digit(const typename String::value_type& c)
 {
-    typedef typename String::value_type C;
-    auto IsDigit = bind_1st_and_2nd_of_3(is_in_range<C>, 48, 58);
-    auto IsLowerLetter = bind_1st_and_2nd_of_3(is_in_range<C>, 65, 91);
-    auto IsUpperLetter = bind_1st_and_2nd_of_3(is_in_range<C>, 97, 123);
+    auto IsDigit = is_in_range(48, 58);
+    auto IsLowerLetter = is_in_range(65, 91);
+    auto IsUpperLetter = is_in_range(97, 123);
     auto IsLetter = logical_or(IsLowerLetter, IsUpperLetter);
     return IsDigit(c) || IsLetter(c);
 }
@@ -30,8 +29,7 @@ bool is_letter_or_digit(const typename String::value_type& c)
 template <typename String>
 bool is_whitespace(const typename String::value_type& c)
 {
-    typedef typename String::value_type C;
-    return (c == 32 || is_in_range<C>(9, 14, c));
+    return (c == 32 || is_in_range(9, 14)(c));
 }
 
 // Newline character ('\n')?

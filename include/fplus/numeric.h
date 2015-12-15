@@ -10,16 +10,24 @@ namespace fplus
 
 // Checks if x is in [low, high), i.e. left-closed and right-open.
 template <typename T>
-bool is_in_range(const T& low, const T& high, const T& x)
+std::function<bool(const T&)>
+        is_in_range(const T& low, const T& high)
 {
-    return (low <= x) && (x < high);
+    return [low, high](const T& x)
+    {
+        return (low <= x) && (x < high);
+    };
 }
 
 // Puts value into [low, high], i.e. left-closed and right-closed.
 template <typename T>
-T clamp(const T& low, const T& high, const T& x)
+std::function<T(const T&)>
+        clamp(const T& low, const T& high)
 {
-    return std::max(low, std::min(high, x));
+    return [low, high](const T& x)
+    {
+        return std::max(low, std::min(high, x));
+    };
 }
 
 // Checks if x < 0.
