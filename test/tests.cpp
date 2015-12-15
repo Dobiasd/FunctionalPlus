@@ -503,6 +503,9 @@ void Test_ContainerTools()
     assert(minimum_by(std::greater<int>(), xs) == 3);
     assert(maximum_by(std::greater<int>(), xs) == 1);
 
+    assert(minimum_idx(xs) == 0);
+    assert(maximum_idx(xs) == 3);
+
     assert(fplus::size_of_cont(xs) == 5);
     assert(fplus::size_of_cont(IntVector()) == 0);
     assert(is_not_empty(xs) == true);
