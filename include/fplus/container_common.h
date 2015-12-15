@@ -514,9 +514,7 @@ bool is_elem_of_by(BinaryPredicate pred, const Container& xs)
 template <typename Container>
 bool is_elem_of(const typename Container::value_type& x, const Container& xs)
 {
-    typedef typename Container::value_type T;
-    auto pred = bind_1st_of_2(is_equal<T>, x);
-    return is_elem_of_by(pred, xs);
+    return is_elem_of_by(is_equal_to(x), xs);
 }
 
 // nub_by((==), [1,2,2,3,2]) == [1,2,3]
@@ -540,8 +538,8 @@ Container nub_by(BinaryPredicate p, const Container& xs)
 template <typename Container>
 Container nub(const Container& xs)
 {
-    auto pred = is_equal<typename Container::value_type>;
-    return nub_by(pred, xs);
+    typedef typename Container::value_type T;
+    return nub_by(std::equal_to<T>(), xs);
 }
 
 } // namespace fplus

@@ -38,8 +38,7 @@ template <typename Container,
     typename T = typename Container::value_type>
 Container without(T elem, const Container& xs)
 {
-    auto pred = bind_1st_of_2(is_equal<T>, elem);
-    return drop_if(pred, xs);
+    return drop_if(is_equal_to(elem), xs);
 }
 
 // Predicate takes index and value.
@@ -172,7 +171,7 @@ template <typename Container,
         typename T = typename Container::value_type>
 Container trim_left(const T& x, const Container& xs)
 {
-    return trim_left_by(bind_1st_of_2(is_equal<T>, x), xs);
+    return trim_left_by(is_equal_to(x), xs);
 }
 
 // trim_token_left([0,1,2], [0,1,2,0,1,2,7,5,9]) == [7,5,9]
@@ -200,7 +199,7 @@ template <typename Container,
         typename T = typename Container::value_type>
 Container trim_right(const T& x, const Container& xs)
 {
-    return trim_right_by(bind_1st_of_2(is_equal<T>, x), xs);
+    return trim_right_by(is_equal_to(x), xs);
 }
 
 // trim_token_right([0,1,2], [7,5,9,0,1,2,0,1,2]) == [7,5,9]

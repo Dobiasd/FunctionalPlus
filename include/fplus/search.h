@@ -72,9 +72,7 @@ template <typename Container>
 maybe<std::size_t> find_first_idx
         (const typename Container::value_type& x, const Container& xs)
 {
-    typedef typename Container::value_type T;
-    auto pred = bind_1st_of_2(is_equal<T>, x);
-    return find_first_idx_by(pred, xs);
+    return find_first_idx_by(is_equal_to(x), xs);
 }
 
 // find_last_idx(4, [1, 3, 4, 4, 9]) == Just(3)
@@ -83,9 +81,7 @@ template <typename Container>
 maybe<std::size_t> find_last_idx
         (const typename Container::value_type& x, const Container& xs)
 {
-    typedef typename Container::value_type T;
-    auto pred = bind_1st_of_2(is_equal<T>, x);
-    return find_last_idx_by(pred, xs);
+    return find_last_idx_by(is_equal_to(x), xs);
 }
 
 // find_all_idxs_by(is_even, [1, 3, 4, 6, 9]) == [2, 3]
@@ -113,8 +109,7 @@ template <typename ContainerOut = std::list<std::size_t>,
 ContainerOut find_all_idxs_of
         (const T& x, const Container& xs)
 {
-    auto pred = bind_1st_of_2(is_equal<T>, x);
-    return find_all_idxs_by(pred, xs);
+    return find_all_idxs_by(is_equal_to(x), xs);
 }
 
 // find_all_instances_of_token("haha", "oh, hahaha!") == [4, 6]

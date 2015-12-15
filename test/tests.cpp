@@ -272,29 +272,38 @@ void Test_Maybe()
 void Test_Compare()
 {
     using namespace fplus;
-    assert(is_equal(2, 2));
-    assert(!is_equal(2, 3));
-    assert(!is_not_equal(2, 2));
-    assert(is_not_equal(2, 3));
+    assert(is_equal_to(2)(2));
+    assert(!is_equal_to(2)(3));
+    assert(!is_not_equal_to(2)(2));
+    assert(is_not_equal_to(2)(3));
 
     assert(!is_less(2, 2));
     assert(is_less(2, 3));
     assert(!is_less(3, 2));
+    assert(is_less_than(3)(2));
 
     assert(is_less_or_equal(2, 2));
     assert(is_less_or_equal(2, 3));
     assert(!is_less_or_equal(3, 2));
+    assert(is_less_or_equal_than(3)(2));
 
     assert(!is_greater(2, 2));
     assert(!is_greater(2, 3));
     assert(is_greater(3, 2));
+    assert(!is_greater_than(3)(2));
 
     assert(is_greater_or_equal(2, 2));
     assert(!is_greater_or_equal(2, 3));
     assert(is_greater_or_equal(3, 2));
+    assert(!is_greater_or_equal_than(3)(2));
 
     assert(identity(2) == 2);
-    assert(always(2, 5) == 2);
+    assert(always<int>(2)(5) == 2);
+    auto square = [](int x){ return x*x; };
+    assert(is_equal_by_and_by(square, square)(2, -2));
+    assert(is_equal_by(square)(2, -2));
+    assert(is_not_equal_by_and_by(square, square)(2, 3));
+    assert(is_not_equal_by(square)(2, 3));
 
     assert(xor_bools(false, false) == false);
     assert(xor_bools(true, false) == true);
@@ -399,11 +408,11 @@ void Test_ContainerTools()
 
     assert(transform_convert<IntList>(squareLambda, xs) == IntList({ 1,4,4,9,4 }));
 
-    assert(is_equal_by_and_by(is_even, is_even, 2, 4) == true);
-    assert(is_equal_by_and_by(is_even, is_even, 1, 2) == false);
-    assert(is_equal_by_and_by(is_odd, is_even, 1, 2) == true);
-    assert(is_equal(2, 2) == true);
-    assert(is_equal(1, 2) == false);
+    assert(is_equal_by_and_by(is_even, is_even)(2, 4) == true);
+    assert(is_equal_by_and_by(is_even, is_even)(1, 2) == false);
+    assert(is_equal_by_and_by(is_odd, is_even)(1, 2) == true);
+    assert(is_equal_to(2)(2) == true);
+    assert(is_equal_to(1)(2) == false);
 
     assert(is_empty(xs) == false);
     assert(is_empty(IntVector()) == true);
@@ -534,9 +543,9 @@ void Test_ContainerTools()
     assert(is_sorted(IntVector({1,2,2})) == true);
     assert(is_sorted(IntVector({1,2,1})) == false);
 
-    auto is2 = bind_1st_of_2(is_equal<int>, 2);
-    auto is3 = bind_1st_of_2(is_equal<int>, 3);
-    auto is4 = bind_1st_of_2(is_equal<int>, 4);
+    auto is2 = is_equal_to(2);
+    auto is3 = is_equal_to(3);
+    auto is4 = is_equal_to(4);
 
     assert(find_first_by(is3, xs) == just(3));
     assert(find_first_by(is4, xs) == nothing<int>());
@@ -641,7 +650,7 @@ void Test_ContainerTools()
     assert(keep_if_with_idx(sumis_even, xs) == IntVector({ 2,3,2 }));
 
     assert(nub(xs) == IntVector({ 1,2,3 }));
-    auto bothEven = bind_1st_of_3(is_equal_by<decltype(is_even), int>, is_even);
+    auto bothEven = is_equal_by(is_even);
     assert(nub_by(bothEven, xs) == IntVector({ 1,2 }));
 
     typedef std::map<int, std::string> IntStringMap;

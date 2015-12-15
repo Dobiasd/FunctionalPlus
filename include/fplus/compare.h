@@ -63,154 +63,287 @@ void check_compare_preprocessors_for_types()
 
 // identity(x) == x
 template <typename T>
-const T identity(const T& x)
+T identity(const T& x)
 {
     return x;
 }
 
-// always(x, y) == x
-template <typename X, typename Y>
-const X always(const X& x, const Y&)
-{
-    return x;
-}
 
-// f(x) == g(y)
-template <typename F, typename G, typename X, typename Y>
-bool is_equal_by_and_by(F f, G g, const X& x, const Y& y)
-{
-    check_compare_preprocessors_for_types<F, G, X, Y>();
-    return f(x) == g(y);
-}
-
-// f(x) == f(y)
-template <typename F, typename T>
-bool is_equal_by(F f, const T& x, const T& y)
-{
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return is_equal_by_and_by(f, f, x, y);
-}
 // x == y
 template <typename T>
 bool is_equal(const T& x, const T& y)
 {
-    return is_equal_by(identity<T>, x, y);
+    return x == y;
 }
 
-// f(x) != g(y)
-template <typename F, typename G, typename X, typename Y>
-bool is_not_equal_by_and_by(F f, G g, const X& x, const Y& y)
+// always(x, y) == x
+template <typename Y, typename X>
+std::function<X(const Y&)> always(const X& x)
 {
-    check_compare_preprocessors_for_types<F, G, X, Y>();
-    return f(x) != g(y);
+    return [x](const Y&) { return x; };
 }
 
-// f(x) != f(y)
-template <typename F, typename T>
-bool is_not_equal_by(F f, const T& x, const T& y)
+// f(x) == g(y)
+template <typename F, typename G,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+    typename GIn = typename utils::function_traits<G>::template arg<0>::type,
+    typename FOut = typename utils::function_traits<F>::result_type,
+    typename GOut = typename utils::function_traits<G>::result_type>
+std::function<bool(const FIn& x, const GIn& y)>
+        is_equal_by_and_by(F f, G g)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return is_not_equal_by_and_by(f, f, x, y);
+    check_compare_preprocessors_for_types<F, G, FIn, GOut>();
+    return [f, g](const FIn& x, const GIn& y)
+    {
+        return is_equal(f(x), g(y));
+    };
 }
+
+// f(x) == f(y)
+template <typename F,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+    typename FOut = typename utils::function_traits<F>::result_type>
+std::function<bool(const FIn& x, const FIn& y)>
+        is_equal_by(F f)
+{
+    return is_equal_by_and_by(f, f);
+}
+
+// x == y
+template <typename T>
+std::function<bool(const T&)> is_equal_to(const T& x)
+{
+    return [x](const T& y)
+    {
+        return is_equal(y, x);
+    };
+}
+
 
 // x != y
 template <typename T>
 bool is_not_equal(const T& x, const T& y)
 {
-    return is_not_equal_by(identity<T>, x, y);
+    return x != y;
 }
 
-// f(x) < g(y)
-template <typename F, typename G, typename X, typename Y>
-bool is_less_by_and_by(F f, G g, const X& x, const Y& y)
+
+// f(x) != g(y)
+template <typename F, typename G,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+    typename GIn = typename utils::function_traits<G>::template arg<0>::type,
+    typename FOut = typename utils::function_traits<F>::result_type,
+    typename GOut = typename utils::function_traits<G>::result_type>
+std::function<bool(const FIn& x, const GIn& y)>
+        is_not_equal_by_and_by(F f, G g)
 {
-    check_compare_preprocessors_for_types<F, G, X, Y>();
-    return f(x) < g(y);
+    check_compare_preprocessors_for_types<F, G, FIn, GOut>();
+    return [f, g](const FIn& x, const GIn& y)
+    {
+        return is_not_equal(f(x), g(y));
+    };
 }
 
-// f(x) < f(y)
-template <typename F, typename T>
-bool is_less_by(F f, const T& x, const T& y)
+// f(x) != f(y)
+template <typename F,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+    typename FOut = typename utils::function_traits<F>::result_type>
+std::function<bool(const FIn& x, const FIn& y)>
+        is_not_equal_by(F f)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return is_less_by_and_by(f, f, x, y);
+    return is_not_equal_by_and_by(f, f);
 }
+
+// x != y
+template <typename T>
+std::function<bool(const T&)> is_not_equal_to(const T& x)
+{
+    return [x](const T& y)
+    {
+        return is_not_equal(y, x);
+    };
+}
+
 
 // x < y
 template <typename T>
 bool is_less(const T& x, const T& y)
 {
-    return is_less_by(identity<T>, x, y);
+    return x < y;
 }
 
-// f(x) <= g(y)
-template <typename F, typename G, typename X, typename Y>
-bool is_less_or_equal_by_and_by(F f, G g, const X& x, const Y& y)
+
+// f(x) < g(y)
+template <typename F, typename G,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+    typename GIn = typename utils::function_traits<G>::template arg<0>::type,
+    typename FOut = typename utils::function_traits<F>::result_type,
+    typename GOut = typename utils::function_traits<G>::result_type>
+std::function<bool(const FIn& x, const GIn& y)>
+        is_less_by_and_by(F f, G g)
 {
-    check_compare_preprocessors_for_types<F, G, X, Y>();
-    return f(x) <= g(y);
+    check_compare_preprocessors_for_types<F, G, FIn, GOut>();
+    return [f, g](const FIn& x, const GIn& y)
+    {
+        return is_less(f(x), g(y));
+    };
 }
 
-// f(x) <= f(y)
-template <typename F, typename T>
-bool is_less_or_equal_by(F f, const T& x, const T& y)
+// f(x) < f(y)
+template <typename F,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+    typename FOut = typename utils::function_traits<F>::result_type>
+std::function<bool(const FIn& x, const FIn& y)>
+        is_less_by(F f)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return is_less_or_equal_by_and_by(f, f, x, y);
+    return is_less_by_and_by(f, f);
 }
+
+// y < x
+template <typename T>
+std::function<bool(const T&)> is_less_than(const T& x)
+{
+    return [x](const T& y)
+    {
+        return is_less(y, x);
+    };
+}
+
 
 // x <= y
 template <typename T>
 bool is_less_or_equal(const T& x, const T& y)
 {
-    return is_less_or_equal_by(identity<T>, x, y);
+    return x <= y;
 }
 
-// f(x) > g(y)
-template <typename F, typename G, typename X, typename Y>
-bool is_greater_by_and_by(F f, G g, const X& x, const Y& y)
+
+// f(x) <= g(y)
+template <typename F, typename G,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+    typename GIn = typename utils::function_traits<G>::template arg<0>::type,
+    typename FOut = typename utils::function_traits<F>::result_type,
+    typename GOut = typename utils::function_traits<G>::result_type>
+std::function<bool(const FIn& x, const GIn& y)>
+        is_less_or_equal_by_and_by(F f, G g)
 {
-    check_compare_preprocessors_for_types<F, G, X, Y>();
-    return f(x) > g(y);
+    check_compare_preprocessors_for_types<F, G, FIn, GOut>();
+    return [f, g](const FIn& x, const GIn& y)
+    {
+        return is_less_or_equal(f(x), g(y));
+    };
 }
 
-// f(x) > f(y)
-template <typename F, typename T>
-bool is_greater_by(F f, const T& x, const T& y)
+// f(x) <= f(y)
+template <typename F,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+    typename FOut = typename utils::function_traits<F>::result_type>
+std::function<bool(const FIn& x, const FIn& y)>
+        is_less_or_equal_by(F f)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return is_greater_by_and_by(f, f, x, y);
+    return is_less_or_equal_by_and_by(f, f);
 }
+
+// y <= x
+template <typename T>
+std::function<bool(const T&)> is_less_or_equal_than(const T& x)
+{
+    return [x](const T& y)
+    {
+        return is_less_or_equal(y, x);
+    };
+}
+
 
 // x > y
 template <typename T>
 bool is_greater(const T& x, const T& y)
 {
-    return is_greater_by(identity<T>, x, y);
+    return x > y;
 }
 
-// f(x) >= g(y)
-template <typename F, typename G, typename X, typename Y>
-bool is_greater_or_equal_by_and_by(F f, G g, const X& x, const Y& y)
+
+// f(x) > g(y)
+template <typename F, typename G,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+    typename GIn = typename utils::function_traits<G>::template arg<0>::type,
+    typename FOut = typename utils::function_traits<F>::result_type,
+    typename GOut = typename utils::function_traits<G>::result_type>
+std::function<bool(const FIn& x, const GIn& y)>
+        is_greater_by_and_by(F f, G g)
 {
-    check_compare_preprocessors_for_types<F, G, X, Y>();
-    return f(x) >= g(y);
+    check_compare_preprocessors_for_types<F, G, FIn, GOut>();
+    return [f, g](const FIn& x, const GIn& y)
+    {
+        return is_greater(f(x), g(y));
+    };
 }
 
-// f(x) >= f(y)
-template <typename F, typename T>
-bool is_greater_or_equal_by(F f, const T& x, const T& y)
+// f(x) > f(y)
+template <typename F,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+    typename FOut = typename utils::function_traits<F>::result_type>
+std::function<bool(const FIn& x, const FIn& y)>
+        is_greater_by(F f)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return is_greater_or_equal_by_and_by(f, f, x, y);
+    return is_greater_by_and_by(f, f);
 }
+
+// y > x
+template <typename T>
+std::function<bool(const T&)> is_greater_than(const T& x)
+{
+    return [x](const T& y)
+    {
+        return is_greater(y, x);
+    };
+}
+
 
 // x >= y
 template <typename T>
 bool is_greater_or_equal(const T& x, const T& y)
 {
-    return is_greater_or_equal_by(identity<T>, x, y);
+    return x >= y;
 }
+
+
+// f(x) >= g(y)
+template <typename F, typename G,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+    typename GIn = typename utils::function_traits<G>::template arg<0>::type,
+    typename FOut = typename utils::function_traits<F>::result_type,
+    typename GOut = typename utils::function_traits<G>::result_type>
+std::function<bool(const FIn& x, const GIn& y)>
+        is_greater_or_equal_by_and_by(F f, G g)
+{
+    check_compare_preprocessors_for_types<F, G, FIn, GOut>();
+    return [f, g](const FIn& x, const GIn& y)
+    {
+        return is_greater_or_equal(f(x), g(y));
+    };
+}
+
+// f(x) >= f(y)
+template <typename F,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+    typename FOut = typename utils::function_traits<F>::result_type>
+std::function<bool(const FIn& x, const FIn& y)>
+        is_greater_or_equal_by(F f)
+{
+    return is_greater_or_equal_by_and_by(f, f);
+}
+
+// y >= x
+template <typename T>
+std::function<bool(const T&)> is_greater_or_equal_than(const T& x)
+{
+    return [x](const T& y)
+    {
+        return is_greater_or_equal(y, x);
+    };
+}
+
 
 template <typename T>
 bool xor_bools(const T& x, const T& y)

@@ -142,7 +142,7 @@ template <typename ContainerIn,
         typename ContainerOut = typename std::list<ContainerIn>>
 ContainerOut split (const T& x, bool allowEmpty, const ContainerIn& xs)
 {
-    return split_by(bind_1st_of_2(is_equal<T>, x), allowEmpty, xs);
+    return split_by(is_equal_to(x), allowEmpty, xs);
 }
 
 // split_at_idx(2, [0,1,2,3,4]) == ([0,1],[2,3,4])
@@ -257,7 +257,7 @@ template <typename ContainerIn,
         typename ContainerOut = typename std::list<std::pair<std::size_t, T>>>
 ContainerOut run_length_encode(const ContainerIn& xs)
 {
-    return run_length_encode_by(is_equal<T>, xs);
+    return run_length_encode_by(is_equal_by(identity<T>), xs);
 }
 
 // run_length_decode([(1,1),(4,2),(2,3),(1,2)]) == [1,2,2,2,2,3,3,2)
