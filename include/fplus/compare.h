@@ -93,7 +93,7 @@ template <typename F, typename G,
 std::function<bool(const FIn& x, const GIn& y)>
         is_equal_by_and_by(F f, G g)
 {
-    check_compare_preprocessors_for_types<F, G, FIn, GOut>();
+    check_compare_preprocessors_for_types<F, G, FIn, GIn>();
     return [f, g](const FIn& x, const GIn& y)
     {
         return is_equal(f(x), g(y));
@@ -138,7 +138,7 @@ template <typename F, typename G,
 std::function<bool(const FIn& x, const GIn& y)>
         is_not_equal_by_and_by(F f, G g)
 {
-    check_compare_preprocessors_for_types<F, G, FIn, GOut>();
+    check_compare_preprocessors_for_types<F, G, FIn, GIn>();
     return [f, g](const FIn& x, const GIn& y)
     {
         return is_not_equal(f(x), g(y));
@@ -183,7 +183,7 @@ template <typename F, typename G,
 std::function<bool(const FIn& x, const GIn& y)>
         is_less_by_and_by(F f, G g)
 {
-    check_compare_preprocessors_for_types<F, G, FIn, GOut>();
+    check_compare_preprocessors_for_types<F, G, FIn, GIn>();
     return [f, g](const FIn& x, const GIn& y)
     {
         return is_less(f(x), g(y));
@@ -228,7 +228,7 @@ template <typename F, typename G,
 std::function<bool(const FIn& x, const GIn& y)>
         is_less_or_equal_by_and_by(F f, G g)
 {
-    check_compare_preprocessors_for_types<F, G, FIn, GOut>();
+    check_compare_preprocessors_for_types<F, G, FIn, GIn>();
     return [f, g](const FIn& x, const GIn& y)
     {
         return is_less_or_equal(f(x), g(y));
@@ -273,7 +273,7 @@ template <typename F, typename G,
 std::function<bool(const FIn& x, const GIn& y)>
         is_greater_by_and_by(F f, G g)
 {
-    check_compare_preprocessors_for_types<F, G, FIn, GOut>();
+    check_compare_preprocessors_for_types<F, G, FIn, GIn>();
     return [f, g](const FIn& x, const GIn& y)
     {
         return is_greater(f(x), g(y));
@@ -318,7 +318,7 @@ template <typename F, typename G,
 std::function<bool(const FIn& x, const GIn& y)>
         is_greater_or_equal_by_and_by(F f, G g)
 {
-    check_compare_preprocessors_for_types<F, G, FIn, GOut>();
+    check_compare_preprocessors_for_types<F, G, FIn, GIn>();
     return [f, g](const FIn& x, const GIn& y)
     {
         return is_greater_or_equal(f(x), g(y));
