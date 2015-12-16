@@ -82,41 +82,40 @@ ContainerOut infixes(std::size_t length, const ContainerIn& xs)
 }
 
 namespace {
-
-template <typename T>
-std::vector<std::vector<T>>
-    product_idxs_helper(
-        const std::vector<T>& xs,
-        const std::vector<std::vector<T>> & acc, std::size_t reps_left)
-{
-    if (reps_left == 1)
-        return acc;
-    typedef std::vector<std::vector<T>> result_t;
-    result_t result;
-    for (const std::vector<T>& a : acc)
+    template <typename T>
+    std::vector<std::vector<T>>
+        product_idxs_helper(
+            const std::vector<T>& xs,
+            const std::vector<std::vector<T>> & acc, std::size_t reps_left)
     {
-        auto ys = replicate<result_t>(size_of_cont(xs), a);
-        for (std::size_t i = 0; i < ys.size(); ++i)
+        static_assert(std::is_same<T, std::size_t>::value, "T must be std::size_t");
+        if (reps_left == 1)
+            return acc;
+        typedef std::vector<std::vector<T>> result_t;
+        result_t result;
+        for (const std::vector<T>& a : acc)
         {
-            ys[i].push_back(xs[i]);
+            auto ys = replicate<result_t>(size_of_cont(xs), a);
+            for (std::size_t i = 0; i < ys.size(); ++i)
+            {
+                ys[i].push_back(xs[i]);
+            }
+            result = append(result, ys);
         }
-        result = append(result, ys);
+        return product_idxs_helper(xs, result, reps_left - 1);
     }
-    return product_idxs_helper(xs, result, reps_left - 1);
-}
-
-template <typename ContainerIn,
-    typename T = typename ContainerIn::value_type,
-    typename ContainerOut = std::vector<std::vector<T>>>
-ContainerOut product_idxs(std::size_t power, const ContainerIn& xs)
-{
-    static_assert(std::is_same<T, std::size_t>::value, "T must be std::size_t");
-    typedef std::vector<std::size_t> result_t;
-    auto elem_to_vec = [](const T& x) { return result_t(1, x); };
-    auto singletons = transform(elem_to_vec, xs);
-    return product_idxs_helper(xs, singletons, power);
-}
-
+    template <typename T,
+        typename ContainerOut = std::vector<std::vector<T>>>
+    ContainerOut product_idxs(std::size_t power, const std::vector<T>& xs)
+    {
+        if (power == 0)
+            return ContainerOut();
+        static_assert(std::is_same<T, std::size_t>::value, "T must be std::size_t");
+        typedef std::vector<std::size_t> result_t;
+        auto elem_to_vec = [](const T& x) { return result_t(1, x); };
+        auto singletons = transform(elem_to_vec, xs);
+        return product_idxs_helper(xs, singletons, power);
+    }
 } // anonymous namespace
 
 // product(2, "ABCD") == AA AB AC AD BA BB BC BD CA CB CC CD DA DB DC DD

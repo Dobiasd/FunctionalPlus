@@ -442,6 +442,9 @@ void Test_ContainerTools()
     assert(product(2, ABCD) == string_vec({"AA", "AB", "AC", "AD", "BA", "BB", "BC", "BD", "CA", "CB", "CC", "CD", "DA", "DB", "DC", "DD"}));
     assert(product(2, vec0123) == IntVectors({{0,0}, {0,1}, {0,2}, {0,3}, {1,0}, {1,1}, {1,2}, {1,3}, {2,0}, {2,1}, {2,2}, {2,3}, {3,0}, {3,1}, {3,2}, {3,3}}));
     assert(combinations(2, ABCD) == string_vec({"AB", "AC", "AD", "BC", "BD", "CD"}));
+    assert(combinations(1, ABCD) == string_vec({"A", "B", "C", "D"}));
+    assert(combinations(3, ABCD) == string_vec({"ABC", "ABD", "ACD", "BCD"}));
+    assert(combinations(0, ABCD) == string_vec({}));
     assert(combinations(2, vec0123) == IntVectors({{0,1}, {0,2}, {0,3}, {1,2}, {1,3}, {2,3}}));
     assert(combinations(2, list0123) == intListVec({{0,1}, {0,2}, {0,3}, {1,2}, {1,3}, {2,3}}));
     assert(permutations(2, ABCD) == string_vec({"AB", "AC", "AD", "BA", "BC", "BD", "CA", "CB", "CD", "DA", "DB", "DC"}));
