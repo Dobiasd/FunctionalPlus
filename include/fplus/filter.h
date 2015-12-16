@@ -7,6 +7,7 @@
 #pragma once
 
 #include "maybe.h"
+#include "container_properties.h"
 
 #include <algorithm>
 

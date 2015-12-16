@@ -543,4 +543,183 @@ Container nub(const Container& xs)
     return nub_by(std::equal_to<T>(), xs);
 }
 
+// Returns true for empty containers.
+// O(n^2)
+template <typename Container, typename BinaryPredicate>
+bool all_unique_by_eq(BinaryPredicate p, const Container& xs)
+{
+    check_binary_predicate_for_container<BinaryPredicate, Container>();
+    return size_of_cont(nub_by(p, xs)) == size_of_cont(xs);
+}
+
+// Returns true for empty containers.
+// O(n^2)
+template <typename Container>
+bool all_unique(const Container& xs)
+{
+    typedef typename Container::value_type T;
+    auto comp = std::equal_to<T>();
+    return all_unique_by_eq(comp, xs);
+}
+
+// comp(a, b) must return true only if a < b.
+// O(n)
+template <typename Container, typename Compare>
+bool is_strictly_sorted_by(Compare comp, const Container& xs)
+{
+    check_compare_for_container<Compare, Container>();
+    if (size_of_cont(xs) < 2)
+        return true;
+    auto it1 = std::begin(xs);
+    for (auto it2 = it1 + 1; it2 < std::end(xs); ++it1, ++it2)
+        if (!comp(*it1, *it2))
+            return false;
+    return true;
+}
+
+// comp(a, b) must return true only if a < b.
+// O(n)
+template <typename Container, typename Compare>
+bool is_sorted_by(Compare comp, const Container& xs)
+{
+    check_compare_for_container<Compare, Container>();
+    if (size_of_cont(xs) < 2)
+        return true;
+    auto it1 = std::begin(xs);
+    for (auto it2 = it1 + 1; it2 < std::end(xs); ++it1, ++it2)
+        if (comp(*it2, *it1))
+            return false;
+    return true;
+}
+
+// O(n)
+template <typename Container>
+bool is_strictly_sorted(const Container& xs)
+{
+    typedef typename Container::value_type T;
+    auto comp = std::less<T>();
+    return is_strictly_sorted_by(comp, xs);
+}
+
+// O(n)
+template <typename Container>
+bool is_sorted(const Container& xs)
+{
+    typedef typename Container::value_type T;
+    auto comp = std::less<T>();
+    return is_sorted_by(comp, xs);
+}
+
+// is_prefix_of("Fun", "FunctionalPlus") == true
+template <typename Container>
+bool is_prefix_of(const Container& token, Container& xs)
+{
+    if (size_of_cont(token) > size_of_cont(xs))
+        return false;
+    return get_range(0, size_of_cont(token), xs) == token;
+}
+
+// is_suffix_of("us", "FunctionalPlus") == true
+template <typename Container>
+bool is_suffix_of(const Container& token, Container& xs)
+{
+    if (size_of_cont(token) > size_of_cont(xs))
+        return false;
+    return get_range(size_of_cont(xs) - size_of_cont(token),
+        size_of_cont(xs), xs) == token;
+}
+
+// all_by(is_even, [2, 4, 6]) == true
+// Returns true for empty containers.
+template <typename UnaryPredicate, typename Container>
+bool all_by(UnaryPredicate p, const Container& xs)
+{
+    check_unary_predicate_for_container<UnaryPredicate, Container>();
+    return std::all_of(std::begin(xs), std::end(xs), p);
+}
+
+// all([true, false, true]) == false
+// Returns true for empty containers.
+template <typename Container>
+bool all(const Container& xs)
+{
+    typedef typename Container::value_type T;
+    return all_by(identity<T>, xs);
+}
+
+// Returns true for empty containers.
+template <typename Container, typename BinaryPredicate>
+bool all_the_same_by(BinaryPredicate p, const Container& xs)
+{
+    check_binary_predicate_for_container<BinaryPredicate, Container>();
+    if (size_of_cont(xs) < 2)
+        return true;
+    auto unaryPredicate = bind_1st_of_2(p, xs.front());
+    return all_by(unaryPredicate, xs);
+}
+
+// Returns true for empty containers.
+template <typename Container>
+bool all_the_same(const Container& xs)
+{
+    typedef typename Container::value_type T;
+    auto binaryPredicate = std::equal_to<T>();
+    return all_the_same_by(binaryPredicate, xs);
+}
+
+// generate_range_step(2, 9, 2) == [2, 4, 6, 8]
+template <typename ContainerOut, typename T>
+ContainerOut generate_range_step
+        (const T start, const T end, const T step)
+{
+    ContainerOut result;
+    std::size_t size = (end - start) / step;
+    prepare_container(result, size);
+    auto it = get_back_inserter<ContainerOut>(result);
+    for (T x = start; x < end; x+=step)
+        *it = x;
+    return result;
+}
+
+// generate_range(2, 9) == [2, 3, 4, 5, 6, 7, 8]
+template <typename ContainerOut, typename T>
+ContainerOut generate_range(const T start, const T end)
+{
+    return generate_range_step<ContainerOut, T>(start, end, 1);
+}
+
+template <typename Container>
+std::vector<std::size_t> all_idxs(const Container& xs)
+{
+    return generate_range<std::vector<std::size_t>, std::size_t>
+        (0, size_of_cont(xs));
+}
+
+template <typename Container,
+    typename T = typename Container::value_type>
+T elem_at_idx(std::size_t idx, const Container& xs)
+{
+    assert(idx < size_of_cont(xs));
+    auto it = std::begin(xs);
+    std::advance(it, idx);
+    return *it;
+}
+
+template <typename Container,
+    typename ContainerIdxs,
+    typename T = typename Container::value_type,
+    typename ContainerOut = std::vector<T>>
+std::vector<T> elems_at_idxs(const ContainerIdxs& idxs, const Container& xs)
+{
+    static_assert(std::is_same<typename ContainerIdxs::value_type, std::size_t>::value, "Indices must be std::size_t");
+    ContainerOut result;
+    prepare_container(result, size_of_cont(idxs));
+    auto itOut = back_inserter(result);
+    for (std::size_t idx : idxs)
+    {
+        *itOut = elem_at_idx(idx, xs);
+    }
+    return result;
+}
+
 } // namespace fplus

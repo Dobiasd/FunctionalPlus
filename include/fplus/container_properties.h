@@ -18,24 +18,6 @@
 namespace fplus
 {
 
-// all_by(is_even, [2, 4, 6]) == true
-// Returns true for empty containers.
-template <typename UnaryPredicate, typename Container>
-bool all_by(UnaryPredicate p, const Container& xs)
-{
-    check_unary_predicate_for_container<UnaryPredicate, Container>();
-    return std::all_of(std::begin(xs), std::end(xs), p);
-}
-
-// all([true, false, true]) == false
-// Returns true for empty containers.
-template <typename Container>
-bool all(const Container& xs)
-{
-    typedef typename Container::value_type T;
-    return all_by(identity<T>, xs);
-}
-
 // any_by(is_odd, [2, 4, 6]) == false
 template <typename UnaryPredicate, typename Container>
 bool any_by(UnaryPredicate p, const Container& xs)
@@ -185,45 +167,6 @@ X median(std::vector<X> xs)
 }
 
 // Returns true for empty containers.
-template <typename Container, typename BinaryPredicate>
-bool all_the_same_by(BinaryPredicate p, const Container& xs)
-{
-    check_binary_predicate_for_container<BinaryPredicate, Container>();
-    if (size_of_cont(xs) < 2)
-        return true;
-    auto unaryPredicate = bind_1st_of_2(p, xs.front());
-    return all_by(unaryPredicate, xs);
-}
-
-// Returns true for empty containers.
-template <typename Container>
-bool all_the_same(const Container& xs)
-{
-    typedef typename Container::value_type T;
-    auto binaryPredicate = std::equal_to<T>();
-    return all_the_same_by(binaryPredicate, xs);
-}
-
-// Returns true for empty containers.
-// O(n^2)
-template <typename Container, typename BinaryPredicate>
-bool all_unique_by_eq(BinaryPredicate p, const Container& xs)
-{
-    check_binary_predicate_for_container<BinaryPredicate, Container>();
-    return size_of_cont(nub_by(p, xs)) == size_of_cont(xs);
-}
-
-// Returns true for empty containers.
-// O(n^2)
-template <typename Container>
-bool all_unique(const Container& xs)
-{
-    typedef typename Container::value_type T;
-    auto comp = std::equal_to<T>();
-    return all_unique_by_eq(comp, xs);
-}
-
-// Returns true for empty containers.
 // O(n*log(n))
 template <typename Container, typename Compare>
 bool all_unique_by_less(Compare comp, const Container& xs)
@@ -244,54 +187,11 @@ bool all_unique_less(const Container& xs)
     return all_unique_by_less(comp, xs);
 }
 
-// comp(a, b) must return true only if a < b.
-// O(n)
-template <typename Container, typename Compare>
-bool is_sorted_by(Compare comp, const Container& xs)
-{
-    check_compare_for_container<Compare, Container>();
-    if (size_of_cont(xs) < 2)
-        return true;
-    auto it1 = std::begin(xs);
-    for (auto it2 = it1 + 1; it2 < std::end(xs); ++it1, ++it2)
-        if (!comp(*it1, *it2))
-            return false;
-    return true;
-}
-
-// O(n)
-template <typename Container>
-bool is_sorted(const Container& xs)
-{
-    typedef typename Container::value_type T;
-    auto comp = std::less_equal<T>();
-    return is_sorted_by(comp, xs);
-}
-
 // is_infix_of("ion", "FunctionalPlus") == true
 template <typename Container>
 bool is_infix_of(const Container& token, Container& xs)
 {
     return is_just(find_first_instance_of_token(token, xs));
-}
-
-// is_prefix_of("Fun", "FunctionalPlus") == true
-template <typename Container>
-bool is_prefix_of(const Container& token, Container& xs)
-{
-    if (size_of_cont(token) > size_of_cont(xs))
-        return false;
-    return get_range(0, size_of_cont(token), xs) == token;
-}
-
-// is_suffix_of("us", "FunctionalPlus") == true
-template <typename Container>
-bool is_suffix_of(const Container& token, Container& xs)
-{
-    if (size_of_cont(token) > size_of_cont(xs))
-        return false;
-    return get_range(size_of_cont(xs) - size_of_cont(token),
-        size_of_cont(xs), xs) == token;
 }
 
 // is_subsequence_of("Final", "FunctionalPlus") == true

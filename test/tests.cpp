@@ -43,6 +43,8 @@ void Test_Numeric()
     assert(clamp(2, 6)(5) == 5);
     assert(clamp(2, 6)(1) == 2);
     assert(clamp(2, 6)(8) == 6);
+
+    assert(int_power(3, 4) == 81);
 }
 
 int APlusTwoTimesBFunc(int a, int b) { return a + 2 * b; }
@@ -432,6 +434,15 @@ void Test_ContainerTools()
         IntVector({1, 2, 2}),
         IntVector({2, 2, 3}),
         IntVector({2, 3, 2})}));
+    typedef std::vector<std::string> string_vec;
+    IntVector vec0123({0,1,2,3});
+    std::string ABCD("ABCD");
+    assert(product(2, ABCD) == string_vec({"AA", "AB", "AC", "AD", "BA", "BB", "BC", "BD", "CA", "CB", "CC", "CD", "DA", "DB", "DC", "DD"}));
+    assert(product(2, vec0123) == IntVectors({{0,0}, {0,1}, {0,2}, {0,3}, {1,0}, {1,1}, {1,2}, {1,3}, {2,0}, {2,1}, {2,2}, {2,3}, {3,0}, {3,1}, {3,2}, {3,3}}));
+    assert(combinations(2, ABCD) == string_vec({"AB", "AC", "AD", "BC", "BD", "CD"}));
+    assert(combinations(2, vec0123) == IntVectors({{0,1}, {0,2}, {0,3}, {1,2}, {1,3}, {2,3}}));
+    assert(permutations(2, ABCD) == string_vec({"AB", "AC", "AD", "BA", "BC", "BD", "CA", "CB", "CD", "DA", "DB", "DC"}));
+    assert(combinations_with_replacement(2, ABCD) == string_vec({"AA", "AB", "AC", "AD", "BB", "BC", "BD", "CC", "CD", "DD"}));
     assert(fill_left(0, 6, IntVector({1,2,3,4})) == IntVector({0,0,1,2,3,4}));
     assert(fill_right(0, 6, IntList({1,2,3,4})) == IntList({1,2,3,4,0,0}));
     assert(fill_left(' ', 6, std::string("12")) == std::string("    12"));
@@ -546,6 +557,9 @@ void Test_ContainerTools()
     assert(is_sorted(IntVector({1,2,3})) == true);
     assert(is_sorted(IntVector({1,2,2})) == true);
     assert(is_sorted(IntVector({1,2,1})) == false);
+    assert(is_strictly_sorted(IntVector({1,2,3})) == true);
+    assert(is_strictly_sorted(IntVector({1,2,2})) == false);
+    assert(is_strictly_sorted(IntVector({1,2,1})) == false);
 
     auto is2 = is_equal_to(2);
     auto is3 = is_equal_to(3);
@@ -935,6 +949,7 @@ int main()
     Test_example_AllIsCalmAndBright();
     Test_example_CollatzSequence();
     std::cout << "Applications OK." << std::endl;
-
+    std::cout << "-------" << std::endl;
     std::cout << "All OK." << std::endl;
+    std::cout << "=======" << std::endl;
 }

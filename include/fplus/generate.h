@@ -6,7 +6,11 @@
 
 #pragma once
 
-#include "container_common.h"
+#include "container_properties.h"
+#include "filter.h"
+#include "numeric.h"
+#include "transform.h"
+#include "composition.h"
 
 namespace fplus
 {
@@ -43,27 +47,6 @@ ContainerOut generate_by_idx(F f, std::size_t amount)
     return ys;
 }
 
-// generate_range_step(2, 9, 2) == [2, 4, 6, 8]
-template <typename ContainerOut, typename T>
-ContainerOut generate_range_step
-        (const T start, const T end, const T step)
-{
-    ContainerOut result;
-    std::size_t size = (end - start) / step;
-    prepare_container(result, size);
-    auto it = get_back_inserter<ContainerOut>(result);
-    for (T x = start; x < end; x+=step)
-        *it = x;
-    return result;
-}
-
-// generate_range(2, 8, 2) == [2, 3, 4, 5, 6, 7, 8]
-template <typename ContainerOut, typename T>
-ContainerOut generate_range(const T start, const T end)
-{
-    return generate_range_step<ContainerOut, T>(start, end, 1);
-}
-
 // repeat(3, [1, 2]) == [1, 2, 1, 2, 1, 2]
 template <typename Container>
 Container repeat(size_t n, const Container& xs)
@@ -97,6 +80,123 @@ ContainerOut infixes(std::size_t length, const ContainerIn& xs)
     }
     return result;
 }
+
+namespace {
+
+template <typename T>
+std::vector<std::vector<T>>
+    product_idxs_helper(
+        const std::vector<T>& xs,
+        const std::vector<std::vector<T>> & acc, std::size_t reps_left)
+{
+    if (reps_left == 1)
+        return acc;
+    typedef std::vector<std::vector<T>> result_t;
+    result_t result;
+    for (const std::vector<T>& a : acc)
+    {
+        auto ys = replicate<result_t>(size_of_cont(xs), a);
+        for (std::size_t i = 0; i < ys.size(); ++i)
+        {
+            ys[i].push_back(xs[i]);
+        }
+        result = append(result, ys);
+    }
+    return product_idxs_helper(xs, result, reps_left - 1);
+}
+
+template <typename ContainerIn,
+    typename T = typename ContainerIn::value_type,
+    typename ContainerOut = std::vector<std::vector<T>>>
+ContainerOut product_idxs(std::size_t power, const ContainerIn& xs)
+{
+    static_assert(std::is_same<T, std::size_t>::value, "T must be std::size_t");
+    typedef std::vector<std::size_t> result_t;
+    auto elem_to_vec = [](const T& x) { return result_t(1, x); };
+    auto singletons = transform(elem_to_vec, xs);
+    return product_idxs_helper(xs, singletons, power);
+}
+
+} // anonymous namespace
+
+// product(2, "ABCD") == AA AB AC AD BA BB BC BD CA CB CC CD DA DB DC DD
+template <typename ContainerIn,
+    typename T = typename ContainerIn::value_type,
+    typename ContainerOut = std::vector<ContainerIn>>
+ContainerOut product(std::size_t power, const ContainerIn& xs_in)
+{
+    std::vector<T> xs = convert_container<std::vector<T>>(xs_in);
+    auto idxs = all_idxs(xs);
+    auto result_idxss = product_idxs(power, idxs);
+    typedef typename ContainerOut::value_type ContainerOutInner;
+    auto to_result_cont = [&](const std::vector<std::size_t>& idxs)
+    {
+        return convert_container_and_elems<ContainerOutInner>(
+            elems_at_idxs(idxs, xs));
+    };
+    return transform(to_result_cont, result_idxss);
+}
+
+// permutations(2, "ABCD") == AB AC AD BA BC BD CA CB CD DA DB DC
+template <typename ContainerIn,
+    typename T = typename ContainerIn::value_type,
+    typename ContainerOut = std::vector<ContainerIn>>
+ContainerOut permutations(std::size_t power, const ContainerIn& xs_in)
+{
+    std::vector<T> xs = convert_container<std::vector<T>>(xs_in);
+    auto idxs = all_idxs(xs);
+    typedef std::vector<std::size_t> idx_vec;
+    auto result_idxss = keep_if(all_unique<idx_vec>,
+        product_idxs(power, idxs));
+    typedef typename ContainerOut::value_type ContainerOutInner;
+    auto to_result_cont = [&](const std::vector<std::size_t>& idxs)
+    {
+        return convert_container_and_elems<ContainerOutInner>(
+            elems_at_idxs(idxs, xs));
+    };
+    return transform(to_result_cont, result_idxss);
+}
+
+// combinations(2, "ABCD") == AB AC AD BC BD CD
+template <typename ContainerIn,
+    typename T = typename ContainerIn::value_type,
+    typename ContainerOut = std::vector<ContainerIn>>
+ContainerOut combinations(std::size_t power, const ContainerIn& xs_in)
+{
+    std::vector<T> xs = convert_container<std::vector<T>>(xs_in);
+    auto idxs = all_idxs(xs);
+    typedef std::vector<std::size_t> idx_vec;
+    auto result_idxss = keep_if(is_strictly_sorted<idx_vec>,
+        product_idxs(power, idxs));
+    typedef typename ContainerOut::value_type ContainerOutInner;
+    auto to_result_cont = [&](const std::vector<std::size_t>& idxs)
+    {
+        return convert_container_and_elems<ContainerOutInner>(
+            elems_at_idxs(idxs, xs));
+    };
+    return transform(to_result_cont, result_idxss);
+}
+
+// combinations_with_replacement(2, "ABCD") == AA AB AC AD BB BC BD CC CD DD
+template <typename ContainerIn,
+    typename T = typename ContainerIn::value_type,
+    typename ContainerOut = std::vector<ContainerIn>>
+ContainerOut combinations_with_replacement(std::size_t power, const ContainerIn& xs_in)
+{
+    std::vector<T> xs = convert_container<std::vector<T>>(xs_in);
+    auto idxs = all_idxs(xs);
+    typedef std::vector<std::size_t> idx_vec;
+    auto result_idxss = keep_if(is_sorted<idx_vec>,
+        product_idxs(power, idxs));
+    typedef typename ContainerOut::value_type ContainerOutInner;
+    auto to_result_cont = [&](const std::vector<std::size_t>& idxs)
+    {
+        return convert_container_and_elems<ContainerOutInner>(
+            elems_at_idxs(idxs, xs));
+    };
+    return transform(to_result_cont, result_idxss);
+}
+
 
 //fill_left(0, 6, [1,2,3,4]) == [0,0,1,2,3,4]
 template <typename Container,

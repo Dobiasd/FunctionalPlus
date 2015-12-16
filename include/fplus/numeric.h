@@ -70,4 +70,12 @@ int ceil(X x)
     return floor(x) + 1;
 }
 
+template <typename X>
+X int_power(X base, X exp)
+{
+    if (exp < 2)
+        return base;
+    return base * int_power(base, exp - 1);
+}
+
 }
