@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "container_properties.h"
 #include "filter.h"
 #include "numeric.h"
 #include "transform.h"
