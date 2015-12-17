@@ -158,7 +158,7 @@ X median(std::vector<X> xs)
     }
     else
     {
-        std::list<X> upperAndLower = {
+        std::vector<X> upperAndLower = {
             xsSorted[size_of_cont(xsSorted) / 2 - 1],
             xsSorted[size_of_cont(xsSorted) / 2]
         };

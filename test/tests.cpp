@@ -369,13 +369,11 @@ void Test_ContainerTools()
     IntVector xs2Times = {1,2,2,3,2,1,2,2,3,2};
 
     typedef std::list<int> IntList;
-    typedef std::list<IntList> IntLists;
+    typedef std::vector<IntList> IntLists;
     IntList intList = { 1,2,2,3,2 };
     IntList intListSorted = { 1,2,2,2,3 };
     IntLists intLists = { { 1 },{ 2, 2 },{ 3 },{ 2 } };
     assert(group(intList) == intLists);
-
-    typedef std::list<std::size_t> IdxList;
 
     assert(transform(squareLambda, xs) == IntVector({1,4,4,9,4}));
     assert(keep_if(is_even, xs) == IntVector({2,2,2}));
@@ -383,8 +381,8 @@ void Test_ContainerTools()
     assert(transform(squareLambda, intList) == IntList({ 1,4,4,9,4 }));
     assert(keep_if(is_even, intList) == IntList({ 2,2,2 }));
     assert(drop_if(is_even, intList) == IntList({ 1,3 }));
-    assert(group(xs) == std::list<IntVector>({IntVector({1}),IntVector({2,2}),IntVector({3}),IntVector({2})}));
-    assert(group_globally(xs) == std::list<IntVector>({IntVector({1}),IntVector({2,2,2}),IntVector({3})}));
+    assert(group(xs) == IntVectors({IntVector({1}),IntVector({2,2}),IntVector({3}),IntVector({2})}));
+    assert(group_globally(xs) == IntVectors({IntVector({1}),IntVector({2,2,2}),IntVector({3})}));
     assert(trim_left(1, intList) == IntList({2,2,3,2}));
     assert(trim_right(2, intList) == IntList({1,2,2,3}));
     assert(trim(0, IntVector({0,2,4,5,6,7,8,0,0})) == IntVector({2,4,5,6,7,8}));
@@ -394,7 +392,7 @@ void Test_ContainerTools()
     assert(trim_token(IntVector({0,1}), IntVector({0,1,7,8,9,0,1})) == IntVector({7,8,9}));
 
     typedef std::pair<std::size_t, int> rle_pair_int;
-    typedef std::list<rle_pair_int> rle_list_int;
+    typedef std::vector<rle_pair_int> rle_list_int;
     IntVector rle_input = {1,2,2,2,2,3,3,2};
     rle_list_int rle_result = {
             std::make_pair(1, 1),
@@ -604,19 +602,19 @@ void Test_ContainerTools()
     assert(find_all_instances_of_token(std::string("Plus"),
         std::string("C Plus Plus is a nice language,") +
         std::string(" and FunctionalPlus makes it even nicer."))
-        == std::list<std::size_t>({ 2, 7, 46 }));
+        == std::vector<std::size_t>({ 2, 7, 46 }));
     assert(find_all_instances_of_token(std::string("xx"), std::string("bxxxxc"))
-        == std::list<std::size_t>({ 1, 2, 3 }));
+        == std::vector<std::size_t>({ 1, 2, 3 }));
     assert(find_all_instances_of_token(std::string("xy"), std::string("xyaaa"))
-        == std::list<std::size_t>({ 0 }));
+        == std::vector<std::size_t>({ 0 }));
     assert(find_all_instances_of_token(std::string("xy"), std::string("aaaxy"))
-        == std::list<std::size_t>({ 3 }));
+        == std::vector<std::size_t>({ 3 }));
     assert(find_all_instances_of_token(std::string("xx"), std::string("xxxxx"))
-        == std::list<std::size_t>({ 0, 1, 2, 3 }));
+        == std::vector<std::size_t>({ 0, 1, 2, 3 }));
     assert(find_all_instances_of_token_non_overlapping(std::string("xx"), std::string("xxxx"))
-        == std::list<std::size_t>({ 0, 2 }));
+        == std::vector<std::size_t>({ 0, 2 }));
     assert(find_all_idxs_of('h', std::string("oh, ha!"))
-        == std::list<std::size_t>({ 1, 4 }));
+        == std::vector<std::size_t>({ 1, 4 }));
     assert(find_first_instance_of_token(std::string("haha"), std::string("oh, hahaha!"))
         == just<std::size_t>(4));
 
@@ -633,7 +631,7 @@ void Test_ContainerTools()
     assert(keep_if(is2, xs) == IntVector({ 2,2,2 }));
     assert(keep_if(is3, xs) == IntVector({ 3 }));
     assert(keep_if(is4, xs) == IntVector());
-    assert(find_all_idxs_of(2, xs) == IdxList({ 1,2,4 }));
+    assert(find_all_idxs_of(2, xs) == IdxVector({ 1,2,4 }));
     assert(count(2, xs) == 3);
     assert(is_infix_of(IntVector({2,3}), xs) == true);
     assert(is_infix_of(IntVector({2,1}), xs) == false);
@@ -714,11 +712,10 @@ void Test_ContainerTools()
     assert(split_at_idx(2, xs) == std::make_pair(IntVector({1,2}), IntVector({2,3,2})));
     assert(partition(is_even, xs) == std::make_pair(IntVector({2,2,2,}), IntVector({1,3})));
 
-    typedef std::list<std::vector<int>> IntVectorList;
     auto splittedAt1And3 = split_at_idxs(IdxVector({1,3}), xs);
     IntVectors splittedAt1And3Dest = {IntVector({1}), IntVector({2,2}), IntVector({3,2})};
     assert(splittedAt1And3 == splittedAt1And3Dest);
-    assert(split(3, true, xs) == IntVectorList({IntVector({1, 2, 2}), IntVector({2})}));
+    assert(split(3, true, xs) == IntVectors({IntVector({1, 2, 2}), IntVector({2})}));
     assert(split_by(is_even, true, IntList({1,3,2,2,5,5,3,6,7,9})) == IntLists({{1,3},{},{5,5,3},{7,9}}));
     typedef std::map<int, std::size_t> IntSizeTMap;
     IntSizeTMap OccurrencesResult = {{1, 1}, {2, 3}, {3, 1}};
@@ -738,18 +735,18 @@ void Test_StringTools()
     assert(trim_whitespace_right(untrimmed) == "  \n \t   foo");
     assert(trim_whitespace(untrimmed) == "foo");
     std::string text = "Hi,\nI am a\r\n***strange***\n\rstring.";
-    std::list<std::string> textAsLinesWithEmty = {
+    std::vector<std::string> textAsLinesWithEmty = {
         std::string("Hi,"),
         std::string("I am a"),
         std::string("***strange***"),
         std::string(""),
         std::string("string.") };
-    std::list<std::string> textAsLinesWithoutEmpty = {
+    std::vector<std::string> textAsLinesWithoutEmpty = {
         std::string("Hi,"),
         std::string("I am a"),
         std::string("***strange***"),
         std::string("string.") };
-    std::list<std::string> textAsWords = {
+    std::vector<std::string> textAsWords = {
         std::string("Hi"),
         std::string("I"),
         std::string("am"),

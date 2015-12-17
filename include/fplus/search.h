@@ -86,7 +86,7 @@ maybe<std::size_t> find_last_idx
 }
 
 // find_all_idxs_by(is_even, [1, 3, 4, 6, 9]) == [2, 3]
-template <typename ContainerOut = std::list<std::size_t>,
+template <typename ContainerOut = std::vector<std::size_t>,
         typename UnaryPredicate, typename Container>
 ContainerOut find_all_idxs_by(UnaryPredicate p, const Container& xs)
 {
@@ -104,7 +104,7 @@ ContainerOut find_all_idxs_by(UnaryPredicate p, const Container& xs)
 }
 
 // find_all_idxs_of(4, [1, 3, 4, 4, 9]) == [2, 3]
-template <typename ContainerOut = std::list<std::size_t>,
+template <typename ContainerOut = std::vector<std::size_t>,
         typename Container,
         typename T = typename Container::value_type>
 ContainerOut find_all_idxs_of
@@ -114,7 +114,7 @@ ContainerOut find_all_idxs_of
 }
 
 // find_all_instances_of_token("haha", "oh, hahaha!") == [4, 6]
-template <typename ContainerOut = std::list<std::size_t>, typename Container>
+template <typename ContainerOut = std::vector<std::size_t>, typename Container>
 ContainerOut find_all_instances_of_token(const Container& token,
         const Container& xs)
 {
@@ -148,7 +148,7 @@ ContainerOut find_all_instances_of_token(const Container& token,
 }
 
 // find_all_instances_of_token_non_overlapping("haha", "oh, hahaha!") == [4]
-template <typename ContainerOut = std::list<std::size_t>, typename Container>
+template <typename ContainerOut = std::vector<std::size_t>, typename Container>
 ContainerOut find_all_instances_of_token_non_overlapping
         (const Container& token, const Container& xs)
 {

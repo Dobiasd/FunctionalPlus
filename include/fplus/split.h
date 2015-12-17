@@ -19,7 +19,7 @@ namespace fplus
 
 // group_by((==), [1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2],[3],[2,2],[4],[5,5]]
 template <typename BinaryPredicate, typename ContainerIn,
-        typename ContainerOut = typename std::list<ContainerIn>>
+        typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
 {
     check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
@@ -43,7 +43,7 @@ ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
 
 // group([1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2],[3],[2,2],[4],[5,5]]
 template <typename ContainerIn,
-        typename ContainerOut = typename std::list<ContainerIn>>
+        typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group(const ContainerIn& xs)
 {
     static_assert(std::is_same<ContainerIn,
@@ -57,7 +57,7 @@ ContainerOut group(const ContainerIn& xs)
 // group_globally_by((==), [1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2,2,2],[3],[4],[5,5]]
 // O(n^2)
 template <typename BinaryPredicate, typename ContainerIn,
-        typename ContainerOut = typename std::list<ContainerIn>>
+        typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group_globally_by(BinaryPredicate p, const ContainerIn& xs)
 {
     check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
@@ -89,7 +89,7 @@ ContainerOut group_globally_by(BinaryPredicate p, const ContainerIn& xs)
 // group_globally([1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2,2,2],[3],[4],[5,5]]
 // O(n^2)
 template <typename ContainerIn,
-        typename ContainerOut = typename std::list<ContainerIn>>
+        typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group_globally(const ContainerIn& xs)
 {
     static_assert(std::is_same<ContainerIn,
@@ -102,7 +102,7 @@ ContainerOut group_globally(const ContainerIn& xs)
 
 // split_by(is_even, true, [1,3,2,2,5,5,3,6,7,9]) == [[1,3],[],[5,5,3],[7,9]]
 template <typename UnaryPredicate, typename ContainerIn,
-        typename ContainerOut = typename std::list<ContainerIn>>
+        typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut split_by
         (UnaryPredicate pred, bool allowEmpty, const ContainerIn& xs)
 {
@@ -140,7 +140,7 @@ ContainerOut split_by
 // split(0, [1,3,2,0,0,6,0,7,5]) == [[1,3,2],[],[6],[7,5]]
 template <typename ContainerIn,
         typename T = typename ContainerIn::value_type,
-        typename ContainerOut = typename std::list<ContainerIn>>
+        typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut split (const T& x, bool allowEmpty, const ContainerIn& xs)
 {
     return split_by(is_equal_to(x), allowEmpty, xs);
@@ -201,14 +201,14 @@ ContainerOut split_at_idxs(const ContainerIdxs& idxsIn, const ContainerIn& xs)
 
 // split_by_token(", ", "foo, bar, baz") == ["foo", "bar", "baz"]
 template <typename ContainerIn,
-        typename ContainerOut = typename std::list<ContainerIn>>
+        typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut split_by_token(const ContainerIn& token,
         bool allowEmpty, const ContainerIn& xs)
 {
     static_assert(std::is_same<ContainerIn, typename ContainerOut::value_type>::value, "Containers do not match.");
     auto instances = find_all_instances_of_token_non_overlapping(token, xs);
     *get_back_inserter(instances) = size_of_cont(xs);
-    std::list<ContainerIn> result;
+    ContainerOut result;
     auto itOut = get_back_inserter(result);
     std::size_t lastEnd = 0;
     for (std::size_t idx : instances)
@@ -239,7 +239,7 @@ MapOut count_occurrences(const ContainerIn& xs)
 template <typename BinaryPredicate,
         typename ContainerIn,
         typename T = typename ContainerIn::value_type,
-        typename ContainerOut = typename std::list<std::pair<std::size_t, T>>>
+        typename ContainerOut = typename std::vector<std::pair<std::size_t, T>>>
 ContainerOut run_length_encode_by(BinaryPredicate pred, const ContainerIn& xs)
 {
     check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
@@ -255,7 +255,7 @@ ContainerOut run_length_encode_by(BinaryPredicate pred, const ContainerIn& xs)
 // run_length_encode([1,2,2,2,2,3,3,2)) == [(1,1),(4,2),(2,3),(1,2)]
 template <typename ContainerIn,
         typename T = typename ContainerIn::value_type,
-        typename ContainerOut = typename std::list<std::pair<std::size_t, T>>>
+        typename ContainerOut = typename std::vector<std::pair<std::size_t, T>>>
 ContainerOut run_length_encode(const ContainerIn& xs)
 {
     return run_length_encode_by(is_equal_by(identity<T>), xs);

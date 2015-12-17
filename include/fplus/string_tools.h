@@ -50,7 +50,7 @@ String clean_newlines(const String& str)
 
 // Splits a string by the found whitespace characters.
 // split_words("How are you?") == ["How", "are", "you?"]
-template <typename String, typename ContainerOut = std::list<String>>
+template <typename String, typename ContainerOut = std::vector<String>>
 ContainerOut split_words(const String& str)
 {
     return split_by(logical_not(is_letter_or_digit<String>), false, str);
@@ -58,7 +58,7 @@ ContainerOut split_words(const String& str)
 
 // Splits a string by the found newlines.
 // split_lines("Hi,\nhow are you?") == ["Hi,", "How are you"]
-template <typename String, typename ContainerOut = std::list<String>>
+template <typename String, typename ContainerOut = std::vector<String>>
 ContainerOut split_lines(const String& str, bool allowEmpty)
 {
     return split_by(is_line_break<String>, allowEmpty, clean_newlines(str));
