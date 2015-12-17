@@ -443,8 +443,8 @@ void Test_ContainerTools()
     IntList list0123({0,1,2,3});
     std::string ABCD("ABCD");
     typedef std::vector<std::list<int>> intListVec;
-    assert(product(2, ABCD) == string_vec({"AA", "AB", "AC", "AD", "BA", "BB", "BC", "BD", "CA", "CB", "CC", "CD", "DA", "DB", "DC", "DD"}));
-    assert(product(2, vec0123) == IntVectors({{0,0}, {0,1}, {0,2}, {0,3}, {1,0}, {1,1}, {1,2}, {1,3}, {2,0}, {2,1}, {2,2}, {2,3}, {3,0}, {3,1}, {3,2}, {3,3}}));
+    assert(carthesian_product_n(2, ABCD) == string_vec({"AA", "AB", "AC", "AD", "BA", "BB", "BC", "BD", "CA", "CB", "CC", "CD", "DA", "DB", "DC", "DD"}));
+    assert(carthesian_product_n(2, vec0123) == IntVectors({{0,0}, {0,1}, {0,2}, {0,3}, {1,0}, {1,1}, {1,2}, {1,3}, {2,0}, {2,1}, {2,2}, {2,3}, {3,0}, {3,1}, {3,2}, {3,3}}));
     assert(combinations(2, ABCD) == string_vec({"AB", "AC", "AD", "BC", "BD", "CD"}));
     assert(combinations(1, ABCD) == string_vec({"A", "B", "C", "D"}));
     assert(combinations(3, ABCD) == string_vec({"ABC", "ABD", "ACD", "BCD"}));
