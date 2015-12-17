@@ -141,7 +141,7 @@ ContainerOut split_by
 template <typename ContainerIn,
         typename T = typename ContainerIn::value_type,
         typename ContainerOut = typename std::vector<ContainerIn>>
-ContainerOut split (const T& x, bool allowEmpty, const ContainerIn& xs)
+ContainerOut split(const T& x, bool allowEmpty, const ContainerIn& xs)
 {
     return split_by(is_equal_to(x), allowEmpty, xs);
 }
