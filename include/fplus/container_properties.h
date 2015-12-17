@@ -143,8 +143,9 @@ Result mean(const Container& xs)
 }
 
 // median([5, 6, 4, 3, 2, 6, 7, 9, 3]) == 5
-template <typename X>
-X median(std::vector<X> xs)
+template <typename Container,
+        typename T = typename Container::value_type>
+T median(const Container& xs)
 {
     assert(is_not_empty(xs));
 
@@ -154,15 +155,18 @@ X median(std::vector<X> xs)
     auto xsSorted = sort(xs);
     if (size_of_cont(xsSorted) % 2 == 1)
     {
-        return xsSorted[size_of_cont(xsSorted) / 2];
+        auto it = std::begin(xsSorted);
+        std::advance(it, size_of_cont(xsSorted) / 2);
+        return *it;
     }
     else
     {
-        std::vector<X> upperAndLower = {
-            xsSorted[size_of_cont(xsSorted) / 2 - 1],
-            xsSorted[size_of_cont(xsSorted) / 2]
-        };
-        return mean<X>(upperAndLower);
+        auto it1 = std::begin(xsSorted);
+        std::advance(it1, size_of_cont(xsSorted) / 2 - 1);
+        auto it2 = it1;
+        ++it2;
+        std::vector<T> upperAndLower = { *it1, *it2 };
+        return mean<T>(upperAndLower);
     }
 }
 
