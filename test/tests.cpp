@@ -47,7 +47,7 @@ void Test_Numeric()
     assert(int_power(3, 0) == 1);
     assert(int_power(3, 1) == 3);
     assert(int_power(3, 2) == 9);
-    assert(int_power(3, 3) == 21);
+    assert(int_power(3, 3) == 27);
     assert(int_power(3, 4) == 81);
 }
 
