@@ -197,6 +197,21 @@ ContainerOut combinations_with_replacement(std::size_t power,
     return transform(to_result_cont, result_idxss);
 }
 
+// power_set("xyz") == ["", "x", "y", "z", "xy", "xz", "yz", "xyz"]
+template <typename ContainerIn,
+    typename T = typename ContainerIn::value_type,
+    typename ContainerOut = std::vector<ContainerIn>>
+ContainerOut power_set(const ContainerIn& xs_in)
+{
+    return append(
+        ContainerOut(1),
+        concat(
+            generate_by_idx<std::vector<ContainerOut>>(
+                bind_1st_of_2(
+                    flip(combinations<ContainerIn, T, ContainerOut>),
+                    xs_in),
+                size_of_cont(xs_in) + 1)));
+}
 
 //fill_left(0, 6, [1,2,3,4]) == [0,0,1,2,3,4]
 template <typename Container,

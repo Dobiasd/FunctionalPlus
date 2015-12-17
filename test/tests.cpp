@@ -451,6 +451,7 @@ void Test_ContainerTools()
     assert(combinations(2, list0123) == intListVec({{0,1}, {0,2}, {0,3}, {1,2}, {1,3}, {2,3}}));
     assert(permutations(2, ABCD) == string_vec({"AB", "AC", "AD", "BA", "BC", "BD", "CA", "CB", "CD", "DA", "DB", "DC"}));
     assert(combinations_with_replacement(2, ABCD) == string_vec({"AA", "AB", "AC", "AD", "BB", "BC", "BD", "CC", "CD", "DD"}));
+    assert(power_set(std::string("xyz")) == string_vec({"", "x", "y", "z", "xy", "xz", "yz", "xyz"}));
     assert(fill_left(0, 6, IntVector({1,2,3,4})) == IntVector({0,0,1,2,3,4}));
     assert(fill_right(0, 6, IntList({1,2,3,4})) == IntList({1,2,3,4,0,0}));
     assert(fill_left(' ', 6, std::string("12")) == std::string("    12"));
