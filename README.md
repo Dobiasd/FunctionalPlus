@@ -14,7 +14,7 @@ Say you have a list of numbers and are interested in the odd ones only.
 bool is_odd(int x) { return x % 2 == 1; }
 int main()
 {
-    typedef list<int> Ints;
+    typedef vector<int> Ints;
     Ints numbers = { 24, 11, 65, 44, 80, 18, 73, 90, 69, 18 };
     // todo: get odd values from numbers ...
 }
@@ -176,12 +176,12 @@ Performance
 -----------
 The basic functions are fast, thanks to C++'s concept of abstraction without overhead. Here are some measurements from the first example, taken on a standard desktop PC, compiled with GCC and the `O3` flag.
 ```
-10000 random numbers, keep odd ones, 1000 consecutive runs accumulated
+5000 random numbers, keep odd ones, 20000 consecutive runs accumulated
 ----------------------------------------------------------------------
 
 | Hand-written for loop | std::copy_if | fplus::keep_if |
 |-----------------------|--------------|----------------|
-|               0.468 s |      0.475 s |        0.463 s |
+|               0.632 s |      0.641 s |        0.627 s |
 ```
 
 So the compiler seems to do a very good job in optimizing and inlining everthing to basically equal machine code performance-wise.

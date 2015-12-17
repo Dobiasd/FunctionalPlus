@@ -787,8 +787,8 @@ void Test_example_KeepIf()
     }
 }
 
-void run_n_times(std::function<std::list<int>(std::list<int>)> f,
-    std::size_t n, const std::string& name, const std::list<int>& inList)
+void run_n_times(std::function<std::vector<int>(std::vector<int>)> f,
+    std::size_t n, const std::string& name, const std::vector<int>& inList)
 {
     typedef std::chrono::time_point<std::chrono::system_clock> Time;
     Time startTime = std::chrono::system_clock::now();
@@ -806,7 +806,7 @@ void Test_example_KeepIf_performance()
 {
     using namespace fplus;
 
-    typedef std::list<int> Ints;
+    typedef std::vector<int> Ints;
     auto run_loop = [&](const Ints numbers)
     {
         Ints odds;
@@ -829,10 +829,10 @@ void Test_example_KeepIf_performance()
 #if defined NDEBUG || defined _DEBUG
     std::size_t numRuns = 10;
 #else
-    std::size_t numRuns = 1000;
+    std::size_t numRuns = 20000;
 #endif
 
-    Ints numbers = generate<Ints>(rand, 10000);
+    Ints numbers = generate<Ints>(rand, 5000);
     run_n_times(run_loop, numRuns, "Hand-written for loop", numbers);
     run_n_times(run_stl, numRuns, "std::copy_if", numbers);
     run_n_times(run_FunctionalPlus, numRuns, "FunctionalPlus::keep_if", numbers);
