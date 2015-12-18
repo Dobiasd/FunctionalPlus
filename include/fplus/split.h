@@ -270,7 +270,7 @@ template <typename ContainerIn,
 ContainerOut run_length_decode(const ContainerIn& pairs)
 {
     static_assert(std::is_convertible<Cnt, std::size_t>::value, "Count type must be convertible to std::size_t.");
-    auto pair_to_vec = apply_to_pair(replicate<std::vector<T>>);
+    auto pair_to_vec = apply_to_pair(replicate<T>);
     return concat(transform(pair_to_vec, pairs));
 }
 

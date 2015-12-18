@@ -54,9 +54,10 @@ Container repeat(size_t n, const Container& xs)
     return concat(xss);
 }
 
-// replicate(3, [1]) == [1, 1, 1]
-template <typename ContainerOut>
-ContainerOut replicate(size_t n, const typename ContainerOut::value_type& x)
+// replicate(3, 1) == [1, 1, 1]
+template <typename T,
+        typename ContainerOut = std::vector<T>>
+ContainerOut replicate(size_t n, const T& x)
 {
     return ContainerOut(n, x);
 }
@@ -82,39 +83,27 @@ ContainerOut infixes(std::size_t length, const ContainerIn& xs)
 
 namespace {
     template <typename T>
-    std::vector<std::vector<T>>
-        carthesian_product_n_idxs_helper(
-            const std::vector<T>& xs,
-            const std::vector<std::vector<T>> & acc, std::size_t reps_left)
-    {
-        static_assert(std::is_same<T, std::size_t>::value, "T must be std::size_t");
-        if (reps_left == 1)
-            return acc;
-        typedef std::vector<std::vector<T>> result_t;
-        result_t result;
-        for (const std::vector<T>& a : acc)
-        {
-            auto ys = replicate<result_t>(size_of_cont(xs), a);
-            for (std::size_t i = 0; i < ys.size(); ++i)
-            {
-                ys[i].push_back(xs[i]);
-            }
-            result = append(result, ys);
-        }
-        return carthesian_product_n_idxs_helper(xs, result, reps_left - 1);
-    }
-    template <typename T,
-        typename ContainerOut = std::vector<std::vector<T>>>
-    ContainerOut carthesian_product_n_idxs(std::size_t power,
+    std::vector<std::vector<T>> carthesian_product_n_idxs(std::size_t power,
             const std::vector<T>& xs)
     {
+        typedef std::vector<T> Vec;
+        typedef std::vector<Vec> VecVec;
         if (power == 0)
-            return ContainerOut();
+            return VecVec();
         static_assert(std::is_same<T, std::size_t>::value, "T must be std::size_t");
-        typedef std::vector<std::size_t> result_t;
-        auto elem_to_vec = [](const T& x) { return result_t(1, x); };
-        auto singletons = transform(elem_to_vec, xs);
-        return carthesian_product_n_idxs_helper(xs, singletons, power);
+        auto go = [](const Vec& elems, const VecVec& acc)
+        {
+            VecVec result;
+            for (const T& x : elems)
+            {
+                for (const Vec& tail : acc)
+                {
+                    result.push_back(append(Vec(1, x), tail));
+                }
+            }
+            return result;
+        };
+        return fold_right(go, VecVec(1), replicate(power, xs));
     }
 } // anonymous namespace
 
@@ -220,7 +209,7 @@ Container fill_left(const T& x, std::size_t min_size, const Container& xs)
 {
     if (min_size <= size_of_cont(xs))
         return xs;
-    return append(replicate<Container>(min_size - size_of_cont(xs), x), xs);
+    return append(replicate<T, Container>(min_size - size_of_cont(xs), x), xs);
 }
 
 //fill_right(0, 6, [1,2,3,4]) == [1,2,3,4,0,0]
@@ -230,7 +219,7 @@ Container fill_right(const T& x, std::size_t min_size, const Container& xs)
 {
     if (min_size <= size_of_cont(xs))
         return xs;
-    return append(xs, replicate<Container>(min_size - size_of_cont(xs), x));
+    return append(xs, replicate<T, Container>(min_size - size_of_cont(xs), x));
 }
 
 } // namespace fplus

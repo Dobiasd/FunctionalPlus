@@ -272,7 +272,7 @@ void Test_Maybe()
     Ints wholeNumbers = { -3, 4, 16, -1 };
     assert(transform_and_keep_justs(sqrtToMaybeInt, wholeNumbers)
             == Ints({2,4}));
-    assert(transform_and_concat(bind_1st_of_2(replicate<Ints>, 3), Ints{ 1,2 })
+    assert(transform_and_concat(bind_1st_of_2(replicate<int>, 3), Ints{ 1,2 })
             == Ints({ 1,1,1,2,2,2 }));
 }
 
@@ -432,6 +432,7 @@ void Test_ContainerTools()
     assert(concat(intLists) == intList);
     assert(concat(IntVectors(2, xs)) == xs2Times);
     assert(repeat(2, xs) == xs2Times);
+    assert(replicate(2, xs) == IntVectors({xs, xs}));
     assert(infixes(3, xs) == IntVectors({
         IntVector({1, 2, 2}),
         IntVector({2, 2, 3}),
