@@ -86,11 +86,11 @@ namespace {
     std::vector<std::vector<T>> carthesian_product_n_idxs(std::size_t power,
             const std::vector<T>& xs)
     {
+        static_assert(std::is_same<T, std::size_t>::value, "T must be std::size_t");
         typedef std::vector<T> Vec;
         typedef std::vector<Vec> VecVec;
         if (power == 0)
             return VecVec();
-        static_assert(std::is_same<T, std::size_t>::value, "T must be std::size_t");
         auto go = [](const Vec& elems, const VecVec& acc)
         {
             VecVec result;
