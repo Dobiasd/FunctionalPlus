@@ -447,11 +447,16 @@ void Test_ContainerTools()
     assert(combinations(2, ABCD) == string_vec({"AB", "AC", "AD", "BC", "BD", "CD"}));
     assert(combinations(1, ABCD) == string_vec({"A", "B", "C", "D"}));
     assert(combinations(3, ABCD) == string_vec({"ABC", "ABD", "ACD", "BCD"}));
-    assert(combinations(0, ABCD) == string_vec({}));
     assert(combinations(2, vec0123) == IntVectors({{0,1}, {0,2}, {0,3}, {1,2}, {1,3}, {2,3}}));
     assert(combinations(2, list0123) == intListVec({{0,1}, {0,2}, {0,3}, {1,2}, {1,3}, {2,3}}));
     assert(permutations(2, ABCD) == string_vec({"AB", "AC", "AD", "BA", "BC", "BD", "CA", "CB", "CD", "DA", "DB", "DC"}));
     assert(combinations_with_replacement(2, ABCD) == string_vec({"AA", "AB", "AC", "AD", "BB", "BC", "BD", "CC", "CD", "DD"}));
+    assert(carthesian_product_n(0, vec0123) == IntVectors({IntVector()}));
+    assert(permutations(0, vec0123) == IntVectors({IntVector()}));
+    assert(combinations(0, IntVector()) == IntVectors({IntVector()}));
+    assert(combinations(0, vec0123) == IntVectors({IntVector()}));
+    assert(combinations(0, ABCD) == string_vec({""}));
+    assert(combinations_with_replacement(0, vec0123) == IntVectors({IntVector()}));
     assert(power_set(std::string("xyz")) == string_vec({"", "x", "y", "z", "xy", "xz", "yz", "xyz"}));
     assert(fill_left(0, 6, IntVector({1,2,3,4})) == IntVector({0,0,1,2,3,4}));
     assert(fill_right(0, 6, IntList({1,2,3,4})) == IntList({1,2,3,4,0,0}));

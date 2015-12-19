@@ -83,8 +83,8 @@ ContainerOut infixes(std::size_t length, const ContainerIn& xs)
 
 namespace {
     template <typename T>
-    std::vector<std::vector<T>> carthesian_product_n_idxs(std::size_t power,
-            const std::vector<T>& xs)
+    std::vector<std::vector<T>> carthesian_product_n_idxs_without_empty
+            (std::size_t power, const std::vector<T>& xs)
     {
         static_assert(std::is_same<T, std::size_t>::value, "T must be std::size_t");
         typedef std::vector<T> Vec;
@@ -113,9 +113,11 @@ template <typename ContainerIn,
     typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut carthesian_product_n(std::size_t power, const ContainerIn& xs_in)
 {
+    if (power == 0)
+        return ContainerOut(1);
     std::vector<T> xs = convert_container<std::vector<T>>(xs_in);
     auto idxs = all_idxs(xs);
-    auto result_idxss = carthesian_product_n_idxs(power, idxs);
+    auto result_idxss = carthesian_product_n_idxs_without_empty(power, idxs);
     typedef typename ContainerOut::value_type ContainerOutInner;
     auto to_result_cont = [&](const std::vector<std::size_t>& idxs)
     {
@@ -131,11 +133,13 @@ template <typename ContainerIn,
     typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut permutations(std::size_t power, const ContainerIn& xs_in)
 {
+    if (power == 0)
+        return ContainerOut(1);
     std::vector<T> xs = convert_container<std::vector<T>>(xs_in);
     auto idxs = all_idxs(xs);
     typedef std::vector<std::size_t> idx_vec;
     auto result_idxss = keep_if(all_unique<idx_vec>,
-        carthesian_product_n_idxs(power, idxs));
+        carthesian_product_n_idxs_without_empty(power, idxs));
     typedef typename ContainerOut::value_type ContainerOutInner;
     auto to_result_cont = [&](const std::vector<std::size_t>& idxs)
     {
@@ -151,11 +155,13 @@ template <typename ContainerIn,
     typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut combinations(std::size_t power, const ContainerIn& xs_in)
 {
+    if (power == 0)
+        return ContainerOut(1);
     std::vector<T> xs = convert_container<std::vector<T>>(xs_in);
     auto idxs = all_idxs(xs);
     typedef std::vector<std::size_t> idx_vec;
     auto result_idxss = keep_if(is_strictly_sorted<idx_vec>,
-        carthesian_product_n_idxs(power, idxs));
+        carthesian_product_n_idxs_without_empty(power, idxs));
     typedef typename ContainerOut::value_type ContainerOutInner;
     auto to_result_cont = [&](const std::vector<std::size_t>& idxs)
     {
@@ -172,11 +178,13 @@ template <typename ContainerIn,
 ContainerOut combinations_with_replacement(std::size_t power,
         const ContainerIn& xs_in)
 {
+    if (power == 0)
+        return ContainerOut(1);
     std::vector<T> xs = convert_container<std::vector<T>>(xs_in);
     auto idxs = all_idxs(xs);
     typedef std::vector<std::size_t> idx_vec;
     auto result_idxss = keep_if(is_sorted<idx_vec>,
-        carthesian_product_n_idxs(power, idxs));
+        carthesian_product_n_idxs_without_empty(power, idxs));
     typedef typename ContainerOut::value_type ContainerOutInner;
     auto to_result_cont = [&](const std::vector<std::size_t>& idxs)
     {
@@ -192,14 +200,12 @@ template <typename ContainerIn,
     typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut power_set(const ContainerIn& xs_in)
 {
-    return append(
-        ContainerOut(1),
-        concat(
-            generate_by_idx<std::vector<ContainerOut>>(
-                bind_1st_of_2(
-                    flip(combinations<ContainerIn, T, ContainerOut>),
-                    xs_in),
-                size_of_cont(xs_in) + 1)));
+    return concat(
+        generate_by_idx<std::vector<ContainerOut>>(
+            bind_1st_of_2(
+                flip(combinations<ContainerIn, T, ContainerOut>),
+                xs_in),
+            size_of_cont(xs_in) + 1));
 }
 
 //fill_left(0, 6, [1,2,3,4]) == [0,0,1,2,3,4]
