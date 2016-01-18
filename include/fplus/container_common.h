@@ -248,13 +248,29 @@ Container replace_range(std::size_t idxBegin,
     return insert_at(idxBegin, token, remove_range(idxBegin, idxEnd, xs));
 }
 
-// nth_element(2, [5,6,7,8]) == 7
-template <typename Container>
-typename Container::value_type nth_element
-        (const std::size_t n, const Container& xs)
+// nth_element(2)([5,6,7,8]) == 7
+template <typename Container,
+        typename T = typename Container::value_type>
+std::function<T(const Container& xs)> nth_element(std::size_t n)
 {
-    assert(size_of_cont(xs) > n);
-    return xs[n];
+    return [n](const Container& xs)
+    {
+        assert(size_of_cont(xs) > n);
+        return xs[n];
+    };
+}
+
+// nth_element_flipped([5,6,7,8])(2) == 7
+// Can be used to erase outer container type.
+template <typename Container,
+        typename T = typename Container::value_type>
+std::function<T(std::size_t n)> nth_element_flipped(const Container& xs)
+{
+    return [xs](std::size_t n)
+    {
+        assert(size_of_cont(xs) > n);
+        return xs[n];
+    };
 }
 
 // reverse([0,4,2,6]) == [6,2,4,0]

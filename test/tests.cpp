@@ -594,7 +594,8 @@ void Test_ContainerTools()
     assert(find_last_idx(2, xs) == just<size_t>(4));
     assert(find_last_idx(4, xs) == nothing<size_t>());
 
-    assert(nth_element(2, xs) == 2);
+    assert(nth_element<IntVector>(2)(xs) == 2);
+    assert(nth_element_flipped(xs)(2) == 2);
 
     IntPair intPair = std::make_pair(2, 3);
     assert(fst(intPair) == 2);
