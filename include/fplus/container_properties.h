@@ -200,7 +200,7 @@ bool is_infix_of(const Container& token, Container& xs)
 
 // is_subsequence_of("Final", "FunctionalPlus") == true
 template <typename Container>
-bool is_subsequence_of(const Container& seq, Container& xs)
+bool is_subsequence_of(const Container& seq, const Container& xs)
 {
     if (is_empty(seq))
         return true;
