@@ -101,6 +101,14 @@ std::function<GOut(FIn)> compose(F f, G g)
     return [f, g](FIn x) { return g(f(x)); };
 }
 
+template <typename X, typename F,
+    typename FOut = typename utils::function_traits<F>::result_type>
+FOut forward_apply(const X& x, F f)
+{
+    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    return f(x);
+}
+
 // Forward composition: compose(f, g, h)(x) = h(g(f(x)))
 template <typename F, typename G, typename H,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,

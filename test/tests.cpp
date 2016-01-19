@@ -93,6 +93,8 @@ void Test_Composition()
     using namespace fplus;
     auto square = [](int x){ return x*x; };
 
+    assert(forward_apply(3, square) == 9);
+
     typedef IntCont Row;
     Row row = {1,2,3};
 
@@ -107,6 +109,7 @@ void Test_Composition()
     assert((compose(square, square, square)(2)) == 256);
     assert((compose(square, square, square, square)(2)) == 65536);
     assert((compose(square, square, square, square, square)(1)) == 1);
+
     auto add3 = [](int x, int y, int z) { return x + y + z; };
     assert(bind_1st_and_2nd_of_3(add3, 3, 5)(7) == 15);
     auto APlusTwoTimesB = [](int a, int b) { return a + 2 * b; };
