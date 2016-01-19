@@ -254,6 +254,11 @@ void Test_Maybe()
     assert(Or42(y) == 42);
     auto squareMaybe = lift_maybe(square);
     auto sqrtAndSqrt = and_then_maybe(sqrtToMaybe, sqrtToMaybe);
+    auto sqrtIntAndSqrtIntAndSqrtInt = and_then_maybe(sqrtToMaybeInt, sqrtToMaybeInt, sqrtToMaybeInt);
+    std::cout << show_maybe(sqrtIntAndSqrtIntAndSqrtInt(16)) << std::endl;
+    assert(sqrtIntAndSqrtIntAndSqrtInt(256) == just(2));
+    auto sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt = and_then_maybe(sqrtToMaybeInt, sqrtToMaybeInt, sqrtToMaybeInt, sqrtToMaybeInt);
+    assert(sqrtIntAndSqrtIntAndSqrtInt(65536) == just(2));
     assert(squareMaybe(x) == just(4));
     assert(squareMaybe(y) == nothing<int>());
     assert((lift_maybe(SquareAndSquare))(x) == just(16));
@@ -306,6 +311,11 @@ void Test_Result()
     auto sqrtAndSqrt = and_then_result(sqrtToResult, sqrtToResult);
     assert(squareResult(x) == (ok<int, std::string>(4)));
     assert(squareResult(y) == (error<int>(std::string("an error"))));
+
+    auto sqrtIntAndSqrtIntAndSqrtInt = and_then_result(sqrtToResultInt, sqrtToResultInt, sqrtToResultInt);
+    assert(sqrtIntAndSqrtIntAndSqrtInt(16) == (ok<int, std::string>(2)));
+    auto sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt = and_then_result(sqrtToResultInt, sqrtToResultInt, sqrtToResultInt, sqrtToResultInt);
+    assert(sqrtIntAndSqrtIntAndSqrtInt(256) == (ok<int, std::string>(2)));
 
     assert((lift_result<std::string>(SquareAndSquare))(x) == (ok<int, std::string>(16)));
     auto LiftedIntToFloat = lift_result<std::string>(IntToFloat);

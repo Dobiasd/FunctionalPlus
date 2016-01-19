@@ -174,9 +174,9 @@ template <typename F, typename G,
     typename FOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::result_type>::type>::type,
     typename GIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<G>::template arg<0>::type>::type>::type,
     typename GOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<G>::result_type>::type>::type,
-    typename C_ok = typename GOut::ok_t,
-    typename C_error = typename GOut::error_t>
-std::function<result<C_ok, C_error>(const FIn&)> and_then_result(F f, G g) {
+    typename Ok = typename GOut::ok_t,
+    typename Error = typename GOut::error_t>
+std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g) {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
     static_assert(std::is_convertible<typename FOut::ok_t,GIn>::value, "Function parameter types do not match");
@@ -185,8 +185,26 @@ std::function<result<C_ok, C_error>(const FIn&)> and_then_result(F f, G g) {
         auto resultB = f(x);
         if (is_ok(resultB))
             return g(unsafe_get_ok(resultB));
-        return error<C_ok, C_error>(unsafe_get_error(resultB));
+        return error<Ok, Error>(unsafe_get_error(resultB));
     };
+}
+
+template <typename F, typename G, typename H,
+    typename FIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename HOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<H>::result_type>::type>::type,
+    typename Ok = typename HOut::ok_t,
+    typename Error = typename HOut::error_t>
+std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g, H h) {
+    return and_then_result(and_then_result(f, g), h);
+}
+
+template <typename F, typename G, typename H, typename I,
+    typename FIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename IOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<I>::result_type>::type>::type,
+    typename Ok = typename IOut::ok_t,
+    typename Error = typename IOut::error_t>
+std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g, H h, I i) {
+    return and_then_result(and_then_result(and_then_result(f, g), h), i);
 }
 
 } // namespace fplus

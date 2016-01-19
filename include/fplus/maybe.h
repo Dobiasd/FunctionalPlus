@@ -129,8 +129,8 @@ template <typename F, typename G,
     typename FOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::result_type>::type>::type,
     typename GIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<G>::template arg<0>::type>::type>::type,
     typename GOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<G>::result_type>::type>::type,
-    typename C = typename GOut::type>
-std::function<maybe<C>(const FIn&)> and_then_maybe(F f, G g) {
+    typename T = typename GOut::type>
+std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g) {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
     static_assert(std::is_convertible<typename FOut::type,GIn>::value, "Function parameter types do not match");
@@ -139,8 +139,24 @@ std::function<maybe<C>(const FIn&)> and_then_maybe(F f, G g) {
         auto maybeB = f(x);
         if (is_just(maybeB))
             return g(unsafe_get_just(maybeB));
-        return nothing<C>();
+        return nothing<T>();
     };
+}
+
+template <typename F, typename G, typename H,
+    typename FIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename HOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<H>::result_type>::type>::type,
+    typename T = typename HOut::type>
+std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g, H h) {
+    return and_then_maybe(and_then_maybe(f, g), h);
+}
+
+template <typename F, typename G, typename H, typename I,
+    typename FIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename IOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<I>::result_type>::type>::type,
+    typename T = typename IOut::type>
+std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g, H h, I i) {
+    return and_then_maybe(and_then_maybe(and_then_maybe(f, g), h), i);
 }
 
 } // namespace fplus
