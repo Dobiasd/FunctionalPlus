@@ -118,7 +118,7 @@ template <typename MapType,
     typename Val = typename MapType::mapped_type>
 Val get_from_map_with_def(const MapType& map, const Val& defVal, const Key& key)
 {
-    return with_default(defVal, get_from_map(map, key));
+    return just_with_default(defVal, get_from_map(map, key));
 }
 
 // Checks if a map contains a key.

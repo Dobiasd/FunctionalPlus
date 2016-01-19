@@ -64,7 +64,7 @@ T unsafe_get_just(const maybe<T>& maybe)
 
 // Get the value from a maybe or the default in case it is nothing.
 template <typename T>
-T with_default(const T& defaultValue, const maybe<T>& maybe)
+T just_with_default(const T& defaultValue, const maybe<T>& maybe)
 {
     if (is_just(maybe))
         return unsafe_get_just(maybe);
@@ -108,7 +108,7 @@ bool operator != (const maybe<T>& x, const maybe<T>& y)
 template <typename F,
     typename A = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
     typename B = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::result_type>::type>::type>
-std::function<maybe<B>(const maybe<A>&)> lift(F f)
+std::function<maybe<B>(const maybe<A>&)> lift_maybe(F f)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     return [f](const maybe<A>& m)
@@ -130,7 +130,7 @@ template <typename F, typename G,
     typename GIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<G>::template arg<0>::type>::type>::type,
     typename GOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<G>::result_type>::type>::type,
     typename C = typename GOut::type>
-std::function<maybe<C>(const FIn&)> and_then(F f, G g) {
+std::function<maybe<C>(const FIn&)> and_then_maybe(F f, G g) {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
     static_assert(std::is_convertible<typename FOut::type,GIn>::value, "Function parameter types do not match");

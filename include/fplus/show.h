@@ -7,6 +7,7 @@
 #pragma once
 
 #include "container_common.h"
+#include "maybe.h"
 #include "transform.h"
 
 #include <sstream>
@@ -24,7 +25,7 @@ std::string show(const T& x)
     return ss.str();
 }
 
-// show_cont_with_frame (" => ", [1, 2, 3], "{", "}") == "{1 => 2 => 3}"
+// show_cont_with_frame (" => ", "{", "}", [1, 2, 3]) == "{1 => 2 => 3}"
 template <typename Container>
 std::string show_cont_with_frame(
     const std::string& separator,
@@ -51,6 +52,27 @@ template <typename Container>
 std::string show_cont(const Container& xs)
 {
     return show_cont_with(", ", xs);
+}
+
+// show_maybe(Just 42) -> "Just 42"
+template <typename T>
+std::string show_maybe(const maybe<T>& maybe)
+{
+    if (is_nothing(maybe))
+        return "Nothing";
+    else
+        return std::string("Just " + show(unsafe_get_just(maybe)));
+}
+
+// show_result(Ok 42) -> "Ok 42"
+// show_result(Error "fail") -> "Error fail"
+template <typename Ok, typename Error>
+std::string show_result(const result<Ok, Error>& result)
+{
+    if (is_error(result))
+        return std::string("Error " + show(unsafe_get_error(result)));
+    else
+        return std::string("Ok " + show(unsafe_get_ok(result)));
 }
 
 

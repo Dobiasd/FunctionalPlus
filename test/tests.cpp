@@ -245,19 +245,19 @@ void Test_Maybe()
 
     maybe<int> x(2);
     maybe<int> y = nothing<int>();
-    auto Or42 = bind_1st_of_2(with_default<int>, 42);
+    auto Or42 = bind_1st_of_2(just_with_default<int>, 42);
     auto SquareAndSquare = compose(square, square);
     assert(Or42(x) == 2);
     assert(Or42(y) == 42);
-    auto squareMaybe = lift(square);
-    auto sqrtAndSqrt = and_then(sqrtToMaybe, sqrtToMaybe);
+    auto squareMaybe = lift_maybe(square);
+    auto sqrtAndSqrt = and_then_maybe(sqrtToMaybe, sqrtToMaybe);
     assert(squareMaybe(x) == just(4));
     assert(squareMaybe(y) == nothing<int>());
-    assert((lift(SquareAndSquare))(x) == just(16));
-    auto LiftedIntToFloat = lift(IntToFloat);
+    assert((lift_maybe(SquareAndSquare))(x) == just(16));
+    auto LiftedIntToFloat = lift_maybe(IntToFloat);
     auto JustInt = just<int>;
     auto IntToMaybeFloat = compose(JustInt, LiftedIntToFloat);
-    auto IntToFloatAndSqrtAndSqrt = and_then(IntToMaybeFloat, sqrtAndSqrt);
+    auto IntToFloatAndSqrtAndSqrt = and_then_maybe(IntToMaybeFloat, sqrtAndSqrt);
     assert(is_in_range(1.41f, 1.42f)(unsafe_get_just<float>
             (IntToFloatAndSqrtAndSqrt(4))));
     typedef std::vector<maybe<int>> IntMaybes;
@@ -274,7 +274,68 @@ void Test_Maybe()
             == Ints({2,4}));
     assert(transform_and_concat(bind_1st_of_2(replicate<int>, 3), Ints{ 1,2 })
             == Ints({ 1,1,1,2,2,2 }));
+    assert(show_maybe(just<int>(42)) == std::string("Just 42"));
+    assert(show_maybe(nothing<int>()) == std::string("Nothing"));
 }
+
+void Test_Result()
+{
+    using namespace fplus;
+    auto square = [](int x){ return x*x; };
+    auto sqrtToResult = [](float x) {
+        return x < 0.0f ? error<float>(std::string("no sqrt of negative numbers")) :
+                ok<float, std::string>(static_cast<float>(sqrt(static_cast<float>(x))));
+    };
+    auto sqrtToResultInt = [](int x) {
+        return x < 0 ? error<int>(std::string("no sqrt of negative numbers")) :
+                ok<int, std::string>(fplus::round(sqrt(static_cast<float>(x))));
+    };
+    auto IntToFloat = [](const int& x) { return static_cast<float>(x); };
+
+    result<int, std::string> x(2);
+    result<int, std::string> y = error<int, std::string>("an error");
+    auto Or42 = bind_1st_of_2(ok_with_default<int, std::string>, 42);
+    auto SquareAndSquare = compose(square, square);
+    assert(Or42(x) == 2);
+    assert(Or42(y) == 42);
+
+    auto squareResult = lift_result<std::string>(square);
+    auto sqrtAndSqrt = and_then_result(sqrtToResult, sqrtToResult);
+    assert(squareResult(x) == (ok<int, std::string>(4)));
+    assert(squareResult(y) == (error<int>(std::string("an error"))));
+
+    assert((lift_result<std::string>(SquareAndSquare))(x) == (ok<int, std::string>(16)));
+    auto LiftedIntToFloat = lift_result<std::string>(IntToFloat);
+    auto OkInt = ok<int, std::string>;
+    auto IntToResultFloat = compose(OkInt, LiftedIntToFloat);
+    auto IntToFloatAndSqrtAndSqrt = and_then_result(IntToResultFloat, sqrtAndSqrt);
+    assert(is_in_range(1.41f, 1.42f)(unsafe_get_ok<float>
+            (IntToFloatAndSqrtAndSqrt(4))));
+
+    typedef std::vector<result<int, std::string>> IntResults;
+    typedef std::vector<int> Ints;
+    IntResults results = {ok<int, std::string>(1), error<int>(std::string("no sqrt of negative numbers")), ok<int, std::string>(2)};
+
+    assert(oks(results) == Ints({ 1,2 }));
+
+    assert((ok<int, std::string>(1)) == (ok<int, std::string>(1)));
+    assert((ok<int, std::string>(1)) != (ok<int, std::string>(2)));
+    assert((ok<int, std::string>(1)) != (error<int, std::string>(std::string("fail"))));
+    assert(error<int>(std::string("fail")) == (error<int>(std::string("fail"))));
+    assert(error<int>(std::string("fail 1")) != (error<int>(std::string("fail 2"))));
+
+    Ints wholeNumbers = { -3, 4, 16, -1 };
+    assert(transform_and_keep_oks(sqrtToResultInt, wholeNumbers)
+            == Ints({2,4}));
+
+    assert(transform_and_concat(bind_1st_of_2(replicate<int>, 3), Ints{ 1,2 })
+            == Ints({ 1,1,1,2,2,2 }));
+    assert(show_result(ok<int, std::string>(42)) == std::string("Ok 42"));
+    assert(show_result(error<int, std::string>("fail")) == std::string("Error fail"));
+    assert((to_maybe<int, std::string>(x)) == just(2));
+    assert((from_maybe<int, std::string>(just(2), std::string("no error"))) == x);
+}
+
 
 void Test_Compare()
 {
@@ -806,7 +867,7 @@ void run_n_times(std::function<std::vector<int>(std::vector<int>)> f,
         lengthSum += f(inList).size();
     }
     Time endTime = std::chrono::system_clock::now();
-	std::chrono::duration<double> elapsed_seconds = endTime - startTime;
+    std::chrono::duration<double> elapsed_seconds = endTime - startTime;
     std::cout << name << "(check: " << lengthSum << "), elapsed time: " << elapsed_seconds.count() << "s\n";
 }
 
@@ -943,6 +1004,10 @@ int main()
     std::cout << "Testing Maybe." << std::endl;
     Test_Maybe();
     std::cout << "Maybe OK." << std::endl;
+
+    std::cout << "Testing Result." << std::endl;
+    Test_Result();
+    std::cout << "Result OK." << std::endl;
 
     std::cout << "Testing Compare." << std::endl;
     Test_Compare();

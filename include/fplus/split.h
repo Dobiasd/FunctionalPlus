@@ -279,7 +279,7 @@ template <typename Container, typename UnaryPredicate>
 Container take_while(UnaryPredicate pred, const Container& xs)
 {
     auto maybeIdx = find_first_idx_by(logical_not(pred), xs);
-    return take(with_default<std::size_t>(size_of_cont(xs), maybeIdx), xs);
+    return take(just_with_default<std::size_t>(size_of_cont(xs), maybeIdx), xs);
 }
 
 // drop_while(is_even, [0,2,4,5,6,7,8]) == [5,6,7,8]
@@ -287,7 +287,7 @@ template <typename Container, typename UnaryPredicate>
 Container drop_while(UnaryPredicate pred, const Container& xs)
 {
     auto maybeIdx = find_first_idx_by(logical_not(pred), xs);
-    return drop(with_default<std::size_t>(size_of_cont(xs), maybeIdx), xs);
+    return drop(just_with_default<std::size_t>(size_of_cont(xs), maybeIdx), xs);
 }
 
 } // namespace fplus

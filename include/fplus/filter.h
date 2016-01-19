@@ -7,6 +7,8 @@
 #pragma once
 
 #include "maybe.h"
+#include "result.h"
+
 #include "container_common.h"
 
 #include <algorithm>
@@ -154,6 +156,25 @@ ContainerOut justs(const ContainerIn& xs)
     auto itOut = get_back_inserter<ContainerOut>(ys);
     std::transform(std::begin(justsInMaybes), std::end(justsInMaybes),
         itOut, unsafe_get_just<T>);
+    return ys;
+}
+
+// From a Container filled with Result<Ok, Error> the errors are dropped
+// and the values inside the ok are returned in a new container.
+template <typename ContainerIn,
+    typename ContainerOut =
+        typename same_cont_new_t<ContainerIn,
+            typename ContainerIn::value_type::ok_t>::type>
+ContainerOut oks(const ContainerIn& xs)
+{
+    typedef typename ContainerIn::value_type::ok_t Ok;
+    typedef typename ContainerIn::value_type::error_t Error;
+    auto oksInResults = keep_if(is_ok<Ok, Error>, xs);
+    ContainerOut ys;
+    prepare_container(ys, fplus::size_of_cont(oksInResults));
+    auto itOut = get_back_inserter<ContainerOut>(ys);
+    std::transform(std::begin(oksInResults), std::end(oksInResults),
+        itOut, unsafe_get_ok<Ok, Error>);
     return ys;
 }
 

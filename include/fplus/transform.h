@@ -9,6 +9,7 @@
 #include "container_common.h"
 #include "filter.h"
 #include "maybe.h"
+#include "result.h"
 #include "composition.h"
 #include "function_traits.h"
 
@@ -73,6 +74,17 @@ ContainerOut transform_and_keep_justs(F f, const ContainerIn& xs)
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     auto transformed = transform(f, xs);
     return justs<decltype(transformed), ContainerOut>(transformed);
+}
+
+// (a -> Result b) -> [a] -> [b]
+template <typename F, typename ContainerIn,
+    typename FOut = typename utils::function_traits<F>::result_type,
+    typename ContainerOut = typename same_cont_new_t<ContainerIn, typename FOut::ok_t>::type>
+ContainerOut transform_and_keep_oks(F f, const ContainerIn& xs)
+{
+    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    auto transformed = transform(f, xs);
+    return oks<decltype(transformed), ContainerOut>(transformed);
 }
 
 // (a -> [b]) -> [a] -> [b]

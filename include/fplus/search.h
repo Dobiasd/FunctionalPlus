@@ -63,7 +63,7 @@ maybe<std::size_t> find_last_idx_by
     auto calcRevIdx = [&](std::size_t idx) {
         return size_of_cont(xs) - (idx + 1);
     };
-    return lift(calcRevIdx)
+    return lift_maybe(calcRevIdx)
             (find_first_idx_by(pred, reverse(xs)));
 }
 
