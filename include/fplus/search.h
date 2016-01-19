@@ -60,7 +60,8 @@ maybe<std::size_t> find_last_idx_by
         (UnaryPredicate pred, const Container& xs)
 {
     check_unary_predicate_for_container<UnaryPredicate, Container>();
-    auto calcRevIdx = [&](std::size_t idx) {
+    auto calcRevIdx = [&](std::size_t idx)
+    {
         return size_of_cont(xs) - (idx + 1);
     };
     return lift_maybe(calcRevIdx)

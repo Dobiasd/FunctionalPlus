@@ -176,7 +176,8 @@ template <typename F, typename G,
     typename GOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<G>::result_type>::type>::type,
     typename Ok = typename GOut::ok_t,
     typename Error = typename GOut::error_t>
-std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g) {
+std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g)
+{
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
     static_assert(std::is_convertible<typename FOut::ok_t,GIn>::value, "Function parameter types do not match");
@@ -194,7 +195,8 @@ template <typename F, typename G, typename H,
     typename HOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<H>::result_type>::type>::type,
     typename Ok = typename HOut::ok_t,
     typename Error = typename HOut::error_t>
-std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g, H h) {
+std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g, H h)
+{
     return and_then_result(and_then_result(f, g), h);
 }
 
@@ -203,7 +205,8 @@ template <typename F, typename G, typename H, typename I,
     typename IOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<I>::result_type>::type>::type,
     typename Ok = typename IOut::ok_t,
     typename Error = typename IOut::error_t>
-std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g, H h, I i) {
+std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g, H h, I i)
+{
     return and_then_result(and_then_result(and_then_result(f, g), h), i);
 }
 
