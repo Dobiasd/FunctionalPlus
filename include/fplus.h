@@ -17,6 +17,7 @@
 #include "fplus/maybe.h"
 #include "fplus/numeric.h"
 #include "fplus/pairs.h"
+#include "fplus/read.h"
 #include "fplus/replace.h"
 #include "fplus/result.h"
 #include "fplus/search.h"

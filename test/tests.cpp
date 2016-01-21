@@ -845,6 +845,27 @@ void Test_StringTools()
     assert(to_string_fill_right(' ', 5, 42) == std::string("42   ") );
 }
 
+void Test_Read()
+{
+    using namespace fplus;
+
+    assert(read_value<int>("42") == just<int>(42));
+    assert(read_value<long>("42") == just<long>(42));
+    assert(read_value<long long>("42") == just<long long>(42));
+    assert(read_value<int>("-3") == just<int>(-3));
+    assert(read_value<int>("twenty") == nothing<int>());
+    assert(read_value<int>("3 thousand") == nothing<int>());
+
+    assert(read_value_result<int>("42") == (ok<int, std::string>(42)));
+    assert(read_value_result<int>("-3") == (ok<int, std::string>(-3)));
+    assert(is_error(read_value_result<int>("twenty")));
+    assert(is_error(read_value_result<int>("3 thousand")));
+
+    assert(is_in_range(-42.4f, -42.2f)(unsafe_get_just(read_value<float>("-42.3"))));
+    assert(is_in_range(-42.4, -42.2)(unsafe_get_just(read_value<double>("-42.3"))));
+    assert(is_in_range(-42.4, -42.2)(unsafe_get_just(read_value<long double>("-42.3"))));
+}
+
 bool is_odd(int x) { return x % 2 == 1; }
 void Test_example_KeepIf()
 {
@@ -1033,6 +1054,10 @@ int main()
     std::cout << "Testing StringTools." << std::endl;
     Test_StringTools();
     std::cout << "StringTools OK." << std::endl;
+
+    std::cout << "Testing Read." << std::endl;
+    Test_Read();
+    std::cout << "Read OK." << std::endl;
 
     std::cout << "Testing Applications." << std::endl;
     Test_example_KeepIf();
