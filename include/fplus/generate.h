@@ -86,7 +86,7 @@ namespace {
     // productN n = foldr go [[]] . replicate n
     //     where go elems acc = [x:xs | x <- elems, xs <- acc]
     template <typename T>
-    std::vector<std::vector<T>> carthesian_product_n_idxs
+    std::vector<std::vector<T>> internal_helper_carthesian_product_n_idxs
             (std::size_t power, const std::vector<T>& xs)
     {
         static_assert(std::is_same<T, std::size_t>::value, "T must be std::size_t");
@@ -120,7 +120,7 @@ ContainerOut carthesian_product_n(std::size_t power, const ContainerIn& xs_in)
         return ContainerOut(1);
     std::vector<T> xs = convert_container<std::vector<T>>(xs_in);
     auto idxs = all_idxs(xs);
-    auto result_idxss = carthesian_product_n_idxs(power, idxs);
+    auto result_idxss = internal_helper_carthesian_product_n_idxs(power, idxs);
     typedef typename ContainerOut::value_type ContainerOutInner;
     auto to_result_cont = [&](const std::vector<std::size_t>& idxs)
     {
@@ -142,7 +142,7 @@ ContainerOut permutations(std::size_t power, const ContainerIn& xs_in)
     auto idxs = all_idxs(xs);
     typedef std::vector<std::size_t> idx_vec;
     auto result_idxss = keep_if(all_unique<idx_vec>,
-        carthesian_product_n_idxs(power, idxs));
+        internal_helper_carthesian_product_n_idxs(power, idxs));
     typedef typename ContainerOut::value_type ContainerOutInner;
     auto to_result_cont = [&](const std::vector<std::size_t>& idxs)
     {
@@ -164,7 +164,7 @@ ContainerOut combinations(std::size_t power, const ContainerIn& xs_in)
     auto idxs = all_idxs(xs);
     typedef std::vector<std::size_t> idx_vec;
     auto result_idxss = keep_if(is_strictly_sorted<idx_vec>,
-        carthesian_product_n_idxs(power, idxs));
+        internal_helper_carthesian_product_n_idxs(power, idxs));
     typedef typename ContainerOut::value_type ContainerOutInner;
     auto to_result_cont = [&](const std::vector<std::size_t>& idxs)
     {
@@ -187,7 +187,7 @@ ContainerOut combinations_with_replacement(std::size_t power,
     auto idxs = all_idxs(xs);
     typedef std::vector<std::size_t> idx_vec;
     auto result_idxss = keep_if(is_sorted<idx_vec>,
-        carthesian_product_n_idxs(power, idxs));
+        internal_helper_carthesian_product_n_idxs(power, idxs));
     typedef typename ContainerOut::value_type ContainerOutInner;
     auto to_result_cont = [&](const std::vector<std::size_t>& idxs)
     {
