@@ -849,6 +849,9 @@ void Test_Read()
 {
     using namespace fplus;
 
+    assert(read_value<std::size_t>("42") == just<std::size_t>(42));
+    assert(read_value<unsigned long>("42") == just<unsigned long>(42));
+    assert(read_value<unsigned long long>("42") == just<unsigned long long>(42));
     assert(read_value<int>("42") == just<int>(42));
     assert(read_value<long>("42") == just<long>(42));
     assert(read_value<long long>("42") == just<long long>(42));
@@ -862,8 +865,8 @@ void Test_Read()
     assert(is_error(read_value_result<int>("3 thousand")));
 
     assert(is_in_range(-42.4f, -42.2f)(unsafe_get_just(read_value<float>("-42.3"))));
-    assert(is_in_range(-42.4, -42.2)(unsafe_get_just(read_value<double>("-42.3"))));
-    assert(is_in_range(-42.4, -42.2)(unsafe_get_just(read_value<long double>("-42.3"))));
+    assert(is_in_range(-42.4 , -42.2 )(unsafe_get_just(read_value<double>("-42.3"))));
+    assert(is_in_range(-42.4 , -42.2 )(unsafe_get_just(read_value<long double>("-42.3"))));
 }
 
 bool is_odd(int x) { return x % 2 == 1; }

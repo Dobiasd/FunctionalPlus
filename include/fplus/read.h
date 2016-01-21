@@ -18,49 +18,99 @@ namespace fplus
 namespace
 {
     template <typename T>
-    void read_value_helper(const std::string& str, T& result, std::size_t& num_chars_used);
+    struct internal_helper_read_value_struct {};
 
     template <>
-    void read_value_helper(const std::string& str, int& result, std::size_t& num_chars_used)
+    struct internal_helper_read_value_struct <int>
     {
-        result = std::stoi(str, &num_chars_used);
-    }
+        static void read(const std::string& str, int& result, std::size_t& num_chars_used)
+        {
+            result = std::stoi(str, &num_chars_used);
+        }
+    };
+
     template <>
-    void read_value_helper(const std::string& str, long& result, std::size_t& num_chars_used)
+    struct internal_helper_read_value_struct <long>
     {
-        result = std::stol(str, &num_chars_used);
-    }
+        static void read(const std::string& str, long& result, std::size_t& num_chars_used)
+        {
+            result = std::stol(str, &num_chars_used);
+        }
+    };
+
     template <>
-    void read_value_helper(const std::string& str, long long& result, std::size_t& num_chars_used)
+    struct internal_helper_read_value_struct <long long>
     {
-        result = std::stoll(str, &num_chars_used);
-    }
+        static void read(const std::string& str, long long& result, std::size_t& num_chars_used)
+        {
+            result = std::stoll(str, &num_chars_used);
+        }
+    };
+
     template <>
-    void read_value_helper(const std::string& str, float& result, std::size_t& num_chars_used)
+    struct internal_helper_read_value_struct <unsigned int>
     {
-        result = std::stof(str, &num_chars_used);
-    }
+        static void read(const std::string& str, unsigned int& result, std::size_t& num_chars_used)
+        {
+            unsigned long result_u_l = std::stoul(str, &num_chars_used);
+            result = static_cast<unsigned int>(result_u_l);
+        }
+    };
+
     template <>
-    void read_value_helper(const std::string& str, double& result, std::size_t& num_chars_used)
+    struct internal_helper_read_value_struct <unsigned long>
     {
-        result = std::stod(str, &num_chars_used);
-    }
+        static void read(const std::string& str, unsigned long& result, std::size_t& num_chars_used)
+        {
+            result = std::stoul(str, &num_chars_used);
+        }
+    };
+
     template <>
-    void read_value_helper(const std::string& str, long double& result, std::size_t& num_chars_used)
+    struct internal_helper_read_value_struct <unsigned long long>
     {
-        result = std::stold(str, &num_chars_used);
-    }
-}
+        static void read(const std::string& str, unsigned long long& result, std::size_t& num_chars_used)
+        {
+            result = std::stoull(str, &num_chars_used);
+        }
+    };
+
+    template <>
+    struct internal_helper_read_value_struct <float>
+    {
+        static void read(const std::string& str, float& result, std::size_t& num_chars_used)
+        {
+            result = std::stof(str, &num_chars_used);
+        }
+    };
+
+    template <>
+    struct internal_helper_read_value_struct <double>
+    {
+        static void read(const std::string& str, double& result, std::size_t& num_chars_used)
+        {
+            result = std::stod(str, &num_chars_used);
+        }
+    };
+
+    template <>
+    struct internal_helper_read_value_struct <long double>
+    {
+        static void read(const std::string& str, long double& result, std::size_t& num_chars_used)
+        {
+            result = std::stold(str, &num_chars_used);
+        }
+    };
+} // anonymous namespace
 
 template <typename T>
 result<T, std::string> read_value_result(const std::string& str)
 {
-    static_assert(std::is_signed<T>::value, "Only signed types supported");
     try
     {
         T result;
         std::size_t num_chars_used = 0;
-        read_value_helper(str, result, num_chars_used);
+        internal_helper_read_value_struct<T>::read(str, result, num_chars_used);
         if (num_chars_used != str.size())
         {
             return error<T>(std::string("String not fully parsable."));
