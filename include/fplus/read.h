@@ -65,7 +65,7 @@ result<T, std::string> read_value_result(const std::string& str)
         {
             return error<T>(std::string("String not fully parsable."));
         }
-        return ok<T, std::string>(static_cast<T>(result));
+        return ok<T, std::string>(result);
     } catch(const std::invalid_argument& e) {
         return error<T, std::string>(e.what());
     } catch(const std::out_of_range& e) {
