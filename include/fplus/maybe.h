@@ -74,7 +74,7 @@ T just_with_default(const T& defaultValue, const maybe<T>& maybe)
 
 // Throw exception if nothing. Return value if just.
 template <typename E, typename T>
-T maybe_throw_on_nothing(const E& e, const maybe<T>& maybe)
+T throw_on_nothing(const E& e, const maybe<T>& maybe)
 {
     if (is_nothing(maybe))
         throw e;

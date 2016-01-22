@@ -130,7 +130,7 @@ result<Ok, Error> from_maybe(const maybe<Ok>& maybe, const Error& err)
 // Throws the given exception in case of error.
 // Return ok value if ok.
 template <typename E, typename Ok, typename Error>
-Ok result_throw_on_error(const E& e, const result<Ok, Error>& result)
+Ok throw_on_error(const E& e, const result<Ok, Error>& result)
 {
     if (is_error(result))
         throw e;
@@ -140,7 +140,7 @@ Ok result_throw_on_error(const E& e, const result<Ok, Error>& result)
 // Throws the given exception type constructed with error value if error.
 // Return ok value if ok.
 template <typename E, typename Ok, typename Error>
-Ok result_throw_error_on_error(const result<Ok, Error>& result)
+Ok throw_type_on_error(const result<Ok, Error>& result)
 {
     if (is_error(result))
         throw E(unsafe_get_error(result));

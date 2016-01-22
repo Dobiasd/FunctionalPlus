@@ -289,7 +289,7 @@ void Test_Maybe()
     std::string thrown_str;
     try
     {
-        maybe_throw_on_nothing(std::invalid_argument("raised"), nothing<int>());
+        throw_on_nothing(std::invalid_argument("raised"), nothing<int>());
     }
     catch (const std::exception& e)
     {
@@ -363,7 +363,7 @@ void Test_Result()
     std::string thrown_str;
     try
     {
-        result_throw_on_error(std::invalid_argument("exception string"), error<int, std::string>("failed"));
+        throw_on_error(std::invalid_argument("exception string"), error<int, std::string>("failed"));
     }
     catch (const std::exception& e)
     {
@@ -374,13 +374,25 @@ void Test_Result()
 
     try
     {
-        result_throw_error_on_error<std::invalid_argument>(error<int, std::string>("failed"));
+        throw_type_on_error<std::invalid_argument>(error<int, std::string>("failed"));
     }
     catch (const std::exception& e)
     {
         thrown_str = e.what();
     }
     assert(thrown_str == "failed");
+    thrown_str.clear();
+
+    try
+    {
+        throw_type_on_error<std::invalid_argument>(error<int, std::string>("failed"));
+    }
+    catch (const std::string& e)
+    {
+        thrown_str = e;
+    }
+    assert(thrown_str == "failed");
+    thrown_str.clear();
 }
 
 
