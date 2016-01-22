@@ -13,6 +13,7 @@
 #include <functional>
 #include <iostream>
 #include <list>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -284,6 +285,17 @@ void Test_Maybe()
             == Ints({ 1,1,1,2,2,2 }));
     assert(show_maybe(just<int>(42)) == std::string("Just 42"));
     assert(show_maybe(nothing<int>()) == std::string("Nothing"));
+
+    std::string thrown_str;
+    try
+    {
+        maybe_throw_on_nothing(std::invalid_argument("raised"), nothing<int>());
+    }
+    catch (const std::exception& e)
+    {
+        thrown_str = e.what();
+    }
+    assert(thrown_str == "raised");
 }
 
 void Test_Result()
@@ -347,6 +359,28 @@ void Test_Result()
     assert(show_result(error<int, std::string>("fail")) == std::string("Error fail"));
     assert((to_maybe<int, std::string>(x)) == just(2));
     assert((from_maybe<int, std::string>(just(2), std::string("no error"))) == x);
+
+    std::string thrown_str;
+    try
+    {
+        result_throw_on_error(std::invalid_argument("exception string"), error<int, std::string>("failed"));
+    }
+    catch (const std::exception& e)
+    {
+        thrown_str = e.what();
+    }
+    assert(thrown_str == "exception string");
+    thrown_str.clear();
+
+    try
+    {
+        result_throw_error_on_error<std::invalid_argument>(error<int, std::string>("failed"));
+    }
+    catch (const std::exception& e)
+    {
+        thrown_str = e.what();
+    }
+    assert(thrown_str == "failed");
 }
 
 

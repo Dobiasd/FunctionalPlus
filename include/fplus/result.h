@@ -127,6 +127,26 @@ result<Ok, Error> from_maybe(const maybe<Ok>& maybe, const Error& err)
         return error<Ok, Error>(err);
 }
 
+// Throws the given exception in case of error.
+// Return ok value if ok.
+template <typename E, typename Ok, typename Error>
+Ok result_throw_on_error(const E& e, const result<Ok, Error>& result)
+{
+    if (is_error(result))
+        throw e;
+    return unsafe_get_ok(result);
+}
+
+// Throws the given exception type constructed with error value if error.
+// Return ok value if ok.
+template <typename E, typename Ok, typename Error>
+Ok result_throw_error_on_error(const result<Ok, Error>& result)
+{
+    if (is_error(result))
+        throw E(unsafe_get_error(result));
+    return unsafe_get_ok(result);
+}
+
 // True if ok values are the same or if errors are the same.
 template <typename Ok, typename Error>
 bool operator == (const result<Ok, Error>& x, const result<Ok, Error>& y)

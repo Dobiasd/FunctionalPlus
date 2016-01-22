@@ -9,6 +9,7 @@
 #include "function_traits.h"
 
 #include <cassert>
+#include <exception>
 #include <functional>
 #include <memory>
 
@@ -69,6 +70,15 @@ T just_with_default(const T& defaultValue, const maybe<T>& maybe)
     if (is_just(maybe))
         return unsafe_get_just(maybe);
     return defaultValue;
+}
+
+// Throw exception if nothing. Return value if just.
+template <typename E, typename T>
+T maybe_throw_on_nothing(const E& e, const maybe<T>& maybe)
+{
+    if (is_nothing(maybe))
+        throw e;
+    return unsafe_get_just(maybe);
 }
 
 // Wrap a value in a Maybe as a Just.
