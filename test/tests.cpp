@@ -382,17 +382,6 @@ void Test_Result()
     }
     assert(thrown_str == "failed");
     thrown_str.clear();
-
-    try
-    {
-        throw_type_on_error<std::invalid_argument>(error<int, std::string>("failed"));
-    }
-    catch (const std::string& e)
-    {
-        thrown_str = e;
-    }
-    assert(thrown_str == "failed");
-    thrown_str.clear();
 }
 
 
