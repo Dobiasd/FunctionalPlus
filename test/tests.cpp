@@ -901,7 +901,7 @@ void Test_Read()
 
     assert(is_in_range(-42.4f, -42.2f)(unsafe_get_just(read_value<float>("-42.3"))));
     assert(is_in_range(-42.4 , -42.2 )(unsafe_get_just(read_value<double>("-42.3"))));
-    assert(is_in_range(-42.4 , -42.2 )(unsafe_get_just(read_value<long double>("-42.3"))));
+    assert(is_in_range(-42.4L, -42.2L )(unsafe_get_just(read_value<long double>("-42.3"))));
 }
 
 bool is_odd(int x) { return x % 2 == 1; }
