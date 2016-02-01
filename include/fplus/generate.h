@@ -231,4 +231,55 @@ Container fill_right(const T& x, std::size_t min_size, const Container& xs)
     return append(xs, replicate<T, Container>(min_size - size_of_cont(xs), x));
 }
 
+// inits([0,1,2,3]) == [[],[0],[0,1],[0,1,2],[0,1,2,3]]
+template <typename ContainerIn,
+    typename T = typename ContainerIn::value_type,
+    typename ContainerOut = std::vector<ContainerIn>>
+ContainerOut inits(const ContainerIn& xs)
+{
+    ContainerOut result;
+    std::size_t xs_size = size_of_cont(xs);
+    prepare_container(result, xs_size + 1);
+    auto it_out = get_back_inserter(result);
+    for (std::size_t i = 0; i <= xs_size; ++i)
+        *it_out = get_range(0, i, xs);
+    return result;
+}
+
+// tails([0,1,2,3]) == [[0,1,2,3],[1,2,3],[2,3],[3],[]]
+template <typename ContainerIn,
+    typename T = typename ContainerIn::value_type,
+    typename ContainerOut = std::vector<ContainerIn>>
+ContainerOut tails(const ContainerIn& xs)
+{
+    ContainerOut result;
+    std::size_t xs_size = size_of_cont(xs);
+    prepare_container(result, xs_size + 1);
+    auto it_out = get_back_inserter(result);
+    for (std::size_t i = 0; i <= xs_size; ++i)
+        *it_out = get_range(i, xs_size, xs);
+    return result;
+}
+
+// iterate((*2), 5, 3) = [3, 6, 12, 24, 48]
+template <typename F,
+    typename T,
+    typename ContainerOut = std::vector<T>>
+ContainerOut iterate(F f, std::size_t size, const T& x)
+{
+    ContainerOut result;
+    if (size == 0)
+        return result;
+    prepare_container(result, size + 1);
+    auto it_out = get_back_inserter(result);
+    T current = x;
+    *it_out = current;
+    for (std::size_t i = 1; i < size; ++i)
+    {
+        current = f(current);
+        *it_out = current;
+    }
+    return result;
+}
+
 } // namespace fplus

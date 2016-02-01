@@ -842,6 +842,18 @@ void Test_ContainerTools()
     assert(insert_at(2, IntVector({8,9}), xs) == IntVector({1,2,8,9,2,3,2}));
 
     assert(sum(convert_container_and_elems<std::vector<int>>(std::string("hello"))) == 532);
+
+    assert(init(xs) == IntVector({1,2,2,3}));
+    assert(tail(xs) == IntVector({2,2,3,2}));
+
+    assert(inits(xs) == IntVectors({{},{1},{1,2},{1,2,2},{1,2,2,3},{1,2,2,3,2}}));
+    assert(tails(xs) == IntVectors({{1,2,2,3,2},{2,2,3,2},{2,3,2},{3,2},{2},{}}));
+
+    auto times_two = [](int x) { return 2*x; };
+    assert(iterate(times_two, 0, 3) == IntVector({}));
+    assert(iterate(times_two, 1, 3) == IntVector({3}));
+    assert(iterate(times_two, 2, 3) == IntVector({3,6}));
+    assert(iterate(times_two, 5, 3) == IntVector({3,6,12,24,48}));
 }
 
 void Test_StringTools()

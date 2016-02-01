@@ -53,7 +53,7 @@ void check_binary_predicate_for_container()
 // for Transform.
 template <typename C>
 void prepare_container(const std::basic_string<C, std::char_traits<C>,
-    std::allocator<C> >& ys, std::size_t size)
+    std::allocator<C>>& ys, std::size_t size)
 {
     ys.reserve(size);
 }
@@ -736,6 +736,22 @@ std::vector<T> elems_at_idxs(const ContainerIdxs& idxs, const Container& xs)
         *itOut = elem_at_idx(idx, xs);
     }
     return result;
+}
+
+// init([0,1,2,3]) == [0,1,2]
+template <typename Container>
+Container init(const Container& xs)
+{
+    assert(!is_empty(xs));
+    return get_range(0, size_of_cont(xs) - 1, xs);
+}
+
+// tail([0,1,2,3]) == [1,2,3]
+template <typename Container>
+Container tail(const Container& xs)
+{
+    assert(!is_empty(xs));
+    return get_range(1, size_of_cont(xs), xs);
 }
 
 } // namespace fplus
