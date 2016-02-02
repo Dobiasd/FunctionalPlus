@@ -285,10 +285,12 @@ Container reverse(const Container& xs)
 }
 
 // take(3, [0,1,2,3,4,5,6,7]) == [0,1,2]
+// take(10, [0,1,2]) == [0,1,2]
 template <typename Container>
 Container take(std::size_t amount, const Container& xs)
 {
-    assert(amount <= size_of_cont(xs));
+    if (amount >= size_of_cont(xs))
+        return xs;
     return get_range(0, amount, xs);
 }
 
@@ -296,7 +298,8 @@ Container take(std::size_t amount, const Container& xs)
 template <typename Container>
 Container drop(std::size_t amount, const Container& xs)
 {
-    assert(amount <= size_of_cont(xs));
+    if (amount >= size_of_cont(xs))
+        return Container();
     return get_range(amount, size_of_cont(xs), xs);
 }
 

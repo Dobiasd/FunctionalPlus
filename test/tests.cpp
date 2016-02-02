@@ -743,6 +743,8 @@ void Test_ContainerTools()
             std::string("--123----123123")) == std::string("--_----__"));
     assert(take(2, xs) == IntVector({ 1,2 }));
     assert(drop(2, xs) == IntVector({ 2,3,2 }));
+    assert(take(999, xs) == xs);
+    assert(drop(999, xs) == IntVector());
     assert(take_while(is_odd, xs) == IntVector({ 1 }));
     assert(drop_while(is_odd, xs) == IntVector({ 2,2,3,2 }));
     assert(keep_if(is2, xs) == IntVector({ 2,2,2 }));
