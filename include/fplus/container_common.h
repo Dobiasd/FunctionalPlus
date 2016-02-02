@@ -248,6 +248,33 @@ Container replace_range(std::size_t idxBegin,
     return insert_at(idxBegin, token, remove_range(idxBegin, idxEnd, xs));
 }
 
+template <typename Container,
+    typename T = typename Container::value_type>
+T elem_at_idx(std::size_t idx, const Container& xs)
+{
+    assert(idx < size_of_cont(xs));
+    auto it = std::begin(xs);
+    std::advance(it, idx);
+    return *it;
+}
+
+template <typename Container,
+    typename ContainerIdxs,
+    typename T = typename Container::value_type,
+    typename ContainerOut = std::vector<T>>
+std::vector<T> elems_at_idxs(const ContainerIdxs& idxs, const Container& xs)
+{
+    static_assert(std::is_same<typename ContainerIdxs::value_type, std::size_t>::value, "Indices must be std::size_t");
+    ContainerOut result;
+    prepare_container(result, size_of_cont(idxs));
+    auto itOut = back_inserter(result);
+    for (std::size_t idx : idxs)
+    {
+        *itOut = elem_at_idx(idx, xs);
+    }
+    return result;
+}
+
 // nth_element(2)([5,6,7,8]) == 7
 template <typename Container,
         typename T = typename Container::value_type>
@@ -255,8 +282,7 @@ std::function<T(const Container& xs)> nth_element(std::size_t n)
 {
     return [n](const Container& xs)
     {
-        assert(size_of_cont(xs) > n);
-        return xs[n];
+        return elem_at_idx(n, xs);
     };
 }
 
@@ -268,8 +294,7 @@ std::function<T(std::size_t n)> nth_element_flipped(const Container& xs)
 {
     return [xs](std::size_t n)
     {
-        assert(size_of_cont(xs) > n);
-        return xs[n];
+        return elem_at_idx(n, xs);
     };
 }
 
@@ -712,33 +737,6 @@ std::vector<std::size_t> all_idxs(const Container& xs)
 {
     return generate_range<std::vector<std::size_t>, std::size_t>
         (0, size_of_cont(xs));
-}
-
-template <typename Container,
-    typename T = typename Container::value_type>
-T elem_at_idx(std::size_t idx, const Container& xs)
-{
-    assert(idx < size_of_cont(xs));
-    auto it = std::begin(xs);
-    std::advance(it, idx);
-    return *it;
-}
-
-template <typename Container,
-    typename ContainerIdxs,
-    typename T = typename Container::value_type,
-    typename ContainerOut = std::vector<T>>
-std::vector<T> elems_at_idxs(const ContainerIdxs& idxs, const Container& xs)
-{
-    static_assert(std::is_same<typename ContainerIdxs::value_type, std::size_t>::value, "Indices must be std::size_t");
-    ContainerOut result;
-    prepare_container(result, size_of_cont(idxs));
-    auto itOut = back_inserter(result);
-    for (std::size_t idx : idxs)
-    {
-        *itOut = elem_at_idx(idx, xs);
-    }
-    return result;
 }
 
 // init([0,1,2,3]) == [0,1,2]
