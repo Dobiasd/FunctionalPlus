@@ -567,6 +567,8 @@ void Test_ContainerTools()
     assert(combinations(0, ABCD) == string_vec({""}));
     assert(combinations_with_replacement(0, vec0123) == IntVectors({IntVector()}));
     assert(power_set(std::string("xyz")) == string_vec({"", "x", "y", "z", "xy", "xz", "yz", "xyz"}));
+    assert(rotations_left(std::string("abcd")) == string_vec({"abcd", "bcda", "cdab", "dabc"}));
+    assert(rotations_right(std::string("abcd")) == string_vec({"abcd", "dabc", "cdab", "bcda"}));
     assert(fill_left(0, 6, IntVector({1,2,3,4})) == IntVector({0,0,1,2,3,4}));
     assert(fill_right(0, 6, IntList({1,2,3,4})) == IntList({1,2,3,4,0,0}));
     assert(fill_left(' ', 6, std::string("12")) == std::string("    12"));

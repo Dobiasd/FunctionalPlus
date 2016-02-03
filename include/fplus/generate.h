@@ -211,6 +211,72 @@ ContainerOut power_set(const ContainerIn& xs_in)
             size_of_cont(xs_in) + 1));
 }
 
+// rotate_left("xyz") == "yzx"
+template <typename Container>
+Container rotate_left(const Container& xs)
+{
+    if (is_empty(xs))
+        return xs;
+    Container ys;
+    auto size = size_of_cont(xs);
+    prepare_container(ys, size);
+    auto it = std::begin(xs);
+    auto it_out = get_back_inserter(ys);
+    ++it;
+    while (it != std::end(xs))
+    {
+        *it_out = *it;
+        ++it;
+    }
+    *it_out = xs.front();
+    return ys;
+}
+
+// rotate_right("xyz") == "zxy"
+template <typename Container>
+Container rotate_right(const Container& xs)
+{
+    return reverse(rotate_left(reverse(xs)));
+}
+
+// rotations_left("abcd") == ["abcd", "bcda", "cdab", "dabc"]
+template <typename ContainerIn,
+    typename T = typename ContainerIn::value_type,
+    typename ContainerOut = std::vector<ContainerIn>>
+ContainerOut rotations_left(const ContainerIn& xs_in)
+{
+    ContainerOut result;
+    std::size_t n = size_of_cont(xs_in);
+    prepare_container(result, n);
+    auto it_out = get_back_inserter(result);
+    ContainerIn current = xs_in;
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        *it_out = current;
+        current = rotate_left(current);
+    }
+    return result;
+}
+
+// rotations_right("abcd") == ["abcd", "dabc", "cdab", "bcda"]
+template <typename ContainerIn,
+    typename T = typename ContainerIn::value_type,
+    typename ContainerOut = std::vector<ContainerIn>>
+ContainerOut rotations_right(const ContainerIn& xs_in)
+{
+    ContainerOut result;
+    std::size_t n = size_of_cont(xs_in);
+    prepare_container(result, n);
+    auto it_out = get_back_inserter(result);
+    ContainerIn current = xs_in;
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        *it_out = current;
+        current = rotate_right(current);
+    }
+    return result;
+}
+
 //fill_left(0, 6, [1,2,3,4]) == [0,0,1,2,3,4]
 template <typename Container,
         typename T = typename Container::value_type>
