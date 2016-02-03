@@ -211,6 +211,28 @@ ContainerOut power_set(const ContainerIn& xs_in)
             size_of_cont(xs_in) + 1));
 }
 
+// iterate((*2), 5, 3) = [3, 6, 12, 24, 48]
+// = [3, f(3), f(f(3)), f(f(f(3))), f(f(f(f(3))))]
+template <typename F,
+    typename T,
+    typename ContainerOut = std::vector<T>>
+ContainerOut iterate(F f, std::size_t size, const T& x)
+{
+    ContainerOut result;
+    if (size == 0)
+        return result;
+    prepare_container(result, size + 1);
+    auto it_out = get_back_inserter(result);
+    T current = x;
+    *it_out = current;
+    for (std::size_t i = 1; i < size; ++i)
+    {
+        current = f(current);
+        *it_out = current;
+    }
+    return result;
+}
+
 // rotate_left("xyz") == "yzx"
 template <typename Container>
 Container rotate_left(const Container& xs)
@@ -245,17 +267,7 @@ template <typename ContainerIn,
     typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut rotations_left(const ContainerIn& xs_in)
 {
-    ContainerOut result;
-    std::size_t n = size_of_cont(xs_in);
-    prepare_container(result, n);
-    auto it_out = get_back_inserter(result);
-    ContainerIn current = xs_in;
-    for (std::size_t i = 0; i < n; ++i)
-    {
-        *it_out = current;
-        current = rotate_left(current);
-    }
-    return result;
+    return iterate(rotate_left<ContainerIn>, size_of_cont(xs_in), xs_in);
 }
 
 // rotations_right("abcd") == ["abcd", "dabc", "cdab", "bcda"]
@@ -264,17 +276,7 @@ template <typename ContainerIn,
     typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut rotations_right(const ContainerIn& xs_in)
 {
-    ContainerOut result;
-    std::size_t n = size_of_cont(xs_in);
-    prepare_container(result, n);
-    auto it_out = get_back_inserter(result);
-    ContainerIn current = xs_in;
-    for (std::size_t i = 0; i < n; ++i)
-    {
-        *it_out = current;
-        current = rotate_right(current);
-    }
-    return result;
+    return iterate(rotate_right<ContainerIn>, size_of_cont(xs_in), xs_in);
 }
 
 //fill_left(0, 6, [1,2,3,4]) == [0,0,1,2,3,4]
@@ -324,27 +326,6 @@ ContainerOut tails(const ContainerIn& xs)
     auto it_out = get_back_inserter(result);
     for (std::size_t i = 0; i <= xs_size; ++i)
         *it_out = get_range(i, xs_size, xs);
-    return result;
-}
-
-// iterate((*2), 5, 3) = [3, 6, 12, 24, 48]
-template <typename F,
-    typename T,
-    typename ContainerOut = std::vector<T>>
-ContainerOut iterate(F f, std::size_t size, const T& x)
-{
-    ContainerOut result;
-    if (size == 0)
-        return result;
-    prepare_container(result, size + 1);
-    auto it_out = get_back_inserter(result);
-    T current = x;
-    *it_out = current;
-    for (std::size_t i = 1; i < size; ++i)
-    {
-        current = f(current);
-        *it_out = current;
-    }
     return result;
 }
 
