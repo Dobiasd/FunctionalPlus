@@ -110,16 +110,22 @@ std::function<bool(const FIn& x, const FIn& y)>
     return is_equal_by_and_by(f, f);
 }
 
+// f(y) == x
+template <typename F, typename T>
+std::function<bool(const T&)> is_equal_by_to(F f, const T& x)
+{
+    return [f, x](const T& y)
+    {
+        return is_equal(f(y), x);
+    };
+}
+
 // x == y
 template <typename T>
 std::function<bool(const T&)> is_equal_to(const T& x)
 {
-    return [x](const T& y)
-    {
-        return is_equal(y, x);
-    };
+    return is_equal_by_to(identity<T>, x);
 }
-
 
 // x != y
 template <typename T>
@@ -127,7 +133,6 @@ bool is_not_equal(const T& x, const T& y)
 {
     return x != y;
 }
-
 
 // f(x) != g(y)
 template <typename F, typename G,
@@ -155,14 +160,21 @@ std::function<bool(const FIn& x, const FIn& y)>
     return is_not_equal_by_and_by(f, f);
 }
 
-// x != y
+// f(y) != x
+template <typename F, typename T>
+std::function<bool(const T&)> is_not_equal_by_to(F f, const T& x)
+{
+    return [f, x](const T& y)
+    {
+        return is_not_equal(f(y), x);
+    };
+}
+
+// y != x
 template <typename T>
 std::function<bool(const T&)> is_not_equal_to(const T& x)
 {
-    return [x](const T& y)
-    {
-        return is_not_equal(y, x);
-    };
+    return is_not_equal_by_to(identity<T>, x);
 }
 
 
@@ -200,18 +212,25 @@ std::function<bool(const FIn& x, const FIn& y)>
     return is_less_by_and_by(f, f);
 }
 
+// f(y) < x
+template <typename F, typename T>
+std::function<bool(const T&)> is_less_by_than(F f, const T& x)
+{
+    return [f, x](const T& y)
+    {
+        return is_less(f(y), x);
+    };
+}
+
 // y < x
 template <typename T>
 std::function<bool(const T&)> is_less_than(const T& x)
 {
-    return [x](const T& y)
-    {
-        return is_less(y, x);
-    };
+    return is_less_by_than(identity<T>, x);
 }
 
 
-// x <= y
+// x < y
 template <typename T>
 bool is_less_or_equal(const T& x, const T& y)
 {
@@ -245,14 +264,21 @@ std::function<bool(const FIn& x, const FIn& y)>
     return is_less_or_equal_by_and_by(f, f);
 }
 
+// f(y) <= x
+template <typename F, typename T>
+std::function<bool(const T&)> is_less_or_equal_by_than(F f, const T& x)
+{
+    return [f, x](const T& y)
+    {
+        return is_less_or_equal(f(y), x);
+    };
+}
+
 // y <= x
 template <typename T>
 std::function<bool(const T&)> is_less_or_equal_than(const T& x)
 {
-    return [x](const T& y)
-    {
-        return is_less_or_equal(y, x);
-    };
+    return is_less_or_equal_by_than(identity<T>, x);
 }
 
 
@@ -290,16 +316,22 @@ std::function<bool(const FIn& x, const FIn& y)>
     return is_greater_by_and_by(f, f);
 }
 
+// f(y) > x
+template <typename F, typename T>
+std::function<bool(const T&)> is_greater_by_than(F f, const T& x)
+{
+    return [f, x](const T& y)
+    {
+        return is_greater(f(y), x);
+    };
+}
+
 // y > x
 template <typename T>
 std::function<bool(const T&)> is_greater_than(const T& x)
 {
-    return [x](const T& y)
-    {
-        return is_greater(y, x);
-    };
+    return is_greater_by_than(identity<T>, x);
 }
-
 
 // x >= y
 template <typename T>
@@ -335,14 +367,21 @@ std::function<bool(const FIn& x, const FIn& y)>
     return is_greater_or_equal_by_and_by(f, f);
 }
 
+// f(y) >= x
+template <typename F, typename T>
+std::function<bool(const T&)> is_greater_or_equal_than(F f, const T& x)
+{
+    return [f, x](const T& y)
+    {
+        return is_greater_or_equal(f(y), x);
+    };
+}
+
 // y >= x
 template <typename T>
 std::function<bool(const T&)> is_greater_or_equal_than(const T& x)
 {
-    return [x](const T& y)
-    {
-        return is_greater_or_equal(y, x);
-    };
+    return is_greater_or_equal_than(identity<T>, x);
 }
 
 
