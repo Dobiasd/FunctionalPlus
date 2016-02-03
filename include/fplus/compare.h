@@ -369,7 +369,7 @@ std::function<bool(const FIn& x, const FIn& y)>
 
 // f(y) >= x
 template <typename F, typename T>
-std::function<bool(const T&)> is_greater_or_equal_than(F f, const T& x)
+std::function<bool(const T&)> is_greater_or_equal_by_than(F f, const T& x)
 {
     return [f, x](const T& y)
     {
@@ -381,7 +381,7 @@ std::function<bool(const T&)> is_greater_or_equal_than(F f, const T& x)
 template <typename T>
 std::function<bool(const T&)> is_greater_or_equal_than(const T& x)
 {
-    return is_greater_or_equal_than(identity<T>, x);
+    return is_greater_or_equal_by_than(identity<T>, x);
 }
 
 
