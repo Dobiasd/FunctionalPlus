@@ -111,20 +111,21 @@ std::function<bool(const FIn& x, const FIn& y)>
 }
 
 // f(y) == x
-template <typename F, typename T>
-std::function<bool(const T&)> is_equal_by_to(F f, const T& x)
+template <typename F, typename X,
+    typename Y = typename utils::function_traits<F>::template arg<0>::type>
+std::function<bool(const Y&)> is_equal_by_to(F f, const X& x)
 {
-    return [f, x](const T& y)
+    return [f, x](const Y& y)
     {
         return is_equal(f(y), x);
     };
 }
 
 // x == y
-template <typename T>
-std::function<bool(const T&)> is_equal_to(const T& x)
+template <typename X>
+std::function<bool(const X&)> is_equal_to(const X& x)
 {
-    return is_equal_by_to(identity<T>, x);
+    return is_equal_by_to(identity<X>, x);
 }
 
 // x != y
@@ -161,20 +162,21 @@ std::function<bool(const FIn& x, const FIn& y)>
 }
 
 // f(y) != x
-template <typename F, typename T>
-std::function<bool(const T&)> is_not_equal_by_to(F f, const T& x)
+template <typename F, typename X,
+    typename Y = typename utils::function_traits<F>::template arg<0>::type>
+std::function<bool(const Y&)> is_not_equal_by_to(F f, const X& x)
 {
-    return [f, x](const T& y)
+    return [f, x](const Y& y)
     {
         return is_not_equal(f(y), x);
     };
 }
 
 // y != x
-template <typename T>
-std::function<bool(const T&)> is_not_equal_to(const T& x)
+template <typename X>
+std::function<bool(const X&)> is_not_equal_to(const X& x)
 {
-    return is_not_equal_by_to(identity<T>, x);
+    return is_not_equal_by_to(identity<X>, x);
 }
 
 
@@ -213,20 +215,21 @@ std::function<bool(const FIn& x, const FIn& y)>
 }
 
 // f(y) < x
-template <typename F, typename T>
-std::function<bool(const T&)> is_less_by_than(F f, const T& x)
+template <typename F, typename X,
+    typename Y = typename utils::function_traits<F>::template arg<0>::type>
+std::function<bool(const Y&)> is_less_by_than(F f, const X& x)
 {
-    return [f, x](const T& y)
+    return [f, x](const Y& y)
     {
         return is_less(f(y), x);
     };
 }
 
 // y < x
-template <typename T>
-std::function<bool(const T&)> is_less_than(const T& x)
+template <typename X>
+std::function<bool(const X&)> is_less_than(const X& x)
 {
-    return is_less_by_than(identity<T>, x);
+    return is_less_by_than(identity<X>, x);
 }
 
 
@@ -265,20 +268,21 @@ std::function<bool(const FIn& x, const FIn& y)>
 }
 
 // f(y) <= x
-template <typename F, typename T>
-std::function<bool(const T&)> is_less_or_equal_by_than(F f, const T& x)
+template <typename F, typename X,
+    typename Y = typename utils::function_traits<F>::template arg<0>::type>
+std::function<bool(const Y&)> is_less_or_equal_by_than(F f, const X& x)
 {
-    return [f, x](const T& y)
+    return [f, x](const Y& y)
     {
         return is_less_or_equal(f(y), x);
     };
 }
 
 // y <= x
-template <typename T>
-std::function<bool(const T&)> is_less_or_equal_than(const T& x)
+template <typename X>
+std::function<bool(const X&)> is_less_or_equal_than(const X& x)
 {
-    return is_less_or_equal_by_than(identity<T>, x);
+    return is_less_or_equal_by_than(identity<X>, x);
 }
 
 
@@ -317,20 +321,21 @@ std::function<bool(const FIn& x, const FIn& y)>
 }
 
 // f(y) > x
-template <typename F, typename T>
-std::function<bool(const T&)> is_greater_by_than(F f, const T& x)
+template <typename F, typename X,
+    typename Y = typename utils::function_traits<F>::template arg<0>::type>
+std::function<bool(const Y&)> is_greater_by_than(F f, const X& x)
 {
-    return [f, x](const T& y)
+    return [f, x](const Y& y)
     {
         return is_greater(f(y), x);
     };
 }
 
 // y > x
-template <typename T>
-std::function<bool(const T&)> is_greater_than(const T& x)
+template <typename X>
+std::function<bool(const X&)> is_greater_than(const X& x)
 {
-    return is_greater_by_than(identity<T>, x);
+    return is_greater_by_than(identity<X>, x);
 }
 
 // x >= y
@@ -368,20 +373,21 @@ std::function<bool(const FIn& x, const FIn& y)>
 }
 
 // f(y) >= x
-template <typename F, typename T>
-std::function<bool(const T&)> is_greater_or_equal_by_than(F f, const T& x)
+template <typename F, typename X,
+    typename Y = typename utils::function_traits<F>::template arg<0>::type>
+std::function<bool(const Y&)> is_greater_or_equal_by_than(F f, const X& x)
 {
-    return [f, x](const T& y)
+    return [f, x](const Y& y)
     {
         return is_greater_or_equal(f(y), x);
     };
 }
 
 // y >= x
-template <typename T>
-std::function<bool(const T&)> is_greater_or_equal_than(const T& x)
+template <typename X>
+std::function<bool(const X&)> is_greater_or_equal_than(const X& x)
 {
-    return is_greater_or_equal_by_than(identity<T>, x);
+    return is_greater_or_equal_by_than(identity<X>, x);
 }
 
 
