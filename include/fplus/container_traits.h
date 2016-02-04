@@ -32,12 +32,16 @@ template<class T, class Container, class Compare> struct has_order<std::priority
 template<class CharT, class Traits, class Alloc> struct has_order<std::basic_string<CharT, Traits, Alloc>> : public std::true_type {};
 
 //http://stackoverflow.com/a/33828321/1866775
-template <class T, class NewP>
-struct same_cont_new_t;
-template <template <class...> class T, class... TPs, class NewP>
-struct same_cont_new_t<T<TPs...>, NewP> {
-    using type = T<NewP>;
-};
+template<class Cont, class NewT> struct same_cont_new_t : public std::false_type{};
+template<class T, std::size_t N, class NewT> struct same_cont_new_t<std::array<T, N>, NewT> { typedef typename std::array<NewT, N> type; };
+template<class T, class Alloc, class NewT> struct same_cont_new_t<std::vector<T, Alloc>, NewT> { typedef typename std::vector<NewT> type; };
+template<class T, class Alloc, class NewT> struct same_cont_new_t<std::deque<T, Alloc>, NewT> { typedef typename std::deque<NewT> type; };
+template<class T, class Alloc, class NewT> struct same_cont_new_t<std::forward_list<T, Alloc>, NewT> { typedef typename std::forward_list<NewT> type; };
+template<class T, class Alloc, class NewT> struct same_cont_new_t<std::list<T, Alloc>, NewT> { typedef typename std::list<NewT> type; };
+template<class T, class Container, class NewT> struct same_cont_new_t<std::stack<T, Container>, NewT> { typedef typename std::stack<NewT, Container> type; };
+template<class T, class Container, class NewT> struct same_cont_new_t<std::queue<T, Container>, NewT> { typedef typename std::queue<NewT, Container> type; };
+template<class T, class Container, class Compare, class NewT> struct same_cont_new_t<std::priority_queue<T, Container, Compare>, NewT> { typedef typename std::priority_queue<NewT, Container, Compare> type; };
+template<class CharT, class Traits, class Alloc, class NewT> struct same_cont_new_t<std::basic_string<CharT, Traits, Alloc>, NewT> { typedef typename std::basic_string<NewT, Traits, Alloc> type; };
 
 template<class Cont, class NewKey, class NewVal> struct SameMapTypeNewTypes : public std::false_type {};
 template<class Key, class T, class Compare, class Alloc, class NewKey, class NewVal> struct SameMapTypeNewTypes<std::map<Key, T, Compare, Alloc>, NewKey, NewVal> { typedef typename std::map<NewKey, NewVal> type; };
