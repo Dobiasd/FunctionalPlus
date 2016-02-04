@@ -830,9 +830,15 @@ void Test_ContainerTools()
     assert(map_contains(intStringMap, 1) == true);
     assert(map_contains(intStringMap, 9) == false);
 
-    std::vector<std::pair<std::string, int>> stringIntPairs = {{"a", 1}, {"a", 2}, {"b", 6}, {"a", 4}};
-    std::map<std::string, std::vector<int>> stringIntPairsAsMap = {{"a", {1, 2, 4}}, {"b", {6}}};
-    assert(pairs_to_map_grouped(stringIntPairs) == stringIntPairsAsMap);
+    typedef std::vector<std::pair<std::string, int>> StringIntPairs;
+    StringIntPairs stringIntPairs = {{"a", 1}, {"a", 2}, {"b", 6}, {"a", 4}};
+    auto stringIntPairsAsMapGrouped = pairs_to_map_grouped(stringIntPairs);
+    auto groupNameToMedianMap = transform_map_values(median<std::vector<int>>, stringIntPairsAsMapGrouped);
+    auto groupNames = transform(fst<std::string, int>, stringIntPairs);
+    auto getMedianValue = bind_1st_and_2nd_of_3(get_from_map_with_def<std::map<std::string, int>>, groupNameToMedianMap, 0);
+    auto groupMendianValues = transform(getMedianValue, groupNames);
+    auto stringIntPairsSndReplacedWithGroupMedian = zip(groupNames, groupMendianValues);
+    assert(stringIntPairsSndReplacedWithGroupMedian == StringIntPairs({{"a", 2}, {"a", 2}, {"b", 6}, {"a", 2}}));
 
     assert(split_at_idx(2, xs) == std::make_pair(IntVector({1,2}), IntVector({2,3,2})));
     assert(partition(is_even, xs) == std::make_pair(IntVector({2,2,2,}), IntVector({1,3})));

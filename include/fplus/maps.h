@@ -132,7 +132,8 @@ maybe<Val> get_from_map(const MapType& map, const Key& key)
 template <typename MapType,
     typename Key = typename MapType::key_type,
     typename Val = typename MapType::mapped_type>
-Val get_from_map_with_def(const MapType& map, const Val& defVal, const Key& key)
+Val get_from_map_with_def(const MapType& map, const Val& defVal,
+    const Key& key)
 {
     return just_with_default(defVal, get_from_map(map, key));
 }
@@ -143,6 +144,21 @@ bool map_contains(const MapType& map, const Key& key)
 {
     auto it = map.find(key);
     return it != std::end(map);
+}
+
+// transform_map_values((*2), {(0, 2), (1, 3)}) == {(0, 4), (1, 6)}
+template <typename F, typename MapIn,
+    typename MapInPair = typename MapIn::value_type,
+    typename Key = typename std::remove_const<typename MapInPair::first_type>::type,
+    typename InVal = typename std::remove_const<typename MapInPair::second_type>::type,
+    typename OutVal = typename utils::function_traits<F>::result_type,
+    typename MapOut = typename SameMapTypeNewTypes<MapIn, Key, OutVal>::type>
+MapOut transform_map_values(F f, const MapIn& map)
+{
+    return pairs_to_map<MapOut>(
+        transform(
+            bind_1st_of_2(transform_snd<Key, InVal, F>, f),
+            map_to_pairs(map)));
 }
 
 } // namespace fplus

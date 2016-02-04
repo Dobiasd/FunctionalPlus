@@ -21,7 +21,7 @@ namespace fplus
 
 // (a -> b) -> [a] -> [b]
 // transform((*2), [1, 3, 4]) == [2, 6, 8]
-// Also known as Map.
+// Also known as map.
 template <typename F, typename ContainerIn,
     typename ContainerOut = typename same_cont_new_t_from_unary_f<ContainerIn, F>::type>
 ContainerOut transform(F f, const ContainerIn& xs)
