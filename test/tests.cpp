@@ -830,6 +830,10 @@ void Test_ContainerTools()
     assert(map_contains(intStringMap, 1) == true);
     assert(map_contains(intStringMap, 9) == false);
 
+    std::vector<std::pair<std::string, int>> stringIntPairs = {{"a", 1}, {"a", 2}, {"b", 6}, {"a", 4}};
+    std::map<std::string, std::vector<int>> stringIntPairsAsMap = {{"a", {1, 2, 4}}, {"b", {6}}};
+    assert(pairs_to_map_grouped(stringIntPairs) == stringIntPairsAsMap);
+
     assert(split_at_idx(2, xs) == std::make_pair(IntVector({1,2}), IntVector({2,3,2})));
     assert(partition(is_even, xs) == std::make_pair(IntVector({2,2,2,}), IntVector({1,3})));
 

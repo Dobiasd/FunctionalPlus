@@ -24,6 +24,22 @@ MapOut pairs_to_map(const ContainerIn& pairs)
     return convert_container_and_elems<MapOut>(pairs);
 }
 
+// pairs_to_map_grouped([("a", 1), ("a", 2), ("b", 6), ("a", 4)])
+//     -> [("a", [1, 2, 4]), ("b", [6])]
+template <typename ContainerIn,
+    typename Key = typename ContainerIn::value_type::first_type,
+    typename SingleValue = typename ContainerIn::value_type::second_type,
+    typename MapOut = std::map<Key, std::vector<SingleValue>>>
+MapOut pairs_to_map_grouped(const ContainerIn& pairs)
+{
+    MapOut result;
+    for (const auto& p : pairs)
+    {
+        result[p.first].push_back(p.second);
+    }
+    return result;
+}
+
 // Converts a dictionary into a Container of pairs (key, value).
 template <typename MapType,
     typename MapPair = typename MapType::value_type,
