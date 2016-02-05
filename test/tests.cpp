@@ -896,12 +896,26 @@ void Test_StringTools()
         std::string("a"),
         std::string("strange"),
         std::string("string") };
+    std::vector<std::string> textSplitBySpaceOnly = {
+        std::string("Hi,\nI"),
+        std::string("am"),
+        std::string("a\r\n***strange***\n\rstring.") };
+    std::vector<std::string> textSplitBySpaceAndCommaAndLine = {
+        std::string("Hi"),
+        std::string("I"),
+        std::string("am"),
+        std::string("a"),
+        std::string("***strange***"),
+        std::string("string.") };
 
     assert(split_lines(text, true)
             == textAsLinesWithEmty);
     assert(split_lines(text, false)
             == textAsLinesWithoutEmpty);
     assert(split_words(text) == textAsWords);
+    assert(split_words_by(text, ' ') == textSplitBySpaceOnly);
+    assert(split_words_by(text, std::string{ " ,\r\n" }) == textSplitBySpaceAndCommaAndLine);
+
     assert(to_string_fill_left('0', 5, 42) == std::string("00042") );
     assert(to_string_fill_right(' ', 5, 42) == std::string("42   ") );
 }

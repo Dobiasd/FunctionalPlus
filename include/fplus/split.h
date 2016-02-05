@@ -106,33 +106,21 @@ template <typename UnaryPredicate, typename ContainerIn,
 ContainerOut split_by
         (UnaryPredicate pred, bool allowEmpty, const ContainerIn& xs)
 {
-    typedef typename ContainerIn::value_type T;
-    typedef typename ContainerOut::value_type ContainerOutInner;
     check_unary_predicate_for_container<UnaryPredicate, ContainerIn>();
     static_assert(std::is_same<ContainerIn, typename ContainerOut::value_type>::value, "Containers do not match.");
+
     ContainerOut result;
     auto itOut = get_back_inserter(result);
-    ContainerOutInner current;
-    auto itOutCurrent = get_back_inserter(current);
-    for (const T& x : xs)
+    auto start = std::begin(xs);
+    while (start != std::end(xs) && *start)
     {
-        if (pred(x))
+        const auto stop = std::find_if(start, std::end(xs), pred);
+        if (start != stop || allowEmpty)
         {
-            if (is_not_empty(current) || allowEmpty)
-            {
-                *itOut = current;
-                current.clear();
-                itOutCurrent = get_back_inserter(current);
-            }
+            *itOut = { start, stop };
         }
-        else
-        {
-            *itOutCurrent = x;
-        }
-    }
-    if (is_not_empty(current) || allowEmpty)
-    {
-        *itOut = current;
+        if (stop == std::end(xs)) break;
+        start = std::next(stop);
     }
     return result;
 }

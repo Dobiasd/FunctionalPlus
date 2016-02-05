@@ -48,12 +48,39 @@ String clean_newlines(const String& str)
         replace_tokens(String("\r\n"), String("\n"), str));
 }
 
-// Splits a string by the found whitespace characters.
-// split_words("How are you?") == ["How", "are", "you?"]
+// Splits a string by non-letter and non-digit characters.
+// split_words("How are you?") == ["How", "are", "you"]
 template <typename String, typename ContainerOut = std::vector<String>>
 ContainerOut split_words(const String& str)
 {
     return split_by(logical_not(is_letter_or_digit<String>), false, str);
+}
+
+// Splits a string by non-letter and non-digit characters.
+// split_words("How-are you?", ' ') == ["How-are", "you?"]
+template <typename String, typename ContainerOut = std::vector<String>>
+ContainerOut split_words_by
+        (const String& str, const typename String::value_type delim)
+{
+    const auto comparator = [delim](const typename String::value_type ch)
+    {
+        return ch == delim;
+    };
+    return split_by(comparator, false, str);
+}
+
+// Splits a string by non-letter and non-digit characters.
+// split_words("How are you?", "- o") == ["H", "w", "are", "y", "u?"]
+template <typename String, typename ContainerOut = std::vector<String>>
+ContainerOut split_words_by(const String& str, const String& delims)
+{
+    typedef typename String::value_type CharType;
+    const auto comparator = [&delims](const CharType ch)
+    {
+        return std::any_of(std::begin(delims), std::end(delims),
+                    [ch](const CharType delim) { return ch == delim; });
+    };
+    return split_by(comparator, false, str);
 }
 
 // Splits a string by the found newlines.
