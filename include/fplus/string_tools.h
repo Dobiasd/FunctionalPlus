@@ -70,7 +70,7 @@ ContainerOut split_words_by
     return split_by(comparator, allowEmpty, str);
 }
 
-// Splits a string by non-letter and non-digit characters.
+// Splits a string by the given delimiter(s).
 // split_words("How are you?", "- o", false) == ["H", "w", "are", "y", "u?"]
 template <typename String, typename ContainerOut = std::vector<String>>
 ContainerOut split_words_by_many
