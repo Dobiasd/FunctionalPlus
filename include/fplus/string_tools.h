@@ -49,7 +49,7 @@ String clean_newlines(const String& str)
 }
 
 // Splits a string by non-letter and non-digit characters.
-// split_words("How are you?") == ["How", "are", "you"]
+// split_words("How are you?", false) == ["How", "are", "you"]
 template <typename String, typename ContainerOut = std::vector<String>>
 ContainerOut split_words(const String& str, const bool allowEmpty)
 {
@@ -57,7 +57,7 @@ ContainerOut split_words(const String& str, const bool allowEmpty)
 }
 
 // Splits a string by non-letter and non-digit characters.
-// split_words("How-are you?", ' ') == ["How-are", "you?"]
+// split_words("How-are you?", ' ', false) == ["How-are", "you?"]
 template <typename String, typename ContainerOut = std::vector<String>>
 ContainerOut split_words_by
         (const String& str, const typename String::value_type delim,
@@ -71,7 +71,7 @@ ContainerOut split_words_by
 }
 
 // Splits a string by non-letter and non-digit characters.
-// split_words("How are you?", "- o") == ["H", "w", "are", "y", "u?"]
+// split_words("How are you?", "- o", false) == ["H", "w", "are", "y", "u?"]
 template <typename String, typename ContainerOut = std::vector<String>>
 ContainerOut split_words_by_many
         (const String& str, const String& delims, const bool allowEmpty)
@@ -86,7 +86,7 @@ ContainerOut split_words_by_many
 }
 
 // Splits a string by the found newlines.
-// split_lines("Hi,\nhow are you?") == ["Hi,", "How are you"]
+// split_lines("Hi,\nhow are you?", false) == ["Hi,", "How are you"]
 template <typename String, typename ContainerOut = std::vector<String>>
 ContainerOut split_lines(const String& str, bool allowEmpty)
 {
