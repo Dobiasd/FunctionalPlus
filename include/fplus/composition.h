@@ -239,4 +239,4 @@ std::function<bool(X)> logical_xor(UnaryPredicateF f, UnaryPredicateG g)
     };
 }
 
-}
+} // namespace fplus

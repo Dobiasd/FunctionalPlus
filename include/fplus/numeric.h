@@ -84,4 +84,4 @@ X int_power(X base, X exp)
     return base * int_power(base, exp - 1);
 }
 
-}
+} // namespace fplus

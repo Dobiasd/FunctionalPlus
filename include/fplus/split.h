@@ -119,7 +119,10 @@ ContainerOut split_by
         {
             *itOut = { start, stop };
         }
-        if (stop == std::end(xs)) break;
+        if (stop == std::end(xs))
+        {
+            break;
+        }
         start = std::next(stop);
     }
     return result;

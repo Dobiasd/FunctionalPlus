@@ -912,9 +912,9 @@ void Test_StringTools()
             == textAsLinesWithEmty);
     assert(split_lines(text, false)
             == textAsLinesWithoutEmpty);
-    assert(split_words(text) == textAsWords);
-    assert(split_words_by(text, ' ') == textSplitBySpaceOnly);
-    assert(split_words_by(text, std::string{ " ,\r\n" }) == textSplitBySpaceAndCommaAndLine);
+    assert(split_words(text, false) == textAsWords);
+    assert(split_words_by(text, ' ', false) == textSplitBySpaceOnly);
+    assert(split_words_by_many(text, std::string{ " ,\r\n" }, false) == textSplitBySpaceAndCommaAndLine);
 
     assert(to_string_fill_left('0', 5, 42) == std::string("00042") );
     assert(to_string_fill_right(' ', 5, 42) == std::string("42   ") );
@@ -1030,7 +1030,7 @@ void Test_example_SameOldSameOld()
 void Test_example_IInTeam()
 {
     std::string team = "Our team is great. I love everybody.";
-    if (fplus::is_elem_of("I", fplus::split_words(team)))
+    if (fplus::is_elem_of("I", fplus::split_words(team, false)))
         std::cout << "There actually is an I in team." << std::endl;
 }
 

@@ -75,5 +75,4 @@ std::string show_result(const result<Ok, Error>& result)
         return std::string("Ok " + show(unsafe_get_ok(result)));
 }
 
-
 } // namespace fplus

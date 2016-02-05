@@ -51,7 +51,7 @@ String clean_newlines(const String& str)
 // Splits a string by non-letter and non-digit characters.
 // split_words("How are you?") == ["How", "are", "you"]
 template <typename String, typename ContainerOut = std::vector<String>>
-ContainerOut split_words(const String& str, const bool allowEmpty = false)
+ContainerOut split_words(const String& str, const bool allowEmpty)
 {
     return split_by(logical_not(is_letter_or_digit<String>), allowEmpty, str);
 }
@@ -61,7 +61,7 @@ ContainerOut split_words(const String& str, const bool allowEmpty = false)
 template <typename String, typename ContainerOut = std::vector<String>>
 ContainerOut split_words_by
         (const String& str, const typename String::value_type delim,
-         const bool allowEmpty = false)
+         const bool allowEmpty)
 {
     const auto comparator = [delim](const typename String::value_type ch)
     {
@@ -73,8 +73,8 @@ ContainerOut split_words_by
 // Splits a string by non-letter and non-digit characters.
 // split_words("How are you?", "- o") == ["H", "w", "are", "y", "u?"]
 template <typename String, typename ContainerOut = std::vector<String>>
-ContainerOut split_words_by
-        (const String& str, const String& delims, const bool allowEmpty = false)
+ContainerOut split_words_by_many
+        (const String& str, const String& delims, const bool allowEmpty)
 {
     typedef typename String::value_type CharType;
     const auto comparator = [&delims](const CharType ch)
