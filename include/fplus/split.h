@@ -112,7 +112,7 @@ ContainerOut split_by
     ContainerOut result;
     auto itOut = get_back_inserter(result);
     auto start = std::begin(xs);
-    while (start != std::end(xs) && *start)
+    while (start != std::end(xs))
     {
         const auto stop = std::find_if(start, std::end(xs), pred);
         if (start != stop || allowEmpty)

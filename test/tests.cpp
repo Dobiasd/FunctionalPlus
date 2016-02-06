@@ -847,6 +847,8 @@ void Test_ContainerTools()
     IntVectors splittedAt1And3Dest = {IntVector({1}), IntVector({2,2}), IntVector({3,2})};
     assert(splittedAt1And3 == splittedAt1And3Dest);
     assert(split(3, true, xs) == IntVectors({IntVector({1, 2, 2}), IntVector({2})}));
+    assert(split(1, true, IntVector{0,1,2}) == IntVectors({{0},{2}}));
+    assert(split(2, true, IntVector{5,2,0,3}) == IntVectors({{5},{0,3}}));
     assert(split_by(is_even, true, IntList({1,3,2,2,5,5,3,6,7,9})) == IntLists({{1,3},{},{5,5,3},{7,9}}));
     typedef std::map<int, std::size_t> IntSizeTMap;
     IntSizeTMap OccurrencesResult = {{1, 1}, {2, 3}, {3, 1}};
