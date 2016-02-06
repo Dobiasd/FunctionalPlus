@@ -124,6 +124,10 @@ ContainerOut split_by
             break;
         }
         start = std::next(stop);
+        if (allowEmpty && start == std::end(xs))
+        {
+            *itOut = {};
+        }
     }
     return result;
 }
