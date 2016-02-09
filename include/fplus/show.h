@@ -25,6 +25,13 @@ std::string show(const T& x)
     return ss.str();
 }
 
+// {1, "one"} -> "(1, one)"
+template <typename X, typename Y>
+std::string show(const std::pair<X, Y>& p)
+{
+    return std::string("(") + show(p.first) + ", " + show(p.second) + ")";
+}
+
 // show_cont_with_frame (" => ", "{", "}", [1, 2, 3]) == "{1 => 2 => 3}"
 template <typename Container>
 std::string show_cont_with_frame(
@@ -32,12 +39,13 @@ std::string show_cont_with_frame(
     const std::string& prefix, const std::string& sufix,
     const Container& xs)
 {
-    typedef typename Container::value_type T;
-    typedef std::vector<std::string> Strings;
-    typedef decltype(show<T>) ShowType;
-    auto showT = show<T>;
-    auto mapped = transform<ShowType, Container, Strings>(showT, xs);
-    return prefix + join(separator, mapped) + sufix;
+    std::vector<std::string> elemStrs;
+    elemStrs.reserve(xs.size());
+    for(const auto& x : xs)
+    {
+        elemStrs.push_back(show(x));
+    }
+    return prefix + join(separator, elemStrs) + sufix;
 }
 
 // show_cont_with( " - ", [1, 2, 3]) == "[1 - 2 - 3]"

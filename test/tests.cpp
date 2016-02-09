@@ -590,6 +590,8 @@ void Test_ContainerTools()
 
     assert(join(IntList({0}), intLists)
             == IntList({1,0,2,2,0,3,0,2}));
+    std::map<int, std::string> mapToShow = {{1, "one"}, {2, "two"}};
+    assert(show_cont(mapToShow) == "[(1, one), (2, two)]");
     assert(show_cont(xs) == xsShown);
     assert(show_cont_with(", ", xs) == xsShown);
     assert(show<int>(1) == "1");
