@@ -740,8 +740,6 @@ void Test_ContainerTools()
     assert(find_all_instances_of_token_non_overlapping(IntVector({}), IntVector({1})) == IdxVector({0,1}));
     assert(find_first_instance_of_token(IntVector({}), IntVector({})) == just<std::size_t>(0));
     assert(find_first_instance_of_token(IntVector({}), IntVector({1,2})) == just<std::size_t>(0));
-    auto asdasd = IntVectors({{1}, {2}});
-    auto qweqwe = split_by_token(IntVector({}), false, IntVector({1,2}));
     assert(split_by_token(IntVector({}), false, IntVector({1,2})) == IntVectors({{1},{2}}));
     assert(split_by_token(IntVector({}), true, IntVector()) == IntVectors({{},{}}));
     assert(split_by_token(IntVector({}), true, IntVector({1,2})) == IntVectors({{},{1},{2},{}}));
