@@ -139,14 +139,15 @@ typename Container::value_type sum(const Container& xs)
 template <typename Result, typename Container>
 Result mean(const Container& xs)
 {
-    return static_cast<Result>(sum(xs)) / size_of_cont(xs);
+    return static_cast<Result>(sum(xs)) / static_cast<Result>(size_of_cont(xs));
 }
 
 // median([5, 6, 4, 3, 2, 6, 7, 9, 3]) == 5
 template <typename Container,
-        typename T = typename Container::value_type>
-T median(const Container& xs)
+        typename Result = typename Container::value_type>
+Result median(const Container& xs)
 {
+    typedef typename Container::value_type T;
     assert(is_not_empty(xs));
 
     if (size_of_cont(xs) == 1)
@@ -166,7 +167,7 @@ T median(const Container& xs)
         auto it2 = it1;
         ++it2;
         std::vector<T> upperAndLower = { *it1, *it2 };
-        return mean<T>(upperAndLower);
+        return mean<Result, Container>(upperAndLower);
     }
 }
 
