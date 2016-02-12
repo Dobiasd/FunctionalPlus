@@ -187,7 +187,7 @@ Container get_range
 // set_range(2, [9,9,9], [0,1,2,3,4,5,6,7,8]) == [0,1,9,9,9,5,6,7,8]
 template <typename Container>
 Container set_range
-        (std::size_t idxBegin, Container& token, const Container& xs)
+        (std::size_t idxBegin, const Container& token, const Container& xs)
 {
     assert(idxBegin + size_of_cont(token) < size_of_cont(xs));
     Container result = xs;

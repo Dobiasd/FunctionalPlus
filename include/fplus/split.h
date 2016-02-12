@@ -161,7 +161,7 @@ std::pair<Container, Container> partition
     Container notMatching;
     auto itOutMatching = get_back_inserter(matching);
     auto itOutNotMatching = get_back_inserter(notMatching);
-    for (auto& x : xs)
+    for (const auto& x : xs)
     {
         if (pred(x))
             *itOutMatching = x;
@@ -223,7 +223,7 @@ template <typename ContainerIn,
 MapOut count_occurrences(const ContainerIn& xs)
 {
     MapOut result;
-    for (auto& x : xs)
+    for (const auto& x : xs)
     {
         ++result[x];
     }

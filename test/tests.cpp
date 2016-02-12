@@ -734,6 +734,17 @@ void Test_ContainerTools()
         == std::vector<std::size_t>({ 0, 1, 2, 3 }));
     assert(find_all_instances_of_token_non_overlapping(std::string("xx"), std::string("xxxx"))
         == std::vector<std::size_t>({ 0, 2 }));
+    assert(find_all_instances_of_token(IntVector({}), IntVector({})) == IdxVector({0}));
+    assert(find_all_instances_of_token(IntVector({}), IntVector({1})) == IdxVector({0,1}));
+    assert(find_all_instances_of_token_non_overlapping(IntVector({}), IntVector({})) == IdxVector({0}));
+    assert(find_all_instances_of_token_non_overlapping(IntVector({}), IntVector({1})) == IdxVector({0,1}));
+    assert(find_first_instance_of_token(IntVector({}), IntVector({})) == just<std::size_t>(0));
+    assert(find_first_instance_of_token(IntVector({}), IntVector({1,2})) == just<std::size_t>(0));
+    auto asdasd = IntVectors({{1}, {2}});
+    auto qweqwe = split_by_token(IntVector({}), false, IntVector({1,2}));
+    assert(split_by_token(IntVector({}), false, IntVector({1,2})) == IntVectors({{1},{2}}));
+    assert(split_by_token(IntVector({}), true, IntVector()) == IntVectors({{},{}}));
+    assert(split_by_token(IntVector({}), true, IntVector({1,2})) == IntVectors({{},{1},{2},{}}));
     assert(find_all_idxs_of('h', std::string("oh, ha!"))
         == std::vector<std::size_t>({ 1, 4 }));
     assert(find_first_instance_of_token(std::string("haha"), std::string("oh, hahaha!"))
@@ -756,14 +767,18 @@ void Test_ContainerTools()
     assert(keep_if(is4, xs) == IntVector());
     assert(find_all_idxs_of(2, xs) == IdxVector({ 1,2,4 }));
     assert(count(2, xs) == 3);
+    assert(is_infix_of(IntVector({}), IntVector({})) == true);
+    assert(is_infix_of(IntVector({}), IntVector({1,2})) == true);
+    assert(is_infix_of(IntVector({2,3}), xs) == true);
     assert(is_infix_of(IntVector({2,3}), xs) == true);
     assert(is_infix_of(IntVector({2,1}), xs) == false);
     assert(is_prefix_of(IntVector({ 1,2 }), xs) == true);
     assert(is_prefix_of(IntVector({ 2,2 }), xs) == false);
     assert(is_suffix_of(IntVector({ 3,2 }), xs) == true);
     assert(is_suffix_of(IntVector({ 2,2 }), xs) == false);
+    assert(is_subsequence_of(IntVector(), IntVector()) == true);
+    assert(is_subsequence_of(IntVector(), xs) == true);
     assert(is_subsequence_of(IntVector({ 1,3 }), xs) == true);
-    assert(is_subsequence_of(IntVector({ 3,1 }), xs) == false);
     assert(is_subsequence_of(IntVector({ 3,1 }), xs) == false);
     typedef std::vector<IntVector> IntGrid2d;
     assert(transpose(IntGrid2d({})) == IntGrid2d({}));

@@ -193,7 +193,7 @@ bool all_unique_less(const Container& xs)
 
 // is_infix_of("ion", "FunctionalPlus") == true
 template <typename Container>
-bool is_infix_of(const Container& token, Container& xs)
+bool is_infix_of(const Container& token, const Container& xs)
 {
     return is_just(find_first_instance_of_token(token, xs));
 }
