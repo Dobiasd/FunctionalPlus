@@ -139,7 +139,7 @@ typename Container::value_type sum(const Container& xs)
 template <typename Result, typename Container>
 Result mean(const Container& xs)
 {
-    return static_cast<Result>(sum(xs)) / static_cast<Result>(size_of_cont(xs));
+    return static_cast<Result>(sum(xs)) / size_of_cont(xs);
 }
 
 // median([5, 6, 4, 3, 2, 6, 7, 9, 3]) == 5
@@ -151,14 +151,14 @@ Result median(const Container& xs)
     assert(is_not_empty(xs));
 
     if (size_of_cont(xs) == 1)
-        return xs.front();
+        return static_cast<Result>(xs.front());
 
     auto xsSorted = sort(xs);
     if (size_of_cont(xsSorted) % 2 == 1)
     {
         auto it = std::begin(xsSorted);
         std::advance(it, size_of_cont(xsSorted) / 2);
-        return *it;
+        return static_cast<Result>(*it);
     }
     else
     {
