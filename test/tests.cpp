@@ -31,15 +31,15 @@ void Test_Numeric()
     assert(is_negative(-0.1) == true);
     assert(is_positive(-0.1) == false);
 
-    assert(round(1.4) == 1);
-    assert(round(1.6) == 2);
-    assert(floor(1.4) == 1);
-    assert(ceil(1.4) == 2);
+    assert(round<int>(1.4) == 1);
+    assert(round<int>(1.6) == 2);
+    assert(floor<int>(1.4) == 1);
+    assert(ceil<int>(1.4) == 2);
 
-    assert(round(-1.4) == -1);
-    assert(round(-1.6) == -2);
-    assert(floor(-1.4) == -2);
-    assert(ceil(-1.4) == -1);
+    assert(round<int>(-1.4) == -1);
+    assert(round<int>(-1.6) == -2);
+    assert(floor<int>(-1.4) == -2);
+    assert(ceil<int>(-1.4) == -1);
 
     assert(clamp(2, 6)(5) == 5);
     assert(clamp(2, 6)(1) == 2);
@@ -243,7 +243,7 @@ void Test_Maybe()
     };
     auto sqrtToMaybeInt = [](int x) {
         return x < 0 ? nothing<int>() :
-                just(fplus::round(sqrt(static_cast<float>(x))));
+                just(fplus::round<int>(sqrt(static_cast<float>(x))));
     };
     auto IntToFloat = [](const int& x) { return static_cast<float>(x); };
 
@@ -308,7 +308,7 @@ void Test_Result()
     };
     auto sqrtToResultInt = [](int x) {
         return x < 0 ? error<int>(std::string("no sqrt of negative numbers")) :
-                ok<int, std::string>(fplus::round(sqrt(static_cast<float>(x))));
+                ok<int, std::string>(fplus::round<int>(sqrt(static_cast<float>(x))));
     };
     auto IntToFloat = [](const int& x) { return static_cast<float>(x); };
 

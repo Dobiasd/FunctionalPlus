@@ -48,28 +48,31 @@ bool is_positive(X x)
 }
 
 // Converts a value to the nearest integer.
-template <typename X>
-int round(X x)
+template <typename Out, typename X>
+Out round(X x)
 {
+    static_assert(std::is_integral<Out>::value, "type must be integral");
     if (is_negative(x))
         x -= 1;
     return static_cast<int>(x + 0.5f);
 }
 
 // Converts a value to the nearest smaller integer.
-template <typename X>
-int floor(X x)
+template <typename Out, typename X>
+Out floor(X x)
 {
+    static_assert(std::is_integral<Out>::value, "type must be integral");
     if (is_negative(x))
         x -= 1;
-    return static_cast<int>(x);
+    return static_cast<Out>(x);
 }
 
 // Converts a value to the nearest greater integer.
-template <typename X>
-int ceil(X x)
+template <typename Out, typename X>
+Out ceil(X x)
 {
-    return floor(x) + 1;
+    static_assert(std::is_integral<Out>::value, "type must be integral");
+    return floor<Out>(x) + 1;
 }
 
 template <typename X>
