@@ -20,6 +20,9 @@ template <typename Ok, typename Error>
 class result;
 
 template <typename Ok, typename Error>
+result<Ok, Error> ok(const Ok& val);
+
+template <typename Ok, typename Error>
 result<Ok, Error> error(const Error& error);
 
 // Can hold a value of type Ok or an error of type Error.
@@ -33,8 +36,6 @@ public:
         {
             check_either_or_invariant();
         }
-    explicit result(const Ok& ok) : ptr_ok_(new Ok(ok)) {}
-    explicit result(const Error& error) : ptr_error_(new Error(error)) {}
     bool is_ok() const { return static_cast<bool>(get_ok()); }
     bool is_error() const { return static_cast<bool>(get_error()); }
     const Ok& unsafe_get_ok() const { check_either_or_invariant(); assert(is_ok()); return *get_ok(); }
@@ -46,7 +47,8 @@ private:
     {
         assert(is_ok() != is_error());
     }
-    result() {} // todo: delete, auch bei maybe
+    result() {}
+    friend result<Ok, Error> ok<Ok, Error>(const Ok& ok);
     friend result<Ok, Error> error<Ok, Error>(const Error& error);
     typedef std::unique_ptr<Ok> ptr_ok;
     typedef std::unique_ptr<Error> ptr_error;
@@ -97,14 +99,18 @@ Ok ok_with_default(const Ok& defaultValue, const result<Ok, Error>& result)
 template <typename Ok, typename Error>
 result<Ok, Error> ok(const Ok& val)
 {
-    return result<Ok, Error>(val);
+    result<Ok, Error> x;
+    x.ptr_ok_.reset(new Ok(val));
+    return x;
 }
 
 // Construct an error of a certain result type.
 template <typename Ok, typename Error>
 result<Ok, Error> error(const Error& error)
 {
-    return result<Ok, Error>(error);
+    result<Ok, Error> x;
+    x.ptr_error_.reset(new Error(error));
+    return x;
 }
 
 // Convert ok to just, error to nothing.
@@ -179,7 +185,7 @@ std::function<result<B, Error>(const result<A, Error>&)> lift_result(F f)
     return [f](const result<A, Error>& r)
     {
         if (is_ok(r))
-            return result<B, Error>(f(unsafe_get_ok(r)));
+            return ok<B, Error>(f(unsafe_get_ok(r)));
         return error<B, Error>(unsafe_get_error(r));
     };
 }

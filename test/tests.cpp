@@ -247,7 +247,7 @@ void Test_Maybe()
     };
     auto IntToFloat = [](const int& x) { return static_cast<float>(x); };
 
-    maybe<int> x(2);
+    auto x = just<int>(2);
     maybe<int> y = nothing<int>();
     auto Or42 = bind_1st_of_2(just_with_default<int>, 42);
     auto SquareAndSquare = compose(square, square);
@@ -312,8 +312,8 @@ void Test_Result()
     };
     auto IntToFloat = [](const int& x) { return static_cast<float>(x); };
 
-    result<int, std::string> x(2);
-    result<int, std::string> y = error<int, std::string>("an error");
+    auto x = ok<int, std::string>(2);
+    auto y = error<int, std::string>("an error");
     auto Or42 = bind_1st_of_2(ok_with_default<int, std::string>, 42);
     auto SquareAndSquare = compose(square, square);
     assert(Or42(x) == 2);

@@ -20,6 +20,9 @@ template <typename T>
 class maybe;
 
 template <typename T>
+maybe<T> just(const T& val);
+
+template <typename T>
 maybe<T> nothing();
 
 // Can hold a value of type T or nothing.
@@ -30,12 +33,12 @@ public:
     maybe(const maybe<T>& other) :
         ptr_(other.get() ? ptr_t( new T(*other.get())) : ptr_t())
         {}
-    explicit maybe(const T& val) : ptr_(new T(val)) {}
     bool is_just() const { return static_cast<bool>(get()); }
     const T& unsafe_get_just() const { assert(is_just()); return *get(); }
     typedef T type;
 private:
     maybe() {}
+    friend maybe<T> just<T>(const T& val);
     friend maybe<T> nothing<T>();
     typedef std::unique_ptr<T> ptr_t;
     const ptr_t& get() const { return ptr_; }
@@ -85,7 +88,9 @@ T throw_on_nothing(const E& e, const maybe<T>& maybe)
 template <typename T>
 maybe<T> just(const T& val)
 {
-    return maybe<T>(val);
+    maybe<T> x;
+    x.ptr_.reset(new T(val));
+    return x;
 }
 
 // Construct a nothing of a certain Maybe type.
@@ -124,7 +129,7 @@ std::function<maybe<B>(const maybe<A>&)> lift_maybe(F f)
     return [f](const maybe<A>& m)
     {
         if (is_just(m))
-            return maybe<B>(f(unsafe_get_just(m)));
+            return just<B>(f(unsafe_get_just(m)));
         return nothing<B>();
     };
 }
