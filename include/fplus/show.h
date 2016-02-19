@@ -25,6 +25,13 @@ std::string show(const T& x)
     return ss.str();
 }
 
+// "foo" -> "foo"
+inline
+std::string show(const std::string& str)
+{
+    return str;
+}
+
 // {1, "one"} -> "(1, one)"
 template <typename X, typename Y>
 std::string show(const std::pair<X, Y>& p)

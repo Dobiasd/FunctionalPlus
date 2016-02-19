@@ -298,6 +298,21 @@ std::function<T(std::size_t n)> nth_element_flipped(const Container& xs)
     };
 }
 
+// (a -> b) -> [a] -> [b]
+// transform((*2), [1, 3, 4]) == [2, 6, 8]
+// Also known as map.
+template <typename F, typename ContainerIn,
+    typename ContainerOut = typename same_cont_new_t_from_unary_f<ContainerIn, F>::type>
+ContainerOut transform(F f, const ContainerIn& xs)
+{
+    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    ContainerOut ys;
+    prepare_container(ys, size_of_cont(xs));
+    auto it = get_back_inserter<ContainerOut>(ys);
+    std::transform(std::begin(xs), std::end(xs), it, f);
+    return ys;
+}
+
 // reverse([0,4,2,6]) == [6,2,4,0]
 template <typename Container>
 Container reverse(const Container& xs)
@@ -445,6 +460,14 @@ ContainerOut scan_right_1(F f, const ContainerIn& xs)
     return reverse(scan_left_1(flip(f), reverse(xs)));
 }
 
+// sum([1, 2, 3]) == 7
+template <typename Container>
+typename Container::value_type sum(const Container& xs)
+{
+    typedef typename Container::value_type X;
+    return fold_left([](const X& acc, const X& x) { return acc+x; }, X(), xs);
+}
+
 // append([1, 2], [3, 4, 5]) == [1, 2, 3, 4, 5]
 template <typename Container>
 Container append(const Container& xs, const Container& ys)
@@ -464,11 +487,15 @@ template <typename ContainerIn,
     typename ContainerOut = typename ContainerIn::value_type>
 ContainerOut concat(const ContainerIn& xss)
 {
-    auto append_one = [](
-            const ContainerOut& acc,
-            const typename ContainerIn::value_type& xs)
-        { return append(acc, xs); };
-    return fold_left(append_one, ContainerOut(), xss);
+    std::size_t length = sum(
+        transform(size_of_cont<typename ContainerIn::value_type>, xss));
+    ContainerOut result;
+    prepare_container(result, length);
+    for(const auto& xs : xss)
+    {
+        result.insert(end(result), begin(xs), end(xs));
+    }
+    return result;
 }
 
 // sort by given less comparator

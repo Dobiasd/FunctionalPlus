@@ -20,21 +20,6 @@ namespace fplus
 {
 
 // (a -> b) -> [a] -> [b]
-// transform((*2), [1, 3, 4]) == [2, 6, 8]
-// Also known as map.
-template <typename F, typename ContainerIn,
-    typename ContainerOut = typename same_cont_new_t_from_unary_f<ContainerIn, F>::type>
-ContainerOut transform(F f, const ContainerIn& xs)
-{
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    ContainerOut ys;
-    prepare_container(ys, size_of_cont(xs));
-    auto it = get_back_inserter<ContainerOut>(ys);
-    std::transform(std::begin(xs), std::end(xs), it, f);
-    return ys;
-}
-
-// (a -> b) -> [a] -> [b]
 // transform_convert((*2), [1, 3, 4]) == [2, 6, 8]
 template <typename ContainerOut, typename F, typename ContainerIn>
 ContainerOut transform_convert(F f, const ContainerIn& xs)
