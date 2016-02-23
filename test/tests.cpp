@@ -536,7 +536,7 @@ void Test_ContainerTools()
     assert(append(xs, xs) == xs2Times);
 
     typedef std::vector<float> FloatVector;
-    assert(convert_elems<float>(xs) == FloatVector({ 1.0f,2.0f,2.0f,3.0f,2.0f }));
+    assert(convert_elems<float>(xs) == FloatVector({1.0f,2.0f,2.0f,3.0f,2.0f}));
 
     assert(concat(intLists) == intList);
     assert(concat(IntVectors(2, xs)) == xs2Times);
@@ -547,8 +547,19 @@ void Test_ContainerTools()
         IntVector({2, 2, 3}),
         IntVector({2, 3, 2})}));
     typedef std::vector<std::string> string_vec;
+    typedef std::pair<std::string::value_type, std::string::value_type> char_pair;
+    typedef std::vector<char_pair> char_pair_vec;
     IntVector vec0123({0,1,2,3});
     IntList list0123({0,1,2,3});
+    std::string ABC("ABC");
+    std::string XY("XY");
+    auto twoCharsToString = [](std::string::value_type x, std::string::value_type y) { std::string result; result += x; result += y; return result; };
+    auto alwaysTrueCharAndChar = [](std::string::value_type, std::string::value_type) { return true; };
+    assert(carthesian_product_with(twoCharsToString, ABC, XY) == string_vec({"AX", "AY", "BX", "BY", "CX", "CY"}));
+    assert(carthesian_product_keep_if(alwaysTrueCharAndChar, ABC, XY) == char_pair_vec({{'A','X'}, {'A','Y'}, {'B','X'}, {'B','Y'}, {'C','X'}, {'C','Y'}}));
+    auto charAndCharSumIsEven = [is_even](std::string::value_type x, std::string::value_type y) { return is_even(x + y); };
+    assert(carthesian_product_with_and_keep_if(twoCharsToString, charAndCharSumIsEven, ABC, XY) == string_vec({"AY", "BX", "CY"}));
+    assert(carthesian_product_keep_if(charAndCharSumIsEven, ABC, XY) == char_pair_vec({{'A','Y'}, {'B','X'}, {'C','Y'}}));
     std::string ABCD("ABCD");
     typedef std::vector<std::list<int>> intListVec;
     assert(carthesian_product_n(2, ABCD) == string_vec({"AA", "AB", "AC", "AD", "BA", "BB", "BC", "BD", "CA", "CB", "CC", "CD", "DA", "DB", "DC", "DD"}));

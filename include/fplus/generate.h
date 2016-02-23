@@ -81,6 +81,70 @@ ContainerOut infixes(std::size_t length, const ContainerIn& xs)
     return result;
 }
 
+// carthesian_product_with_and_keep_if(make_pair, always(true), "ABC", "XY")
+// == [(A,X),(A,Y),(B,X),(B,Y),(C,X),(C,Y)]
+template <typename F,
+    typename Pred,
+    typename Container1,
+    typename Container2,
+    typename X = typename Container1::value_type,
+    typename Y = typename Container2::value_type,
+    typename FOut = typename utils::function_traits<F>::result_type,
+    typename ContainerOut = std::vector<FOut>>
+ContainerOut carthesian_product_with_and_keep_if(F f, Pred pred,
+    const Container1& xs, const Container2& ys)
+{
+    ContainerOut result;
+    prepare_container(result, size_of_cont(xs) * size_of_cont(ys));
+    auto itOut = get_back_inserter(result);
+    for (const auto& x : xs)
+    {
+        for (const auto& y : ys)
+        {
+            if (pred(x, y))
+            {
+                itOut = f(x, y);
+            }
+        }
+    }
+    return result;
+}
+
+// carthesian_product_with(make_pair, "ABC", "XY")
+// == [(A,X),(A,Y),(B,X),(B,Y),(C,X),(C,Y)]
+template <typename F,
+    typename Container1,
+    typename Container2,
+    typename X = typename Container1::value_type,
+    typename Y = typename Container2::value_type,
+    typename FOut = typename utils::function_traits<F>::result_type,
+    typename ContainerOut = std::vector<FOut>>
+ContainerOut carthesian_product_with(F f,
+    const Container1& xs, const Container2& ys)
+{
+    auto always_true_x_y = [](const X&, const Y&) { return true; };
+    return carthesian_product_with_and_keep_if(f, always_true_x_y, xs, ys);
+}
+
+// carthesian_product_keep_if(always(true), "ABC", "XY")
+// == [(A,X),(A,Y),(B,X),(B,Y),(C,X),(C,Y)]
+template <typename Pred,
+    typename Container1,
+    typename Container2,
+    typename X = typename Container1::value_type,
+    typename Y = typename Container2::value_type,
+    typename Out = std::pair<X, Y>,
+    typename ContainerOut = std::vector<Out>>
+ContainerOut carthesian_product_keep_if(Pred pred,
+    const Container1& xs, const Container2& ys)
+{
+    auto make_res_pair = [](const X& x, const Y& y)
+    {
+        return std::make_pair(x, y);
+    };
+    return carthesian_product_with_and_keep_if(make_res_pair, pred, xs, ys);
+}
+
 namespace {
     // productN :: Int -> [a] -> [[a]]
     // productN n = foldr go [[]] . replicate n
