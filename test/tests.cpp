@@ -560,6 +560,7 @@ void Test_ContainerTools()
     auto charAndCharSumIsEven = [is_even](std::string::value_type x, std::string::value_type y) { return is_even(x + y); };
     assert(carthesian_product_with_and_keep_if(twoCharsToString, charAndCharSumIsEven, ABC, XY) == string_vec({"AY", "BX", "CY"}));
     assert(carthesian_product_keep_if(charAndCharSumIsEven, ABC, XY) == char_pair_vec({{'A','Y'}, {'B','X'}, {'C','Y'}}));
+    assert(carthesian_product(ABC, XY) == char_pair_vec({{'A','X'}, {'A','Y'}, {'B','X'}, {'B','Y'}, {'C','X'}, {'C','Y'}}));
     std::string ABCD("ABCD");
     typedef std::vector<std::list<int>> intListVec;
     assert(carthesian_product_n(2, ABCD) == string_vec({"AA", "AB", "AC", "AD", "BA", "BB", "BC", "BD", "CA", "CB", "CC", "CD", "DA", "DB", "DC", "DD"}));

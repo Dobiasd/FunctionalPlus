@@ -145,6 +145,24 @@ ContainerOut carthesian_product_keep_if(Pred pred,
     return carthesian_product_with_and_keep_if(make_res_pair, pred, xs, ys);
 }
 
+// carthesian_product("ABC", "XY") == [(A,X),(A,Y),(B,X),(B,Y),(C,X),(C,Y)]
+template <typename Container1,
+    typename Container2,
+    typename X = typename Container1::value_type,
+    typename Y = typename Container2::value_type,
+    typename Out = std::pair<X, Y>,
+    typename ContainerOut = std::vector<Out>>
+ContainerOut carthesian_product(const Container1& xs, const Container2& ys)
+{
+    auto make_res_pair = [](const X& x, const Y& y)
+    {
+        return std::make_pair(x, y);
+    };
+    auto always_true_x_y = [](const X&, const Y&) { return true; };
+    return carthesian_product_with_and_keep_if(
+        make_res_pair, always_true_x_y, xs, ys);
+}
+
 namespace {
     // productN :: Int -> [a] -> [[a]]
     // productN n = foldr go [[]] . replicate n
