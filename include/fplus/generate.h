@@ -81,9 +81,10 @@ ContainerOut infixes(std::size_t length, const ContainerIn& xs)
     return result;
 }
 
-// carthesian_product_with_where, always(true), "ABC", "XY")
-// == [(A,X),(A,Y),(B,X),(B,Y),(C,X),(C,Y)]
-// same as (in Haskell): [ f x y | x <- xs, y <- ys, pred x y ]
+// carthesian_product_with_where(always(true), "ABC", "XY")
+//   == [(A,X),(A,Y),(B,X),(B,Y),(C,X),(C,Y)]
+// same as (in Haskell):
+//   [ f x y | x <- xs, y <- ys, pred x y ]
 // same as (in pseudo SQL):
 //   SELECT f(xs.x, ys.y)
 //   FROM xs, ys
