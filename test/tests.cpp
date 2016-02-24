@@ -556,10 +556,10 @@ void Test_ContainerTools()
     auto twoCharsToString = [](std::string::value_type x, std::string::value_type y) { std::string result; result += x; result += y; return result; };
     auto alwaysTrueCharAndChar = [](std::string::value_type, std::string::value_type) { return true; };
     assert(carthesian_product_with(twoCharsToString, ABC, XY) == string_vec({"AX", "AY", "BX", "BY", "CX", "CY"}));
-    assert(carthesian_product_keep_if(alwaysTrueCharAndChar, ABC, XY) == char_pair_vec({{'A','X'}, {'A','Y'}, {'B','X'}, {'B','Y'}, {'C','X'}, {'C','Y'}}));
+    assert(carthesian_product_where(alwaysTrueCharAndChar, ABC, XY) == char_pair_vec({{'A','X'}, {'A','Y'}, {'B','X'}, {'B','Y'}, {'C','X'}, {'C','Y'}}));
     auto charAndCharSumIsEven = [is_even](std::string::value_type x, std::string::value_type y) { return is_even(x + y); };
-    assert(carthesian_product_with_and_keep_if(twoCharsToString, charAndCharSumIsEven, ABC, XY) == string_vec({"AY", "BX", "CY"}));
-    assert(carthesian_product_keep_if(charAndCharSumIsEven, ABC, XY) == char_pair_vec({{'A','Y'}, {'B','X'}, {'C','Y'}}));
+    assert(carthesian_product_with_where(twoCharsToString, charAndCharSumIsEven, ABC, XY) == string_vec({"AY", "BX", "CY"}));
+    assert(carthesian_product_where(charAndCharSumIsEven, ABC, XY) == char_pair_vec({{'A','Y'}, {'B','X'}, {'C','Y'}}));
     assert(carthesian_product(ABC, XY) == char_pair_vec({{'A','X'}, {'A','Y'}, {'B','X'}, {'B','Y'}, {'C','X'}, {'C','Y'}}));
     std::string ABCD("ABCD");
     typedef std::vector<std::list<int>> intListVec;

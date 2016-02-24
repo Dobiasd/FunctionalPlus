@@ -81,8 +81,13 @@ ContainerOut infixes(std::size_t length, const ContainerIn& xs)
     return result;
 }
 
-// carthesian_product_with_and_keep_if(make_pair, always(true), "ABC", "XY")
+// carthesian_product_with_where, always(true), "ABC", "XY")
 // == [(A,X),(A,Y),(B,X),(B,Y),(C,X),(C,Y)]
+// same as (in Haskell): [ f x y | x <- xs, y <- ys, pred x y ]
+// same as (in pseudo SQL):
+//   SELECT f(xs.x, ys.y)
+//   FROM xs, ys
+//   WHERE pred(xs.x, ys.y);
 template <typename F,
     typename Pred,
     typename Container1,
@@ -91,11 +96,10 @@ template <typename F,
     typename Y = typename Container2::value_type,
     typename FOut = typename utils::function_traits<F>::result_type,
     typename ContainerOut = std::vector<FOut>>
-ContainerOut carthesian_product_with_and_keep_if(F f, Pred pred,
+ContainerOut carthesian_product_with_where(F f, Pred pred,
     const Container1& xs, const Container2& ys)
 {
     ContainerOut result;
-    prepare_container(result, size_of_cont(xs) * size_of_cont(ys));
     auto itOut = get_back_inserter(result);
     for (const auto& x : xs)
     {
@@ -123,10 +127,10 @@ ContainerOut carthesian_product_with(F f,
     const Container1& xs, const Container2& ys)
 {
     auto always_true_x_y = [](const X&, const Y&) { return true; };
-    return carthesian_product_with_and_keep_if(f, always_true_x_y, xs, ys);
+    return carthesian_product_with_where(f, always_true_x_y, xs, ys);
 }
 
-// carthesian_product_keep_if(always(true), "ABC", "XY")
+// carthesian_product_where(always(true), "ABC", "XY")
 // == [(A,X),(A,Y),(B,X),(B,Y),(C,X),(C,Y)]
 template <typename Pred,
     typename Container1,
@@ -135,14 +139,14 @@ template <typename Pred,
     typename Y = typename Container2::value_type,
     typename Out = std::pair<X, Y>,
     typename ContainerOut = std::vector<Out>>
-ContainerOut carthesian_product_keep_if(Pred pred,
+ContainerOut carthesian_product_where(Pred pred,
     const Container1& xs, const Container2& ys)
 {
     auto make_res_pair = [](const X& x, const Y& y)
     {
         return std::make_pair(x, y);
     };
-    return carthesian_product_with_and_keep_if(make_res_pair, pred, xs, ys);
+    return carthesian_product_with_where(make_res_pair, pred, xs, ys);
 }
 
 // carthesian_product("ABC", "XY") == [(A,X),(A,Y),(B,X),(B,Y),(C,X),(C,Y)]
@@ -159,7 +163,7 @@ ContainerOut carthesian_product(const Container1& xs, const Container2& ys)
         return std::make_pair(x, y);
     };
     auto always_true_x_y = [](const X&, const Y&) { return true; };
-    return carthesian_product_with_and_keep_if(
+    return carthesian_product_with_where(
         make_res_pair, always_true_x_y, xs, ys);
 }
 
