@@ -87,4 +87,52 @@ X int_power(X base, X exp)
     return base * int_power(base, exp - 1);
 }
 
+template <typename X>
+const X& min_2(const X& a, const X& b)
+{
+    return std::min(a, b);
+}
+
+template <typename X>
+const X& min_3(const X& a, const X& b, const X& c)
+{
+    return min_2(a, min_2(b, c));
+}
+
+template <typename X>
+const X& min_4(const X& a, const X& b, const X& c, const X& d)
+{
+    return min_2(a, min_3(b, c, d));
+}
+
+template <typename X>
+const X& min_5(const X& a, const X& b, const X& c, const X& d, const X& e)
+{
+    return min_3(a, b, min_3(c, d, e));
+}
+
+template <typename X>
+const X& max_2(const X& a, const X& b)
+{
+    return std::max(a, b);
+}
+
+template <typename X>
+const X& max_3(const X& a, const X& b, const X& c)
+{
+    return max_2(a, max_2(b, c));
+}
+
+template <typename X>
+const X& max_4(const X& a, const X& b, const X& c, const X& d)
+{
+    return max_2(a, max_3(b, c, d));
+}
+
+template <typename X>
+const X& max_5(const X& a, const X& b, const X& c, const X& d, const X& e)
+{
+    return max_3(a, b, max_3(c, d, e));
+}
+
 } // namespace fplus

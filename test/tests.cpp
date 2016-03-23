@@ -50,6 +50,18 @@ void Test_Numeric()
     assert(int_power(3, 2) == 9);
     assert(int_power(3, 3) == 27);
     assert(int_power(3, 4) == 81);
+
+    assert(min_2(4, 3) == 3);
+    assert(min_2(3, 4) == 3);
+    assert(min_3(3, 1, 9) == 1);
+    assert(min_4(3, 1, 9, 5) == 1);
+    assert(min_5(3, 1, 9, 5, 7) == 1);
+
+    assert(max_2(4, 3) == 4);
+    assert(max_2(3, 4) == 4);
+    assert(max_3(3, 1, 9) == 9);
+    assert(max_4(3, 1, 9, 5) == 9);
+    assert(max_5(3, 1, 9, 5, 7) == 9);
 }
 
 int APlusTwoTimesBFunc(int a, int b) { return a + 2 * b; }
