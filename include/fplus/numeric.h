@@ -87,6 +87,28 @@ X int_power(X base, X exp)
     return base * int_power(base, exp - 1);
 }
 
+template <typename F,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type>
+std::function<const FIn&(const FIn& x, const FIn& y)>
+        min_2_by(F f)
+{
+    return [f](const FIn& x, const FIn& y)
+    {
+        return f(x) < f(y) ? x : y;
+    };
+}
+
+template <typename F,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type>
+std::function<const FIn&(const FIn& x, const FIn& y)>
+        max_2_by(F f)
+{
+    return [f](const FIn& x, const FIn& y)
+    {
+        return f(x) > f(y) ? x : y;
+    };
+}
+
 template <typename X>
 const X& min_2(const X& a, const X& b)
 {
