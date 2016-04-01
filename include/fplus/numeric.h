@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "function_traits.h"
 #include <functional>
 
 namespace fplus
@@ -92,7 +93,7 @@ template <typename F,
 std::function<const FIn&(const FIn& x, const FIn& y)>
         min_2_by(F f)
 {
-    return [f](const FIn& x, const FIn& y)
+    return [f](const FIn& x, const FIn& y) -> const FIn&
     {
         return f(x) < f(y) ? x : y;
     };
@@ -103,7 +104,7 @@ template <typename F,
 std::function<const FIn&(const FIn& x, const FIn& y)>
         max_2_by(F f)
 {
-    return [f](const FIn& x, const FIn& y)
+    return [f](const FIn& x, const FIn& y) -> const FIn&
     {
         return f(x) > f(y) ? x : y;
     };
