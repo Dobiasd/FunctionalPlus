@@ -118,19 +118,19 @@ const X& min_2(const X& a, const X& b)
 template <typename X>
 const X& min_3(const X& a, const X& b, const X& c)
 {
-    return min_2(a, min_2(b, c));
+    return min_2(min_2(a, b), c);
 }
 
 template <typename X>
 const X& min_4(const X& a, const X& b, const X& c, const X& d)
 {
-    return min_2(a, min_3(b, c, d));
+    return min_2(min_3(a, b, c), d);
 }
 
 template <typename X>
 const X& min_5(const X& a, const X& b, const X& c, const X& d, const X& e)
 {
-    return min_3(a, b, min_3(c, d, e));
+    return min_3(min_3(a, b, c), d, e);
 }
 
 template <typename X>
@@ -142,19 +142,19 @@ const X& max_2(const X& a, const X& b)
 template <typename X>
 const X& max_3(const X& a, const X& b, const X& c)
 {
-    return max_2(a, max_2(b, c));
+    return max_2(max_2(a, b), c);
 }
 
 template <typename X>
 const X& max_4(const X& a, const X& b, const X& c, const X& d)
 {
-    return max_2(a, max_3(b, c, d));
+    return max_2(max_3(a, b, c), d);
 }
 
 template <typename X>
 const X& max_5(const X& a, const X& b, const X& c, const X& d, const X& e)
 {
-    return max_3(a, b, max_3(c, d, e));
+    return max_3(max_3(a, b, c), d, e);
 }
 
 } // namespace fplus
