@@ -250,7 +250,7 @@ Container replace_range(std::size_t idxBegin,
 
 template <typename Container,
     typename T = typename Container::value_type>
-T elem_at_idx(std::size_t idx, const Container& xs)
+const T& elem_at_idx(std::size_t idx, const Container& xs)
 {
     assert(idx < size_of_cont(xs));
     auto it = std::begin(xs);
@@ -278,9 +278,9 @@ std::vector<T> elems_at_idxs(const ContainerIdxs& idxs, const Container& xs)
 // nth_element(2)([5,6,7,8]) == 7
 template <typename Container,
         typename T = typename Container::value_type>
-std::function<T(const Container& xs)> nth_element(std::size_t n)
+std::function<const T&(const Container& xs)> nth_element(std::size_t n)
 {
-    return [n](const Container& xs)
+    return [n](const Container& xs) -> const T&
     {
         return elem_at_idx(n, xs);
     };
@@ -290,9 +290,9 @@ std::function<T(const Container& xs)> nth_element(std::size_t n)
 // Can be used to erase outer container type.
 template <typename Container,
         typename T = typename Container::value_type>
-std::function<T(std::size_t n)> nth_element_flipped(const Container& xs)
+std::function<const T&(std::size_t n)> nth_element_flipped(const Container& xs)
 {
-    return [xs](std::size_t n)
+    return [xs](std::size_t n) -> const T&
     {
         return elem_at_idx(n, xs);
     };
