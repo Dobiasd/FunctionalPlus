@@ -32,9 +32,13 @@ void Test_Numeric()
     assert(is_positive(-0.1) == false);
 
     assert(round<int>(1.4) == 1);
+    assert(round<int>(1.5) == 2);
     assert(round<int>(1.6) == 2);
     assert(floor<int>(1.4) == 1);
     assert(ceil<int>(1.4) == 2);
+
+    assert(round<unsigned char>(300.0) == 255);
+    assert(round<unsigned char>(-5.0) == 0);
 
     assert(round<int>(-1.4) == -1);
     assert(round<int>(-1.6) == -2);
@@ -684,8 +688,10 @@ void Test_ContainerTools()
     assert(is_not_empty(xs) == true);
 
 
+    std::vector<unsigned char> uchars = {200, 202};
     assert(sum(xs) == 10);
     assert(mean<int>(xs) == 2);
+    assert(mean<unsigned char>(uchars) == 201);
     assert(median(IntVector({ 3 })) == 3);
     assert(median(IntVector({ 3, 5 })) == 4);
     assert(is_in_range(3.49f, 3.51f)(median<IntVector, float>(IntVector({ 3, 4 }))));
