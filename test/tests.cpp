@@ -272,6 +272,7 @@ void Test_Maybe()
     };
     auto IntToFloat = [](const int& x) { return static_cast<float>(x); };
 
+    assert(maybe<int>(4) == just<int>(4));
     auto x = just<int>(2);
     maybe<int> y = nothing<int>();
     auto Or42 = bind_1st_of_2(just_with_default<int>, 42);

@@ -30,8 +30,11 @@ template <typename T>
 class maybe
 {
 public:
+    explicit maybe(const T& other) :
+        ptr_(new T(other))
+        {}
     maybe(const maybe<T>& other) :
-        ptr_(other.get() ? ptr_t( new T(*other.get())) : ptr_t())
+        ptr_(other.get() ? ptr_t(new T(*other.get())) : ptr_t())
         {}
     bool is_just() const { return static_cast<bool>(get()); }
     const T& unsafe_get_just() const { assert(is_just()); return *get(); }
