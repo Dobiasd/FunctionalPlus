@@ -7,11 +7,13 @@
 #pragma once
 
 #include <algorithm>
+#include <type_traits>
 
 #include "container_common.h"
 #include "compare.h"
 #include "generate.h"
 #include "maybe.h"
+#include "numeric.h"
 #include "search.h"
 #include "composition.h"
 
@@ -130,6 +132,21 @@ typename Container::value_type maximum_idx(const Container& xs)
 template <typename Result, typename Container>
 Result mean(const Container& xs)
 {
+    typedef typename Container::value_type X;
+    auto size = size_of_cont(xs);
+    assert(size != 0);
+    if (!std::is_same<X, double>::value &&
+        std::is_convertible<X, double>::value)
+    {
+        auto xs_as_doubles = convert_elems<double>(xs);
+        auto result_as_double = sum(xs_as_doubles) / static_cast<double>(size);
+        if (!std::is_integral<Result>::value)
+            return static_cast<Result>(result_as_double);
+        else
+        {
+            return round<Result>(result_as_double);
+        }
+    }
     return static_cast<Result>(sum(xs)) / size_of_cont(xs);
 }
 
@@ -138,7 +155,6 @@ template <typename Container,
         typename Result = typename Container::value_type>
 Result median(const Container& xs)
 {
-    typedef typename Container::value_type T;
     assert(is_not_empty(xs));
 
     if (size_of_cont(xs) == 1)
@@ -157,8 +173,7 @@ Result median(const Container& xs)
         std::advance(it1, size_of_cont(xsSorted) / 2 - 1);
         auto it2 = it1;
         ++it2;
-        std::vector<T> upperAndLower = { *it1, *it2 };
-        return mean<Result, Container>(upperAndLower);
+        return (*it1 + *it2) / static_cast<Result>(2);
     }
 }
 

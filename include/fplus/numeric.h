@@ -8,6 +8,7 @@
 
 #include "function_traits.h"
 #include <functional>
+#include <limits>
 
 namespace fplus
 {
@@ -52,10 +53,14 @@ bool is_positive(X x)
 template <typename Out, typename X>
 Out round(X x)
 {
+    if (x < std::numeric_limits<Out>::lowest())
+        return std::numeric_limits<Out>::lowest();
+    if (x > std::numeric_limits<Out>::max())
+        return std::numeric_limits<Out>::max();
     static_assert(std::is_integral<Out>::value, "type must be integral");
     if (is_negative(x))
         x -= 1;
-    return static_cast<int>(x + 0.5f);
+    return static_cast<Out>(x + 0.5);
 }
 
 // Converts a value to the nearest smaller integer.
