@@ -147,7 +147,10 @@ Result mean(const Container& xs)
             return round<Result>(result_as_double);
         }
     }
-    return static_cast<Result>(sum(xs)) / size_of_cont(xs);
+    else
+    {
+        return static_cast<Result>(sum(xs) / size_of_cont(xs));
+    }
 }
 
 // median([5, 6, 4, 3, 2, 6, 7, 9, 3]) == 5
