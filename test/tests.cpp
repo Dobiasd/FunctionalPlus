@@ -690,12 +690,14 @@ void Test_ContainerTools()
 
 
     std::vector<unsigned char> uchars = {200, 202};
+    typedef std::vector<double> DoubleVector;
     assert(sum(xs) == 10);
     assert(mean<int>(xs) == 2);
     assert(mean<unsigned char>(uchars) == 201);
     assert(median(IntVector({ 3 })) == 3);
     assert(median(IntVector({ 3, 5 })) == 4);
     assert(is_in_range(3.49f, 3.51f)(median<IntVector, float>(IntVector({ 3, 4 }))));
+    assert(is_in_range(3.49f, 3.51f)(mean<double>(DoubleVector({ 3, 4 }))));
     assert(median(IntVector({ 3, 9, 5 })) == 5);
     assert(median(xs) == 2);
     assert(sort(reverse(xs)) == xsSorted);

@@ -144,7 +144,7 @@ Result mean(const Container& xs)
             return static_cast<Result>(result_as_double);
         else
         {
-            return round<Result>(result_as_double);
+            return static_cast<Result>(round<int>(result_as_double));
         }
     }
     else
