@@ -129,28 +129,27 @@ typename Container::value_type maximum_idx(const Container& xs)
 }
 
 // mean([1, 4, 4]) == 3
+// unsafe! Make sure sum(xs) does not overflow.
 template <typename Result, typename Container>
 Result mean(const Container& xs)
 {
-    typedef typename Container::value_type X;
+    assert(size_of_cont(xs) != 0);
+    return static_cast<Result>(sum(xs) / size_of_cont(xs));
+}
+
+// mean_using_doubles([1, 4, 4]) == 3
+// Converts elements to double before calculating the sum to prevent overflows.
+template <typename Result, typename Container>
+Result mean_using_doubles(const Container& xs)
+{
     auto size = size_of_cont(xs);
     assert(size != 0);
-    if (!std::is_same<X, double>::value &&
-        std::is_convertible<X, double>::value)
-    {
-        auto xs_as_doubles = convert_elems<double>(xs);
-        auto result_as_double = sum(xs_as_doubles) / static_cast<double>(size);
-        if (!std::is_integral<Result>::value)
-            return static_cast<Result>(result_as_double);
-        else
-        {
-            return static_cast<Result>(round<int>(result_as_double));
-        }
-    }
+    auto xs_as_doubles = convert_elems<double>(xs);
+    auto result_as_double = mean<double>(xs_as_doubles);
+    if (!std::is_integral<Result>::value)
+        return static_cast<Result>(result_as_double);
     else
-    {
-        return static_cast<Result>(sum(xs) / size_of_cont(xs));
-    }
+        return round<Result>(result_as_double);
 }
 
 // median([5, 6, 4, 3, 2, 6, 7, 9, 3]) == 5

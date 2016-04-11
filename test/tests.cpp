@@ -693,7 +693,7 @@ void Test_ContainerTools()
     typedef std::vector<double> DoubleVector;
     assert(sum(xs) == 10);
     assert(mean<int>(xs) == 2);
-    assert(mean<unsigned char>(uchars) == 201);
+    assert(mean_using_doubles<unsigned char>(uchars) == 201);
     assert(median(IntVector({ 3 })) == 3);
     assert(median(IntVector({ 3, 5 })) == 4);
     assert(is_in_range(3.49f, 3.51f)(median<IntVector, float>(IntVector({ 3, 4 }))));
