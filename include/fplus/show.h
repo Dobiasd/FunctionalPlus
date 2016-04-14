@@ -39,20 +39,52 @@ std::string show(const std::pair<X, Y>& p)
     return std::string("(") + show(p.first) + ", " + show(p.second) + ")";
 }
 
+// show_cont_with_frame_with_linebreaks (",", "(", ")", [1, 2, 3, 4, 5], 2)
+// == "(1,2)
+//      3,4)
+//      5)"
+template <typename Container>
+std::string show_cont_with_frame_and_newlines(
+    const std::string& separator,
+    const std::string& prefix, const std::string& suffix,
+    const Container& xs,
+    std::size_t new_line_every_nth_elem )
+{
+    std::vector<std::string> elemStrs;
+    elemStrs.reserve(xs.size());
+    if (new_line_every_nth_elem == 0)
+    {
+        for (const auto& x : xs)
+        {
+            elemStrs.push_back(show(x));
+        }
+    }
+    else
+    {
+        std::size_t i = 0;
+        std::string newline =
+            std::string("\n") + std::string(prefix.size(), ' ');
+        for (const auto& x : xs)
+        {
+            if ( i && i % new_line_every_nth_elem == 0)
+                elemStrs.push_back(newline + show(x));
+            else
+                elemStrs.push_back(show(x));
+            ++i;
+        }
+    }
+    return prefix + join(separator, elemStrs) + suffix;
+}
+
 // show_cont_with_frame (" => ", "{", "}", [1, 2, 3]) == "{1 => 2 => 3}"
 template <typename Container>
 std::string show_cont_with_frame(
     const std::string& separator,
-    const std::string& prefix, const std::string& sufix,
+    const std::string& prefix, const std::string& suffix,
     const Container& xs)
 {
-    std::vector<std::string> elemStrs;
-    elemStrs.reserve(xs.size());
-    for(const auto& x : xs)
-    {
-        elemStrs.push_back(show(x));
-    }
-    return prefix + join(separator, elemStrs) + sufix;
+    return
+        show_cont_with_frame_and_newlines( separator, prefix, suffix, xs, 0);
 }
 
 // show_cont_with( " - ", [1, 2, 3]) == "[1 - 2 - 3]"

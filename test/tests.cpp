@@ -632,6 +632,10 @@ void Test_ContainerTools()
     assert(show_cont(mapToShow) == "[(1, one), (2, two)]");
     assert(show_cont(xs) == xsShown);
     assert(show_cont_with(", ", xs) == xsShown);
+    std::string xsShownNLs = "(1,2,\n"
+                             " 2,3,\n"
+                             " 2)";
+    assert(show_cont_with_frame_and_newlines(",", "(", ")", xs, 2) == xsShownNLs);
     assert(show<int>(1) == "1");
     auto multiply = [](int x, int y){ return x * y; };
     assert(zip_with(multiply, xs, xs)
@@ -697,7 +701,7 @@ void Test_ContainerTools()
     assert(median(IntVector({ 3 })) == 3);
     assert(median(IntVector({ 3, 5 })) == 4);
     assert(is_in_range(3.49f, 3.51f)(median<IntVector, float>(IntVector({ 3, 4 }))));
-    assert(is_in_range(3.49f, 3.51f)(mean<double>(DoubleVector({ 3, 4 }))));
+    assert(is_in_range(3.49, 3.51)(mean<double>(DoubleVector({ 3, 4 }))));
     assert(median(IntVector({ 3, 9, 5 })) == 5);
     assert(median(xs) == 2);
     assert(sort(reverse(xs)) == xsSorted);
