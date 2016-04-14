@@ -194,6 +194,17 @@ ContainerOut split_at_idxs(const ContainerIdxs& idxsIn, const ContainerIn& xs)
     return result;
 }
 
+// split_every(3, [0,1,2,3,4,5,6,7]) == [[0,1,2],[3,4,5],[6,7]]
+template <typename ContainerIn,
+        typename ContainerOut = std::vector<ContainerIn>>
+ContainerOut split_every(std::size_t n, const ContainerIn& xs)
+{
+    return split_at_idxs(
+        generate_range_step<std::vector<std::size_t>, std::size_t>(
+            0, size_of_cont(xs), n),
+        xs);
+}
+
 // split_by_token(", ", "foo, bar, baz") == ["foo", "bar", "baz"]
 template <typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
