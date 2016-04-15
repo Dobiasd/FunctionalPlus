@@ -30,7 +30,7 @@ template <typename T>
 class maybe
 {
 public:
-    explicit maybe(const T& other) :
+    maybe(const T& other) :
         ptr_(new T(other))
         {}
     maybe(const maybe<T>& other) :
