@@ -41,6 +41,14 @@ ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
     return result;
 }
 
+// group_on((mod 10), [12,22,34]) == [[12,22],[34]]
+template <typename F, typename ContainerIn,
+        typename ContainerOut = typename std::vector<ContainerIn>>
+ContainerOut group_on(F f, const ContainerIn& xs)
+{
+    return group_by(is_equal_by(f), xs);
+}
+
 // group([1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2],[3],[2,2],[4],[5,5]]
 template <typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
@@ -54,7 +62,9 @@ ContainerOut group(const ContainerIn& xs)
     return group_by<decltype(pred), ContainerIn, ContainerOut>(pred, xs);
 }
 
-// group_globally_by((==), [1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2,2,2],[3],[4],[5,5]]
+
+// group_globally_by((==), [1,2,2,2,3,2,2,4,5,5])
+// == [[1],[2,2,2,2,2],[3],[4],[5,5]]
 // O(n^2)
 template <typename BinaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
@@ -84,6 +94,15 @@ ContainerOut group_globally_by(BinaryPredicate p, const ContainerIn& xs)
         }
     }
     return result;
+}
+
+// group_globally_on((mod 10), [12,34,22]) == [[12,34],[22]]
+// O(n^2)
+template <typename F, typename ContainerIn,
+        typename ContainerOut = typename std::vector<ContainerIn>>
+ContainerOut group_globally_on(F f, const ContainerIn& xs)
+{
+    return group_globally_by(is_equal_by(f), xs);
 }
 
 // group_globally([1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2,2,2],[3],[4],[5,5]]

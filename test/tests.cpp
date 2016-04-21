@@ -510,6 +510,8 @@ void Test_ContainerTools()
     IntLists intLists = { { 1 },{ 2, 2 },{ 3 },{ 2 } };
     assert(group(intList) == intLists);
 
+    auto int_mod_10 = [](int x) -> int { return x % 10; };
+
     assert(transform(squareLambda, xs) == IntVector({1,4,4,9,4}));
     assert(keep_if(is_even, xs) == IntVector({2,2,2}));
     assert(drop_if(is_even, xs) == IntVector({1,3}));
@@ -517,7 +519,9 @@ void Test_ContainerTools()
     assert(keep_if(is_even, intList) == IntList({ 2,2,2 }));
     assert(drop_if(is_even, intList) == IntList({ 1,3 }));
     assert(group(xs) == IntVectors({IntVector({1}),IntVector({2,2}),IntVector({3}),IntVector({2})}));
+    assert(group_on(int_mod_10, IntVector({12,22,34})) == IntVectors({IntVector({12,22}),IntVector({34})}));
     assert(group_globally(xs) == IntVectors({IntVector({1}),IntVector({2,2,2}),IntVector({3})}));
+    assert(group_globally_on(int_mod_10, IntVector({12,34,22})) == IntVectors({IntVector({12,22}),IntVector({34})}));
     assert(trim_left(1, intList) == IntList({2,2,3,2}));
     assert(trim_right(2, intList) == IntList({1,2,2,3}));
     assert(trim(0, IntVector({0,2,4,5,6,7,8,0,0})) == IntVector({2,4,5,6,7,8}));
@@ -718,15 +722,23 @@ void Test_ContainerTools()
     assert(sort(reverse(xs)) == xsSorted);
     assert(sort(reverse(intList)) == intListSorted);
     assert(sort_by(std::greater<int>(), xs) == reverse(xsSorted));
+
+    assert(sort_on(int_mod_10, IntVector({26,3,14})) == IntVector({3,14,26}));
+
     assert(unique(xs) == IntVector({1,2,3,2}));
     auto IsEqualByis_even = [&](int a, int b)
             { return is_even(a) == is_even(b); };
     assert(unique_by(IsEqualByis_even, xs) == IntVector({1,2,3,2}));
 
+    assert(unique_on(int_mod_10, IntVector({2,22,3})) == IntVector({2, 3}));
+
     assert(all_the_same(IntVector()) == true);
     assert(all_the_same(IntVector({1})) == true);
     assert(all_the_same(IntVector({1,1,1})) == true);
     assert(all_the_same(IntVector({1,2,1})) == false);
+
+    assert(all_the_same_on(int_mod_10, IntVector({3,13,33})) == true);
+    assert(all_the_same_on(int_mod_10, IntVector({3,14,33})) == false);
 
     assert(all_unique(IntVector()) == true);
     assert(all_unique(IntVector({1})) == true);
@@ -734,18 +746,26 @@ void Test_ContainerTools()
     assert(all_unique(IntVector({1,2,3})) == true);
 
     assert(all_unique_less(IntVector()) == true);
-    assert(all_unique_less(IntVector({ 1 })) == true);
-    assert(all_unique_less(IntVector({ 1,2,1 })) == false);
-    assert(all_unique_less(IntVector({ 1,2,3 })) == true);
+    assert(all_unique_less(IntVector({1})) == true);
+    assert(all_unique_less(IntVector({1,2,1})) == false);
+    assert(all_unique_less(IntVector({1,2,3})) == true);
+
+    assert(all_unique_on(int_mod_10, IntVector({3,14,35})) == true);
+    assert(all_unique_on(int_mod_10, IntVector({3,14,33})) == false);
 
     assert(is_sorted(IntVector()) == true);
     assert(is_sorted(IntVector({1})) == true);
     assert(is_sorted(IntVector({1,2,3})) == true);
     assert(is_sorted(IntVector({1,2,2})) == true);
     assert(is_sorted(IntVector({1,2,1})) == false);
+    assert(is_sorted_on(int_mod_10, IntVector({51,32,43})) == true);
+    assert(is_sorted_on(int_mod_10, IntVector({15,23})) == false);
     assert(is_strictly_sorted(IntVector({1,2,3})) == true);
     assert(is_strictly_sorted(IntVector({1,2,2})) == false);
     assert(is_strictly_sorted(IntVector({1,2,1})) == false);
+    assert(is_strictly_sorted_on(int_mod_10, IntVector({51,32,43})) == true);
+    assert(is_strictly_sorted_on(int_mod_10, IntVector({51,32,43,63})) == false);
+    assert(is_strictly_sorted_on(int_mod_10, IntVector({15,23})) == false);
 
     auto is2 = is_equal_to(2);
     auto is3 = is_equal_to(3);
@@ -872,6 +892,7 @@ void Test_ContainerTools()
     assert(nub(xs) == IntVector({ 1,2,3 }));
     auto bothEven = is_equal_by(is_even);
     assert(nub_by(bothEven, xs) == IntVector({ 1,2 }));
+    assert(nub_on(int_mod_10, IntVector({12,32,15})) == IntVector({12,15}));
 
     typedef std::map<int, std::string> IntStringMap;
     typedef std::map<std::string, int> StringIntMap;

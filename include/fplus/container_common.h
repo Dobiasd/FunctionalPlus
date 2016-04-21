@@ -519,6 +519,13 @@ Container sort_by(Compare comp, const Container& xs)
     return result;
 }
 
+// sort by given transformer
+template <typename F, typename Container>
+Container sort_on(F f, const Container& xs)
+{
+    return sort_by(is_less_by(f), xs);
+}
+
 // sort by std::less
 template <typename Container>
 Container sort(const Container& xs)
@@ -536,6 +543,13 @@ Container unique_by(BinaryPredicate p, const Container& xs)
     auto last = std::unique(std::begin(result), std::end(result), p);
     result.erase(last, std::end(result));
     return result;
+}
+
+// Like unique but with user supplied transformation (e.g. getter).
+template <typename Container, typename F>
+Container unique_on(F f, const Container& xs)
+{
+    return unique_by(is_equal_by(f), xs);
 }
 
 // unique([1,2,2,3,2]) == [1,2,3,2]
@@ -609,6 +623,13 @@ Container nub_by(BinaryPredicate p, const Container& xs)
     return result;
 }
 
+// nub_on((mod 10), [12,32,15]) == [12,15]
+template <typename Container, typename F>
+Container nub_on(F f, const Container& xs)
+{
+    return nub_by(is_equal_by(f), xs);
+}
+
 // nub([1,2,2,3,2]) == [1,2,3]
 template <typename Container>
 Container nub(const Container& xs)
@@ -624,6 +645,14 @@ bool all_unique_by_eq(BinaryPredicate p, const Container& xs)
 {
     check_binary_predicate_for_container<BinaryPredicate, Container>();
     return size_of_cont(nub_by(p, xs)) == size_of_cont(xs);
+}
+
+// Returns true for empty containers.
+// O(n^2)
+template <typename Container, typename F>
+bool all_unique_on(F f, const Container& xs)
+{
+    return all_unique_by_eq(is_equal_by(f), xs);
 }
 
 // Returns true for empty containers.
@@ -651,6 +680,22 @@ bool is_strictly_sorted_by(Compare comp, const Container& xs)
     return true;
 }
 
+// O(n)
+template <typename Container, typename F>
+bool is_strictly_sorted_on(F f, const Container& xs)
+{
+    return is_strictly_sorted_by(is_less_by(f), xs);
+}
+
+// O(n)
+template <typename Container>
+bool is_strictly_sorted(const Container& xs)
+{
+    typedef typename Container::value_type T;
+    auto comp = std::less<T>();
+    return is_strictly_sorted_by(comp, xs);
+}
+
 // comp(a, b) must return true only if a < b.
 // O(n)
 template <typename Container, typename Compare>
@@ -667,12 +712,10 @@ bool is_sorted_by(Compare comp, const Container& xs)
 }
 
 // O(n)
-template <typename Container>
-bool is_strictly_sorted(const Container& xs)
+template <typename Container, typename F>
+bool is_sorted_on(F f, const Container& xs)
 {
-    typedef typename Container::value_type T;
-    auto comp = std::less<T>();
-    return is_strictly_sorted_by(comp, xs);
+    return is_sorted_by(is_less_by(f), xs);
 }
 
 // O(n)
@@ -729,6 +772,16 @@ bool all_the_same_by(BinaryPredicate p, const Container& xs)
     if (size_of_cont(xs) < 2)
         return true;
     auto unaryPredicate = bind_1st_of_2(p, xs.front());
+    return all_by(unaryPredicate, xs);
+}
+
+// Returns true for empty containers.
+template <typename Container, typename F>
+bool all_the_same_on(F f, const Container& xs)
+{
+    if (size_of_cont(xs) < 2)
+        return true;
+    auto unaryPredicate = is_equal_by_to(f, xs.front());
     return all_by(unaryPredicate, xs);
 }
 
