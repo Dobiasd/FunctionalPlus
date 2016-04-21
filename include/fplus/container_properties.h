@@ -53,7 +53,7 @@ bool none(const Container& xs)
 }
 
 
-// minimum_by(length, ["123", "12", "1234", "123"]) -> "12"
+// minimum_by(lessLength, ["123", "12", "1234", "123"]) -> "12"
 template <typename Compare, typename Container>
 typename Container::value_type minimum_by(Compare comp,
         const Container& xs)
@@ -63,7 +63,7 @@ typename Container::value_type minimum_by(Compare comp,
     return *std::min_element(std::begin(xs), std::end(xs), comp);
 }
 
-// maximum_by(length, ["123", "12", "1234", "123"]) == "1234"
+// maximum_by(lessLength, ["123", "12", "1234", "123"]) == "1234"
 template <typename Compare, typename Container>
 typename Container::value_type maximum_by(Compare comp,
         const Container& xs)
@@ -72,6 +72,24 @@ typename Container::value_type maximum_by(Compare comp,
     assert(is_not_empty(xs));
     return *std::max_element(std::begin(xs), std::end(xs), comp);
 }
+
+
+// minimum_on(length, ["123", "12", "1234", "123"]) -> "12"
+template <typename F, typename Container>
+typename Container::value_type minimum_on(F f, const Container& xs)
+{
+    assert(is_not_empty(xs));
+    return minimum_by(is_less_by(f), xs);
+}
+
+// maximum_on(length, ["123", "12", "1234", "123"]) == "1234"
+template <typename F, typename Container>
+typename Container::value_type maximum_on(F f, const Container& xs)
+{
+    assert(is_not_empty(xs));
+    return maximum_by(is_less_by(f), xs);
+}
+
 
 // minimum([3, 1, 4, 2]) == 1
 template <typename Container>
@@ -88,7 +106,7 @@ typename Container::value_type maximum(const Container& xs)
 }
 
 
-// minimum_idx_by(length, ["123", "12", "1234", "123"]) -> "1"
+// minimum_idx_by(lessLength, ["123", "12", "1234", "123"]) -> "1"
 // return index of first minimum element
 template <typename Compare, typename Container>
 typename Container::value_type minimum_idx_by(Compare comp,
@@ -100,7 +118,7 @@ typename Container::value_type minimum_idx_by(Compare comp,
         std::min_element(std::begin(xs), std::end(xs), comp));
 }
 
-// maximum_idx_by(length, ["123", "12", "1234", "123"]) == "2"
+// maximum_idx_by(lessLength, ["123", "12", "1234", "123"]) == "2"
 // return index of first maximum element
 template <typename Compare, typename Container>
 typename Container::value_type maximum_idx_by(Compare comp,
@@ -110,6 +128,22 @@ typename Container::value_type maximum_idx_by(Compare comp,
     assert(is_not_empty(xs));
     return std::distance(std::begin(xs),
         std::max_element(std::begin(xs), std::end(xs), comp));
+}
+
+// minimum_idx_on(length, ["123", "12", "1234", "123"]) -> "1"
+// return index of first minimum element
+template <typename F, typename Container>
+typename Container::value_type minimum_idx_on(F f, const Container& xs)
+{
+    return minimum_idx_by(is_less_by(f), xs);
+}
+
+// maximum_idx_on(length, ["123", "12", "1234", "123"]) == "2"
+// return index of first maximum element
+template <typename F, typename Container>
+typename Container::value_type maximum_idx_on(F f, const Container& xs)
+{
+    return maximum_idx_by(is_less_by(f), xs);
 }
 
 // minimum_idx([3, 1, 4, 2]) == 1
