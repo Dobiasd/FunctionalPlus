@@ -6,6 +6,7 @@
 
 #include "fplus.h"
 
+#include <atomic>
 #include <cassert>
 #include <chrono>
 #include <ctime>
@@ -1041,6 +1042,41 @@ void Test_Read()
     assert(is_in_range(-42.4L, -42.2L )(unsafe_get_just(read_value<long double>("-42.3"))));
 }
 
+void Test_SideEffects()
+{
+    using namespace fplus;
+    typedef std::vector<int> Ints;
+    Ints buffer;
+    //auto push_one = [&](){ buffer.push_back(1); };
+    auto push_one_return_true = [&]() -> bool { buffer.push_back(1); return true; };
+    auto push_one_return_false = [&]() -> bool { buffer.push_back(1); return false; };
+    auto push_3_ones = execute_serially(replicate(3, push_one_return_true))();
+    assert(buffer == Ints({1,1,1}));
+
+    auto return_one = [&](){ return 1; };
+    assert(execute_parallelly(replicate(4, return_one))() == Ints({1,1,1,1}));
+    //execute_fire_and_forget([](){std::cout << "Fired and forgotten." << std::endl;})();
+
+    buffer.clear();
+    execute_n_times_until_success_with_pauses_in_milliseconds(5, 1, push_one_return_false)();
+    assert(buffer == Ints({1,1,1,1,1}));
+
+    buffer.clear();
+    typedef std::function<bool()> BoolReturningFunction;
+    typedef std::vector<BoolReturningFunction> BoolReturningFunctions;
+    execute_serially_until_success(BoolReturningFunctions({push_one_return_false, push_one_return_false, push_one_return_true, push_one_return_true}))();
+    assert(buffer == Ints({1,1,1}));
+
+    buffer.clear();
+    execute_serially_until_failure(BoolReturningFunctions({push_one_return_true, push_one_return_false, push_one_return_false}))();
+    assert(buffer == Ints({1,1}));
+
+    std::atomic<int> atomic_int(0);
+    auto inc_atomic_int_return_true = [&]() -> bool { ++atomic_int; return true;};
+    execute_parallelly(replicate(4, inc_atomic_int_return_true))();
+    assert(atomic_int.load() == 4);
+}
+
 bool is_odd(int x) { return x % 2 == 1; }
 void Test_example_KeepIf()
 {
@@ -1233,6 +1269,10 @@ int main()
     std::cout << "Testing Read." << std::endl;
     Test_Read();
     std::cout << "Read OK." << std::endl;
+
+    std::cout << "Testing Side Effects." << std::endl;
+    Test_SideEffects();
+    std::cout << "Side Effects OK." << std::endl;
 
     std::cout << "Testing Applications." << std::endl;
     Test_example_KeepIf();

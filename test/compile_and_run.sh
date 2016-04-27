@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-g++ -std=c++11 -O3 -Wall -Wextra -pedantic -Werror -o ./temp_FunctionalPlus_tests__gcc -I./../include tests.cpp
-clang++-3.6 -O3 -std=c++11 -Wall -Wextra -pedantic -Werror -o ./temp_FunctionalPlus_tests__clang -I./../include tests.cpp
+g++ -std=c++11 -O3 -Wall -Wextra -pedantic -Werror -pthread -o ./temp_FunctionalPlus_tests__gcc -I./../include tests.cpp
+clang++-3.6 -O3 -std=c++11 -Wall -Wextra -pedantic -Werror -pthread -o ./temp_FunctionalPlus_tests__clang -I./../include tests.cpp
 
 if [ -f ./temp_FunctionalPlus_tests__gcc ];
 then
