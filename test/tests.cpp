@@ -1058,8 +1058,9 @@ void Test_SideEffects()
     //execute_fire_and_forget([](){std::cout << "Fired and forgotten." << std::endl;})();
 
     buffer.clear();
-    execute_n_times_until_success_with_pauses_in_milliseconds(5, 1, push_one_return_false)();
-    assert(buffer == Ints({1,1,1,1,1}));
+    execute_max_n_times_until_success(5, push_one_return_false)();
+    execute_max_n_times_until_success(3, push_one_return_false, 1)();
+    assert(buffer == Ints({1,1,1,1,1,1,1,1}));
 
     buffer.clear();
     typedef std::function<bool()> BoolReturningFunction;
