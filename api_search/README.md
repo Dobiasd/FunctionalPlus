@@ -4,5 +4,6 @@ todo:
 3) case insensitive suchen
 4) signaturen mit query als teil suchen
 5) int auch auf size_t in queries matchen
-6) a, b auf beliebige typen matchen
+6) a, b usw. auf beliebige typen matchen
+7) [a], [b] usw. auf string matchen
 passen 1 und 2 zusammen?
