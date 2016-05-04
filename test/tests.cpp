@@ -283,7 +283,6 @@ void Test_Maybe()
     auto squareMaybe = lift_maybe(square);
     auto sqrtAndSqrt = and_then_maybe(sqrtToMaybe, sqrtToMaybe);
     auto sqrtIntAndSqrtIntAndSqrtInt = and_then_maybe(sqrtToMaybeInt, sqrtToMaybeInt, sqrtToMaybeInt);
-    std::cout << show_maybe(sqrtIntAndSqrtIntAndSqrtInt(16)) << std::endl;
     assert(sqrtIntAndSqrtIntAndSqrtInt(256) == just(2));
     auto sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt = and_then_maybe(sqrtToMaybeInt, sqrtToMaybeInt, sqrtToMaybeInt, sqrtToMaybeInt);
     assert(sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt(65536) == just(2));
@@ -565,6 +564,10 @@ void Test_ContainerTools()
     assert(is_not_empty(IntVector()) == false);
     assert(convert_container<IntList>(xs) == intList);
     assert(append(xs, xs) == xs2Times);
+    assert(interweave(IntVector({1,3}), IntVector({2,4})) == IntVector({1,2,3,4}));
+    assert(interweave(IntVector({1,3,5,7}), IntVector({2,4})) == IntVector({1,2,3,4,5,7}));
+    assert(unweave(IntVector({0,1,2,3})) == std::make_pair(IntVector({0,2}), IntVector({1,3})));
+    assert(unweave(IntVector({0,1,2,3,4})) == std::make_pair(IntVector({0,2,4}), IntVector({1,3})));
 
     typedef std::vector<float> FloatVector;
     assert(convert_elems<float>(xs) == FloatVector({1.0f,2.0f,2.0f,3.0f,2.0f}));

@@ -523,6 +523,58 @@ ContainerOut concat(const ContainerIn& xss)
     return result;
 }
 
+// API search type: interweave : [a], [a] -> [a]
+// Return a list that contains elements from the two provided,
+// in alternate order. If one list runs out of items,
+// append the items from the remaining list.
+// interweave([1,3], [2,4]) == [1,2,3,4]
+// interweave([1,3,5,7], [2,4]) == [1,2,3,4,5,7]
+template <typename Container>
+Container interweave(const Container& xs, const Container& ys)
+{
+    Container result;
+    prepare_container(result, size_of_cont(xs) + size_of_cont(ys));
+    auto it = get_back_inserter<Container>(result);
+    auto it_xs = std::begin(xs);
+    auto it_ys = std::begin(ys);
+    while (it_xs != std::end(xs) || it_ys != std::end(ys))
+    {
+        if (it_xs != std::end(xs))
+            *it = *(it_xs++);
+        if (it_ys != std::end(ys))
+            *it = *(it_ys++);
+    }
+    return result;
+}
+
+// API search type: unweave : [a] -> ([a], [a])
+// Puts the elements with an even index into the first list,
+// and the elements with an odd index into the second list.
+// Inverse of interweave.
+// unweave([0,1,2,3]) == ([0,2], [1,3])
+// unweave([0,1,2,3,4]) == ([0,2,4], [1,3])
+template <typename Container>
+std::pair<Container, Container> unweave(const Container& xs)
+{
+    std::pair<Container, Container> result;
+    if (size_of_cont(xs) % 2 == 0)
+        prepare_container(result.first, size_of_cont(xs) / 2);
+    else
+        prepare_container(result.first, size_of_cont(xs) / 2 + 1);
+    prepare_container(result.second, size_of_cont(xs) / 2);
+    auto it_even = get_back_inserter<Container>(result.first);
+    auto it_odd = get_back_inserter<Container>(result.second);
+    std::size_t counter = 0;
+    for (const auto& x : xs)
+    {
+        if (counter++ % 2 == 0)
+            *it_even = x;
+        else
+            *it_odd = x;
+    }
+    return result;
+}
+
 // sort by given less comparator
 template <typename Compare, typename T>
 std::list<T> sort_by(Compare comp, const std::list<T>& xs)
