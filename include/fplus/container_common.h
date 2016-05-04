@@ -87,6 +87,7 @@ std::insert_iterator<Container> get_back_inserter(Container& ys)
     return std::inserter(ys, std::end(ys));
 }
 
+// API search type: is_empty : [a] -> bool
 // is_empty([1, 2]) == false
 template <typename Container>
 bool is_empty(const Container& xs)
@@ -94,6 +95,7 @@ bool is_empty(const Container& xs)
     return xs.empty();
 }
 
+// API search type: is_not_empty : [a] -> bool
 // is_not_empty([1, 2]) == true
 template <typename Container>
 bool is_not_empty(const Container& xs)
@@ -101,6 +103,7 @@ bool is_not_empty(const Container& xs)
     return !is_empty(xs);
 }
 
+// API search type: size_of_cont : [a] -> int
 // size_of_cont([3, 4]) == 2
 template <typename Container>
 std::size_t size_of_cont(const Container& xs)
@@ -108,6 +111,7 @@ std::size_t size_of_cont(const Container& xs)
     return xs.size();
 }
 
+// API search type: convert : a -> b
 // Converts one type of element to another.
 template <typename Dest, typename Source>
 Dest convert(const Source& x)
@@ -115,6 +119,7 @@ Dest convert(const Source& x)
     return Dest(x);
 }
 
+// API search type: convert_elems : [a] -> [b]
 // convert_elems<NewT>([1, 2, 3]) == [NewT(1), NewT(2), NewT(3)]
 template <typename NewT, typename ContainerIn,
     typename ContainerOut = typename same_cont_new_t<ContainerIn, NewT>::type>
@@ -134,6 +139,7 @@ ContainerOut convert_elems(const ContainerIn& xs)
     return ys;
 }
 
+// API search type: convert_container : [a] -> [a]
 // convert_container([1, 2, 3]) == [1, 2, 3]
 // Useful for example if you want to convert an std::list to an std::vector.
 template <typename ContainerOut, typename ContainerIn>
@@ -150,6 +156,7 @@ ContainerOut convert_container(const ContainerIn& xs)
     return ys;
 }
 
+// API search type: convert_container_and_elems : [a] -> [b]
 // Converts between different containers and elements.
 // Dest elements are allowed to have explicit constructors.
 // convert([1, 2, 3]) == [1, 2, 3]
@@ -168,6 +175,7 @@ ContainerOut convert_container_and_elems(const ContainerIn& xs)
     return ys;
 }
 
+// API search type: get_range : int, int, [a] -> [a]
 // get_range(2, 5, [0,1,2,3,4,5,6,7,8]) == [2,3,4]
 template <typename Container>
 Container get_range
@@ -184,6 +192,7 @@ Container get_range
     return result;
 }
 
+// API search type: set_range : int, [a], [a] -> [a]
 // set_range(2, [9,9,9], [0,1,2,3,4,5,6,7,8]) == [0,1,9,9,9,5,6,7,8]
 template <typename Container>
 Container set_range
@@ -197,6 +206,7 @@ Container set_range
     return result;
 }
 
+// API search type: remove_range : int, int, [a] -> [a]
 // remove_range(2, 5, [0,1,2,3,4,5,6,7]) == [0,1,5,6,7]
 template <typename Container>
 Container remove_range
@@ -220,6 +230,7 @@ Container remove_range
     return result;
 }
 
+// API search type: insert_at : int, [a], [a] -> [a]
 // insert_at(2, [8,9], [0,1,2,3,4]) == [0,1,8,9,2,3,4]
 template <typename Container>
 Container insert_at(std::size_t idxBegin,
@@ -239,6 +250,7 @@ Container insert_at(std::size_t idxBegin,
     return result;
 }
 
+// API search type: replace_range : int, [a], [a] -> [a]
 // replace_range(2, [8,9], [0,1,2,3,4]) == [0,1,8,9,4]
 template <typename Container>
 Container replace_range(std::size_t idxBegin,
@@ -248,6 +260,7 @@ Container replace_range(std::size_t idxBegin,
     return insert_at(idxBegin, token, remove_range(idxBegin, idxEnd, xs));
 }
 
+// API search type: elem_at_idx : int, [a] -> [a]
 template <typename Container,
     typename T = typename Container::value_type>
 const T& elem_at_idx(std::size_t idx, const Container& xs)
@@ -258,6 +271,7 @@ const T& elem_at_idx(std::size_t idx, const Container& xs)
     return *it;
 }
 
+// API search type: elems_at_idxs : [int], [a] -> [a]
 template <typename Container,
     typename ContainerIdxs,
     typename T = typename Container::value_type,
@@ -275,6 +289,7 @@ std::vector<T> elems_at_idxs(const ContainerIdxs& idxs, const Container& xs)
     return result;
 }
 
+// API search type: nth_element : int -> [a] -> a
 // nth_element(2)([5,6,7,8]) == 7
 template <typename Container,
         typename T = typename Container::value_type>
@@ -286,6 +301,7 @@ std::function<const T&(const Container& xs)> nth_element(std::size_t n)
     };
 }
 
+// API search type: nth_element_flipped : [a] -> int -> a
 // nth_element_flipped([5,6,7,8])(2) == 7
 // Can be used to erase outer container type.
 template <typename Container,
@@ -298,7 +314,7 @@ std::function<const T&(std::size_t n)> nth_element_flipped(const Container& xs)
     };
 }
 
-// (a -> b) -> [a] -> [b]
+// API search type: transform : (a -> b), [a] -> [b]
 // transform((*2), [1, 3, 4]) == [2, 6, 8]
 // Also known as map.
 template <typename F, typename ContainerIn,
@@ -313,6 +329,7 @@ ContainerOut transform(F f, const ContainerIn& xs)
     return ys;
 }
 
+// API search type: reverse : [a] -> [a]
 // reverse([0,4,2,6]) == [6,2,4,0]
 template <typename Container>
 Container reverse(const Container& xs)
@@ -324,6 +341,7 @@ Container reverse(const Container& xs)
     return ys;
 }
 
+// API search type: take : int, [a] -> [a]
 // take(3, [0,1,2,3,4,5,6,7]) == [0,1,2]
 // take(10, [0,1,2]) == [0,1,2]
 template <typename Container>
@@ -334,6 +352,7 @@ Container take(std::size_t amount, const Container& xs)
     return get_range(0, amount, xs);
 }
 
+// API search type: drop : int, [a] -> [a]
 // drop(3, [0,1,2,3,4,5,6,7]) == [3,4,5,6,7]
 template <typename Container>
 Container drop(std::size_t amount, const Container& xs)
@@ -343,8 +362,8 @@ Container drop(std::size_t amount, const Container& xs)
     return get_range(amount, size_of_cont(xs), xs);
 }
 
+// API search type: fold_left : (a, b -> a), a, [b] -> a
 // fold_left((+), 0, [1, 2, 3]) == ((0+1)+2)+3 == 6
-// (a -> b -> a) -> a -> [b] -> a
 // Takes the second argument and the first item of the list
 // and applies the function to them,
 // then feeds the function with this result and the second argument and so on.
@@ -360,8 +379,8 @@ Acc fold_left(F f, const Acc& init, const Container& xs)
     return acc;
 }
 
+// API search type: fold_left : (a, a -> a), [a] -> a
 // fold_left_1((+), [1, 2, 3]) == (1+2)+3 == 6
-// (a -> a -> a) -> [a] -> a
 // Takes the first 2 items of the list and applies the function to them,
 // then feeds the function with this result and the third argument and so on.
 template <typename F, typename Container,
@@ -372,8 +391,8 @@ Acc fold_left_1(F f, const Container& xs)
     return fold_left(f, xs.front(), drop(1, xs));
 }
 
+// API search type: fold_right : (a, b -> b), b, [a] -> b
 // fold_right((+), 0, [1, 2, 3]) == 1+(2+(3+0)) == 6
-// (a -> b -> b) -> b -> [a] -> b
 // Takes the second argument and the last item of the list
 // and applies the function,
 // then it takes the penultimate item from the end and the result, and so on.
@@ -384,8 +403,8 @@ Acc fold_right(F f, const Acc& init, const Container& xs)
     return fold_left(flip(f), init, reverse(xs));
 }
 
+// API search type: fold_right_1 : (a, a -> a), [a] -> a
 // fold_right_1((+), [1, 2, 3]) == 1+(2+3)) == 6
-// (a -> a -> a) -> [a] -> a
 // Takes the last two items of the list and applies the function,
 // then it takes the third item from the end and the result, and so on.
 template <typename F, typename Container,
@@ -395,8 +414,8 @@ Acc fold_right_1(F f, const Container& xs)
     return fold_left_1(flip(f), reverse(xs));
 }
 
+// API search type: scan_left : (a, b -> a), a, [b] -> [a]
 // scan_left((+), 0, [1, 2, 3]) == [0, 1, 3, 6]
-// (a -> b -> a) -> a -> [b] -> [a]
 // Takes the second argument and the first item of the list
 // and applies the function to them,
 // then feeds the function with this result and the second argument and so on.
@@ -419,8 +438,8 @@ ContainerOut scan_left(F f, const Acc& init, const ContainerIn& xs)
     return result;
 }
 
+// API search type: scan_left_1 : (a, a -> a), [a] -> [a]
 // scan_left_1((+), [1, 2, 3]) == [1, 3, 6]
-// (a -> a -> a) -> [a] -> [a]
 // Takes the first 2 items of the list and applies the function to them,
 // then feeds the function with this result and the third argument and so on.
 // It returns the list of intermediate and final results.
@@ -433,8 +452,8 @@ ContainerOut scan_left_1(F f, const ContainerIn& xs)
     return scan_left(f, xs.front(), drop(1, xs));
 }
 
+// API search type: scan_right : (a, b -> b), b, [a] -> [b]
 // scan_right((+), 0, [1, 2, 3]) == [6, 5, 3, 0]
-// (a -> b -> b) -> b -> [a] -> [b]
 // Takes the second argument and the last item of the list
 // and applies the function,
 // then it takes the penultimate item from the end and the result, and so on.
@@ -447,8 +466,8 @@ ContainerOut scan_right(F f, const Acc& init, const ContainerIn& xs)
     return reverse(scan_left(flip(f), init, reverse(xs)));
 }
 
+// API search type: scan_right_1 : (a, a -> a), [a] -> [a]
 // scan_right_1((+), [1, 2, 3]) == [1, 3, 6]
-// (a -> a -> a) -> [a] -> [a]
 // Takes the last two items of the list and applies the function,
 // then it takes the third item from the end and the result, and so on.
 // It returns the list of inntermediate and final results.
@@ -460,6 +479,7 @@ ContainerOut scan_right_1(F f, const ContainerIn& xs)
     return reverse(scan_left_1(flip(f), reverse(xs)));
 }
 
+// API search type: sum : [a] -> a
 // sum([1, 2, 3]) == 7
 template <typename Container>
 typename Container::value_type sum(const Container& xs)
@@ -471,6 +491,7 @@ typename Container::value_type sum(const Container& xs)
         }, X(), xs);
 }
 
+// API search type: append : [a], [a] -> [a]
 // append([1, 2], [3, 4, 5]) == [1, 2, 3, 4, 5]
 template <typename Container>
 Container append(const Container& xs, const Container& ys)
@@ -484,6 +505,7 @@ Container append(const Container& xs, const Container& ys)
     return result;
 }
 
+// API search type: concat : [[a]] -> [a]
 // concat([[1, 2], [], [3]]) == [1, 2, 3]
 // also known as flatten
 template <typename ContainerIn,
@@ -510,6 +532,7 @@ std::list<T> sort_by(Compare comp, const std::list<T>& xs)
     return result;
 }
 
+// API search type: sort_by : (a, a -> bool), [a] -> [a]
 // sort by given less comparator
 template <typename Compare, typename Container>
 Container sort_by(Compare comp, const Container& xs)
@@ -519,6 +542,7 @@ Container sort_by(Compare comp, const Container& xs)
     return result;
 }
 
+// API search type: sort_on : (a -> b), [a] -> [a]
 // sort by given transformer
 template <typename F, typename Container>
 Container sort_on(F f, const Container& xs)
@@ -526,6 +550,7 @@ Container sort_on(F f, const Container& xs)
     return sort_by(is_less_by(f), xs);
 }
 
+// API search type: sort : [a] -> [a]
 // sort by std::less
 template <typename Container>
 Container sort(const Container& xs)
@@ -534,6 +559,7 @@ Container sort(const Container& xs)
     return sort_by(std::less<T>(), xs);
 }
 
+// API search type: unique_by : (a, a -> bool), [a] -> [a]
 // Like unique but with user supplied equality predicate.
 template <typename Container, typename BinaryPredicate>
 Container unique_by(BinaryPredicate p, const Container& xs)
@@ -545,6 +571,7 @@ Container unique_by(BinaryPredicate p, const Container& xs)
     return result;
 }
 
+// API search type: unique_on : (a -> b), [a] -> [a]
 // Like unique but with user supplied transformation (e.g. getter).
 template <typename Container, typename F>
 Container unique_on(F f, const Container& xs)
@@ -552,6 +579,7 @@ Container unique_on(F f, const Container& xs)
     return unique_by(is_equal_by(f), xs);
 }
 
+// API search type: unique : [a] -> [a]
 // unique([1,2,2,3,2]) == [1,2,3,2]
 template <typename Container>
 Container unique(const Container& xs)
@@ -562,6 +590,7 @@ Container unique(const Container& xs)
     return result;
 }
 
+// API search type: intersperse : a, [a] -> [a]
 // intersperse(0, [1, 2, 3]) == [1, 0, 2, 0, 3]
 template <typename Container,
     typename X = typename Container::value_type>
@@ -583,6 +612,7 @@ Container intersperse(const X& value, const Container& xs)
     return result;
 }
 
+// API search type: join : [a], [[a]] -> [a]
 // Also known as Intercalate.
 // join([0, 0], [[1], [2], [3, 4]]) == [1, 0, 0, 2, 0, 0, 3, 4]
 template <typename Container,
@@ -592,13 +622,15 @@ X join(const X& separator, const Container& xs)
     return concat(intersperse(separator, xs));
 }
 
+// API search type: is_elem_of_by : (a -> bool), [a] -> bool
 // is_elem_of_by((==), [1,2,3]) == true
-template <typename BinaryPredicate, typename Container>
-bool is_elem_of_by(BinaryPredicate pred, const Container& xs)
+template <typename UnaryPredicate, typename Container>
+bool is_elem_of_by(UnaryPredicate pred, const Container& xs)
 {
     return std::find_if(std::begin(xs), std::end(xs), pred) != std::end(xs);
 }
 
+// API search type: is_elem_of : a, [a] -> bool
 // is_elem_of(2, [1,2,3]) == true
 template <typename Container>
 bool is_elem_of(const typename Container::value_type& x, const Container& xs)
@@ -606,6 +638,7 @@ bool is_elem_of(const typename Container::value_type& x, const Container& xs)
     return is_elem_of_by(is_equal_to(x), xs);
 }
 
+// API search type: nub_by : (a, a -> bool), [a] -> [a]
 // nub_by((==), [1,2,2,3,2]) == [1,2,3]
 template <typename Container, typename BinaryPredicate>
 Container nub_by(BinaryPredicate p, const Container& xs)
@@ -623,6 +656,7 @@ Container nub_by(BinaryPredicate p, const Container& xs)
     return result;
 }
 
+// API search type: nub_on : (a -> b), [a] -> [a]
 // nub_on((mod 10), [12,32,15]) == [12,15]
 template <typename Container, typename F>
 Container nub_on(F f, const Container& xs)
@@ -630,6 +664,7 @@ Container nub_on(F f, const Container& xs)
     return nub_by(is_equal_by(f), xs);
 }
 
+// API search type: nub : [a] -> [a]
 // nub([1,2,2,3,2]) == [1,2,3]
 template <typename Container>
 Container nub(const Container& xs)
@@ -638,6 +673,7 @@ Container nub(const Container& xs)
     return nub_by(std::equal_to<T>(), xs);
 }
 
+// API search type: all_unique_by_eq : (a, a -> bool), [a] -> bool
 // Returns true for empty containers.
 // O(n^2)
 template <typename Container, typename BinaryPredicate>
@@ -647,6 +683,7 @@ bool all_unique_by_eq(BinaryPredicate p, const Container& xs)
     return size_of_cont(nub_by(p, xs)) == size_of_cont(xs);
 }
 
+// API search type: all_unique_on : (a -> b), [a] -> bool
 // Returns true for empty containers.
 // O(n^2)
 template <typename Container, typename F>
@@ -655,6 +692,7 @@ bool all_unique_on(F f, const Container& xs)
     return all_unique_by_eq(is_equal_by(f), xs);
 }
 
+// API search type: all_unique : [a] -> bool
 // Returns true for empty containers.
 // O(n^2)
 template <typename Container>
@@ -665,6 +703,7 @@ bool all_unique(const Container& xs)
     return all_unique_by_eq(comp, xs);
 }
 
+// API search type: is_strictly_sorted_by : (a, a -> bool) -> [a] -> bool
 // comp(a, b) must return true only if a < b.
 // O(n)
 template <typename Container, typename Compare>
@@ -680,6 +719,7 @@ bool is_strictly_sorted_by(Compare comp, const Container& xs)
     return true;
 }
 
+// API search type: is_strictly_sorted_by : (a -> b) -> [a] -> bool
 // O(n)
 template <typename Container, typename F>
 bool is_strictly_sorted_on(F f, const Container& xs)
@@ -687,6 +727,7 @@ bool is_strictly_sorted_on(F f, const Container& xs)
     return is_strictly_sorted_by(is_less_by(f), xs);
 }
 
+// API search type: is_strictly_sorted : [a] -> bool
 // O(n)
 template <typename Container>
 bool is_strictly_sorted(const Container& xs)
@@ -696,6 +737,7 @@ bool is_strictly_sorted(const Container& xs)
     return is_strictly_sorted_by(comp, xs);
 }
 
+// API search type: is_sorted_by : (a, a -> bool), [a] -> bool
 // comp(a, b) must return true only if a < b.
 // O(n)
 template <typename Container, typename Compare>
@@ -711,6 +753,7 @@ bool is_sorted_by(Compare comp, const Container& xs)
     return true;
 }
 
+// API search type: is_sorted_on : (a -> b), [a] -> bool
 // O(n)
 template <typename Container, typename F>
 bool is_sorted_on(F f, const Container& xs)
@@ -718,6 +761,7 @@ bool is_sorted_on(F f, const Container& xs)
     return is_sorted_by(is_less_by(f), xs);
 }
 
+// API search type: is_sorted : [a] -> bool
 // O(n)
 template <typename Container>
 bool is_sorted(const Container& xs)
@@ -727,6 +771,7 @@ bool is_sorted(const Container& xs)
     return is_sorted_by(comp, xs);
 }
 
+// API search type: is_prefix_of : [a] -> [a] -> bool
 // is_prefix_of("Fun", "FunctionalPlus") == true
 template <typename Container>
 bool is_prefix_of(const Container& token, Container& xs)
@@ -736,6 +781,7 @@ bool is_prefix_of(const Container& token, Container& xs)
     return get_range(0, size_of_cont(token), xs) == token;
 }
 
+// API search type: is_suffix_of : [a] -> [a] -> bool
 // is_suffix_of("us", "FunctionalPlus") == true
 template <typename Container>
 bool is_suffix_of(const Container& token, Container& xs)
@@ -746,6 +792,7 @@ bool is_suffix_of(const Container& token, Container& xs)
         size_of_cont(xs), xs) == token;
 }
 
+// API search type: all_by : (a -> bool), [a] -> bool
 // all_by(is_even, [2, 4, 6]) == true
 // Returns true for empty containers.
 template <typename UnaryPredicate, typename Container>
@@ -755,6 +802,7 @@ bool all_by(UnaryPredicate p, const Container& xs)
     return std::all_of(std::begin(xs), std::end(xs), p);
 }
 
+// API search type: all : [bool] -> bool
 // all([true, false, true]) == false
 // Returns true for empty containers.
 template <typename Container>
@@ -764,6 +812,7 @@ bool all(const Container& xs)
     return all_by(identity<T>, xs);
 }
 
+// API search type: all_the_same_by : (a, a -> bool), [a] -> bool
 // Returns true for empty containers.
 template <typename Container, typename BinaryPredicate>
 bool all_the_same_by(BinaryPredicate p, const Container& xs)
@@ -775,6 +824,7 @@ bool all_the_same_by(BinaryPredicate p, const Container& xs)
     return all_by(unaryPredicate, xs);
 }
 
+// API search type: all_the_same_on : (a -> bool), [a] -> bool
 // Returns true for empty containers.
 template <typename Container, typename F>
 bool all_the_same_on(F f, const Container& xs)
@@ -785,6 +835,7 @@ bool all_the_same_on(F f, const Container& xs)
     return all_by(unaryPredicate, xs);
 }
 
+// API search type: all_the_same : [a] -> bool
 // Returns true for empty containers.
 template <typename Container>
 bool all_the_same(const Container& xs)
@@ -794,6 +845,7 @@ bool all_the_same(const Container& xs)
     return all_the_same_by(binaryPredicate, xs);
 }
 
+// API search type: generate_range_step : a, a, a -> [a]
 // generate_range_step(2, 9, 2) == [2, 4, 6, 8]
 template <typename ContainerOut, typename T>
 ContainerOut generate_range_step
@@ -808,6 +860,7 @@ ContainerOut generate_range_step
     return result;
 }
 
+// API search type: generate_range : a, a -> [a]
 // generate_range(2, 9) == [2, 3, 4, 5, 6, 7, 8]
 template <typename ContainerOut, typename T>
 ContainerOut generate_range(const T start, const T end)
@@ -815,6 +868,7 @@ ContainerOut generate_range(const T start, const T end)
     return generate_range_step<ContainerOut, T>(start, end, 1);
 }
 
+// API search type: all_idxs : [a] -> [int]
 template <typename Container>
 std::vector<std::size_t> all_idxs(const Container& xs)
 {
@@ -822,6 +876,7 @@ std::vector<std::size_t> all_idxs(const Container& xs)
         (0, size_of_cont(xs));
 }
 
+// API search type: init : [a] -> [a]
 // init([0,1,2,3]) == [0,1,2]
 template <typename Container>
 Container init(const Container& xs)
@@ -830,6 +885,7 @@ Container init(const Container& xs)
     return get_range(0, size_of_cont(xs) - 1, xs);
 }
 
+// API search type: tail : [a] -> [a]
 // tail([0,1,2,3]) == [1,2,3]
 template <typename Container>
 Container tail(const Container& xs)

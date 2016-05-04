@@ -1228,7 +1228,7 @@ int main()
     std::cout << "Running all tests." << std::endl;
 
     std::cout << "Testing Numeric." << std::endl;
-        Test_Numeric();
+    Test_Numeric();
     std::cout << "Numeric OK." << std::endl;
 
     std::cout << "Testing FunctionTraits." << std::endl;
