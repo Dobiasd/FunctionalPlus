@@ -6,11 +6,16 @@
 
 #pragma once
 
-#include <chrono>
-#include <future>
 #include "container_common.h"
-#include "generate.h"
 #include "function_traits.h"
+#include "generate.h"
+#include "string_tools.h"
+#include <chrono>
+#include <fstream>
+#include <future>
+#include <streambuf>
+#include <string>
+#include <vector>
 
 namespace fplus
 {
@@ -171,6 +176,41 @@ std::function<void()> execute_fire_and_forget(Effect eff)
         std::thread t(eff);
         t.detach();
     };
+}
+
+inline
+std::string read_text_file(const std::string& filename)
+{
+    std::ifstream input(filename);
+    return std::string(
+            std::istreambuf_iterator<std::string::value_type>(input),
+            std::istreambuf_iterator<std::string::value_type>());
+}
+
+inline
+std::vector<std::string> read_text_file_lines(const std::string& filename)
+{
+    return split_lines(read_text_file(filename), true);
+}
+
+inline
+bool write_text_file(const std::string& filename, const std::string& content)
+{
+    std::ofstream output(filename);
+    output << content;
+    return output.good();
+}
+
+inline
+bool write_text_file_lines(const std::string& filename,
+        const std::vector<std::string>& lines, bool trailing_newline = true)
+{
+    std::string content = join(std::string("\n"), lines);
+    if (trailing_newline)
+    {
+        content += "\n";
+    }
+    return write_text_file(filename, content);
 }
 
 } // namespace fplus

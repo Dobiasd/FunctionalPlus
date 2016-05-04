@@ -26,18 +26,6 @@ std::vector<std::string> list_files(const std::string& dir_path)
     return result;
 }
 
-std::vector<std::string> read_text_file(const std::string& filename)
-{
-    std::ifstream input(filename);
-    std::string line;
-    std::vector<std::string> result;
-    while (std::getline(input, line))
-    {
-        result.push_back(line);
-    }
-    return result;
-}
-
 int main()
 {
     const std::string key = "API search type: ";
@@ -45,7 +33,7 @@ int main()
     auto code_files = list_files(code_dir);
     for (const auto& code_file : code_files)
     {
-        auto lines = read_text_file(code_dir + code_file);
+        auto lines = fplus::read_text_file_lines(code_dir + code_file);
         for (const auto& line : lines)
         {
             if (fplus::is_infix_of(key, line))
