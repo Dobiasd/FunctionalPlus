@@ -120,6 +120,7 @@ ContainerOut group_globally(const ContainerIn& xs)
 }
 
 // split_by(is_even, true, [1,3,2,2,5,5,3,6,7,9]) == [[1,3],[],[5,5,3],[7,9]]
+// also known as split_when
 template <typename UnaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut split_by
@@ -299,6 +300,7 @@ ContainerOut run_length_decode(const ContainerIn& pairs)
     return concat(transform(pair_to_vec, pairs));
 }
 
+// API search type: take_while : (a -> bool), [a] -> [a]
 // take_while(is_even, [0,2,4,5,6,7,8]) == [0,2,4]
 template <typename Container, typename UnaryPredicate>
 Container take_while(UnaryPredicate pred, const Container& xs)
@@ -307,12 +309,29 @@ Container take_while(UnaryPredicate pred, const Container& xs)
     return take(just_with_default<std::size_t>(size_of_cont(xs), maybeIdx), xs);
 }
 
+// API search type: drop_while : (a -> bool), [a] -> [a]
 // drop_while(is_even, [0,2,4,5,6,7,8]) == [5,6,7,8]
 template <typename Container, typename UnaryPredicate>
 Container drop_while(UnaryPredicate pred, const Container& xs)
 {
     auto maybeIdx = find_first_idx_by(logical_not(pred), xs);
     return drop(just_with_default<std::size_t>(size_of_cont(xs), maybeIdx), xs);
+}
+
+// API search type: span : (a -> bool), [a] -> ([a], [a])
+// span, applied to a predicate p and a list xs,
+// returns a tuple where first element is longest prefix (possibly empty)
+// of xs of elements that satisfy p
+// and second element is the remainder of the list.
+// span(is_even, [0,2,4,5,6,7,8]) == ([0,2,4], [5,6,7,8])
+template <typename Container, typename UnaryPredicate>
+std::pair<Container, Container> span(UnaryPredicate pred, const Container& xs)
+{
+    auto maybeIdx = find_first_idx_by(logical_not(pred), xs);
+    return {
+        take(just_with_default<std::size_t>(size_of_cont(xs), maybeIdx), xs),
+        drop(just_with_default<std::size_t>(size_of_cont(xs), maybeIdx), xs)
+    };
 }
 
 } // namespace fplus

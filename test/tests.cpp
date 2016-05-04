@@ -839,6 +839,7 @@ void Test_ContainerTools()
     assert(drop(999, xs) == IntVector());
     assert(take_while(is_odd, xs) == IntVector({ 1 }));
     assert(drop_while(is_odd, xs) == IntVector({ 2,2,3,2 }));
+    assert(span(is_odd, xs) == std::make_pair(IntVector({ 1 }), IntVector({ 2,2,3,2 })));
     assert(keep_if(is2, xs) == IntVector({ 2,2,2 }));
     assert(keep_if(is3, xs) == IntVector({ 3 }));
     assert(keep_if(is4, xs) == IntVector());

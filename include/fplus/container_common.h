@@ -774,7 +774,7 @@ bool is_sorted(const Container& xs)
 // API search type: is_prefix_of : [a] -> [a] -> bool
 // is_prefix_of("Fun", "FunctionalPlus") == true
 template <typename Container>
-bool is_prefix_of(const Container& token, Container& xs)
+bool is_prefix_of(const Container& token, const Container& xs)
 {
     if (size_of_cont(token) > size_of_cont(xs))
         return false;
@@ -784,7 +784,7 @@ bool is_prefix_of(const Container& token, Container& xs)
 // API search type: is_suffix_of : [a] -> [a] -> bool
 // is_suffix_of("us", "FunctionalPlus") == true
 template <typename Container>
-bool is_suffix_of(const Container& token, Container& xs)
+bool is_suffix_of(const Container& token, const Container& xs)
 {
     if (size_of_cont(token) > size_of_cont(xs))
         return false;

@@ -115,6 +115,15 @@ std::pair<X, ResultSecond> transform_snd(F f, const std::pair<X, Y>& pair)
     return std::make_pair(pair.first, f(pair.second));
 }
 
+// transform_pair(square, (4, 5)) == (16, 25)
+template <typename X, typename Y, typename F, typename G,
+    typename ResultFirst = typename utils::function_traits<F>::result_type,
+    typename ResultSecond = typename utils::function_traits<G>::result_type>
+std::pair<ResultFirst, ResultSecond> transform_pair(F f, G g, const std::pair<X, Y>& pair)
+{
+    return std::make_pair(f(pair.first), g(pair.second));
+}
+
 // swap_pair_elems((3,4)) == (4,3)
 template <typename X, typename Y>
 std::pair<Y, X> swap_pair_elems(const std::pair<X, Y>& pair)
