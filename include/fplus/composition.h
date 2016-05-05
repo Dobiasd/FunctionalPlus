@@ -15,7 +15,7 @@
 namespace fplus
 {
 
-// bind_1st_of_2 : (a -> b -> c) -> a -> (b -> c)
+// API search type: bind_1st_of_2 : (a, b -> c), a -> (b -> c)
 template <typename F, typename T,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
@@ -29,7 +29,7 @@ std::function<FOut(FIn1)> bind_1st_of_2(F f, T x)
            { return f(x, y); };
 }
 
-// bind_1st_of_3 : (a -> b -> c -> d) -> a -> (b -> c -> d)
+// API search type: bind_1st_of_3 : (a, b, c -> d), a -> (b, c -> d)
 template <typename F, typename X,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
@@ -44,7 +44,7 @@ std::function<FOut(FIn1, FIn2)> bind_1st_of_3(F f, X x)
            { return f(x, y, z); };
 }
 
-// bind_1st_and_2nd_of_3 : (a -> b -> c -> d) -> a -> b -> (c -> d)
+// API search type: bind_1st_and_2nd_of_3 : (a, b, c -> d), a, b -> (c -> d)
 template <typename F, typename X, typename Y,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
@@ -60,7 +60,7 @@ std::function<FOut(FIn2)> bind_1st_and_2nd_of_3(F f, X x, Y y)
            { return f(x, y, z); };
 }
 
-// flip : (a -> b) -> (b -> a)
+// API search type: flip : (a -> b) -> (b -> a)
 // Flips the arguments of a binary function
 template <typename F,
     typename A = typename utils::function_traits<F>::template arg<0>::type,
@@ -72,7 +72,7 @@ std::function<C(B, A)> flip(F f)
     return [f](B y, A x) { return f(x, y); };
 }
 
-// apply_to_pair : (a -> b -> c) -> (a, b) -> c
+// API search type: apply_to_pair : (a, b -> c) -> (a, b) -> c
 template <typename F,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
@@ -87,6 +87,7 @@ ResFunc apply_to_pair(F f)
     };
 }
 
+// API search type: compose : (a -> b), (b -> c) -> (a -> c)
 // Forward composition: compose(f, g)(x) = g(f(x))
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
@@ -101,6 +102,7 @@ std::function<GOut(FIn)> compose(F f, G g)
     return [f, g](FIn x) { return g(f(x)); };
 }
 
+// API search type: forward_apply : a, (a -> b) -> b
 template <typename X, typename F,
     typename FOut = typename utils::function_traits<F>::result_type>
 FOut forward_apply(const X& x, F f)
@@ -109,6 +111,7 @@ FOut forward_apply(const X& x, F f)
     return f(x);
 }
 
+// API search type: compose : (a -> b), (b -> c), (c -> d) -> (a -> d)
 // Forward composition: compose(f, g, h)(x) = h(g(f(x)))
 template <typename F, typename G, typename H,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
@@ -127,6 +130,7 @@ std::function<HOut(FIn)> compose(F f, G g, H h)
     return [f, g, h](FIn x) { return h(g(f(x))); };
 }
 
+// API search type: compose : (a -> b), (b -> c), (c -> d), (d -> e) -> (a -> e)
 // Forward composition: compose(f, g, h, i)(x) = i(h(g(f(x))))
 template <typename F, typename G, typename H, typename I,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
@@ -149,6 +153,7 @@ std::function<IOut(FIn)> compose(F f, G g, H h, I i)
     return [f, g, h, i](FIn x) { return i(h(g(f(x)))); };
 }
 
+// API search type: compose : (a -> b), (b -> c), (c -> d), (d -> e), (e -> f) -> (a -> f)
 // Forward composition: compose(f, g, h, i, j)(x) = j(i(h(g(f(x)))))
 template <typename F, typename G, typename H, typename I, typename J,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
@@ -175,6 +180,7 @@ std::function<JOut(FIn)> compose(F f, G g, H h, I i, J j)
     return [f, g, h, i, j](FIn x) { return j(i(h(g(f(x))))); };
 }
 
+// API search type: logical_not : (a -> bool) -> (a -> bool)
 // logical_not(f) = \x -> !x
 template <typename UnaryPredicate,
     typename X = typename utils::function_traits<UnaryPredicate>::template arg<0>::type>
@@ -186,6 +192,7 @@ std::function<bool(X)> logical_not(UnaryPredicate f)
     return [f](X x) { return !f(x); };
 }
 
+// API search type: logical_or : (a -> bool), (a -> bool) -> (a -> bool)
 // logical_or(f, g) = \x -> f(x) or g(x)
 template <typename UnaryPredicateF, typename UnaryPredicateG,
     typename X = typename utils::function_traits<UnaryPredicateF>::template arg<0>::type,
@@ -202,6 +209,7 @@ std::function<bool(X)> logical_or(UnaryPredicateF f, UnaryPredicateG g)
     return [f, g](X x) { return f(x) || g(x); };
 }
 
+// API search type: logical_and : (a -> bool), (a -> bool) -> (a -> bool)
 // logical_and(f, g) = \x -> f(x) and g(x)
 template <typename UnaryPredicateF, typename UnaryPredicateG,
     typename X = typename utils::function_traits<UnaryPredicateF>::template arg<0>::type,
@@ -218,6 +226,7 @@ std::function<bool(X)> logical_and(UnaryPredicateF f, UnaryPredicateG g)
     return [f, g](X x) { return f(x) && g(x); };
 }
 
+// API search type: logical_xor : (a -> bool), (a -> bool) -> (a -> bool)
 // logical_xor(f, g) = \x -> f(x) xor g(x)
 template <typename UnaryPredicateF, typename UnaryPredicateG,
     typename X = typename utils::function_traits<UnaryPredicateF>::template arg<0>::type,
