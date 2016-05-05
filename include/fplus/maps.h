@@ -56,6 +56,7 @@ ContainerOut map_to_pairs(const MapType& dict)
 }
 
 // API search type: get_map_keys : map a b -> [a]
+// Returns all keys used in a map.
 template <typename MapType,
     typename ContainerOut =
         std::vector<typename std::remove_const<typename MapType::key_type>::type>>
@@ -68,6 +69,7 @@ ContainerOut get_map_keys(const MapType& dict)
 }
 
 // API search type: get_map_values : map a b -> [b]
+// Returns all values present in a map.
 template <typename MapType,
     typename ContainerOut =
         std::vector<typename std::remove_const<typename MapType::mapped_type>::type>>

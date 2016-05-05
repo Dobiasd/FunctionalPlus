@@ -159,6 +159,7 @@ std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g)
 }
 
 // API search type: and_then_maybe : (a -> maybe b), (b -> maybe c), (c -> maybe d) -> (maybe a -> maybe d)
+// Monadic bind.
 template <typename F, typename G, typename H,
     typename FIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
     typename HOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<H>::result_type>::type>::type,
@@ -169,6 +170,7 @@ std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g, H h)
 }
 
 // API search type: and_then_maybe : (a -> maybe b), (b -> maybe c), (c -> maybe d), (d -> maybe e) -> (maybe a -> maybe e)
+// Monadic bind.
 template <typename F, typename G, typename H, typename I,
     typename FIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
     typename IOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<I>::result_type>::type>::type,

@@ -50,7 +50,8 @@ ContainerOut transform_with_idx(F f, const ContainerIn& xs)
     return ys;
 }
 
-// API search type: transform_convert : (a -> maybe b), [a] -> [b]
+// API search type: transform_and_keep_justs : (a -> maybe b), [a] -> [b]
+// Map function over values and drop resulting nothings.
 template <typename F, typename ContainerIn,
     typename FOut = typename utils::function_traits<F>::result_type,
     typename ContainerOut = typename same_cont_new_t<ContainerIn, typename FOut::type>::type>
@@ -62,6 +63,7 @@ ContainerOut transform_and_keep_justs(F f, const ContainerIn& xs)
 }
 
 // API search type: transform_and_keep_oks : (a -> Result b) -> [a] -> [b]
+// Map function over values and drop resulting errors.
 template <typename F, typename ContainerIn,
     typename FOut = typename utils::function_traits<F>::result_type,
     typename ContainerOut = typename same_cont_new_t<ContainerIn, typename FOut::ok_t>::type>
@@ -73,6 +75,7 @@ ContainerOut transform_and_keep_oks(F f, const ContainerIn& xs)
 }
 
 // API search type: transform_and_concat : (a -> [b]), [a] -> [b]
+// Map function over values and concat results.
 template <typename F, typename ContainerIn,
     typename ContainerOut = typename same_cont_new_t_from_unary_f<ContainerIn, F>::type::value_type>
 ContainerOut transform_and_concat(F f, const ContainerIn& xs)

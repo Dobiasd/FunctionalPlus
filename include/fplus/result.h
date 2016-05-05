@@ -230,6 +230,7 @@ std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g)
 }
 
 // API search type: and_then_result : (a -> result b c), (b -> result d c), (d -> result e c) -> (a -> result e c)
+// Monadic bind.
 template <typename F, typename G, typename H,
     typename FIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
     typename HOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<H>::result_type>::type>::type,
@@ -241,6 +242,7 @@ std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g, H h)
 }
 
 // API search type: and_then_result : (a -> result b c), (b -> result d c), (d -> result e c), (e -> result f c) -> (a -> result f c)
+// Monadic bind.
 template <typename F, typename G, typename H, typename I,
     typename FIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
     typename IOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<I>::result_type>::type>::type,

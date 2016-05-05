@@ -16,6 +16,7 @@ namespace fplus
 {
 
 // API search type: bind_1st_of_2 : (a, b -> c), a -> (b -> c)
+// Bind first parameter or binary function.
 template <typename F, typename T,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
@@ -30,6 +31,7 @@ std::function<FOut(FIn1)> bind_1st_of_2(F f, T x)
 }
 
 // API search type: bind_1st_of_3 : (a, b, c -> d), a -> (b, c -> d)
+// Bind first parameter of ternary function.
 template <typename F, typename X,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
@@ -45,6 +47,7 @@ std::function<FOut(FIn1, FIn2)> bind_1st_of_3(F f, X x)
 }
 
 // API search type: bind_1st_and_2nd_of_3 : (a, b, c -> d), a, b -> (c -> d)
+// Bind first and second parameter of ternary function.
 template <typename F, typename X, typename Y,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
@@ -73,6 +76,7 @@ std::function<C(B, A)> flip(F f)
 }
 
 // API search type: apply_to_pair : (a, b -> c) -> (a, b) -> c
+// Apply binary function to parts of a pair.
 template <typename F,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
@@ -103,6 +107,7 @@ std::function<GOut(FIn)> compose(F f, G g)
 }
 
 // API search type: forward_apply : a, (a -> b) -> b
+// Forward application.
 template <typename X, typename F,
     typename FOut = typename utils::function_traits<F>::result_type>
 FOut forward_apply(const X& x, F f)

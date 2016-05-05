@@ -71,7 +71,7 @@ std::vector<function_help> parse_code_file(const std::string& code_file)
 {
     using namespace std;
     typedef vector<string> strings;
-    const auto lines = fplus::read_text_file_lines(code_dir + code_file);
+    const auto lines = fplus::read_text_file_lines(code_dir + code_file)();
     const auto is_search_type = fplus::bind_1st_of_2(
             fplus::is_infix_of<string>, api_search_type_key);
     const auto functions_lines = fplus::split_by_keep_separators(
@@ -104,8 +104,17 @@ int main()
     const auto code_files = list_files(code_dir);
     const auto functions = fplus::transform_and_concat(
             parse_code_file, code_files);
-    std::cout << fplus::show_cont_with_frame_and_newlines(
-        "\n-----\n", "[", "]",
-        get_broken_function_helps(functions),
-        0) << std::endl;
+    const auto broken = get_broken_function_helps(functions);
+    if (fplus::is_not_empty(broken))
+    {
+        std::cout << fplus::show_cont_with_frame_and_newlines(
+            "\n-----\n", "[", "]",
+            get_broken_function_helps(functions),
+            0) << std::endl;
+        return 1;
+    }
+    else
+    {
+        std::cout << "All OK." << std::endl;
+    }
 }

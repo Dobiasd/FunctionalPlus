@@ -21,6 +21,7 @@ namespace fplus
 {
 
 // API search type: sleep_for_n_seconds : int -> io ()
+// Returns a function that suspends the calling thread for n seconds.
 inline
 std::function<void()> sleep_for_n_seconds(std::size_t seconds)
 {
@@ -31,6 +32,7 @@ std::function<void()> sleep_for_n_seconds(std::size_t seconds)
 }
 
 // API search type: sleep_for_n_milliseconds : int -> io ()
+// Returns a function that suspends the calling thread for n milliseconds.
 inline
 std::function<void()> sleep_for_n_milliseconds(std::size_t milliseconds)
 {
@@ -41,6 +43,7 @@ std::function<void()> sleep_for_n_milliseconds(std::size_t milliseconds)
 }
 
 // API search type: sleep_for_n_microseconds : int -> io ()
+// Returns a function that suspends the calling thread for n microseconds.
 inline
 std::function<void()> sleep_for_n_microseconds(std::size_t microseconds)
 {
@@ -51,6 +54,7 @@ std::function<void()> sleep_for_n_microseconds(std::size_t microseconds)
 }
 
 // API search type: execute_serially : [io ()] -> io ()
+// Returns a function that executes the given effects one after another.
 template <typename Container,
         typename Effect = typename Container::value_type,
         typename Result = typename utils::function_traits<Effect>::result_type>
@@ -68,6 +72,8 @@ std::function<std::vector<Result>()> execute_serially(const Container& effs)
 }
 
 // API search type: execute_serially_until_success : [io bool] -> io bool
+// Returns a function that executes the given effects one after another
+// until one of it returns true.
 template <typename Container,
         typename Effect = typename Container::value_type,
         typename Result = typename utils::function_traits<Effect>::result_type>
@@ -88,6 +94,8 @@ std::function<bool()> execute_serially_until_success(const Container& effs)
 }
 
 // API search type: execute_and_return_fixed_value : a, [io b] -> io a
+// Returns a function that executes the given effect
+// and returns a fixed value.
 template <typename Result, typename Effect>
 std::function<Result()> execute_and_return_fixed_value(
         Result result,
@@ -101,6 +109,7 @@ std::function<Result()> execute_and_return_fixed_value(
 }
 
 // API search type: effect_to_std_function : io a -> io a
+// Converts an arbitrary callable effect to an std::function.
 template <typename Effect,
         typename Result = typename utils::function_traits<Effect>::result_type>
 std::function<Result()> effect_to_std_function(Effect eff)
@@ -112,6 +121,8 @@ std::function<Result()> effect_to_std_function(Effect eff)
 }
 
 // API search type: execute_max_n_times_until_success : int, io (), int -> io bool
+// Returns a function that executes an effect until it succeds
+// with a maximum number of attempts and an optinal pause in milliseconds.
 template <typename Effect,
         typename Result = typename utils::function_traits<Effect>::result_type>
 std::function<bool()> execute_max_n_times_until_success(
@@ -135,6 +146,8 @@ std::function<bool()> execute_max_n_times_until_success(
 }
 
 // API search type: execute_serially_until_failure : [io bool] -> io bool
+// Returns a function that executes the given effects one after another
+// until one of them returns false.
 template <typename Container,
         typename Effect = typename Container::value_type,
         typename Result = typename utils::function_traits<Effect>::result_type>
@@ -155,6 +168,9 @@ std::function<bool()> execute_serially_until_failure(const Container& effs)
 }
 
 // API search type: execute_parallelly : [io a] -> io [a]
+// Returns a function that executes the given effects in parallel
+// and returns the collected results.
+// Can be used for something like MapReduce.
 template <typename Container,
         typename Effect = typename Container::value_type,
         typename Result = typename utils::function_traits<Effect>::result_type>
@@ -179,6 +195,8 @@ std::function<std::vector<Result>()> execute_parallelly(const Container& effs)
 }
 
 // API search type: execute_fire_and_forget : io a -> io a
+// Returns a function that executes the given effect in a new thread
+// and return immediately.
 template <typename Effect>
 std::function<void()> execute_fire_and_forget(Effect eff)
 {
@@ -190,34 +208,52 @@ std::function<void()> execute_fire_and_forget(Effect eff)
 }
 
 // API search type: read_text_file : string -> io string
+// Returns a function that reads the content of a text file.
 inline
-std::string read_text_file(const std::string& filename)
+std::function<std::string()> read_text_file(const std::string& filename)
 {
-    std::ifstream input(filename);
-    return std::string(
-            std::istreambuf_iterator<std::string::value_type>(input),
-            std::istreambuf_iterator<std::string::value_type>());
+    return [filename]()
+    {
+        std::ifstream input(filename);
+        return std::string(
+                std::istreambuf_iterator<std::string::value_type>(input),
+                std::istreambuf_iterator<std::string::value_type>());
+    };
 }
 
 // API search type: read_text_file_lines : string -> io [string]
+// Returns a function that reads the content of a text file
+// and returns it line by line.
 inline
-std::vector<std::string> read_text_file_lines(const std::string& filename)
+std::function<std::vector<std::string>()> read_text_file_lines(
+        const std::string& filename)
 {
-    return split_lines(read_text_file(filename), true);
+    return [filename]() -> std::vector<std::string>
+    {
+        return split_lines(read_text_file(filename)(), true);
+    };
 }
 
 // API search type: write_text_file : string, string -> io bool
+// Returns a function that writes content into a text file,
+// replacing it if it already exists.
 inline
-bool write_text_file(const std::string& filename, const std::string& content)
+std::function<bool()> write_text_file(const std::string& filename,
+        const std::string& content)
 {
-    std::ofstream output(filename);
-    output << content;
-    return output.good();
+    return [filename, content]() -> bool
+    {
+        std::ofstream output(filename);
+        output << content;
+        return output.good();
+    };
 }
 
 // API search type: write_text_file_lines : string, [string], bool -> io bool
+// Returns a function that writes lines into a text file,
+// replacing it if it already exists.
 inline
-bool write_text_file_lines(const std::string& filename,
+std::function<bool()> write_text_file_lines(const std::string& filename,
         const std::vector<std::string>& lines, bool trailing_newline = true)
 {
     std::string content = join(std::string("\n"), lines);

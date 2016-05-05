@@ -417,6 +417,7 @@ std::function<bool(const X&)> is_greater_or_equal_than(const X& x)
 }
 
 // API search type: xor_bools : bool -> bool -> bool
+// Exclusive or.
 template <typename T>
 bool xor_bools(const T& x, const T& y)
 {

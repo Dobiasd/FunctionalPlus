@@ -89,6 +89,7 @@ Out ceil(X x)
 }
 
 // API search type: int_power : int, int -> int
+// integer power
 template <typename X>
 X int_power(X base, X exp)
 {
@@ -102,6 +103,7 @@ X int_power(X base, X exp)
 }
 
 // API search type: min_2_on : (a -> b) -> (a, a -> bool)
+// minimum of two values after transformation
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type>
 std::function<const FIn&(const FIn& x, const FIn& y)>
@@ -114,6 +116,7 @@ std::function<const FIn&(const FIn& x, const FIn& y)>
 }
 
 // API search type: max_2_on : (a -> b) -> (a, a -> bool)
+// maximum of two values after transformation
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type>
 std::function<const FIn&(const FIn& x, const FIn& y)>
@@ -126,6 +129,7 @@ std::function<const FIn&(const FIn& x, const FIn& y)>
 }
 
 // API search type: min_2 : a, a -> a
+// Minimum of two values.
 template <typename X>
 const X& min_2(const X& a, const X& b)
 {
@@ -133,6 +137,7 @@ const X& min_2(const X& a, const X& b)
 }
 
 // API search type: min_3 : a, a, a -> a
+// Minimum of three values.
 template <typename X>
 const X& min_3(const X& a, const X& b, const X& c)
 {
@@ -140,6 +145,7 @@ const X& min_3(const X& a, const X& b, const X& c)
 }
 
 // API search type: min_4 : a, a, a, a -> a
+// Minimum of four values.
 template <typename X>
 const X& min_4(const X& a, const X& b, const X& c, const X& d)
 {
@@ -147,6 +153,7 @@ const X& min_4(const X& a, const X& b, const X& c, const X& d)
 }
 
 // API search type: min_5 : a, a, a, a, a -> a
+// Minimum of five values.
 template <typename X>
 const X& min_5(const X& a, const X& b, const X& c, const X& d, const X& e)
 {
@@ -154,6 +161,7 @@ const X& min_5(const X& a, const X& b, const X& c, const X& d, const X& e)
 }
 
 // API search type: max_2 : a, a -> a
+// Maximum of two values.
 template <typename X>
 const X& max_2(const X& a, const X& b)
 {
@@ -161,6 +169,7 @@ const X& max_2(const X& a, const X& b)
 }
 
 // API search type: max_3 : a, a, a -> a
+// Maximum of three values.
 template <typename X>
 const X& max_3(const X& a, const X& b, const X& c)
 {
@@ -168,6 +177,7 @@ const X& max_3(const X& a, const X& b, const X& c)
 }
 
 // API search type: max_4 : a, a, a, a -> a
+// Maximum of four values.
 template <typename X>
 const X& max_4(const X& a, const X& b, const X& c, const X& d)
 {
@@ -175,6 +185,7 @@ const X& max_4(const X& a, const X& b, const X& c, const X& d)
 }
 
 // API search type: max_5 : a, a, a, a, a -> a
+// Maximum of five values.
 template <typename X>
 const X& max_5(const X& a, const X& b, const X& c, const X& d, const X& e)
 {
