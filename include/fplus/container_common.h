@@ -261,6 +261,7 @@ Container replace_range(std::size_t idxBegin,
 }
 
 // API search type: elem_at_idx : int, [a] -> [a]
+// elem_at_idx(2, [7,6,5,4,3]) == 5
 template <typename Container,
     typename T = typename Container::value_type>
 const T& elem_at_idx(std::size_t idx, const Container& xs)
@@ -272,6 +273,7 @@ const T& elem_at_idx(std::size_t idx, const Container& xs)
 }
 
 // API search type: elems_at_idxs : [int], [a] -> [a]
+// elem_at_idxs([1, 3], [7,6,5,4,3]) == [6, 4]
 template <typename Container,
     typename ContainerIdxs,
     typename T = typename Container::value_type,
@@ -921,6 +923,7 @@ ContainerOut generate_range(const T start, const T end)
 }
 
 // API search type: all_idxs : [a] -> [int]
+// all_idxs([6,4,7,6]) == [0,1,2,3]
 template <typename Container>
 std::vector<std::size_t> all_idxs(const Container& xs)
 {

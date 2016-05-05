@@ -46,7 +46,6 @@ std::ostream & operator<<(std::ostream &os, const function_help& f)
 
 function_help lines_to_function_help(const std::vector<std::string>& lines)
 {
-    assert(!lines.empty());
     const auto trim_line = fplus::bind_1st_of_2(
             fplus::trim_token_left<std::string>, comment_token);
     const auto trim_type_line = fplus::bind_1st_of_2(
@@ -87,11 +86,26 @@ std::vector<function_help> parse_code_file(const std::string& code_file)
     return fplus::transform(lines_to_function_help, functions_docs);
 }
 
+std::vector<function_help> get_broken_function_helps(
+        const std::vector<function_help>& helps)
+{
+    auto help_is_ok = [](const function_help& help)
+    {
+        return
+            !help.search_type.empty() &&
+            !help.declaration.empty() &&
+            !help.documentation.empty();
+    };
+    return fplus::drop_if(help_is_ok, helps);
+}
+
 int main()
 {
     const auto code_files = list_files(code_dir);
     const auto functions = fplus::transform_and_concat(
             parse_code_file, code_files);
     std::cout << fplus::show_cont_with_frame_and_newlines(
-        "\n-----\n", "[", "]", functions, 0) << std::endl;
+        "\n-----\n", "[", "]",
+        get_broken_function_helps(functions),
+        0) << std::endl;
 }
