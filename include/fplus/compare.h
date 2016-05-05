@@ -62,6 +62,7 @@ void check_compare_preprocessors_for_types()
     static_assert(std::is_same<typename utils::function_traits<F>::result_type, typename utils::function_traits<G>::result_type>::value, "Both functions must return same type.");
 }
 
+// API search type: identity : a -> a
 // identity(x) == x
 template <typename T>
 T identity(const T& x)
@@ -70,6 +71,7 @@ T identity(const T& x)
 }
 
 
+// API search type: is_equal : a, a -> bool
 // x == y
 template <typename T>
 bool is_equal(const T& x, const T& y)
@@ -77,6 +79,7 @@ bool is_equal(const T& x, const T& y)
     return x == y;
 }
 
+// API search type: always : a, b -> a
 // always(x, y) == x
 template <typename Y, typename X>
 std::function<X(const Y&)> always(const X& x)
@@ -84,6 +87,7 @@ std::function<X(const Y&)> always(const X& x)
     return [x](const Y&) { return x; };
 }
 
+// API search type: is_equal_by_and_by : (a -> b), (c ->b ) -> a, c -> bool
 // f(x) == g(y)
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
@@ -100,6 +104,7 @@ std::function<bool(const FIn& x, const GIn& y)>
     };
 }
 
+// API search type: is_equal_by : (a -> b) -> a -> bool
 // f(x) == f(y)
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
@@ -110,6 +115,7 @@ std::function<bool(const FIn& x, const FIn& y)>
     return is_equal_by_and_by(f, f);
 }
 
+// API search type: is_equal_by : (b -> a), a -> (b -> bool)
 // f(y) == x
 template <typename F, typename X,
     typename Y = typename utils::function_traits<F>::template arg<0>::type>
@@ -121,13 +127,16 @@ std::function<bool(const Y&)> is_equal_by_to(F f, const X& x)
     };
 }
 
+// API search type: is_equal_to : a -> a -> bool
 // x == y
+// curried version of is_equal
 template <typename X>
 std::function<bool(const X&)> is_equal_to(const X& x)
 {
     return is_equal_by_to(identity<X>, x);
 }
 
+// API search type: is_not_equal : a, a -> bool
 // x != y
 template <typename T>
 bool is_not_equal(const T& x, const T& y)
@@ -135,6 +144,7 @@ bool is_not_equal(const T& x, const T& y)
     return x != y;
 }
 
+// API search type: is_not_equal_by_and_by : (a -> c), (b -> c) -> (a, b -> bool)
 // f(x) != g(y)
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
@@ -151,6 +161,7 @@ std::function<bool(const FIn& x, const GIn& y)>
     };
 }
 
+// API search type: is_not_equal_by : (a -> b) -> (a, a -> bool)
 // f(x) != f(y)
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
@@ -161,6 +172,7 @@ std::function<bool(const FIn& x, const FIn& y)>
     return is_not_equal_by_and_by(f, f);
 }
 
+// API search type: is_not_equal_by_to : (a -> b), b -> a -> bool
 // f(y) != x
 template <typename F, typename X,
     typename Y = typename utils::function_traits<F>::template arg<0>::type>
@@ -172,6 +184,7 @@ std::function<bool(const Y&)> is_not_equal_by_to(F f, const X& x)
     };
 }
 
+// API search type: is_not_equal_to : a -> a -> bool
 // y != x
 template <typename X>
 std::function<bool(const X&)> is_not_equal_to(const X& x)
@@ -179,7 +192,7 @@ std::function<bool(const X&)> is_not_equal_to(const X& x)
     return is_not_equal_by_to(identity<X>, x);
 }
 
-
+// API search type: is_less : a, a -> bool
 // x < y
 template <typename T>
 bool is_less(const T& x, const T& y)
@@ -187,7 +200,7 @@ bool is_less(const T& x, const T& y)
     return x < y;
 }
 
-
+// API search type: is_less_by_and_by : (a -> c), (b -> c) -> (a, b -> bool)
 // f(x) < g(y)
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
@@ -204,6 +217,7 @@ std::function<bool(const FIn& x, const GIn& y)>
     };
 }
 
+// API search type: is_less_by : (a -> b) -> (a, a -> bool)
 // f(x) < f(y)
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
@@ -214,6 +228,7 @@ std::function<bool(const FIn& x, const FIn& y)>
     return is_less_by_and_by(f, f);
 }
 
+// API search type: is_less_by_than : (a -> b), b -> a -> bool
 // f(y) < x
 template <typename F, typename X,
     typename Y = typename utils::function_traits<F>::template arg<0>::type>
@@ -225,6 +240,7 @@ std::function<bool(const Y&)> is_less_by_than(F f, const X& x)
     };
 }
 
+// API search type: is_less_than : a -> a -> bool
 // y < x
 template <typename X>
 std::function<bool(const X&)> is_less_than(const X& x)
@@ -232,7 +248,7 @@ std::function<bool(const X&)> is_less_than(const X& x)
     return is_less_by_than(identity<X>, x);
 }
 
-
+// API search type: is_less_or_equal : a, a -> bool
 // x < y
 template <typename T>
 bool is_less_or_equal(const T& x, const T& y)
@@ -240,7 +256,7 @@ bool is_less_or_equal(const T& x, const T& y)
     return x <= y;
 }
 
-
+// API search type: is_less_or_equal_by_and_by : (a -> c), (b -> c) -> (a, b -> bool)
 // f(x) <= g(y)
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
@@ -257,6 +273,7 @@ std::function<bool(const FIn& x, const GIn& y)>
     };
 }
 
+// API search type: is_less_or_equal_by : (a -> b) -> (a, a -> bool)
 // f(x) <= f(y)
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
@@ -267,6 +284,7 @@ std::function<bool(const FIn& x, const FIn& y)>
     return is_less_or_equal_by_and_by(f, f);
 }
 
+// API search type: is_less_or_equal_by_than : (a -> b), b -> a -> bool
 // f(y) <= x
 template <typename F, typename X,
     typename Y = typename utils::function_traits<F>::template arg<0>::type>
@@ -278,6 +296,7 @@ std::function<bool(const Y&)> is_less_or_equal_by_than(F f, const X& x)
     };
 }
 
+// API search type: is_less_or_equal_than : a -> a -> bool
 // y <= x
 template <typename X>
 std::function<bool(const X&)> is_less_or_equal_than(const X& x)
@@ -285,7 +304,7 @@ std::function<bool(const X&)> is_less_or_equal_than(const X& x)
     return is_less_or_equal_by_than(identity<X>, x);
 }
 
-
+// API search type: is_greater : a, a -> bool
 // x > y
 template <typename T>
 bool is_greater(const T& x, const T& y)
@@ -293,7 +312,7 @@ bool is_greater(const T& x, const T& y)
     return x > y;
 }
 
-
+// API search type: is_greater_by_and_by : (a -> c), (b -> c) -> (a, b -> bool)
 // f(x) > g(y)
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
@@ -310,6 +329,7 @@ std::function<bool(const FIn& x, const GIn& y)>
     };
 }
 
+// API search type: is_greater_by : (a -> b) -> (a, a -> bool)
 // f(x) > f(y)
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
@@ -320,6 +340,7 @@ std::function<bool(const FIn& x, const FIn& y)>
     return is_greater_by_and_by(f, f);
 }
 
+// API search type: is_greater_by_than : (a -> b), b -> a -> bool
 // f(y) > x
 template <typename F, typename X,
     typename Y = typename utils::function_traits<F>::template arg<0>::type>
@@ -331,6 +352,7 @@ std::function<bool(const Y&)> is_greater_by_than(F f, const X& x)
     };
 }
 
+// API search type: is_greater_than : a -> a -> bool
 // y > x
 template <typename X>
 std::function<bool(const X&)> is_greater_than(const X& x)
@@ -338,6 +360,7 @@ std::function<bool(const X&)> is_greater_than(const X& x)
     return is_greater_by_than(identity<X>, x);
 }
 
+// API search type: is_greater_or_equal : a, a -> bool
 // x >= y
 template <typename T>
 bool is_greater_or_equal(const T& x, const T& y)
@@ -345,7 +368,7 @@ bool is_greater_or_equal(const T& x, const T& y)
     return x >= y;
 }
 
-
+// API search type: is_greater_or_equal_by_and_by : (a -> c), (b -> c) -> (a, b -> bool)
 // f(x) >= g(y)
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
@@ -362,6 +385,7 @@ std::function<bool(const FIn& x, const GIn& y)>
     };
 }
 
+// API search type: is_greater_or_equal_by : (a -> b) -> (a, a -> bool)
 // f(x) >= f(y)
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
@@ -372,6 +396,7 @@ std::function<bool(const FIn& x, const FIn& y)>
     return is_greater_or_equal_by_and_by(f, f);
 }
 
+// API search type: is_greater_or_equal_by_than : (a -> b), b -> a -> bool
 // f(y) >= x
 template <typename F, typename X,
     typename Y = typename utils::function_traits<F>::template arg<0>::type>
@@ -383,6 +408,7 @@ std::function<bool(const Y&)> is_greater_or_equal_by_than(F f, const X& x)
     };
 }
 
+// API search type: is_greater_or_equal_than : a -> a -> bool
 // y >= x
 template <typename X>
 std::function<bool(const X&)> is_greater_or_equal_than(const X& x)
@@ -390,7 +416,7 @@ std::function<bool(const X&)> is_greater_or_equal_than(const X& x)
     return is_greater_or_equal_by_than(identity<X>, x);
 }
 
-
+// API search type: xor_bools : bool -> bool -> bool
 template <typename T>
 bool xor_bools(const T& x, const T& y)
 {
@@ -398,6 +424,7 @@ bool xor_bools(const T& x, const T& y)
     return (x && !y) || (!x && y);
 }
 
+// API search type: ord_to_eq : (a, a -> bool) -> (a, a -> bool)
 // ord_to_eq((<)) == (==)
 template <typename Compare,
     typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
@@ -413,6 +440,7 @@ std::function<FOut(FIn0, FIn1)> ord_to_eq(Compare comp)
            { return !comp(x, y) && !comp(y, x); };
 }
 
+// API search type: ord_to_not_eq : (a, a -> bool) -> (a, a -> bool)
 // ord_to_not_eq((<)) == (!=)
 template <typename Compare,
     typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
@@ -428,6 +456,7 @@ std::function<FOut(FIn0, FIn1)> ord_to_not_eq(Compare comp)
            { return comp(x, y) || comp(y, x); };
 }
 
+// API search type: ord_eq_to_eq : (a, a -> bool) -> (a, a -> bool)
 // ord_eq_to_eq((<=)) == (==)
 template <typename Compare,
     typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
@@ -443,6 +472,7 @@ std::function<FOut(FIn0, FIn1)> ord_eq_to_eq(Compare comp)
            { return comp(x, y) && comp(y, x); };
 }
 
+// API search type: ord_eq_to_not_eq : (a, a -> bool) -> (a, a -> bool)
 // ord_eq_to_not_eq((<=)) == (!=)
 template <typename Compare,
     typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
