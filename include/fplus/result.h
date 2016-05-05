@@ -58,6 +58,7 @@ private:
     ptr_error ptr_error_;
 };
 
+// API search type: is_ok : result a b -> bool
 // Is not error?
 template <typename Ok, typename Error>
 bool is_ok(const result<Ok, Error>& result)
@@ -65,6 +66,7 @@ bool is_ok(const result<Ok, Error>& result)
     return result.is_ok();
 }
 
+// API search type: is_error : result a b -> bool
 // Has no value?
 template <typename Ok, typename Error>
 bool is_error(const result<Ok, Error>& result)
@@ -72,6 +74,7 @@ bool is_error(const result<Ok, Error>& result)
     return !is_ok(result);
 }
 
+// API search type: unsafe_get_ok : result a b -> a
 // Crashes if result is error!
 template <typename Ok, typename Error>
 Ok unsafe_get_ok(const result<Ok, Error>& result)
@@ -79,6 +82,7 @@ Ok unsafe_get_ok(const result<Ok, Error>& result)
     return result.unsafe_get_ok();
 }
 
+// API search type: unsafe_get_ok : result a b -> b
 // Crashes if result is ok!
 template <typename Ok, typename Error>
 Error unsafe_get_error(const result<Ok, Error>& result)
@@ -86,6 +90,7 @@ Error unsafe_get_error(const result<Ok, Error>& result)
     return result.unsafe_get_error();
 }
 
+// API search type: ok_with_default : a, result a b -> a
 // Get the value from a result or the default in case it is error.
 template <typename Ok, typename Error>
 Ok ok_with_default(const Ok& defaultValue, const result<Ok, Error>& result)
@@ -95,6 +100,7 @@ Ok ok_with_default(const Ok& defaultValue, const result<Ok, Error>& result)
     return defaultValue;
 }
 
+// API search type: ok : a -> result a b
 // Wrap a value in a result as a Ok.
 template <typename Ok, typename Error>
 result<Ok, Error> ok(const Ok& val)
@@ -104,6 +110,7 @@ result<Ok, Error> ok(const Ok& val)
     return x;
 }
 
+// API search type: error : b -> result a b
 // Construct an error of a certain result type.
 template <typename Ok, typename Error>
 result<Ok, Error> error(const Error& error)
@@ -113,6 +120,7 @@ result<Ok, Error> error(const Error& error)
     return x;
 }
 
+// API search type: to_maybe : result a b -> maybe a
 // Convert ok to just, error to nothing.
 template <typename Ok, typename Error>
 maybe<Ok> to_maybe(const result<Ok, Error>& result)
@@ -123,6 +131,7 @@ maybe<Ok> to_maybe(const result<Ok, Error>& result)
         return nothing<Ok>();
 }
 
+// API search type: from_maybe : maybe a, b -> result a b
 // Convert just to ok, nothing to error.
 template <typename Ok, typename Error>
 result<Ok, Error> from_maybe(const maybe<Ok>& maybe, const Error& err)
@@ -133,6 +142,7 @@ result<Ok, Error> from_maybe(const maybe<Ok>& maybe, const Error& err)
         return error<Ok, Error>(err);
 }
 
+// API search type: throw_on_error : e, result a b -> a
 // Throws the given exception in case of error.
 // Return ok value if ok.
 template <typename E, typename Ok, typename Error>
@@ -143,6 +153,7 @@ Ok throw_on_error(const E& e, const result<Ok, Error>& result)
     return unsafe_get_ok(result);
 }
 
+// API search type: throw_type_on_error : result a b -> a
 // Throws the given exception type constructed with error value if error.
 // Return ok value if ok.
 template <typename E, typename Ok, typename Error>
@@ -171,6 +182,7 @@ bool operator != (const result<Ok, Error>& x, const result<Ok, Error>& y)
     return !(x == y);
 }
 
+// API search type: lift_result : (a -> b) -> (result a c -> result b c)
 // Lifts a function into the result functor.
 // A function that for example was able to convert and int into a string,
 // now can convert a result<int> into a result<string>.
@@ -190,6 +202,7 @@ std::function<result<B, Error>(const result<A, Error>&)> lift_result(F f)
     };
 }
 
+// API search type: and_then_result : (a -> result b c), (b -> result d c) -> (a -> result d c)
 // Monadic bind.
 // Composes two functions taking a value and returning result.
 // If the first function returns a ok, the value from the ok
@@ -216,6 +229,7 @@ std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g)
     };
 }
 
+// API search type: and_then_result : (a -> result b c), (b -> result d c), (d -> result e c) -> (a -> result e c)
 template <typename F, typename G, typename H,
     typename FIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
     typename HOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<H>::result_type>::type>::type,
@@ -226,6 +240,7 @@ std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g, H h)
     return and_then_result(and_then_result(f, g), h);
 }
 
+// API search type: and_then_result : (a -> result b c), (b -> result d c), (d -> result e c), (e -> result f c) -> (a -> result f c)
 template <typename F, typename G, typename H, typename I,
     typename FIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
     typename IOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<I>::result_type>::type>::type,

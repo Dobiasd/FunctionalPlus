@@ -20,6 +20,7 @@
 namespace fplus
 {
 
+// API search type: sleep_for_n_seconds : int -> io ()
 inline
 std::function<void()> sleep_for_n_seconds(std::size_t seconds)
 {
@@ -29,6 +30,7 @@ std::function<void()> sleep_for_n_seconds(std::size_t seconds)
     };
 }
 
+// API search type: sleep_for_n_milliseconds : int -> io ()
 inline
 std::function<void()> sleep_for_n_milliseconds(std::size_t milliseconds)
 {
@@ -38,6 +40,7 @@ std::function<void()> sleep_for_n_milliseconds(std::size_t milliseconds)
     };
 }
 
+// API search type: sleep_for_n_microseconds : int -> io ()
 inline
 std::function<void()> sleep_for_n_microseconds(std::size_t microseconds)
 {
@@ -47,6 +50,7 @@ std::function<void()> sleep_for_n_microseconds(std::size_t microseconds)
     };
 }
 
+// API search type: execute_serially : [io ()] -> io ()
 template <typename Container,
         typename Effect = typename Container::value_type,
         typename Result = typename utils::function_traits<Effect>::result_type>
@@ -63,6 +67,7 @@ std::function<std::vector<Result>()> execute_serially(const Container& effs)
     };
 }
 
+// API search type: execute_serially_until_success : [io bool] -> io bool
 template <typename Container,
         typename Effect = typename Container::value_type,
         typename Result = typename utils::function_traits<Effect>::result_type>
@@ -82,6 +87,7 @@ std::function<bool()> execute_serially_until_success(const Container& effs)
     };
 }
 
+// API search type: execute_and_return_fixed_value : a, [io b] -> io a
 template <typename Result, typename Effect>
 std::function<Result()> execute_and_return_fixed_value(
         Result result,
@@ -94,6 +100,7 @@ std::function<Result()> execute_and_return_fixed_value(
     };
 }
 
+// API search type: effect_to_std_function : io a -> io a
 template <typename Effect,
         typename Result = typename utils::function_traits<Effect>::result_type>
 std::function<Result()> effect_to_std_function(Effect eff)
@@ -104,6 +111,7 @@ std::function<Result()> effect_to_std_function(Effect eff)
     };
 }
 
+// API search type: execute_max_n_times_until_success : int, io (), int -> io bool
 template <typename Effect,
         typename Result = typename utils::function_traits<Effect>::result_type>
 std::function<bool()> execute_max_n_times_until_success(
@@ -126,6 +134,7 @@ std::function<bool()> execute_max_n_times_until_success(
         replicate(n, effect_to_std_function(eff)));
 }
 
+// API search type: execute_serially_until_failure : [io bool] -> io bool
 template <typename Container,
         typename Effect = typename Container::value_type,
         typename Result = typename utils::function_traits<Effect>::result_type>
@@ -145,6 +154,7 @@ std::function<bool()> execute_serially_until_failure(const Container& effs)
     };
 }
 
+// API search type: execute_parallelly : [io a] -> io [a]
 template <typename Container,
         typename Effect = typename Container::value_type,
         typename Result = typename utils::function_traits<Effect>::result_type>
@@ -168,6 +178,7 @@ std::function<std::vector<Result>()> execute_parallelly(const Container& effs)
     };
 }
 
+// API search type: execute_fire_and_forget : io a -> io a
 template <typename Effect>
 std::function<void()> execute_fire_and_forget(Effect eff)
 {
@@ -178,6 +189,7 @@ std::function<void()> execute_fire_and_forget(Effect eff)
     };
 }
 
+// API search type: read_text_file : string -> io string
 inline
 std::string read_text_file(const std::string& filename)
 {
@@ -187,12 +199,14 @@ std::string read_text_file(const std::string& filename)
             std::istreambuf_iterator<std::string::value_type>());
 }
 
+// API search type: read_text_file_lines : string -> io [string]
 inline
 std::vector<std::string> read_text_file_lines(const std::string& filename)
 {
     return split_lines(read_text_file(filename), true);
 }
 
+// API search type: write_text_file : string, string -> io bool
 inline
 bool write_text_file(const std::string& filename, const std::string& content)
 {
@@ -201,6 +215,7 @@ bool write_text_file(const std::string& filename, const std::string& content)
     return output.good();
 }
 
+// API search type: write_text_file_lines : string, [string], bool -> io bool
 inline
 bool write_text_file_lines(const std::string& filename,
         const std::vector<std::string>& lines, bool trailing_newline = true)

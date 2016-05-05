@@ -16,6 +16,7 @@
 namespace fplus
 {
 
+// API search type: show : a -> string
 // 42 -> "42"
 template <typename T>
 std::string show(const T& x)
@@ -25,6 +26,8 @@ std::string show(const T& x)
     return ss.str();
 }
 
+// API search type: show : string -> string
+// string identity
 // "foo" -> "foo"
 inline
 std::string show(const std::string& str)
@@ -32,6 +35,7 @@ std::string show(const std::string& str)
     return str;
 }
 
+// API search type: show : (a, b) -> string
 // {1, "one"} -> "(1, one)"
 template <typename X, typename Y>
 std::string show(const std::pair<X, Y>& p)
@@ -39,7 +43,8 @@ std::string show(const std::pair<X, Y>& p)
     return std::string("(") + show(p.first) + ", " + show(p.second) + ")";
 }
 
-// show_cont_with_frame_with_linebreaks (",", "(", ")", [1, 2, 3, 4, 5], 2)
+// API search type: show_cont_with_frame_and_newlines : string, string, string, [a], int -> string
+// show_cont_with_frame_and_newlines (",", "(", ")", [1, 2, 3, 4, 5], 2)
 // == "(1,2)
 //      3,4)
 //      5)"
@@ -76,6 +81,7 @@ std::string show_cont_with_frame_and_newlines(
     return prefix + join(separator, elemStrs) + suffix;
 }
 
+// API search type: show_cont_with_frame : string, string, string, [a] -> string
 // show_cont_with_frame (" => ", "{", "}", [1, 2, 3]) == "{1 => 2 => 3}"
 template <typename Container>
 std::string show_cont_with_frame(
@@ -87,6 +93,7 @@ std::string show_cont_with_frame(
         show_cont_with_frame_and_newlines( separator, prefix, suffix, xs, 0);
 }
 
+// API search type: show_cont_with : string, [a] -> string
 // show_cont_with( " - ", [1, 2, 3]) == "[1 - 2 - 3]"
 template <typename Container>
 std::string show_cont_with(const std::string& separator, const Container& xs)
@@ -94,6 +101,7 @@ std::string show_cont_with(const std::string& separator, const Container& xs)
     return show_cont_with_frame(separator, "[", "]", xs);
 }
 
+// API search type: show_cont : [a] -> string
 // show_cont [1, 2, 3] -> "[1, 2, 3]"
 template <typename Container>
 std::string show_cont(const Container& xs)
@@ -101,6 +109,7 @@ std::string show_cont(const Container& xs)
     return show_cont_with(", ", xs);
 }
 
+// API search type: show_maybe : maybe a -> string
 // show_maybe(Just 42) -> "Just 42"
 template <typename T>
 std::string show_maybe(const maybe<T>& maybe)
@@ -111,6 +120,7 @@ std::string show_maybe(const maybe<T>& maybe)
         return std::string("Just " + show(unsafe_get_just(maybe)));
 }
 
+// API search type: show_result : result a b -> string
 // show_result(Ok 42) -> "Ok 42"
 // show_result(Error "fail") -> "Error fail"
 template <typename Ok, typename Error>

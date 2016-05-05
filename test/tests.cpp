@@ -69,13 +69,13 @@ void Test_Numeric()
     assert(max_5(3, 1, 9, 5, 7) == 9);
 
     auto mod2 = [](int x) {return x % 2; };
-    assert(min_2_by(mod2)(4, 3) == 4);
-    assert(max_2_by(mod2)(4, 3) == 3);
+    assert(min_2_on(mod2)(4, 3) == 4);
+    assert(max_2_on(mod2)(4, 3) == 3);
 
     std::string str1 = "hello";
     std::string str2 = "hi";
     auto str_length = [](const std::string& str) { return str.size(); };
-    assert(min_2_by(str_length)(str1, str2) == "hi");
+    assert(min_2_on(str_length)(str1, str2) == "hi");
 }
 
 int APlusTwoTimesBFunc(int a, int b) { return a + 2 * b; }

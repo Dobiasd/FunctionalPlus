@@ -16,15 +16,6 @@
 namespace fplus
 {
 
-template <typename T>
-class maybe;
-
-template <typename T>
-maybe<T> just(const T& val);
-
-template <typename T>
-maybe<T> nothing();
-
 // Can hold a value of type T or nothing.
 template <typename T>
 class maybe
@@ -46,6 +37,7 @@ private:
     ptr_t ptr_;
 };
 
+// API search type: is_just : maybe a -> bool
 // Is not nothing?
 template <typename T>
 bool is_just(const maybe<T>& maybe)
@@ -53,6 +45,7 @@ bool is_just(const maybe<T>& maybe)
     return maybe.is_just();
 }
 
+// API search type: is_nothing : maybe a -> bool
 // Has no value?
 template <typename T>
 bool is_nothing(const maybe<T>& maybe)
@@ -60,6 +53,7 @@ bool is_nothing(const maybe<T>& maybe)
     return !is_just(maybe);
 }
 
+// API search type: unsafe_get_just : maybe a -> a
 // Crashes if maybe is nothing!
 template <typename T>
 T unsafe_get_just(const maybe<T>& maybe)
@@ -67,6 +61,7 @@ T unsafe_get_just(const maybe<T>& maybe)
     return maybe.unsafe_get_just();
 }
 
+// API search type: just_with_default : a, maybe a -> a
 // Get the value from a maybe or the default in case it is nothing.
 template <typename T>
 T just_with_default(const T& defaultValue, const maybe<T>& maybe)
@@ -76,6 +71,7 @@ T just_with_default(const T& defaultValue, const maybe<T>& maybe)
     return defaultValue;
 }
 
+// API search type: throw_on_nothing : e, maybe a -> a
 // Throw exception if nothing. Return value if just.
 template <typename E, typename T>
 T throw_on_nothing(const E& e, const maybe<T>& maybe)
@@ -85,6 +81,7 @@ T throw_on_nothing(const E& e, const maybe<T>& maybe)
     return unsafe_get_just(maybe);
 }
 
+// API search type: just : a -> maybe a
 // Wrap a value in a Maybe as a Just.
 template <typename T>
 maybe<T> just(const T& val)
@@ -92,6 +89,7 @@ maybe<T> just(const T& val)
     return val;
 }
 
+// API search type: just : () -> maybe a
 // Construct a nothing of a certain Maybe type.
 template <typename T>
 maybe<T> nothing()
@@ -115,6 +113,7 @@ bool operator != (const maybe<T>& x, const maybe<T>& y)
     return !(x == y);
 }
 
+// API search type: lift_maybe : (a -> b) -> (maybe a -> maybe b)
 // Lifts a function into the maybe functor.
 // A function that for example was able to convert and int into a string,
 // now can convert a Maybe<int> into a Maybe<string>.
@@ -133,6 +132,7 @@ std::function<maybe<B>(const maybe<A>&)> lift_maybe(F f)
     };
 }
 
+// API search type: and_then_maybe : (a -> maybe b), (b -> maybe c) -> (a -> maybe c)
 // Monadic bind.
 // Composes two functions taking a value and returning Maybe.
 // If the first function returns a just, the value from the just
@@ -158,6 +158,7 @@ std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g)
     };
 }
 
+// API search type: and_then_maybe : (a -> maybe b), (b -> maybe c), (c -> maybe d) -> (maybe a -> maybe d)
 template <typename F, typename G, typename H,
     typename FIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
     typename HOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<H>::result_type>::type>::type,
@@ -167,6 +168,7 @@ std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g, H h)
     return and_then_maybe(and_then_maybe(f, g), h);
 }
 
+// API search type: and_then_maybe : (a -> maybe b), (b -> maybe c), (c -> maybe d), (d -> maybe e) -> (maybe a -> maybe e)
 template <typename F, typename G, typename H, typename I,
     typename FIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
     typename IOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<I>::result_type>::type>::type,

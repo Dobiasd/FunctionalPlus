@@ -13,6 +13,7 @@
 namespace fplus
 {
 
+// API search type: is_in_range : a, a -> (a -> bool)
 // Checks if x is in [low, high), i.e. left-closed and right-open.
 template <typename T>
 std::function<bool(const T&)>
@@ -24,6 +25,7 @@ std::function<bool(const T&)>
     };
 }
 
+// API search type: clamp : a, a -> (a -> a)
 // Puts value into [low, high], i.e. left-closed and right-closed.
 template <typename T>
 std::function<T(const T&)>
@@ -35,6 +37,7 @@ std::function<T(const T&)>
     };
 }
 
+// API search type: is_negative : a -> bool
 // Checks if x < 0.
 template <typename X>
 bool is_negative(X x)
@@ -42,6 +45,7 @@ bool is_negative(X x)
     return x < 0;
 }
 
+// API search type: is_positive : a -> bool
 // Checks if x is not negative.
 template <typename X>
 bool is_positive(X x)
@@ -49,6 +53,7 @@ bool is_positive(X x)
     return !is_negative(x);
 }
 
+// API search type: round : a -> b
 // Converts a value to the nearest integer.
 template <typename Out, typename X>
 Out round(X x)
@@ -63,6 +68,7 @@ Out round(X x)
     return static_cast<Out>(x + 0.5);
 }
 
+// API search type: floor : a -> b
 // Converts a value to the nearest smaller integer.
 template <typename Out, typename X>
 Out floor(X x)
@@ -73,6 +79,7 @@ Out floor(X x)
     return static_cast<Out>(x);
 }
 
+// API search type: ceil : a -> b
 // Converts a value to the nearest greater integer.
 template <typename Out, typename X>
 Out ceil(X x)
@@ -81,6 +88,7 @@ Out ceil(X x)
     return floor<Out>(x) + 1;
 }
 
+// API search type: int_power : int, int -> int
 template <typename X>
 X int_power(X base, X exp)
 {
@@ -93,10 +101,11 @@ X int_power(X base, X exp)
     return base * int_power(base, exp - 1);
 }
 
+// API search type: min_2_on : (a -> b) -> (a, a -> bool)
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type>
 std::function<const FIn&(const FIn& x, const FIn& y)>
-        min_2_by(F f)
+        min_2_on(F f)
 {
     return [f](const FIn& x, const FIn& y) -> const FIn&
     {
@@ -104,10 +113,11 @@ std::function<const FIn&(const FIn& x, const FIn& y)>
     };
 }
 
+// API search type: max_2_on : (a -> b) -> (a, a -> bool)
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type>
 std::function<const FIn&(const FIn& x, const FIn& y)>
-        max_2_by(F f)
+        max_2_on(F f)
 {
     return [f](const FIn& x, const FIn& y) -> const FIn&
     {
@@ -115,48 +125,56 @@ std::function<const FIn&(const FIn& x, const FIn& y)>
     };
 }
 
+// API search type: min_2 : a, a -> a
 template <typename X>
 const X& min_2(const X& a, const X& b)
 {
     return std::min(a, b);
 }
 
+// API search type: min_3 : a, a, a -> a
 template <typename X>
 const X& min_3(const X& a, const X& b, const X& c)
 {
     return min_2(min_2(a, b), c);
 }
 
+// API search type: min_4 : a, a, a, a -> a
 template <typename X>
 const X& min_4(const X& a, const X& b, const X& c, const X& d)
 {
     return min_2(min_3(a, b, c), d);
 }
 
+// API search type: min_5 : a, a, a, a, a -> a
 template <typename X>
 const X& min_5(const X& a, const X& b, const X& c, const X& d, const X& e)
 {
     return min_3(min_3(a, b, c), d, e);
 }
 
+// API search type: max_2 : a, a -> a
 template <typename X>
 const X& max_2(const X& a, const X& b)
 {
     return std::max(a, b);
 }
 
+// API search type: max_3 : a, a, a -> a
 template <typename X>
 const X& max_3(const X& a, const X& b, const X& c)
 {
     return max_2(max_2(a, b), c);
 }
 
+// API search type: max_4 : a, a, a, a -> a
 template <typename X>
 const X& max_4(const X& a, const X& b, const X& c, const X& d)
 {
     return max_2(max_3(a, b, c), d);
 }
 
+// API search type: max_5 : a, a, a, a, a -> a
 template <typename X>
 const X& max_5(const X& a, const X& b, const X& c, const X& d, const X& e)
 {
