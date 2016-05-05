@@ -365,9 +365,11 @@ void Test_Result()
 
     typedef std::vector<result<int, std::string>> IntResults;
     typedef std::vector<int> Ints;
+    typedef std::vector<std::string> Strings;
     IntResults results = {ok<int, std::string>(1), error<int>(std::string("no sqrt of negative numbers")), ok<int, std::string>(2)};
 
     assert(oks(results) == Ints({ 1,2 }));
+    assert(errors(results) == Strings({std::string("no sqrt of negative numbers")}));
 
     assert((ok<int, std::string>(1)) == (ok<int, std::string>(1)));
     assert((ok<int, std::string>(1)) != (ok<int, std::string>(2)));
