@@ -31,7 +31,7 @@ template<class T, class Container> struct has_order<std::queue<T, Container>> : 
 template<class T, class Container, class Compare> struct has_order<std::priority_queue<T, Container, Compare>> : public std::false_type {};
 template<class CharT, class Traits, class Alloc> struct has_order<std::basic_string<CharT, Traits, Alloc>> : public std::true_type {};
 
-//http://stackoverflow.com/a/33828321/1866775
+// http://stackoverflow.com/a/33828321/1866775
 template<class Cont, class NewT> struct same_cont_new_t : public std::false_type{};
 template<class T, std::size_t N, class NewT> struct same_cont_new_t<std::array<T, N>, NewT> { typedef typename std::array<NewT, N> type; };
 template<class T, class Alloc, class NewT> struct same_cont_new_t<std::vector<T, Alloc>, NewT> { typedef typename std::vector<NewT> type; };
