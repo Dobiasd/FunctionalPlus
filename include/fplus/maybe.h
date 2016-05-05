@@ -30,6 +30,7 @@ template <typename T>
 class maybe
 {
 public:
+    maybe() {};
     maybe(const T& other) :
         ptr_(new T(other))
         {}
@@ -40,9 +41,6 @@ public:
     const T& unsafe_get_just() const { assert(is_just()); return *get(); }
     typedef T type;
 private:
-    maybe() {}
-    friend maybe<T> just<T>(const T& val);
-    friend maybe<T> nothing<T>();
     typedef std::unique_ptr<T> ptr_t;
     const ptr_t& get() const { return ptr_; }
     ptr_t ptr_;
@@ -91,16 +89,14 @@ T throw_on_nothing(const E& e, const maybe<T>& maybe)
 template <typename T>
 maybe<T> just(const T& val)
 {
-    maybe<T> x;
-    x.ptr_.reset(new T(val));
-    return x;
+    return val;
 }
 
 // Construct a nothing of a certain Maybe type.
 template <typename T>
 maybe<T> nothing()
 {
-    return maybe<T>();
+    return {};
 }
 
 // True if just values are the same or if both are nothing.
