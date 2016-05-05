@@ -80,8 +80,8 @@ int main()
         auto lines = fplus::read_text_file_lines(code_dir + code_file);
         auto is_search_type = fplus::bind_1st_of_2(
                 fplus::is_infix_of<string>, key);
-        auto start_idxs = fplus::find_all_idxs_by(is_search_type, lines);
-        auto functions_lines = fplus::split_at_idxs(start_idxs, lines);
+        auto functions_lines = fplus::split_by_keep_separators(
+                is_search_type, lines);
         if (functions_lines.size() < 2)
             continue;
         functions_lines = fplus::tail(functions_lines);

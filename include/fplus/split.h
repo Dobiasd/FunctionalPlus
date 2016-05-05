@@ -152,6 +152,32 @@ ContainerOut split_by
     return result;
 }
 
+// split_by_keep_separators(is_even, true, [1,3,2,2,5,5,3,6,7,9]) == [[1,3],[2],[2,5,5,3],[6,7,9]]
+template <typename UnaryPredicate, typename ContainerIn,
+        typename ContainerOut = typename std::vector<ContainerIn>>
+ContainerOut split_by_keep_separators
+        (UnaryPredicate pred, const ContainerIn& xs)
+{
+    check_unary_predicate_for_container<UnaryPredicate, ContainerIn>();
+    static_assert(std::is_same<ContainerIn, typename ContainerOut::value_type>::value, "Containers do not match.");
+    ContainerOut result;
+    if (is_empty(xs))
+        return result;
+    auto itOut = get_back_inserter(result);
+    auto start = std::begin(xs);
+    while (start != std::end(xs))
+    {
+        const auto stop = std::find_if(std::next(start), std::end(xs), pred);
+        *itOut = { start, stop };
+        if (stop == std::end(xs))
+        {
+            break;
+        }
+        start = stop;
+    }
+    return result;
+}
+
 // split(0, [1,3,2,0,0,6,0,7,5]) == [[1,3,2],[],[6],[7,5]]
 template <typename ContainerIn,
         typename T = typename ContainerIn::value_type,
