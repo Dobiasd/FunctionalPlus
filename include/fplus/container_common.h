@@ -1,4 +1,4 @@
-// Copyright Tobias Hermann 2015.
+// Copyright Tobias Hermann 2016.
 // https://github.com/Dobiasd/FunctionalPlus
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
