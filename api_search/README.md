@@ -1,3 +1,5 @@
+haskell type in die comments für FunctionalPlus API search engine, filter : (a -> bool), [a] -> [a] oder auch [a], (a -> bool) -> [a]
+
 todo:
 1) komma bindet enger als pfeil
 2) pfeil kann immer auch gefunden werden wenn man nach komma sucht
