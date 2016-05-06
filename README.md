@@ -160,7 +160,7 @@ FunctionalPlus deduces types for you where possible. Let's take one line of code
     auto show_collats_seq = fplus::compose(collatz_seq, show_ints);
 ```
 
-`collatz_seq` is a Function taking an `uint64_t` and returning a `list<uint64_t>`. `show_ints` takes a `list<uint64_t>` and returns a `string`. Thanks to making use of `function_traits` [written by kennyim](https://github.com/kennytm/utils/blob/master/traits.hpp) it is possible to automatically deduce the expression `fplus::compose(collatz_seq, show_ints)` being a function taking an `uint64_t` and returning a `string`, so you do not have to manually provide type hints to the compiler.
+`collatz_seq` is a function taking an `uint64_t` and returning a `list<uint64_t>`. `show_ints` takes a `list<uint64_t>` and returns a `string`. Thanks to making use of `function_traits` [written by kennyim](https://github.com/kennytm/utils/blob/master/traits.hpp) it is possible to automatically deduce the expression `fplus::compose(collatz_seq, show_ints)` being a function taking an `uint64_t` and returning a `string`, so you do not have to manually provide type hints to the compiler.
 
 In case you would accidentally pass two functions whose "connecting type" does not match, you will get a nice error message telling you exactly that, because FunctionalPlus uses compile time assertions where feasible to guard you from the sometimes confusingly long error messages compilers like to generate when faced with type errors in function templates.
 
