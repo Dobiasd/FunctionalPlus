@@ -71,16 +71,30 @@ MapOut transform_map_values(F f, const MapIn& map)
             map_to_pairs(map)));
 }
 
-// API search type: map_union : map a b, map a b -> map a b
-// map_union([(0,a), (1,b)], [(0,c), (2,d)]) == [(0,a), (1,b), (2,d)]
-template <typename MapType>
-MapType map_union(const MapType& dict1, const MapType& dict2)
+// API search type: map_union_with : map a b, map a b -> map a b
+// map_union_with((++), [(0,a), (1,b)], [(0,c), (2,d)]) == [(0,ac), (1,b), (2,d)]
+template <typename F, typename MapIn,
+    typename MapInPair = typename MapIn::value_type,
+    typename Key = typename std::remove_const<typename MapInPair::first_type>::type,
+    typename OutVal = typename std::remove_reference<typename std::remove_const<typename utils::function_traits<F>::result_type>::type>::type,
+    typename MapOut = typename SameMapTypeNewTypes<MapIn, Key, OutVal>::type>
+MapOut map_union_with(F f, const MapIn& dict1, const MapIn& dict2)
 {
     auto full_map = pairs_to_map_grouped(
             append(map_to_pairs(dict1), map_to_pairs(dict2)));
+    return transform_map_values(f, full_map);
+}
+
+// API search type: map_union : map a b, map a b -> map a b
+// map_union([(0,a), (1,b)], [(0,c), (2,d)]) == [(0,a), (1,b), (2,d)]
+template <typename MapType,
+    typename MapInPair = typename MapType::value_type,
+    typename InVal = typename std::remove_const<typename MapInPair::second_type>::type>
+MapType map_union(const MapType& dict1, const MapType& dict2)
+{
     typedef typename MapType::value_type::second_type value;
     typedef std::vector<value> values;
-    return transform_map_values(nth_element<values>(0), full_map);
+    return map_union_with(nth_element<values>(0), dict1, dict2);
 }
 
 // API search type: get_map_keys : map a b -> [a]

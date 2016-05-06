@@ -942,7 +942,9 @@ void Test_ContainerTools()
     IntStringMap union_map_1 = {{0, "a"}, {1, "b"}};
     IntStringMap union_map_2 = {{0, "c"}, {2, "d"}};
     IntStringMap union_map_res = {{0, "a"}, {1, "b"}, {2, "d"}};
+    IntStringMap union_map_with_res = {{0, "ac"}, {1, "b"}, {2, "d"}};
     assert(map_union(union_map_1, union_map_2) == union_map_res);
+    assert(map_union_with(concat<std::vector<std::string>>, union_map_1, union_map_2) == union_map_with_res);
 
     typedef std::vector<std::pair<std::string, int>> StringIntPairs;
     StringIntPairs stringIntPairs = {{"a", 1}, {"a", 2}, {"b", 6}, {"a", 4}};
