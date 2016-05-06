@@ -55,6 +55,34 @@ ContainerOut map_to_pairs(const MapType& dict)
     return convert_container_and_elems<ContainerOut>(dict);
 }
 
+// API search type: transform_map_values : (b -> c), map a b -> map a c
+// transform_map_values((*2), {(0, 2), (1, 3)}) == {(0, 4), (1, 6)}
+template <typename F, typename MapIn,
+    typename MapInPair = typename MapIn::value_type,
+    typename Key = typename std::remove_const<typename MapInPair::first_type>::type,
+    typename InVal = typename std::remove_const<typename MapInPair::second_type>::type,
+    typename OutVal = typename std::remove_reference<typename std::remove_const<typename utils::function_traits<F>::result_type>::type>::type,
+    typename MapOut = typename SameMapTypeNewTypes<MapIn, Key, OutVal>::type>
+MapOut transform_map_values(F f, const MapIn& map)
+{
+    return pairs_to_map<MapOut>(
+        transform(
+            bind_1st_of_2(transform_snd<Key, InVal, F>, f),
+            map_to_pairs(map)));
+}
+
+// API search type: map_union : map a b, map a b -> map a b
+// map_union([(0,a), (1,b)], [(0,c), (2,d)]) == [(0,a), (1,b), (2,d)]
+template <typename MapType>
+MapType map_union(const MapType& dict1, const MapType& dict2)
+{
+    auto full_map = pairs_to_map_grouped(
+            append(map_to_pairs(dict1), map_to_pairs(dict2)));
+    typedef typename MapType::value_type::second_type value;
+    typedef std::vector<value> values;
+    return transform_map_values(nth_element<values>(0), full_map);
+}
+
 // API search type: get_map_keys : map a b -> [a]
 // Returns all keys used in a map.
 template <typename MapType,
@@ -157,22 +185,6 @@ bool map_contains(const MapType& map, const Key& key)
 {
     auto it = map.find(key);
     return it != std::end(map);
-}
-
-// API search type: transform_map_values : (b -> c), map a b -> map a c
-// transform_map_values((*2), {(0, 2), (1, 3)}) == {(0, 4), (1, 6)}
-template <typename F, typename MapIn,
-    typename MapInPair = typename MapIn::value_type,
-    typename Key = typename std::remove_const<typename MapInPair::first_type>::type,
-    typename InVal = typename std::remove_const<typename MapInPair::second_type>::type,
-    typename OutVal = typename utils::function_traits<F>::result_type,
-    typename MapOut = typename SameMapTypeNewTypes<MapIn, Key, OutVal>::type>
-MapOut transform_map_values(F f, const MapIn& map)
-{
-    return pairs_to_map<MapOut>(
-        transform(
-            bind_1st_of_2(transform_snd<Key, InVal, F>, f),
-            map_to_pairs(map)));
 }
 
 } // namespace fplus

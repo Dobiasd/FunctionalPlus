@@ -32,6 +32,12 @@ void Test_Numeric()
     assert(is_negative(-0.1) == true);
     assert(is_positive(-0.1) == false);
 
+    assert(is_in_range(0.09, 0.11)(fplus::abs( 0.1)) == true);
+    assert(is_in_range(0.09, 0.11)(fplus::abs(-0.1)) == true);
+
+    assert(sign(0.1) == 1);
+    assert(sign(-0.1) == -1);
+
     assert(round<int>(1.4) == 1);
     assert(round<int>(1.5) == 2);
     assert(round<int>(1.6) == 2);
@@ -932,6 +938,11 @@ void Test_ContainerTools()
     assert(get_from_map_with_def(intStringMap, std::string("n/a"), 9) == "n/a");
     assert(map_contains(intStringMap, 1) == true);
     assert(map_contains(intStringMap, 9) == false);
+
+    IntStringMap union_map_1 = {{0, "a"}, {1, "b"}};
+    IntStringMap union_map_2 = {{0, "c"}, {2, "d"}};
+    IntStringMap union_map_res = {{0, "a"}, {1, "b"}, {2, "d"}};
+    assert(map_union(union_map_1, union_map_2) == union_map_res);
 
     typedef std::vector<std::pair<std::string, int>> StringIntPairs;
     StringIntPairs stringIntPairs = {{"a", 1}, {"a", 2}, {"b", 6}, {"a", 4}};
