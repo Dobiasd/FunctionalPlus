@@ -282,6 +282,7 @@ void Test_Maybe()
     auto IntToFloat = [](const int& x) { return static_cast<float>(x); };
 
     assert(maybe<int>(4) == just<int>(4));
+
     auto x = just<int>(2);
     maybe<int> y = nothing<int>();
     auto Or42 = bind_1st_of_2(just_with_default<int>, 42);
@@ -330,6 +331,18 @@ void Test_Maybe()
         thrown_str = e.what();
     }
     assert(thrown_str == "raised");
+
+    maybe<int> maybe_4(4);
+    maybe<int> maybe_4_copy(maybe_4);
+    maybe<int> maybe_4_copy_2;
+    maybe_4_copy_2 = maybe_4_copy;
+    assert(maybe_4_copy_2 == just<int>(4));
+
+    maybe<int> maybe_int_nothing;
+    maybe<int> maybe_int_nothing_copy(maybe_int_nothing);
+    maybe<int> maybe_int_nothing_copy_2;
+    maybe_int_nothing_copy_2 = maybe_int_nothing_copy;
+    assert(maybe_int_nothing_copy_2 == nothing<int>());
 }
 
 void Test_Result()
@@ -418,6 +431,18 @@ void Test_Result()
     }
     assert(thrown_str == "failed");
     thrown_str.clear();
+
+    result<int, std::string> result_4 = ok<int, std::string>(4);
+    result<int, std::string> result_4_copy(result_4);
+    result<int, std::string> result_4_copy_2 = error<int, std::string>("dummy");
+    result_4_copy_2 = result_4_copy;
+    assert(result_4_copy_2 == (ok<int, std::string>(4)));
+
+    result<int, std::string> result_int_string_error = error<int, std::string>("error");
+    result<int, std::string> result_int_string_error_copy(result_int_string_error);
+    result<int, std::string> result_int_string_error_copy_2 = ok<int, std::string>(9999);
+    result_int_string_error_copy_2 = result_int_string_error_copy;
+    assert(result_int_string_error_copy_2 == (error<int, std::string>("error")));
 }
 
 

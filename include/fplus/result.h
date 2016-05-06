@@ -30,30 +30,35 @@ template <typename Ok, typename Error>
 class result
 {
 public:
-    result(const result<Ok, Error>& other) :
-        ptr_ok_(other.get_ok() ? ptr_ok( new Ok(*other.get_ok())) : ptr_ok()),
-        ptr_error_(other.get_error() ? ptr_error( new Error(*other.get_error())) : ptr_error())
-        {
-            check_either_or_invariant();
-        }
-    bool is_ok() const { return static_cast<bool>(get_ok()); }
-    bool is_error() const { return static_cast<bool>(get_error()); }
-    const Ok& unsafe_get_ok() const { check_either_or_invariant(); assert(is_ok()); return *get_ok(); }
-    const Error& unsafe_get_error() const { check_either_or_invariant(); assert(is_error()); return *get_error(); }
+    bool is_ok() const { return static_cast<bool>(ptr_ok_); }
+    bool is_error() const { return static_cast<bool>(ptr_error_); }
+    const Ok& unsafe_get_ok() const { check_either_or_invariant(); assert(is_ok()); return *ptr_ok_; }
+    const Error& unsafe_get_error() const { check_either_or_invariant(); assert(is_error()); return *ptr_error_; }
     typedef Ok ok_t;
     typedef Error error_t;
+
+    result(const result<Ok, Error>& other) :
+        ptr_ok_(other.is_ok() ? ptr_ok(new Ok(other.unsafe_get_ok())) : ptr_ok()),
+        ptr_error_(other.is_error() ? ptr_error(new Error(other.unsafe_get_error())) : ptr_error())
+    {
+        check_either_or_invariant();
+    }
+    result<Ok, Error>& operator = (const result<Ok, Error>& other)
+    {
+        ptr_ok_ = other.is_ok() ? ptr_ok(new Ok(other.unsafe_get_ok())) : ptr_ok();
+        ptr_error_ = other.is_error() ? ptr_error(new Error(other.unsafe_get_error())) : ptr_error();
+        return *this;
+    }
 private:
     void check_either_or_invariant() const
     {
         assert(is_ok() != is_error());
     }
     result() {}
-    friend result<Ok, Error> ok<Ok, Error>(const Ok& ok);
-    friend result<Ok, Error> error<Ok, Error>(const Error& error);
     typedef std::unique_ptr<Ok> ptr_ok;
     typedef std::unique_ptr<Error> ptr_error;
-    const ptr_ok& get_ok() const { return ptr_ok_; }
-    const ptr_error& get_error() const { return ptr_error_; }
+    friend result<Ok, Error> ok<Ok, Error>(const Ok& ok);
+    friend result<Ok, Error> error<Ok, Error>(const Error& error);
     ptr_ok ptr_ok_;
     ptr_error ptr_error_;
 };

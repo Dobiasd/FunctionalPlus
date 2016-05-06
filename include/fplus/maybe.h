@@ -21,20 +21,25 @@ template <typename T>
 class maybe
 {
 public:
-    maybe() {};
-    maybe(const T& other) :
-        ptr_(new T(other))
-        {}
-    maybe(const maybe<T>& other) :
-        ptr_(other.get() ? ptr_t(new T(*other.get())) : ptr_t())
-        {}
-    bool is_just() const { return static_cast<bool>(get()); }
+    bool is_just() const { return static_cast<bool>(ptr_); }
     bool is_nothing() const { return !is_just(); }
-    const T& unsafe_get_just() const { assert(is_just()); return *get(); }
+    const T& unsafe_get_just() const { assert(is_just()); return *ptr_; }
     typedef T type;
+
+    maybe() {};
+    maybe(const T& val_just) :
+        ptr_(new T(val_just))
+    {}
+    maybe(const maybe<T>& other) :
+        ptr_(other.is_just() ? ptr_t(new T(other.unsafe_get_just())) : ptr_t())
+    {}
+    maybe<T>& operator = (const maybe<T>& other)
+    {
+        ptr_ = other.is_just() ? ptr_t(new T(other.unsafe_get_just())) : ptr_t();
+        return *this;
+    }
 private:
     typedef std::unique_ptr<T> ptr_t;
-    const ptr_t& get() const { return ptr_; }
     ptr_t ptr_;
 };
 
