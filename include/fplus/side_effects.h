@@ -54,7 +54,7 @@ std::function<void()> sleep_for_n_microseconds(std::size_t microseconds)
 }
 
 // API search type: execute_serially : [io ()] -> io ()
-// Returns a function that executes the given effects one after another.
+// Returns a function that executes the given side effects one after another.
 template <typename Container,
         typename Effect = typename Container::value_type,
         typename Result = typename utils::function_traits<Effect>::result_type>
@@ -72,7 +72,7 @@ std::function<std::vector<Result>()> execute_serially(const Container& effs)
 }
 
 // API search type: execute_serially_until_success : [io bool] -> io bool
-// Returns a function that executes the given effects one after another
+// Returns a function that executes the given side effects one after another
 // until one of it returns true.
 template <typename Container,
         typename Effect = typename Container::value_type,
@@ -94,7 +94,7 @@ std::function<bool()> execute_serially_until_success(const Container& effs)
 }
 
 // API search type: execute_and_return_fixed_value : a, [io b] -> io a
-// Returns a function that executes the given effect
+// Returns a function that executes the given side effect
 // and returns a fixed value.
 template <typename Result, typename Effect>
 std::function<Result()> execute_and_return_fixed_value(
@@ -108,7 +108,6 @@ std::function<Result()> execute_and_return_fixed_value(
     };
 }
 
-// API search type: effect_to_std_function : io a -> io a
 // Converts an arbitrary callable effect to an std::function.
 template <typename Effect,
         typename Result = typename utils::function_traits<Effect>::result_type>
@@ -121,7 +120,7 @@ std::function<Result()> effect_to_std_function(Effect eff)
 }
 
 // API search type: execute_max_n_times_until_success : int, io (), int -> io bool
-// Returns a function that executes an effect until it succeds
+// Returns a function that executes a side effect until it succeds
 // with a maximum number of attempts and an optinal pause in milliseconds.
 template <typename Effect,
         typename Result = typename utils::function_traits<Effect>::result_type>
@@ -146,7 +145,7 @@ std::function<bool()> execute_max_n_times_until_success(
 }
 
 // API search type: execute_serially_until_failure : [io bool] -> io bool
-// Returns a function that executes the given effects one after another
+// Returns a function that executes the given side effects one after another
 // until one of them returns false.
 template <typename Container,
         typename Effect = typename Container::value_type,
@@ -168,7 +167,7 @@ std::function<bool()> execute_serially_until_failure(const Container& effs)
 }
 
 // API search type: execute_parallelly : [io a] -> io [a]
-// Returns a function that executes the given effects in parallel
+// Returns a function that executes the given side effects in parallel
 // and returns the collected results.
 // Can be used for something like MapReduce.
 template <typename Container,
@@ -195,7 +194,7 @@ std::function<std::vector<Result>()> execute_parallelly(const Container& effs)
 }
 
 // API search type: execute_fire_and_forget : io a -> io a
-// Returns a function that executes the given effect in a new thread
+// Returns a function that executes the given side effect in a new thread
 // and return immediately.
 template <typename Effect>
 std::function<void()> execute_fire_and_forget(Effect eff)

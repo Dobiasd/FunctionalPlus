@@ -177,34 +177,34 @@ ContainerOut carthesian_product(const Container1& xs, const Container2& ys)
         make_res_pair, always_true_x_y, xs, ys);
 }
 
-namespace {
-    // productN :: Int -> [a] -> [[a]]
-    // productN n = foldr go [[]] . replicate n
-    //     where go elems acc = [x:xs | x <- elems, xs <- acc]
-    template <typename T>
-    std::vector<std::vector<T>> internal_helper_carthesian_product_n_idxs
-            (std::size_t power, const std::vector<T>& xs)
+
+// productN :: Int -> [a] -> [[a]]
+// productN n = foldr go [[]] . replicate n
+//     where go elems acc = [x:xs | x <- elems, xs <- acc]
+template <typename T>
+std::vector<std::vector<T>> internal_helper_carthesian_product_n_idxs
+        (std::size_t power, const std::vector<T>& xs)
+{
+    static_assert(std::is_same<T, std::size_t>::value, "T must be std::size_t");
+    typedef std::vector<T> Vec;
+    typedef std::vector<Vec> VecVec;
+    if (power == 0)
+        return VecVec();
+    auto go = [](const Vec& elems, const VecVec& acc)
     {
-        static_assert(std::is_same<T, std::size_t>::value, "T must be std::size_t");
-        typedef std::vector<T> Vec;
-        typedef std::vector<Vec> VecVec;
-        if (power == 0)
-            return VecVec();
-        auto go = [](const Vec& elems, const VecVec& acc)
+        VecVec result;
+        for (const T& x : elems)
         {
-            VecVec result;
-            for (const T& x : elems)
+            for (const Vec& tail : acc)
             {
-                for (const Vec& tail : acc)
-                {
-                    result.push_back(append(Vec(1, x), tail));
-                }
+                result.push_back(append(Vec(1, x), tail));
             }
-            return result;
-        };
-        return fold_right(go, VecVec(1), replicate(power, xs));
-    }
-} // anonymous namespace
+        }
+        return result;
+    };
+    return fold_right(go, VecVec(1), replicate(power, xs));
+}
+
 
 // API search type: carthesian_product_n : int, [a] -> [[a]]
 // carthesian_product_n(2, "ABCD") == AA AB AC AD BA BB BC BD CA CB CC CD DA DB DC DD

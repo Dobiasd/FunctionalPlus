@@ -15,93 +15,92 @@
 namespace fplus
 {
 
-namespace
+
+template <typename T>
+struct internal_helper_read_value_struct {};
+
+template <>
+struct internal_helper_read_value_struct <int>
 {
-    template <typename T>
-    struct internal_helper_read_value_struct {};
-
-    template <>
-    struct internal_helper_read_value_struct <int>
+    static void read(const std::string& str, int& result, std::size_t& num_chars_used)
     {
-        static void read(const std::string& str, int& result, std::size_t& num_chars_used)
-        {
-            result = std::stoi(str, &num_chars_used);
-        }
-    };
+        result = std::stoi(str, &num_chars_used);
+    }
+};
 
-    template <>
-    struct internal_helper_read_value_struct <long>
+template <>
+struct internal_helper_read_value_struct <long>
+{
+    static void read(const std::string& str, long& result, std::size_t& num_chars_used)
     {
-        static void read(const std::string& str, long& result, std::size_t& num_chars_used)
-        {
-            result = std::stol(str, &num_chars_used);
-        }
-    };
+        result = std::stol(str, &num_chars_used);
+    }
+};
 
-    template <>
-    struct internal_helper_read_value_struct <long long>
+template <>
+struct internal_helper_read_value_struct <long long>
+{
+    static void read(const std::string& str, long long& result, std::size_t& num_chars_used)
     {
-        static void read(const std::string& str, long long& result, std::size_t& num_chars_used)
-        {
-            result = std::stoll(str, &num_chars_used);
-        }
-    };
+        result = std::stoll(str, &num_chars_used);
+    }
+};
 
-    template <>
-    struct internal_helper_read_value_struct <unsigned int>
+template <>
+struct internal_helper_read_value_struct <unsigned int>
+{
+    static void read(const std::string& str, unsigned int& result, std::size_t& num_chars_used)
     {
-        static void read(const std::string& str, unsigned int& result, std::size_t& num_chars_used)
-        {
-            unsigned long result_u_l = std::stoul(str, &num_chars_used);
-            result = static_cast<unsigned int>(result_u_l);
-        }
-    };
+        unsigned long result_u_l = std::stoul(str, &num_chars_used);
+        result = static_cast<unsigned int>(result_u_l);
+    }
+};
 
-    template <>
-    struct internal_helper_read_value_struct <unsigned long>
+template <>
+struct internal_helper_read_value_struct <unsigned long>
+{
+    static void read(const std::string& str, unsigned long& result, std::size_t& num_chars_used)
     {
-        static void read(const std::string& str, unsigned long& result, std::size_t& num_chars_used)
-        {
-            result = std::stoul(str, &num_chars_used);
-        }
-    };
+        result = std::stoul(str, &num_chars_used);
+    }
+};
 
-    template <>
-    struct internal_helper_read_value_struct <unsigned long long>
+template <>
+struct internal_helper_read_value_struct <unsigned long long>
+{
+    static void read(const std::string& str, unsigned long long& result, std::size_t& num_chars_used)
     {
-        static void read(const std::string& str, unsigned long long& result, std::size_t& num_chars_used)
-        {
-            result = std::stoull(str, &num_chars_used);
-        }
-    };
+        result = std::stoull(str, &num_chars_used);
+    }
+};
 
-    template <>
-    struct internal_helper_read_value_struct <float>
+template <>
+struct internal_helper_read_value_struct <float>
+{
+    static void read(const std::string& str, float& result, std::size_t& num_chars_used)
     {
-        static void read(const std::string& str, float& result, std::size_t& num_chars_used)
-        {
-            result = std::stof(str, &num_chars_used);
-        }
-    };
+        result = std::stof(str, &num_chars_used);
+    }
+};
 
-    template <>
-    struct internal_helper_read_value_struct <double>
+template <>
+struct internal_helper_read_value_struct <double>
+{
+    static void read(const std::string& str, double& result, std::size_t& num_chars_used)
     {
-        static void read(const std::string& str, double& result, std::size_t& num_chars_used)
-        {
-            result = std::stod(str, &num_chars_used);
-        }
-    };
+        result = std::stod(str, &num_chars_used);
+    }
+};
 
-    template <>
-    struct internal_helper_read_value_struct <long double>
+template <>
+struct internal_helper_read_value_struct <long double>
+{
+    static void read(const std::string& str, long double& result, std::size_t& num_chars_used)
     {
-        static void read(const std::string& str, long double& result, std::size_t& num_chars_used)
-        {
-            result = std::stold(str, &num_chars_used);
-        }
-    };
-} // anonymous namespace
+        result = std::stold(str, &num_chars_used);
+    }
+};
+
 
 template <typename T>
 result<T, std::string> read_value_result(const std::string& str)
