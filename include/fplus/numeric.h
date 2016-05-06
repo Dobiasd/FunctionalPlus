@@ -53,6 +53,22 @@ bool is_positive(X x)
     return !is_negative(x);
 }
 
+// API search type: abs : a -> a
+// Returns the absolute (always positive) value of x.
+template <typename X>
+X abs(X x)
+{
+    return is_negative(x) ? -x : x;
+}
+
+// API search type: sign : a -> int
+// Returns -1 for negative values, 1 otherwise.
+template <typename X>
+int sign(X x)
+{
+    return is_negative(x) ? -1 : 1;
+}
+
 // API search type: round : a -> b
 // Converts a value to the nearest integer.
 template <typename Out, typename X>
