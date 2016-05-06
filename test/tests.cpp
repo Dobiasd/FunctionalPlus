@@ -71,6 +71,8 @@ void Test_Numeric()
     auto mod2 = [](int x) {return x % 2; };
     assert(min_2_on(mod2)(4, 3) == 4);
     assert(max_2_on(mod2)(4, 3) == 3);
+    assert(min_3_on(mod2)(4, 3, 7) == 4);
+    assert(max_3_on(mod2)(4, 3, 6) == 3);
 
     std::string str1 = "hello";
     std::string str2 = "hi";
