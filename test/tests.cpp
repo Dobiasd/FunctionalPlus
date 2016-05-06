@@ -971,6 +971,23 @@ void Test_ContainerTools()
     assert(map_union(union_map_1, union_map_2) == union_map_res);
     assert(map_union_with(concat<std::vector<std::string>>, union_map_1, union_map_2) == union_map_with_res);
 
+    typedef std::set<int> IntSet;
+    IntSet intSet1 = {0,1,2,3};
+    IntSet intSet2 = {2,3,4,5};
+    IntSet intSet3 = {0,2};
+    IntSet intSet4 = {2,3};
+    IntSet intSet5 = {0,1};
+    IntSet intSet6 = {0,1,2,3,4,5};
+    IntSet intSet7 = {0,1,4,5};
+    assert(set_includes(intSet1, intSet3) == true);
+    assert(set_includes(intSet3, intSet1) == false);
+    assert(set_includes(intSet1, intSet2) == false);
+    assert(set_merge(intSet1, intSet2) == intSet6);
+    assert(set_merge(intSet1, intSet3) == intSet1);
+    assert(set_intersection(intSet1, intSet2) == intSet4);
+    assert(set_difference(intSet1, intSet2) == intSet5);
+    assert(set_symmetric_difference(intSet1, intSet2) == intSet7);
+
     typedef std::vector<std::pair<std::string, int>> StringIntPairs;
     StringIntPairs stringIntPairs = {{"a", 1}, {"a", 2}, {"b", 6}, {"a", 4}};
     auto stringIntPairsAsMapGrouped = pairs_to_map_grouped(stringIntPairs);

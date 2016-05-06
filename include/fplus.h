@@ -21,6 +21,7 @@
 #include "fplus/replace.h"
 #include "fplus/result.h"
 #include "fplus/search.h"
+#include "fplus/sets.h"
 #include "fplus/show.h"
 #include "fplus/split.h"
 #include "fplus/string_tools.h"
