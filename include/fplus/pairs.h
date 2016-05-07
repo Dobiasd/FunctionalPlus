@@ -122,7 +122,7 @@ std::pair<X, ResultSecond> transform_snd(F f, const std::pair<X, Y>& pair)
     return std::make_pair(pair.first, f(pair.second));
 }
 
-// API search type: transform_snd: (a -> c), (b -> d), (a, b) -> (c, d)
+// API search type: transform_pair : (a -> c), (b -> d), (a, b) -> (c, d)
 // transform_pair(square, square, (4, 5)) == (16, 25)
 template <typename X, typename Y, typename F, typename G,
     typename ResultFirst = typename utils::function_traits<F>::result_type,

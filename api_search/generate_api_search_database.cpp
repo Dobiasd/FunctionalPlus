@@ -30,18 +30,18 @@ std::vector<std::string> list_files(const std::string& dir_path)
 
 struct function_help
 {
-    std::string search_type;
-    std::vector<std::string> documentation;
-    std::vector<std::string> declaration;
+    std::string name;
+    std::string signature;
+    std::string documentation;
+    std::string declaration;
 };
 
 std::ostream & operator<<(std::ostream &os, const function_help& f)
 {
-    return os << "Type: " << f.search_type << "\n" <<
-        "Doc: " << fplus::show_cont_with_frame_and_newlines(
-                "\n", "", "", f.documentation, 0) << "\n" <<
-        "Decl: " << fplus::show_cont_with_frame_and_newlines(
-                "\n", "", "", f.declaration, 0);
+    return os << "Name: " << f.name << "\n" <<
+        "Type: " << f.signature << "\n" <<
+        "Doc: " << f.documentation << "\n" <<
+        "Decl: " << f.declaration;
 }
 
 function_help lines_to_function_help(const std::vector<std::string>& lines)
@@ -57,8 +57,15 @@ function_help lines_to_function_help(const std::vector<std::string>& lines)
     const auto doc_and_decl = fplus::span(is_comment, fplus::tail(lines));
     const auto doc_and_decl_trimmed = fplus::transform_pair(
             trim_lines, trim_lines, doc_and_decl);
-    return {search_type,
-            doc_and_decl_trimmed.first, doc_and_decl_trimmed.second};
+    auto name_and_type = fplus::split_by_token(std::string(" : "),
+            false, search_type);
+    assert(name_and_type.size() == 2);
+    return {
+        name_and_type[0],
+        name_and_type[1],
+        fplus::join(std::string("\n"), doc_and_decl_trimmed.first),
+        fplus::join(std::string("\n"), doc_and_decl_trimmed.second)
+    };
 }
 
 bool begins_with_curly_open(const std::string& line)
@@ -92,11 +99,64 @@ std::vector<function_help> get_broken_function_helps(
     auto help_is_ok = [](const function_help& help)
     {
         return
-            !help.search_type.empty() &&
+            !help.name.empty() &&
+            !help.signature.empty() &&
             !help.declaration.empty() &&
             !help.documentation.empty();
     };
     return fplus::drop_if(help_is_ok, helps);
+}
+
+std::string functions_to_elm_code(const std::vector<function_help> functions)
+{
+    auto escape_backslashes = [](const std::string& str) -> std::string
+    {
+        return fplus::replace_tokens(
+                std::string("\\"), std::string("\\\\"), str);
+    };
+    auto escape_quotation_marks = [](const std::string& str) -> std::string
+    {
+        return fplus::replace_tokens(
+                std::string("\""), std::string("\\\""), str);
+    };
+    auto escape_newlines = [](const std::string& str)
+    {
+        return fplus::replace_tokens(
+                std::string("\n"), std::string("\\n"), str);
+    };
+    auto escape_special_characters =
+            fplus::compose(
+                    escape_backslashes,
+                    escape_quotation_marks,
+                    escape_newlines);
+    auto show_function = [&](const function_help& f) -> std::string
+    {
+        std::string str;
+        str += std::string("{ name = \"") + f.name + "\"";
+        str += std::string(", signature = \"") + f.signature + "\"";
+        str += std::string(", documentation = \"") +
+                escape_special_characters(f.documentation) + "\"";
+        str += std::string(", declaration = \"") +
+                escape_special_characters(f.declaration) + "\" }";
+        return str;
+    };
+
+    auto function_strings = fplus::transform(show_function, functions);
+
+    std::string result;
+    result += "module Database (..) where\n\n\n";
+    result += "type alias Function =\n";
+    result += "    { name : String\n";
+    result += "    , signature : String\n";
+    result += "    , documentation : String\n";
+    result += "    , declaration : String\n";
+    result += "    }\n\n\n";
+    result += "functions : List Function\n";
+    result += "functions =\n";
+    result += "    [ ";
+    result += fplus::join(std::string("\n    , "), function_strings);
+    result += "\n    ]";
+    return result;
 }
 
 int main()
@@ -115,6 +175,8 @@ int main()
     }
     else
     {
+        auto output = functions_to_elm_code(functions);
+        fplus::write_text_file("frontend/src/Database.elm", output)();
         std::cout << "All OK." << std::endl;
     }
 }
