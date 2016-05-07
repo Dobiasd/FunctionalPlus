@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
-    "summary": "Generate barcodes in your browser with addon2/addon5 and real-time output.",
-    "repository": "https://github.com/dobiasd/barcode-generator.git",
+    "summary": "Search the FunctionalPlus C++ library.",
+    "repository": "https://github.com/Dobiasd/FunctionalPlus",
     "license": "MIT",
     "source-directories": [
         "src"
