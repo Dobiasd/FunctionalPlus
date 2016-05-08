@@ -3,11 +3,12 @@ body
     color: #f8f8f2;
     background-color: #23241f;
     font-size: 110%;
+    font-family: monospace;
 }
 
 input
 {
-    font-family: monospace;
+
     font-size: 110%;
 }
 
@@ -41,5 +42,9 @@ code {
 }
 
 .functiondecl
+{
+}
+
+.footer
 {
 }

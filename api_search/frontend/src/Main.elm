@@ -45,7 +45,9 @@ view : Address Action -> Model -> Html
 view address model =
     div
         [ class "main" ]
-        [ input
+        [ img [ src "fplus.png" ] []
+        , hr [] []
+        , input
             [ placeholder "search query"
             , autofocus True
             , style [ ( "width", "500px" ) ]
@@ -54,6 +56,16 @@ view address model =
             []
         , hr [] []
         , model.searchResult |> showFunctions
+        , hr [] []
+        , showFooter
+        ]
+
+
+showFooter : Html
+showFooter =
+    footer
+        [ class "footer" ]
+        [ text "Copyright © 2016 Tobias Hermann. All rights reserved."
         ]
 
 
