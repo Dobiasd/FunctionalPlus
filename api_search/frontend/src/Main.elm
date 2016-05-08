@@ -1,51 +1,51 @@
 module FPlusApiSearch (..) where
 
 import Database exposing (Function, functions)
-import Graphics.Element exposing (..)
-import Graphics.Input.Field as Field
-import Html as H
-import Html.Attributes as HA
-import Html.Events as HE
-import Text as T
-import Time
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
+import Signal exposing (Signal, Address)
+import String
 
 
-updateContentStr : Field.Content -> String -> Field.Content
-updateContentStr cont str =
-    { cont | string = str }
+type alias Model =
+    { query : String
+    }
 
 
-contentBox : Signal.Mailbox Field.Content
-contentBox =
-    Signal.mailbox Field.noContent
+emptyModel : Model
+emptyModel =
+    { query = ""
+    }
 
 
-main : Signal Element
-main =
-    Signal.map scene contentBox.signal
+type Action
+    = NoOp
+    | UpdateQuery String
 
 
-scene : Field.Content -> Element
-scene content =
-    flow
-        down
-        [ H.input
-            [ HA.placeholder "search query"
-            , HA.autofocus True
-              -- removed as a workaround for
-              -- https://github.com/evancz/elm-html/issues/51
-              --, HA.value content.string
-            , HA.style [ ( "width", "500px" ) ]
-            , HE.on
-                "input"
-                HE.targetValue
-                (updateContentStr content
-                    >> Signal.message contentBox.address
-                )
+update : Action -> Model -> Model
+update action model =
+    case action of
+        NoOp ->
+            model
+
+        UpdateQuery str ->
+            { model | query = str }
+
+
+view : Address Action -> Model -> Html
+view address model =
+    div
+        [ class "main" ]
+        [ input
+            [ placeholder "search query"
+            , autofocus True
+            , style [ ( "width", "500px" ) ]
+            , on "input" targetValue (Signal.message address << UpdateQuery)
             ]
             []
-            |> H.toElement 500 100
-        , searchFunction content.string |> showFunctions
+        , model.query |> searchFunction |> showFunctions
         ]
 
 
@@ -54,34 +54,53 @@ searchFunction query =
     functions
 
 
-functionsSpacer : Element
-functionsSpacer =
-    spacer 32 32
-
-
-functionSpacer : Element
-functionSpacer =
-    spacer 8 8
-
-
-showFunctions : List Function -> Element
+showFunctions : List Function -> Html
 showFunctions functions =
-    functions
-        |> List.map showFunction
-        |> List.intersperse functionsSpacer
-        |> flow down
+    div
+        [ class "functions" ]
+        (List.map showFunction functions)
 
 
-showFunction : Function -> Element
+singletonList : a -> List a
+singletonList x =
+    [ x ]
+
+
+
+-- todo: display new lines in code, and syntax highlight with highlight.js
+
+
+stringToCode : String -> Html
+stringToCode str =
+    str
+        |> text
+        |> singletonList
+        |> code [ style [ ( "display", "block" ) ] ]
+
+
+showFunction : Function -> Html
 showFunction function =
-    [ function.name
-        ++ " : "
-        ++ function.signature
-        |> T.fromString
-        |> T.bold
-    , function.documentation |> T.fromString
-    , function.declaration |> T.fromString
-    ]
-        |> List.map (T.monospace >> leftAligned)
-        |> List.intersperse functionSpacer
-        |> flow down
+    div
+        [ class "function" ]
+        [ function.name
+            ++ " : "
+            ++ function.signature
+            |> stringToCode
+        , function.documentation |> stringToCode
+        , function.declaration |> stringToCode
+        ]
+
+
+main : Signal Html
+main =
+    Signal.map (view actions.address) model
+
+
+model : Signal Model
+model =
+    Signal.foldp update emptyModel actions.signal
+
+
+actions : Signal.Mailbox Action
+actions =
+    Signal.mailbox NoOp

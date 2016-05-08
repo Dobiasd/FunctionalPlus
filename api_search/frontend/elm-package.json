@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
     "summary": "Search the FunctionalPlus C++ library.",
-    "repository": "https://github.com/Dobiasd/FunctionalPlus",
+    "repository": "https://github.com/dobiasd/functionalplus.git",
     "license": "MIT",
     "source-directories": [
         "src"
