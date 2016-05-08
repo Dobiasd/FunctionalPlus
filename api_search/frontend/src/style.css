@@ -1,9 +1,28 @@
 body
 {
-    background-color: #DDDDDD;
+    background-color: #23241f;
+}
+
+code {
+    white-space: pre;
 }
 
 .function
+{
+    padding: 10px
+}
+
+.functionnameandsig
+{
+    padding: 10px
+}
+
+.functiondoc
+{
+    padding: 10px
+}
+
+.functiondecl
 {
     padding: 10px
 }

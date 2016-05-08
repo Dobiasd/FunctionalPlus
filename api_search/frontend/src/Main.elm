@@ -67,7 +67,7 @@ singletonList x =
 
 
 
--- todo: display new lines in code, and syntax highlight with highlight.js
+-- todo: syntax highlight with highlight.js
 
 
 stringToCode : String -> Html
@@ -75,20 +75,43 @@ stringToCode str =
     str
         |> text
         |> singletonList
-        |> code [ style [ ( "display", "block" ) ] ]
+        |> code []
+        |> singletonList
+        |> pre []
 
 
 showFunction : Function -> Html
 showFunction function =
-    div
-        [ class "function" ]
-        [ function.name
-            ++ " : "
-            ++ function.signature
-            |> stringToCode
-        , function.documentation |> stringToCode
-        , function.declaration |> stringToCode
-        ]
+    let
+        functionNameAndSig =
+            div
+                [ class "functionnameandsig" ]
+                [ function.name
+                    ++ " : "
+                    ++ function.signature
+                    |> stringToCode
+                ]
+
+        functionDocumentation =
+            div
+                [ class "functiondoc" ]
+                [ function.documentation
+                    |> stringToCode
+                ]
+
+        functionDeclaration =
+            div
+                [ class "functiondecl" ]
+                [ function.declaration
+                    |> stringToCode
+                ]
+    in
+        div
+            [ class "function" ]
+            [ functionNameAndSig
+            , functionDocumentation
+            , functionDeclaration
+            ]
 
 
 main : Signal Html

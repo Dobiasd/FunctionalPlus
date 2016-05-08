@@ -9,7 +9,8 @@ elm-make src/Main.elm --output build/js/fplus_api_search.js
 
 if [ $? -eq 0 ]
 then
-  cp ./src/index.html ./build/index.html
+  cp -r ./src/highlight ./build/
   cp ./src/style.css ./build/style.css
   cp ./src/htmlmain.js ./build/js/htmlmain.js
+  cp ./src/index.html ./build/index.html
 fi
