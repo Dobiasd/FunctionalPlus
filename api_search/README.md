@@ -9,3 +9,9 @@ todo:
 6) a, b usw. auf beliebige typen matchen
 7) [a], [b] usw. auf string matchen
 passen 1 und 2 zusammen?
+
+
+http://ndmitchell.com/downloads/slides-hoogle-08_dec_2005.pdf
+http://ndmitchell.com/downloads/slides-hoogle_fast_type_searching-09_aug_2008.pdf
+http://ndmitchell.com/downloads/paper-hoogle_overview-19_nov_2008.pdf
+http://ndmitchell.com/downloads/slides-hoogle_finding_functions_from_types-16_may_2011.pdf
