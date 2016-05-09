@@ -12,7 +12,7 @@ import StringDistance
 
 type alias Model =
     { query : String
-    , searchResult : List Function
+    , searchResult : List ( Function, Float )
     }
 
 
@@ -69,31 +69,49 @@ showFooter =
         ]
 
 
-searchFunctions : String -> List Function
+searchFunctions : String -> List ( Function, Float )
 searchFunctions query =
     let
         ratedFunctions =
             functions
-                |> List.map (\f -> ( functionRating query f, f ))
+                |> List.map (\f -> ( f, functionRating query f ))
     in
         ratedFunctions
-            |> List.sortBy fst
-            |> List.map snd
+            |> List.sortBy (\( _, rating ) -> 0 - rating)
             |> List.take 20
+            |> List.filter (\( _, rating ) -> rating > 0)
 
 
 functionRating : String -> Function -> Float
 functionRating query function =
-    StringDistance.sift3Distance query function.name
+    String.words query |> List.map (functionWordRating function) |> List.sum
+
+
+functionWordRating : Function -> String -> Float
+functionWordRating function query =
+    --StringDistance.sift3Distance query function.name
+    let
+        boolToNum value b =
+            if b then
+                value
+            else
+                0
+
+        -- todo: rate type
+        nameRating = String.contains query function.name |> boolToNum 100
+
+        docRating = String.contains query function.documentation |> boolToNum 10
+    in
+        nameRating + docRating
 
 
 
 --StringDistance.lcs (String.toList query) (String.toList function.name) |> List.length |> toFloat
 
 
-showFunctions : List Function -> Html
-showFunctions functions =
-    List.map showFunction functions
+showFunctions : List ( Function, Float ) -> Html
+showFunctions ratedFunctions =
+    List.map showRatedFunction ratedFunctions
         |> List.intersperse (hr [] [])
         |> div [ class "functions" ]
 
@@ -118,8 +136,13 @@ stringToDoc str =
         Markdown.toHtmlWith Markdown.defaultOptions taggedStr
 
 
-showFunction : Function -> Html
-showFunction function =
+ratingToHtml : Float -> Html
+ratingToHtml rating =
+    "search rating: " ++ toString rating |> stringToDoc
+
+
+showRatedFunction : ( Function, Float ) -> Html
+showRatedFunction ( function, rating ) =
     let
         functionNameAndSig =
             div
@@ -143,12 +166,20 @@ showFunction function =
                 [ function.declaration
                     |> stringToCode "cpp"
                 ]
+
+        functionRating =
+            div
+                [ class "functionrating" ]
+                [ rating
+                    |> ratingToHtml
+                ]
     in
         div
             [ class "function" ]
             [ functionNameAndSig
             , functionDocumentation
             , functionDeclaration
+            , functionRating
             ]
 
 
