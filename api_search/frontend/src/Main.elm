@@ -100,9 +100,15 @@ functionWordRating function query =
         -- todo: rate type
         isSubStr = String.contains query function.name
 
-        lengthDiff = String.length query - String.length function.name |> abs |> toFloat
+        queryLength = String.length query |> toFloat
 
-        nameRating = Basics.max 0 (boolToNum 1000 isSubStr - 100 * lengthDiff)
+        functionNameLength = String.length function.name |> toFloat
+
+        lengthDiff = queryLength - functionNameLength |> abs
+
+        relLengthDiff = lengthDiff / Basics.max queryLength functionNameLength
+
+        nameRating = Basics.max 0 (boolToNum 1000 isSubStr - 50 * relLengthDiff)
 
         docRating = String.contains query function.documentation |> boolToNum 10
     in
