@@ -87,7 +87,7 @@ Ok unsafe_get_ok(const result<Ok, Error>& result)
     return result.unsafe_get_ok();
 }
 
-// API search type: unsafe_get_ok : result a b -> b
+// API search type: unsafe_get_error : result a b -> b
 // Crashes if result is ok!
 template <typename Ok, typename Error>
 Error unsafe_get_error(const result<Ok, Error>& result)
