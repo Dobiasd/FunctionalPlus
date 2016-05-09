@@ -87,7 +87,7 @@ std::function<X(const Y&)> always(const X& x)
     return [x](const Y&) { return x; };
 }
 
-// API search type: is_equal_by_and_by : (a -> b), (c ->b ) -> a, c -> bool
+// API search type: is_equal_by_and_by : (a -> b), (c -> b) -> a, c -> bool
 // f(x) == g(y)
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
