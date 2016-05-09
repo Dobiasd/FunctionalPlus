@@ -4,3 +4,4 @@ test/temp*
 api_search/frontend/build
 api_search/frontend/elm-stuff
 api_search/frontend/deploy.sh
+api_search/frontend/src/Database.elm
