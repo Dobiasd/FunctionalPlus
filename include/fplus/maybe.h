@@ -95,7 +95,7 @@ maybe<T> just(const T& val)
     return val;
 }
 
-// API search type: just : () -> maybe a
+// API search type: nothing : () -> maybe a
 // Construct a nothing of a certain Maybe type.
 template <typename T>
 maybe<T> nothing()

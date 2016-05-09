@@ -381,7 +381,7 @@ Acc fold_left(F f, const Acc& init, const Container& xs)
     return acc;
 }
 
-// API search type: fold_left : (a, a -> a), [a] -> a
+// API search type: fold_left_1 : (a, a -> a), [a] -> a
 // fold_left_1((+), [1, 2, 3]) == (1+2)+3 == 6
 // Takes the first 2 items of the list and applies the function to them,
 // then feeds the function with this result and the third argument and so on.
@@ -773,7 +773,7 @@ bool is_strictly_sorted_by(Compare comp, const Container& xs)
     return true;
 }
 
-// API search type: is_strictly_sorted_by : (a -> b) -> [a] -> bool
+// API search type: is_strictly_sorted_on : (a -> b) -> [a] -> bool
 // O(n)
 template <typename Container, typename F>
 bool is_strictly_sorted_on(F f, const Container& xs)

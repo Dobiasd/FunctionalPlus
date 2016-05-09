@@ -32,7 +32,7 @@ ContainerOut transform_convert(F f, const ContainerIn& xs)
     return ys;
 }
 
-// API search type: transform_convert : (int -> a -> b), [a] -> [b]
+// API search type: transform_with_idx : (int -> a -> b), [a] -> [b]
 // transform_with_idx(f, [6, 4, 7]) == [f(0, 6), f(1, 4), f(2, 7)]
 template <typename F, typename ContainerIn,
     typename ContainerOut = typename same_cont_new_t_from_binary_f< ContainerIn, F, std::size_t, typename ContainerIn::value_type>::type>

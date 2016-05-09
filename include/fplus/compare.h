@@ -115,7 +115,7 @@ std::function<bool(const FIn& x, const FIn& y)>
     return is_equal_by_and_by(f, f);
 }
 
-// API search type: is_equal_by : (b -> a), a -> (b -> bool)
+// API search type: is_equal_by_to : (b -> a), a -> (b -> bool)
 // f(y) == x
 template <typename F, typename X,
     typename Y = typename utils::function_traits<F>::template arg<0>::type>
