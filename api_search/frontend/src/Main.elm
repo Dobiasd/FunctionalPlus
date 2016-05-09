@@ -84,11 +84,29 @@ searchFunctions query =
 
 functionRating : String -> Function -> Float
 functionRating query function =
-    String.words query |> List.map (functionWordRating function) |> List.sum
+    let
+        queryWords = String.words query
+
+        stringLengthFloat = String.length >> toFloat
+
+        queryWordLengthSum =
+            queryWords
+                |> List.map stringLengthFloat
+                |> List.sum
+    in
+        queryWords
+            |> List.map
+                (\queryWord ->
+                    functionWordRating
+                        (stringLengthFloat queryWord / queryWordLengthSum)
+                        function
+                        queryWord
+                )
+            |> List.sum
 
 
-functionWordRating : Function -> String -> Float
-functionWordRating function query =
+functionWordRating : Float -> Function -> String -> Float
+functionWordRating weight function query =
     --StringDistance.sift3Distance query function.name
     let
         boolToNum value b =
@@ -106,9 +124,11 @@ functionWordRating function query =
 
         lengthDiff = queryLength - functionNameLength |> abs
 
-        relLengthDiff = lengthDiff / Basics.max queryLength functionNameLength
+        queryAndFunctionNameMaxLength = Basics.max queryLength functionNameLength
 
-        nameRating = Basics.max 0 (boolToNum 1000 isSubStr - 50 * relLengthDiff)
+        relLengthDiff = lengthDiff / queryAndFunctionNameMaxLength
+
+        nameRating = weight * Basics.max 0 (boolToNum 1000 isSubStr - 50 * relLengthDiff)
 
         docRating = String.contains query function.documentation |> boolToNum 10
     in
