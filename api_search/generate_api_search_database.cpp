@@ -176,7 +176,14 @@ int main()
     else
     {
         auto output = functions_to_elm_code(functions);
-        fplus::write_text_file("frontend/src/Database.elm", output)();
-        std::cout << "All OK." << std::endl;
+        std::string out_file = "frontend/src/Database.elm";
+        if (fplus::write_text_file(out_file, output)())
+        {
+            std::cout << out_file << " written." << std::endl;
+        }
+        else
+            {
+            std::cerr << "Error: Unable to write " << out_file << std::endl;
+        }
     }
 }
