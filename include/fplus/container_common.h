@@ -677,6 +677,7 @@ X join(const X& separator, const Container& xs)
 }
 
 // API search type: is_elem_of_by : (a -> bool), [a] -> bool
+// Checks if at least one element of the container fulfils a predicate.
 // is_elem_of_by((==), [1,2,3]) == true
 template <typename UnaryPredicate, typename Container>
 bool is_elem_of_by(UnaryPredicate pred, const Container& xs)
@@ -685,6 +686,7 @@ bool is_elem_of_by(UnaryPredicate pred, const Container& xs)
 }
 
 // API search type: is_elem_of : a, [a] -> bool
+// Checks if an element is a member of a container.
 // is_elem_of(2, [1,2,3]) == true
 template <typename Container>
 bool is_elem_of(const typename Container::value_type& x, const Container& xs)
