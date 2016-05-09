@@ -8,10 +8,22 @@ todo:
 5) int auch auf size_t in queries matchen
 6) a, b usw. auf beliebige typen matchen
 7) [a], [b] usw. auf string matchen
-passen 1 und 2 zusammen?
 
 
 http://ndmitchell.com/downloads/slides-hoogle-08_dec_2005.pdf
 http://ndmitchell.com/downloads/slides-hoogle_fast_type_searching-09_aug_2008.pdf
 http://ndmitchell.com/downloads/paper-hoogle_overview-19_nov_2008.pdf
 http://ndmitchell.com/downloads/slides-hoogle_finding_functions_from_types-16_may_2011.pdf
+
+
+normalisierung:
+alles klein
+alle leerzeichen weg
+komma durch pfeil ersetzen
+nach words splitten
+alle klammern weg
+words alphabetisch ersetzen, aber nur wenn sie nur einen buchstaben lang sind: LUT = zip (nub xs) [a..z]
+
+query muss substring von db-entry-type sein
+
+oder doch lieber parsen
