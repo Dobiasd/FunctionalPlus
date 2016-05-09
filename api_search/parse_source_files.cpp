@@ -36,6 +36,26 @@ struct function_help
     std::string declaration;
 };
 
+std::string get_function_help_name(const function_help& f)
+{
+    return f.name;
+}
+
+std::string get_function_help_signature(const function_help& f)
+{
+    return f.name;
+}
+
+std::string get_function_help_documentation(const function_help& f)
+{
+    return f.name;
+}
+
+std::string get_function_help_declaration(const function_help& f)
+{
+    return f.name;
+}
+
 std::ostream & operator<<(std::ostream &os, const function_help& f)
 {
     return os << "Name: " << f.name << "\n" <<
@@ -159,6 +179,23 @@ std::string functions_to_elm_code(const std::vector<function_help> functions)
     return result;
 }
 
+void print_duplicates(const std::vector<std::string>& strs)
+{
+    const auto occurences = fplus::count_occurrences(strs);
+    typedef decltype(occurences)::value_type pair;
+    const std::vector<std::string> allowed_dups =
+            {"and_then_maybe", "and_then_result", "compose", "show"};
+    const auto dups = fplus::keep_if([&](const pair& p) -> bool
+        {
+            return p.second > 1 && !fplus::is_elem_of(p.first, allowed_dups);
+        }, fplus::map_to_pairs(occurences));
+    if (!dups.empty())
+    {
+        std::cerr << "Duplicates!\n";
+        std::cerr << fplus::show_cont(dups) << std::endl;
+    }
+}
+
 int main()
 {
     const auto code_files = list_files(code_dir);
@@ -173,17 +210,21 @@ int main()
             0) << std::endl;
         return 1;
     }
-    else
+
+    using fplus::transform;
+    print_duplicates(transform(get_function_help_name, functions));
+    print_duplicates(transform(get_function_help_signature, functions));
+    print_duplicates(transform(get_function_help_documentation, functions));
+    print_duplicates(transform(get_function_help_declaration, functions));
+
+    auto output = functions_to_elm_code(functions);
+    std::string out_file = "frontend/src/Database.elm";
+    if (fplus::write_text_file(out_file, output)())
     {
-        auto output = functions_to_elm_code(functions);
-        std::string out_file = "frontend/src/Database.elm";
-        if (fplus::write_text_file(out_file, output)())
+        std::cout << out_file << " written." << std::endl;
+    }
+    else
         {
-            std::cout << out_file << " written." << std::endl;
-        }
-        else
-            {
-            std::cerr << "Error: Unable to write " << out_file << std::endl;
-        }
+        std::cerr << "Error: Unable to write " << out_file << std::endl;
     }
 }
