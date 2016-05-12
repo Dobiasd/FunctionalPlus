@@ -38,6 +38,13 @@ void Test_Numeric()
     assert(sign(0.1) == 1);
     assert(sign(-0.1) == -1);
 
+    assert(float_mod(8, 3) == 3);
+    assert(float_mod(8, 11) == 3);
+    assert(float_mod(8, 19) == 3);
+    assert(float_mod(8, -2) == 6);
+    assert(float_mod(8, -5) == 3);
+    assert(float_mod(8, -13) == 3);
+
     assert(round<int>(1.4) == 1);
     assert(round<int>(1.5) == 2);
     assert(round<int>(1.6) == 2);

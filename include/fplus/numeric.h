@@ -69,6 +69,25 @@ int sign(X x)
     return is_negative(x) ? -1 : 1;
 }
 
+// API search type: float_mod : float -> float
+// Modulo for floating point values.
+// float_mod(8, 3) == 3
+// float_mod(8, 11) == 3
+// float_mod(8, 19) == 3
+// float_mod(8, -2) == 6
+// float_mod(8, -5) == 3
+// float_mod(8, -13) == 3
+// only positive denominators allowed;
+template <typename X>
+X float_mod(X denominator, X numerator)
+{
+    assert(denominator > 0);
+    if (sign(numerator) < 0)
+        return denominator - std::fmod(abs(numerator), abs(denominator));
+    else
+        return std::fmod(abs(numerator), abs(denominator));
+}
+
 // API search type: round : a -> b
 // Converts a value to the nearest integer.
 template <typename Out, typename X>
