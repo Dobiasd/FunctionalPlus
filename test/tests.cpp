@@ -45,26 +45,26 @@ void Test_Numeric()
     assert(float_mod(8, -5) == 3);
     assert(float_mod(8, -13) == 3);
 
-    assert(circular_difference(100)(2, 5) == 3);
-    assert(circular_difference(100)(5, 2) == 97);
-    assert(circular_difference(100)(-2, 3) == 5);
-    assert(circular_difference(100)(3, -2) == 95);
-    assert(circular_difference(100)(10, 90) == 80);
-    assert(circular_difference(100)(90, 10) == 20);
+    assert(cyclic_difference(100)(2, 5) == 3);
+    assert(cyclic_difference(100)(5, 2) == 97);
+    assert(cyclic_difference(100)(-2, 3) == 5);
+    assert(cyclic_difference(100)(3, -2) == 95);
+    assert(cyclic_difference(100)(10, 90) == 80);
+    assert(cyclic_difference(100)(90, 10) == 20);
 
-    assert(circular_shortest_difference(100)(2, 5) == 3);
-    assert(circular_shortest_difference(100)(5, 2) == -3);
-    assert(circular_shortest_difference(100)(-2, 3) == 5);
-    assert(circular_shortest_difference(100)(3, -2) == -5);
-    assert(circular_shortest_difference(100)(10, 90) == -20);
-    assert(circular_shortest_difference(100)(90, 10) == 20);
+    assert(cyclic_shortest_difference(100)(2, 5) == 3);
+    assert(cyclic_shortest_difference(100)(5, 2) == -3);
+    assert(cyclic_shortest_difference(100)(-2, 3) == 5);
+    assert(cyclic_shortest_difference(100)(3, -2) == -5);
+    assert(cyclic_shortest_difference(100)(10, 90) == -20);
+    assert(cyclic_shortest_difference(100)(90, 10) == 20);
 
-    assert(circular_distance(100)(2, 5) == 3);
-    assert(circular_distance(100)(5, 2) == 3);
-    assert(circular_distance(100)(-2, 3) == 5);
-    assert(circular_distance(100)(3, -2) == 5);
-    assert(circular_distance(100)(10, 90) == 20);
-    assert(circular_distance(100)(90, 10) == 20);
+    assert(cyclic_distance(100)(2, 5) == 3);
+    assert(cyclic_distance(100)(5, 2) == 3);
+    assert(cyclic_distance(100)(-2, 3) == 5);
+    assert(cyclic_distance(100)(3, -2) == 5);
+    assert(cyclic_distance(100)(10, 90) == 20);
+    assert(cyclic_distance(100)(90, 10) == 20);
 
     assert(round<int>(1.4) == 1);
     assert(round<int>(1.5) == 2);

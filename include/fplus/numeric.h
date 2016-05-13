@@ -255,16 +255,16 @@ X float_mod(X denominator, X numerator)
         return static_cast<X>(std::fmod(abs(numerator), abs(denominator)));
 }
 
-// API search type: circular_difference : float -> float, float -> float
+// API search type: cyclic_difference : float -> float, float -> float
 // circumfence has to be positive.
-// circular_difference(100)(2, 5) == 3
-// circular_difference(100)(5, 2) == 97
-// circular_difference(100)(-2, 3) == 5
-// circular_difference(100)(3, -2) == 95
-// circular_difference(100)(10, 90) == 80
-// circular_difference(100)(90, 10) == 20
+// cyclic_difference(100)(2, 5) == 3
+// cyclic_difference(100)(5, 2) == 97
+// cyclic_difference(100)(-2, 3) == 5
+// cyclic_difference(100)(3, -2) == 95
+// cyclic_difference(100)(10, 90) == 80
+// cyclic_difference(100)(90, 10) == 20
 template <typename X>
-std::function<X(X, X)> circular_difference(X circumfence)
+std::function<X(X, X)> cyclic_difference(X circumfence)
 {
     assert(circumfence >= 0);
     return [circumfence](X a, X b) -> X
@@ -274,43 +274,43 @@ std::function<X(X, X)> circular_difference(X circumfence)
     };
 }
 
-// API search type: circular_shortest_difference : float -> float, float -> float
+// API search type: cyclic_shortest_difference : float -> float, float -> float
 // circumfence has to be positive.
-// circular_shortest_difference(100)(2, 5) == 3
-// circular_shortest_difference(100)(5, 2) == -3
-// circular_shortest_difference(100)(-2, 3) == 5
-// circular_shortest_difference(100)(3, -2) == -5
-// circular_shortest_difference(100)(10, 90) == -20
-// circular_shortest_difference(100)(90, 10) == 20
+// cyclic_shortest_difference(100)(2, 5) == 3
+// cyclic_shortest_difference(100)(5, 2) == -3
+// cyclic_shortest_difference(100)(-2, 3) == 5
+// cyclic_shortest_difference(100)(3, -2) == -5
+// cyclic_shortest_difference(100)(10, 90) == -20
+// cyclic_shortest_difference(100)(90, 10) == 20
 template <typename X>
-std::function<X(X, X)> circular_shortest_difference(X circumfence)
+std::function<X(X, X)> cyclic_shortest_difference(X circumfence)
 {
     assert(circumfence >= 0);
     return [circumfence](X a, X b) -> X
     {
-        auto diff_func = circular_difference(circumfence);
+        auto diff_func = cyclic_difference(circumfence);
         auto a_to_b = diff_func(a, b);
         auto b_to_a = diff_func(b, a);
         return a_to_b <= b_to_a ? a_to_b : -b_to_a;
     };
 }
 
-// API search type: circular_distance : float -> float, float -> float
+// API search type: cyclic_distance : float -> float, float -> float
 // circumfence has to be positive.
-// circular_distance(100)(2, 5) == 3
-// circular_distance(100)(5, 2) == 3
-// circular_distance(100)(-2, 3) == 5
-// circular_distance(100)(3, -2) == 5
-// circular_distance(100)(10, 90) == 20
-// circular_distance(100)(90, 10) == 20
+// cyclic_distance(100)(2, 5) == 3
+// cyclic_distance(100)(5, 2) == 3
+// cyclic_distance(100)(-2, 3) == 5
+// cyclic_distance(100)(3, -2) == 5
+// cyclic_distance(100)(10, 90) == 20
+// cyclic_distance(100)(90, 10) == 20
 // Can be useful to calculate the difference of two angles;
 template <typename X>
-std::function<X(X, X)> circular_distance(X circumfence)
+std::function<X(X, X)> cyclic_distance(X circumfence)
 {
     assert(circumfence >= 0);
     return [circumfence](X a, X b) -> X
     {
-        return abs(circular_shortest_difference(circumfence)(a, b));
+        return abs(cyclic_shortest_difference(circumfence)(a, b));
     };
 }
 
