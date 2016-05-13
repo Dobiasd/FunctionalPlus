@@ -69,25 +69,6 @@ int sign(X x)
     return is_negative(x) ? -1 : 1;
 }
 
-// API search type: float_mod : float -> float
-// Modulo for floating point values.
-// float_mod(8, 3) == 3
-// float_mod(8, 11) == 3
-// float_mod(8, 19) == 3
-// float_mod(8, -2) == 6
-// float_mod(8, -5) == 3
-// float_mod(8, -13) == 3
-// only positive denominators allowed;
-template <typename X>
-X float_mod(X denominator, X numerator)
-{
-    assert(denominator > 0);
-    if (sign(numerator) < 0)
-        return denominator - std::fmod(abs(numerator), abs(denominator));
-    else
-        return std::fmod(abs(numerator), abs(denominator));
-}
-
 // API search type: round : a -> b
 // Converts a value to the nearest integer.
 template <typename Out, typename X>
@@ -251,6 +232,86 @@ template <typename X>
 const X& max_5(const X& a, const X& b, const X& c, const X& d, const X& e)
 {
     return max_3(max_3(a, b, c), d, e);
+}
+
+// API search type: float_mod : float -> float
+// Modulo for floating point values.
+// Only positive denominators allowed;
+// float_mod(8, 3) == 3
+// float_mod(8, 11) == 3
+// float_mod(8, 19) == 3
+// float_mod(8, -2) == 6
+// float_mod(8, -5) == 3
+// float_mod(8, -13) == 3
+// Can be useful to normalize an angle into [0, 360]
+template <typename X>
+X float_mod(X denominator, X numerator)
+{
+    assert(denominator > 0);
+    if (sign(numerator) < 0)
+        return denominator -
+            static_cast<X>(std::fmod(abs(numerator), abs(denominator)));
+    else
+        return static_cast<X>(std::fmod(abs(numerator), abs(denominator)));
+}
+
+// API search type: circular_difference : float -> float, float -> float
+// circumfence has to be positive.
+// circular_difference(100)(2, 5) == 3
+// circular_difference(100)(5, 2) == 97
+// circular_difference(100)(-2, 3) == 5
+// circular_difference(100)(3, -2) == 95
+// circular_difference(100)(10, 90) == 80
+// circular_difference(100)(90, 10) == 20
+template <typename X>
+std::function<X(X, X)> circular_difference(X circumfence)
+{
+    assert(circumfence >= 0);
+    return [circumfence](X a, X b) -> X
+    {
+        return float_mod(circumfence,
+            float_mod(circumfence, b) - float_mod(circumfence, a));
+    };
+}
+
+// API search type: circular_shortest_difference : float -> float, float -> float
+// circumfence has to be positive.
+// circular_shortest_difference(100)(2, 5) == 3
+// circular_shortest_difference(100)(5, 2) == -3
+// circular_shortest_difference(100)(-2, 3) == 5
+// circular_shortest_difference(100)(3, -2) == -5
+// circular_shortest_difference(100)(10, 90) == -20
+// circular_shortest_difference(100)(90, 10) == 20
+template <typename X>
+std::function<X(X, X)> circular_shortest_difference(X circumfence)
+{
+    assert(circumfence >= 0);
+    return [circumfence](X a, X b) -> X
+    {
+        auto diff_func = circular_difference(circumfence);
+        auto a_to_b = diff_func(a, b);
+        auto b_to_a = diff_func(b, a);
+        return a_to_b <= b_to_a ? a_to_b : -b_to_a;
+    };
+}
+
+// API search type: circular_distance : float -> float, float -> float
+// circumfence has to be positive.
+// circular_distance(100)(2, 5) == 3
+// circular_distance(100)(5, 2) == 3
+// circular_distance(100)(-2, 3) == 5
+// circular_distance(100)(3, -2) == 5
+// circular_distance(100)(10, 90) == 20
+// circular_distance(100)(90, 10) == 20
+// Can be useful to calculate the difference of two angles;
+template <typename X>
+std::function<X(X, X)> circular_distance(X circumfence)
+{
+    assert(circumfence >= 0);
+    return [circumfence](X a, X b) -> X
+    {
+        return abs(circular_shortest_difference(circumfence)(a, b));
+    };
 }
 
 } // namespace fplus
