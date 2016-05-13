@@ -91,6 +91,16 @@ ResFunc apply_to_pair(F f)
     };
 }
 
+// API search type: forward_apply : a, (a -> b) -> b
+// Forward application.
+template <typename X, typename F,
+    typename FOut = typename utils::function_traits<F>::result_type>
+FOut forward_apply(const X& x, F f)
+{
+    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    return f(x);
+}
+
 // API search type: compose : (a -> b), (b -> c) -> (a -> c)
 // Forward composition: compose(f, g)(x) = g(f(x))
 template <typename F, typename G,
@@ -104,16 +114,6 @@ std::function<GOut(FIn)> compose(F f, G g)
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
     static_assert(std::is_convertible<FOut,GIn>::value, "Parameter types do not match");
     return [f, g](FIn x) { return g(f(x)); };
-}
-
-// API search type: forward_apply : a, (a -> b) -> b
-// Forward application.
-template <typename X, typename F,
-    typename FOut = typename utils::function_traits<F>::result_type>
-FOut forward_apply(const X& x, F f)
-{
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return f(x);
 }
 
 // API search type: compose : (a -> b), (b -> c), (c -> d) -> (a -> d)
