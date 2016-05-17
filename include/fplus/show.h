@@ -7,9 +7,12 @@
 #pragma once
 
 #include "container_common.h"
+#include "generate.h"
 #include "maybe.h"
 #include "transform.h"
 
+#include <iomanip>
+#include <ios>
 #include <sstream>
 #include <string>
 
@@ -130,6 +133,22 @@ std::string show_result(const result<Ok, Error>& result)
         return std::string("Error " + show(unsafe_get_error(result)));
     else
         return std::string("Ok " + show(unsafe_get_ok(result)));
+}
+
+template <typename T>
+std::function<std::string(const T&)>
+show_float(std::size_t min_left_chars, std::size_t right_char_count,
+        std::string::value_type fillChar)
+{
+    return [min_left_chars, right_char_count, fillChar](const T& x)
+            -> std::string
+    {
+        std::stringstream stream;
+        stream << std::fixed << std::setprecision(right_char_count) << x;
+        std::string s = stream.str();
+        std::size_t min_dest_length = min_left_chars + 1 + right_char_count;
+        return fill_left(fillChar, min_dest_length, s);
+    };
 }
 
 } // namespace fplus
