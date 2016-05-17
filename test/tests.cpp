@@ -38,12 +38,13 @@ void Test_Numeric()
     assert(sign(0.1) == 1);
     assert(sign(-0.1) == -1);
 
-    assert(float_mod(8, 3) == 3);
-    assert(float_mod(8, 11) == 3);
-    assert(float_mod(8, 19) == 3);
-    assert(float_mod(8, -2) == 6);
-    assert(float_mod(8, -5) == 3);
-    assert(float_mod(8, -13) == 3);
+    assert(cyclic_value(8, 3) == 3);
+    assert(cyclic_value(8, 11) == 3);
+    assert(cyclic_value(8, 19) == 3);
+    assert(cyclic_value(8, -2) == 6);
+    assert(cyclic_value(8, -5) == 3);
+    assert(cyclic_value(8, -13) == 3);
+    assert(is_in_range(3.19, 3.21)(cyclic_value(8.1, 3.2)));
 
     assert(cyclic_difference(100)(2, 5) == 3);
     assert(cyclic_difference(100)(5, 2) == 97);

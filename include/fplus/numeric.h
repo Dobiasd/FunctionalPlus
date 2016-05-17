@@ -234,18 +234,19 @@ const X& max_5(const X& a, const X& b, const X& c, const X& d, const X& e)
     return max_3(max_3(a, b, c), d, e);
 }
 
-// API search type: float_mod : float -> float
+// API search type: cyclic_value : float -> float
 // Modulo for floating point values.
 // Only positive denominators allowed;
-// float_mod(8, 3) == 3
-// float_mod(8, 11) == 3
-// float_mod(8, 19) == 3
-// float_mod(8, -2) == 6
-// float_mod(8, -5) == 3
-// float_mod(8, -13) == 3
+// cyclic_value(8, 3) == 3
+// cyclic_value(8, 11) == 3
+// cyclic_value(8, 19) == 3
+// cyclic_value(8, -2) == 6
+// cyclic_value(8, -5) == 3
+// cyclic_value(8, -13) == 3
 // Can be useful to normalize an angle into [0, 360]
+// For positive values it behaves like std::fmod with flipped arguments.
 template <typename X>
-X float_mod(X denominator, X numerator)
+X cyclic_value(X denominator, X numerator)
 {
     assert(denominator > 0);
     if (sign(numerator) < 0)
@@ -269,8 +270,8 @@ std::function<X(X, X)> cyclic_difference(X circumfence)
     assert(circumfence >= 0);
     return [circumfence](X a, X b) -> X
     {
-        return float_mod(circumfence,
-            float_mod(circumfence, b) - float_mod(circumfence, a));
+        return cyclic_value(circumfence,
+            cyclic_value(circumfence, b) - cyclic_value(circumfence, a));
     };
 }
 
