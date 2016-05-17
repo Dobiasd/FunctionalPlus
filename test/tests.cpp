@@ -38,13 +38,13 @@ void Test_Numeric()
     assert(sign(0.1) == 1);
     assert(sign(-0.1) == -1);
 
-    assert(cyclic_value(8, 3) == 3);
-    assert(cyclic_value(8, 11) == 3);
-    assert(cyclic_value(8, 19) == 3);
-    assert(cyclic_value(8, -2) == 6);
-    assert(cyclic_value(8, -5) == 3);
-    assert(cyclic_value(8, -13) == 3);
-    assert(is_in_range(3.19, 3.21)(cyclic_value(8.1, 3.2)));
+    assert(cyclic_value(8)(3) == 3);
+    assert(cyclic_value(8)(11) == 3);
+    assert(cyclic_value(8)(19) == 3);
+    assert(cyclic_value(8)(-2) == 6);
+    assert(cyclic_value(8)(-5) == 3);
+    assert(cyclic_value(8)(-13) == 3);
+    assert(is_in_range(3.19, 3.21)(cyclic_value(8.1)(3.2)));
 
     assert(cyclic_difference(100)(2, 5) == 3);
     assert(cyclic_difference(100)(5, 2) == 97);
@@ -712,6 +712,15 @@ void Test_ContainerTools()
     auto multiply = [](int x, int y){ return x * y; };
     assert(zip_with(multiply, xs, xs)
             == transform(squareLambda, xs));
+
+    const double pi = 3.14159;
+    assert(show_float<double>(0, 3, '0')(pi) == "3.142");
+    assert(show_float<double>(1, 3, '0')(pi) == "3.142");
+    assert(show_float<double>(2, 3, '0')(pi) == "03.142");
+    assert(show_float<double>(3, 3, '0')(pi) == "003.142");
+    assert(show_float<double>(1, 2, '0')(pi) == "3.14");
+    assert(show_float<double>(1, 4, '0')(pi) == "3.1416");
+    assert(show_float<double>(1, 7, '0')(pi) == "3.1415900");
 
     auto xsZippedWithXs = zip(xs, xs);
     assert(unzip(xsZippedWithXs).first == xs);

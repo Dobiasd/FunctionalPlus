@@ -237,23 +237,26 @@ const X& max_5(const X& a, const X& b, const X& c, const X& d, const X& e)
 // API search type: cyclic_value : float -> float
 // Modulo for floating point values.
 // Only positive denominators allowed;
-// cyclic_value(8, 3) == 3
-// cyclic_value(8, 11) == 3
-// cyclic_value(8, 19) == 3
-// cyclic_value(8, -2) == 6
-// cyclic_value(8, -5) == 3
-// cyclic_value(8, -13) == 3
+// cyclic_value(8)(3) == 3
+// cyclic_value(8)(11) == 3
+// cyclic_value(8)(19) == 3
+// cyclic_value(8)(-2) == 6
+// cyclic_value(8)(-5) == 3
+// cyclic_value(8)(-13) == 3
 // Can be useful to normalize an angle into [0, 360]
 // For positive values it behaves like std::fmod with flipped arguments.
 template <typename X>
-X cyclic_value(X denominator, X numerator)
+std::function<X(X)> cyclic_value(X circumfence)
 {
-    assert(denominator > 0);
-    if (sign(numerator) < 0)
-        return denominator -
-            static_cast<X>(std::fmod(abs(numerator), abs(denominator)));
-    else
-        return static_cast<X>(std::fmod(abs(numerator), abs(denominator)));
+    assert(circumfence > 0);
+    return [circumfence](X x) -> X
+    {
+        if (sign(x) < 0)
+            return circumfence -
+                static_cast<X>(std::fmod(abs(x), abs(circumfence)));
+        else
+            return static_cast<X>(std::fmod(abs(x), abs(circumfence)));
+    };
 }
 
 // API search type: cyclic_difference : float -> float, float -> float
@@ -270,8 +273,8 @@ std::function<X(X, X)> cyclic_difference(X circumfence)
     assert(circumfence >= 0);
     return [circumfence](X a, X b) -> X
     {
-        return cyclic_value(circumfence,
-            cyclic_value(circumfence, b) - cyclic_value(circumfence, a));
+        auto cyclic_value_f = cyclic_value(circumfence);
+        return cyclic_value_f(cyclic_value_f(b) - cyclic_value_f(a));
     };
 }
 
