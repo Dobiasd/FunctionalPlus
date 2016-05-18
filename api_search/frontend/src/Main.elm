@@ -18,6 +18,7 @@ main =
         , view = view
         }
 
+
 initModelAndCommands : ( Model, Cmd Msg )
 initModelAndCommands =
     ( defaultModel, Cmd.none )
@@ -45,19 +46,20 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
     case action of
         NoOp ->
-            (model, Cmd.none)
+            ( model, Cmd.none )
 
         UpdateQuery str ->
-            ({ model
+            ( { model
                 | query = str
                 , searchResult = searchFunctions str
-            }, Cmd.none)
+              }
+            , Cmd.none
+            )
 
 
 view : Model -> Html Msg
 view model =
-    div
-        [ class "main" ]
+    div [ class "main" ]
         [ img [ src "fplus.png" ] []
         , hr [] []
         , input
@@ -76,8 +78,7 @@ view model =
 
 showFooter : Html Msg
 showFooter =
-    footer
-        [ class "footer" ]
+    footer [ class "footer" ]
         [ text "Copyright © 2016 Tobias Hermann. All rights reserved."
         ]
 
@@ -95,55 +96,76 @@ searchFunctions query =
             |> List.filter (\( _, rating ) -> rating > 0)
 
 
-functionRating : String -> Function -> Float
-functionRating query function =
-    let
-        queryWords = String.words query
+boolToNum : Float -> Bool -> Float
+boolToNum value b =
+            if b then
+                value
+            else
+                0
 
-        stringLengthFloat = String.length >> toFloat
+functionRating : String -> Function -> Float
+functionRating query_orig function =
+    let
+        query =
+            query_orig |> String.toLower
+
+        queryWords =
+            String.words query
+
+        stringLengthFloat =
+            String.length >> toFloat
 
         queryWordLengthSum =
             queryWords
                 |> List.map stringLengthFloat
                 |> List.sum
+        wordRatingSum =
+            queryWords
+                |> List.map
+                    (\queryWord ->
+                        functionWordRating (stringLengthFloat queryWord / queryWordLengthSum)
+                            function
+                            queryWord
+                    )
+                |> List.sum
+        -- todo: type rating with parsing
+        typeRating =
+            String.contains query (String.toLower function.signature) |> boolToNum 100
     in
-        queryWords
-            |> List.map
-                (\queryWord ->
-                    functionWordRating
-                        (stringLengthFloat queryWord / queryWordLengthSum)
-                        function
-                        queryWord
-                )
-            |> List.sum
+        wordRatingSum + typeRating
 
 
 functionWordRating : Float -> Function -> String -> Float
 functionWordRating weight function query =
     --StringDistance.sift3Distance query function.name
     let
-        boolToNum value b =
-            if b then
-                value
-            else
-                0
 
-        -- todo: rate type
-        isSubStr = String.contains query function.name
 
-        queryLength = String.length query |> toFloat
+        isSubStr =
+            String.contains query function.name
 
-        functionNameLength = String.length function.name |> toFloat
+        queryLength =
+            String.length query |> toFloat
 
-        lengthDiff = queryLength - functionNameLength |> abs
+        functionNameLength =
+            String.length function.name |> toFloat
 
-        queryAndFunctionNameMaxLength = Basics.max queryLength functionNameLength
+        lengthDiff =
+            queryLength - functionNameLength |> abs
 
-        relLengthDiff = lengthDiff / queryAndFunctionNameMaxLength
+        queryAndFunctionNameMaxLength =
+            Basics.max queryLength functionNameLength
 
-        nameRating = weight * Basics.max 0 (boolToNum 1000 isSubStr - 50 * relLengthDiff)
+        relLengthDiff =
+            lengthDiff / queryAndFunctionNameMaxLength
 
-        docRating = String.contains query function.documentation |> boolToNum 10
+        nameRating =
+            weight * Basics.max 0 (boolToNum 1000 isSubStr - 50 * relLengthDiff)
+
+        docRating =
+            String.contains query (String.toLower function.documentation) |> boolToNum 10
+
+
     in
         nameRating + docRating
 
@@ -162,11 +184,14 @@ showFunctions ratedFunctions =
 stringToCode : String -> String -> Html Msg
 stringToCode language str =
     let
-        defOpts = Markdown.defaultOptions
+        defOpts =
+            Markdown.defaultOptions
 
-        options = { defOpts | defaultHighlighting = Just language }
+        options =
+            { defOpts | defaultHighlighting = Just language }
 
-        taggedStr = "```\n" ++ str ++ "\n```"
+        taggedStr =
+            "```\n" ++ str ++ "\n```"
     in
         Markdown.toHtmlWith options [] taggedStr
 
@@ -174,7 +199,8 @@ stringToCode language str =
 stringToDoc : String -> Html Msg
 stringToDoc str =
     let
-        taggedStr = "```" ++ str ++ "```"
+        taggedStr =
+            "```" ++ str ++ "```"
     in
         Markdown.toHtmlWith Markdown.defaultOptions [] taggedStr
 
@@ -188,8 +214,7 @@ showRatedFunction : ( Function, Float ) -> Html Msg
 showRatedFunction ( function, rating ) =
     let
         functionNameAndSig =
-            div
-                [ class "functionnameandsig" ]
+            div [ class "functionnameandsig" ]
                 [ function.name
                     ++ " : "
                     ++ function.signature
@@ -197,28 +222,24 @@ showRatedFunction ( function, rating ) =
                 ]
 
         functionDocumentation =
-            div
-                [ class "functiondoc" ]
+            div [ class "functiondoc" ]
                 [ function.documentation
                     |> stringToDoc
                 ]
 
         functionDeclaration =
-            div
-                [ class "functiondecl" ]
+            div [ class "functiondecl" ]
                 [ function.declaration
                     |> stringToCode "cpp"
                 ]
 
         functionRating =
-            div
-                [ class "functionrating" ]
+            div [ class "functionrating" ]
                 [ rating
                     |> ratingToHtml
                 ]
     in
-        div
-            [ class "function" ]
+        div [ class "function" ]
             [ functionNameAndSig
             , functionDocumentation
             , functionDeclaration
