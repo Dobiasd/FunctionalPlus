@@ -171,9 +171,7 @@ typename Container::value_type maximum(const Container& xs)
 template <typename F, typename Container>
 typename Container::value_type minimum_on(F f, const Container& xs)
 {
-    typedef typename Container::value_type T;
-    auto transformed = transform_convert<std::vector<T>>(f, xs);
-    return elem_at_idx(minimum_idx(transformed), xs);
+    return elem_at_idx(minimum_idx_on(f, xs), xs);
 }
 
 // API search type: maximum_on : (a -> b) -> [a] -> a
@@ -181,9 +179,7 @@ typename Container::value_type minimum_on(F f, const Container& xs)
 template <typename F, typename Container>
 typename Container::value_type maximum_on(F f, const Container& xs)
 {
-    typedef typename Container::value_type T;
-    auto transformed = transform_convert<std::vector<T>>(f, xs);
-    return elem_at_idx(maximum_idx(transformed), xs);
+    return elem_at_idx(maximum_idx_on(f, xs), xs);
 }
 
 
