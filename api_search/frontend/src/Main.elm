@@ -98,10 +98,11 @@ searchFunctions query =
 
 boolToNum : Float -> Bool -> Float
 boolToNum value b =
-            if b then
-                value
-            else
-                0
+    if b then
+        value
+    else
+        0
+
 
 functionRating : String -> Function -> Float
 functionRating query_orig function =
@@ -119,6 +120,7 @@ functionRating query_orig function =
             queryWords
                 |> List.map stringLengthFloat
                 |> List.sum
+
         wordRatingSum =
             queryWords
                 |> List.map
@@ -128,6 +130,7 @@ functionRating query_orig function =
                             queryWord
                     )
                 |> List.sum
+
         -- todo: type rating with parsing
         typeRating =
             String.contains query (String.toLower function.signature) |> boolToNum 100
@@ -139,8 +142,6 @@ functionWordRating : Float -> Function -> String -> Float
 functionWordRating weight function query =
     --StringDistance.sift3Distance query function.name
     let
-
-
         isSubStr =
             String.contains query function.name
 
@@ -164,8 +165,6 @@ functionWordRating weight function query =
 
         docRating =
             String.contains query (String.toLower function.documentation) |> boolToNum 10
-
-
     in
         nameRating + docRating
 
