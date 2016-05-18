@@ -169,7 +169,7 @@ By changing the way you think about programming from "writing your own loops and
 
 Finding the right functions
 ---------------------------
-If you are looking for a specific function you can use the autocomplete feature of your IDE to check the content of `fplus::` of simply use the [FunctionalPlus API search website](http://www.editgym.com/fplus-api-search/). You can use it to quickly search by keywords or function types.
+If you are looking for a specific fplus function you do not know the name of yet, you can of course use the autocomplete feature of your IDE to check the content of `fplus::`. But the recommended way is to simply use the [FunctionalPlus API search website](http://www.editgym.com/fplus-api-search/). You can quickly search by keywords or function types there.
 
 
 Performance
