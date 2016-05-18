@@ -261,12 +261,12 @@ std::function<X(X)> cyclic_value(X circumfence)
 
 // API search type: cyclic_difference : float -> float, float -> float
 // circumfence has to be positive.
-// cyclic_difference(100)(2, 5) == 3
-// cyclic_difference(100)(5, 2) == 97
-// cyclic_difference(100)(-2, 3) == 5
-// cyclic_difference(100)(3, -2) == 95
-// cyclic_difference(100)(10, 90) == 80
-// cyclic_difference(100)(90, 10) == 20
+// cyclic_difference(100)(5, 2) == 3
+// cyclic_difference(100)(2, 5) == 97
+// cyclic_difference(100)(3, -2) == 5
+// cyclic_difference(100)(-2, 3) == 95
+// cyclic_difference(100)(90, 10) == 80
+// cyclic_difference(100)(10, 90) == 20
 template <typename X>
 std::function<X(X, X)> cyclic_difference(X circumfence)
 {
@@ -274,18 +274,18 @@ std::function<X(X, X)> cyclic_difference(X circumfence)
     return [circumfence](X a, X b) -> X
     {
         auto cyclic_value_f = cyclic_value(circumfence);
-        return cyclic_value_f(cyclic_value_f(b) - cyclic_value_f(a));
+        return cyclic_value_f(cyclic_value_f(a) - cyclic_value_f(b));
     };
 }
 
 // API search type: cyclic_shortest_difference : float -> float, float -> float
 // circumfence has to be positive.
-// cyclic_shortest_difference(100)(2, 5) == 3
-// cyclic_shortest_difference(100)(5, 2) == -3
-// cyclic_shortest_difference(100)(-2, 3) == 5
-// cyclic_shortest_difference(100)(3, -2) == -5
-// cyclic_shortest_difference(100)(10, 90) == -20
-// cyclic_shortest_difference(100)(90, 10) == 20
+// cyclic_shortest_difference(100)(5, 2) == 3
+// cyclic_shortest_difference(100)(2, 5) == -3
+// cyclic_shortest_difference(100)(3, -2) == 5
+// cyclic_shortest_difference(100)(-2, 3) == -5
+// cyclic_shortest_difference(100)(90, 10) == -20
+// cyclic_shortest_difference(100)(10, 90) == 20
 template <typename X>
 std::function<X(X, X)> cyclic_shortest_difference(X circumfence)
 {
@@ -293,9 +293,9 @@ std::function<X(X, X)> cyclic_shortest_difference(X circumfence)
     return [circumfence](X a, X b) -> X
     {
         auto diff_func = cyclic_difference(circumfence);
-        auto a_to_b = diff_func(a, b);
-        auto b_to_a = diff_func(b, a);
-        return a_to_b <= b_to_a ? a_to_b : -b_to_a;
+        auto a_minus_b = diff_func(a, b);
+        auto b_minus_a = diff_func(b, a);
+        return a_minus_b <= b_minus_a ? a_minus_b : -b_minus_a;
     };
 }
 

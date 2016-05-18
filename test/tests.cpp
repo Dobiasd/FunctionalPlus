@@ -46,19 +46,19 @@ void Test_Numeric()
     assert(cyclic_value(8)(-13) == 3);
     assert(is_in_range(3.19, 3.21)(cyclic_value(8.1)(3.2)));
 
-    assert(cyclic_difference(100)(2, 5) == 3);
-    assert(cyclic_difference(100)(5, 2) == 97);
-    assert(cyclic_difference(100)(-2, 3) == 5);
-    assert(cyclic_difference(100)(3, -2) == 95);
-    assert(cyclic_difference(100)(10, 90) == 80);
-    assert(cyclic_difference(100)(90, 10) == 20);
+    assert(cyclic_difference(100)(5, 2) == 3);
+    assert(cyclic_difference(100)(2, 5) == 97);
+    assert(cyclic_difference(100)(3, -2) == 5);
+    assert(cyclic_difference(100)(-2, 3) == 95);
+    assert(cyclic_difference(100)(90, 10) == 80);
+    assert(cyclic_difference(100)(10, 90) == 20);
 
-    assert(cyclic_shortest_difference(100)(2, 5) == 3);
-    assert(cyclic_shortest_difference(100)(5, 2) == -3);
-    assert(cyclic_shortest_difference(100)(-2, 3) == 5);
-    assert(cyclic_shortest_difference(100)(3, -2) == -5);
-    assert(cyclic_shortest_difference(100)(10, 90) == -20);
-    assert(cyclic_shortest_difference(100)(90, 10) == 20);
+    assert(cyclic_shortest_difference(100)(5, 2) == 3);
+    assert(cyclic_shortest_difference(100)(2, 5) == -3);
+    assert(cyclic_shortest_difference(100)(3, -2) == 5);
+    assert(cyclic_shortest_difference(100)(-2, 3) == -5);
+    assert(cyclic_shortest_difference(100)(90, 10) == -20);
+    assert(cyclic_shortest_difference(100)(10, 90) == 20);
 
     assert(cyclic_distance(100)(2, 5) == 3);
     assert(cyclic_distance(100)(5, 2) == 3);
