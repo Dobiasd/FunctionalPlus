@@ -164,7 +164,7 @@ std::string functions_to_elm_code(const std::vector<function_help> functions)
     auto function_strings = fplus::transform(show_function, functions);
 
     std::string result;
-    result += "module Database (..) where\n\n\n";
+    result += "module Database exposing (..)\n\n\n";
     result += "type alias Function =\n";
     result += "    { name : String\n";
     result += "    , signature : String\n";

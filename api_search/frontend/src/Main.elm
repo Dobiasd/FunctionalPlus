@@ -1,13 +1,26 @@
-module FPlusApiSearch (..) where
+module FPlusApiSearch exposing (..)
 
 import Database exposing (Function, functions)
 import Html exposing (..)
+import Html.App exposing (program)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Markdown
-import Signal exposing (Signal, Address)
 import String
 import StringDistance
+
+
+main =
+    program
+        { init = initModelAndCommands
+        , update = update
+        , subscriptions = always Sub.none
+        , view = view
+        }
+
+initModelAndCommands : ( Model, Cmd Msg )
+initModelAndCommands =
+    ( defaultModel, Cmd.none )
 
 
 type alias Model =
@@ -16,33 +29,33 @@ type alias Model =
     }
 
 
-emptyModel : Model
-emptyModel =
+defaultModel : Model
+defaultModel =
     { query = ""
     , searchResult = []
     }
 
 
-type Action
+type Msg
     = NoOp
     | UpdateQuery String
 
 
-update : Action -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
     case action of
         NoOp ->
-            model
+            (model, Cmd.none)
 
         UpdateQuery str ->
-            { model
+            ({ model
                 | query = str
                 , searchResult = searchFunctions str
-            }
+            }, Cmd.none)
 
 
-view : Address Action -> Model -> Html
-view address model =
+view : Model -> Html Msg
+view model =
     div
         [ class "main" ]
         [ img [ src "fplus.png" ] []
@@ -51,7 +64,7 @@ view address model =
             [ placeholder "search query"
             , autofocus True
             , style [ ( "width", "500px" ) ]
-            , on "input" targetValue (Signal.message address << UpdateQuery)
+            , onInput UpdateQuery
             ]
             []
         , hr [] []
@@ -61,7 +74,7 @@ view address model =
         ]
 
 
-showFooter : Html
+showFooter : Html Msg
 showFooter =
     footer
         [ class "footer" ]
@@ -139,14 +152,14 @@ functionWordRating weight function query =
 --StringDistance.lcs (String.toList query) (String.toList function.name) |> List.length |> toFloat
 
 
-showFunctions : List ( Function, Float ) -> Html
+showFunctions : List ( Function, Float ) -> Html Msg
 showFunctions ratedFunctions =
     List.map showRatedFunction ratedFunctions
         |> List.intersperse (hr [] [])
         |> div [ class "functions" ]
 
 
-stringToCode : String -> String -> Html
+stringToCode : String -> String -> Html Msg
 stringToCode language str =
     let
         defOpts = Markdown.defaultOptions
@@ -155,23 +168,23 @@ stringToCode language str =
 
         taggedStr = "```\n" ++ str ++ "\n```"
     in
-        Markdown.toHtmlWith options taggedStr
+        Markdown.toHtmlWith options [] taggedStr
 
 
-stringToDoc : String -> Html
+stringToDoc : String -> Html Msg
 stringToDoc str =
     let
         taggedStr = "```" ++ str ++ "```"
     in
-        Markdown.toHtmlWith Markdown.defaultOptions taggedStr
+        Markdown.toHtmlWith Markdown.defaultOptions [] taggedStr
 
 
-ratingToHtml : Float -> Html
+ratingToHtml : Float -> Html Msg
 ratingToHtml rating =
     "search rating: " ++ toString rating |> stringToDoc
 
 
-showRatedFunction : ( Function, Float ) -> Html
+showRatedFunction : ( Function, Float ) -> Html Msg
 showRatedFunction ( function, rating ) =
     let
         functionNameAndSig =
@@ -211,18 +224,3 @@ showRatedFunction ( function, rating ) =
             , functionDeclaration
             , functionRating
             ]
-
-
-main : Signal Html
-main =
-    Signal.map (view actions.address) model
-
-
-model : Signal Model
-model =
-    Signal.foldp update emptyModel actions.signal
-
-
-actions : Signal.Mailbox Action
-actions =
-    Signal.mailbox NoOp

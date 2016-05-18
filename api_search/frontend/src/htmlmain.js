@@ -1,4 +1,4 @@
 function init() {
   var mainDiv = document.getElementById('main');
-  elmContent = Elm.embed(Elm.FPlusApiSearch, mainDiv, {});
+  elmContent = Elm.FPlusApiSearch.embed(mainDiv);
 }
