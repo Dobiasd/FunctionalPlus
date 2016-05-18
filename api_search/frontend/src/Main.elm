@@ -83,6 +83,15 @@ showFooter =
         ]
 
 
+cleanFunctionSignature : String -> String
+cleanFunctionSignature str =
+    let
+        isSpace c =
+            c == ' '
+    in
+        String.filter (isSpace >> not) str
+
+
 searchFunctions : String -> List ( Function, Float )
 searchFunctions query =
     let
@@ -133,7 +142,9 @@ functionRating query_orig function =
 
         -- todo: type rating with parsing
         typeRating =
-            String.contains query (String.toLower function.signature) |> boolToNum 100
+            String.contains (cleanFunctionSignature query)
+                (function.signature |> cleanFunctionSignature |> String.toLower)
+                |> boolToNum 100
     in
         wordRatingSum + typeRating
 
