@@ -8,12 +8,7 @@ body
 
 input
 {
-
     font-size: 110%;
-}
-
-code {
-    white-space: pre;
 }
 
 pre {
@@ -23,14 +18,41 @@ pre {
 }
 
 code {
+    white-space: pre;
     padding: 0px;
     border: 0px;
     margin: 0px;
 }
 
+.mainwrapper
+{
+}
+
+.main
+{
+    margin: 0 auto;
+    width: 800px;
+}
+
+.logo
+{
+    text-align: center;
+    margin: 4px;
+}
+
+.githublink
+{
+    text-align: center;
+}
+
+.githublink a:link    { color: #f8f8f2 }
+.githublink a:visited { color: #f8f8f2 }
+.githublink a:hover   { color: #f8f8f2 }
+.githublink a:active  { color: #f8f8f2 }
+
 .function
 {
-    padding: 16px
+    padding: 16px;
 }
 
 .functionnameandsig

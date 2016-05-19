@@ -6,6 +6,7 @@ import Html.App exposing (program)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Markdown
+import Random
 import String
 import StringDistance
 
@@ -18,11 +19,20 @@ main =
         , view = view
         }
 
+maxVisibleFunctions : Int
+maxVisibleFunctions = 20
 
 initModelAndCommands : ( Model, Cmd Msg )
 initModelAndCommands =
-    ( defaultModel, Cmd.none )
+    ( defaultModel, cmdGetRandomNumbers )
 
+functionCnt : Int
+functionCnt = List.length functions
+
+cmdGetRandomNumbers : Cmd Msg
+cmdGetRandomNumbers =
+    Random.list maxVisibleFunctions (Random.int 0 (functionCnt))
+    |> Random.generate RandomNumbers
 
 type alias Model =
     { query : String
@@ -39,6 +49,7 @@ defaultModel =
 
 type Msg
     = NoOp
+    | RandomNumbers (List Int)
     | UpdateQuery String
 
 
@@ -49,30 +60,79 @@ update action model =
             ( model, Cmd.none )
 
         UpdateQuery str ->
+            if String.isEmpty str then
+                ( { model
+                    | query = str
+                    , searchResult = []
+                  }
+                , cmdGetRandomNumbers
+                )
+            else
+                ( { model
+                    | query = str
+                    , searchResult = searchFunctions str
+                  }
+                , Cmd.none
+                )
+
+        RandomNumbers nums ->
             ( { model
-                | query = str
-                , searchResult = searchFunctions str
+                | searchResult =
+                    if String.isEmpty model.query then
+                        getRandomSearchResult nums
+                    else
+                        model.searchResult
               }
             , Cmd.none
             )
 
+isElem : List a -> a -> Bool
+isElem xs elem =
+    List.filter (\x -> x == elem) xs |> List.isEmpty |> not
+
+getRandomSearchResult : List Int -> List (Function, Float)
+getRandomSearchResult chosenIdxs =
+    functions
+    |> List.map2 (,) [0..functionCnt]
+    |> List.filter (\(idx, _) -> isElem chosenIdxs idx)
+    |> List.map snd
+    |> List.take maxVisibleFunctions
+    |> List.map (\x -> (x, 0))
+
 
 view : Model -> Html Msg
 view model =
-    div [ class "main" ]
-        [ img [ src "fplus.png" ] []
-        , hr [] []
-        , input
-            [ placeholder "search query"
-            , autofocus True
-            , style [ ( "width", "500px" ) ]
-            , onInput UpdateQuery
-            ]
-            []
-        , hr [] []
-        , model.searchResult |> showFunctions
-        , hr [] []
-        , showFooter
+    div [ class "mainwrapper" ]
+        [
+            div [ class "main" ]
+            [
+                div [ class "githublink" ]
+                [
+                    let
+                        url = "https://github.com/dobiasd/"
+                    in
+                        a [ href url]
+                        [
+                            div [ class "logo" ]
+                            [
+                                img [ class "logo", src "fplus.png" ] []
+                            ]
+                          , text url
+                        ]
+                ]
+              , hr [] []
+              , input
+                  [ placeholder "search query"
+                  , autofocus True
+                  , style [ ( "width", "500px" ) ]
+                  , onInput UpdateQuery
+                  ]
+                  []
+              , hr [] []
+              , model.searchResult |> showFunctions
+              , hr [] []
+              , showFooter
+              ]
         ]
 
 
@@ -101,7 +161,7 @@ searchFunctions query =
     in
         ratedFunctions
             |> List.sortBy (\( _, rating ) -> 0 - rating)
-            |> List.take 20
+            |> List.take maxVisibleFunctions
             |> List.filter (\( _, rating ) -> rating > 0)
 
 
@@ -217,7 +277,7 @@ stringToDoc str =
 
 ratingToHtml : Float -> Html Msg
 ratingToHtml rating =
-    "search rating: " ++ toString rating |> stringToDoc
+    "search rating: " ++ toString (round rating) |> stringToDoc
 
 
 showRatedFunction : ( Function, Float ) -> Html Msg
