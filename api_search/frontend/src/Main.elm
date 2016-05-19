@@ -204,7 +204,7 @@ functionRating query_orig function =
         typeRating =
             String.contains (cleanFunctionSignature query)
                 (function.signature |> cleanFunctionSignature |> String.toLower)
-                |> boolToNum 100
+                |> boolToNum 1000
     in
         wordRatingSum + typeRating
 
