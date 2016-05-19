@@ -61,7 +61,7 @@ bool none(const Container& xs)
 // minimum_idx_by(lessLength, ["123", "12", "1234", "123"]) -> "1"
 // return index of first minimum element
 template <typename Compare, typename Container>
-typename Container::value_type minimum_idx_by(Compare comp,
+typename std::size_t minimum_idx_by(Compare comp,
         const Container& xs)
 {
     check_compare_for_container<Compare, Container>();
@@ -74,7 +74,7 @@ typename Container::value_type minimum_idx_by(Compare comp,
 // maximum_idx_by(lessLength, ["123", "12", "1234", "123"]) == "2"
 // return index of first maximum element
 template <typename Compare, typename Container>
-typename Container::value_type maximum_idx_by(Compare comp,
+typename std::size_t maximum_idx_by(Compare comp,
         const Container& xs)
 {
     check_compare_for_container<Compare, Container>();
@@ -88,7 +88,7 @@ typename Container::value_type maximum_idx_by(Compare comp,
 // minimum_idx([3, 1, 4, 2]) == 1
 // return index of first minimum element
 template <typename Container>
-typename Container::value_type minimum_idx(const Container& xs)
+typename std::size_t minimum_idx(const Container& xs)
 {
     return minimum_idx_by(is_less<typename Container::value_type>, xs);
 }
@@ -97,7 +97,7 @@ typename Container::value_type minimum_idx(const Container& xs)
 // maximum_idx([3, 1, 4, 2]) == 2
 // return index of first maximum element
 template <typename Container>
-typename Container::value_type maximum_idx(const Container& xs)
+typename std::size_t maximum_idx(const Container& xs)
 {
     return maximum_idx_by(is_less<typename Container::value_type>, xs);
 }
@@ -107,10 +107,10 @@ typename Container::value_type maximum_idx(const Container& xs)
 // minimum_idx_on(length, ["123", "12", "1234", "123"]) -> "1"
 // return index of first minimum element
 template <typename F, typename Container>
-typename Container::value_type minimum_idx_on(F f, const Container& xs)
+typename std::size_t minimum_idx_on(F f, const Container& xs)
 {
-    typedef typename Container::value_type T;
-    auto transformed = transform_convert<std::vector<T>>(f, xs);
+    typedef typename utils::function_traits<F>::result_type Result;
+    auto transformed = transform_convert<std::vector<Result>>(f, xs);
     return minimum_idx(transformed);
 }
 
@@ -118,10 +118,10 @@ typename Container::value_type minimum_idx_on(F f, const Container& xs)
 // maximum_idx_on(length, ["123", "12", "1234", "123"]) == "2"
 // return index of first maximum element
 template <typename F, typename Container>
-typename Container::value_type maximum_idx_on(F f, const Container& xs)
+typename std::size_t maximum_idx_on(F f, const Container& xs)
 {
-    typedef typename Container::value_type T;
-    auto transformed = transform_convert<std::vector<T>>(f, xs);
+    typedef typename utils::function_traits<F>::result_type Result;
+    auto transformed = transform_convert<std::vector<Result>>(f, xs);
     return maximum_idx(transformed);
 }
 
