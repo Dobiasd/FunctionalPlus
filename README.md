@@ -80,6 +80,12 @@ int main()
 }
 ```
 
+Output:
+
+```
+There actually are this many 'I's in team: 2
+```
+
 ### The cutest cat
 Finding the highest rated element in a container is easy.
 ```c++
@@ -111,6 +117,12 @@ int main()
     std::cout << fplus::maximum_on(cuteness, cats).name_ <<
         " is the cutest kitty." << std::endl;
 }
+```
+
+Output:
+
+```
+Muffin is the cutest cat.
 ```
 
 ### Transformations, function composition and binding
@@ -195,14 +207,9 @@ The basic functions are fast, thanks to C++'s concept of abstraction without ove
 
 So the compiler seems to do a very good job in optimizing and inlining everthing to basically equal machine code performance-wise.
 
-The more complex functions though can probably be written in a more optimized/optimizable way. Sometimes they are not even in the best possible time complexity class. If you use FunctionalPlus in a performance-critical scenario and profiling shows you need a faster version of a function [please let me know](https://github.com/Dobiasd/FunctionalPlus/issues) or [even help improving FunctionalPlus](https://github.com/Dobiasd/FunctionalPlus/pulls).
+The more complex functions though sometimes can be written in a more optimized way. If you use FunctionalPlus in a performance-critical scenario and profiling shows you need a faster version of a function [please let me know](https://github.com/Dobiasd/FunctionalPlus/issues) or [even help improving FunctionalPlus](https://github.com/Dobiasd/FunctionalPlus/pulls).
 
-Additionally keep in mind that FunctionalPlus always produces copies and never operates in place. For example in the code for "The I in our team" there is this line:
-```c++
-if (fplus::is_elem_of("I", fplus::split_words(team, false)))
-```
-
-It first splits the whole `string` `team` into (non-empty) words and only then checks if it contains an `"I"`. A hand-written version could be faster, because it could stop the splitting as soon as it encounters the word it is looking for. But since in my experience even in performance-critical software the vast majority of parts is not relevant for the overall performance, I think it is a good idea to strive for developer productivity and readability of code as the default. In many cases one can easily switch to something else later if it turns out to be needed.
+Additionally keep in mind that FunctionalPlus always produces copies and never operates in place. So it is biased towards developer productivity and readability of code and not towards using as little memory as possible.
 
 
 Installation/Requirements
