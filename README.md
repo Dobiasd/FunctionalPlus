@@ -1,5 +1,7 @@
 ![logo](logo/fplus.png)
 
+FunctionalPlus
+==============
 **helps you write concise and readable C++ code.**
 
 Introduction
