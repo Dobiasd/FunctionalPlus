@@ -78,7 +78,7 @@ ContainerOut split_words_by
 
 // API search type: split_words_by_many : string, [char], bool -> [string]
 // Splits a string by the given delimiter(s).
-// split_words_by_many("How are you?", "- o", false) == ["H","w","are","y","u?"]
+// split_words_by_many("How are u?", " o", false) == ["H","w","are","u?"]
 template <typename String, typename ContainerOut = std::vector<String>>
 ContainerOut split_words_by_many
         (const String& str, const String& delims, const bool allowEmpty)

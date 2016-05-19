@@ -37,7 +37,8 @@ ContainerOut generate_by_idx(F f, std::size_t amount)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     typedef typename utils::function_traits<F>::template arg<0>::type FIn;
-    static_assert(std::is_convertible<std::size_t, FIn>::value, "Function does not take std::size_t or compatible type.");
+    static_assert(std::is_convertible<std::size_t, FIn>::value,
+        "Function does not take std::size_t or compatible type.");
     ContainerOut ys;
     prepare_container(ys, amount);
     auto it = get_back_inserter<ContainerOut>(ys);
@@ -73,7 +74,9 @@ template <typename ContainerIn,
 ContainerOut infixes(std::size_t length, const ContainerIn& xs)
 {
     assert(length > 0);
-    static_assert(std::is_convertible<ContainerIn, typename ContainerOut::value_type>::value, "ContainerOut can not take values of type ContainerIn as elements.");
+    static_assert(std::is_convertible<ContainerIn,
+        typename ContainerOut::value_type>::value,
+        "ContainerOut can not take values of type ContainerIn as elements.");
     ContainerOut result;
     if (size_of_cont(xs) < length)
         return result;
@@ -185,7 +188,8 @@ template <typename T>
 std::vector<std::vector<T>> internal_helper_carthesian_product_n_idxs
         (std::size_t power, const std::vector<T>& xs)
 {
-    static_assert(std::is_same<T, std::size_t>::value, "T must be std::size_t");
+    static_assert(std::is_same<T, std::size_t>::value,
+        "T must be std::size_t");
     typedef std::vector<T> Vec;
     typedef std::vector<Vec> VecVec;
     if (power == 0)

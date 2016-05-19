@@ -124,7 +124,8 @@ ContainerOut find_all_idxs_of
 
 // API search type: find_all_instances_of_token : [a], [a] -> [int]
 // find_all_instances_of_token("haha", "oh, hahaha!") == [4, 6]
-template <typename ContainerOut = std::vector<std::size_t>, typename Container>
+template <typename ContainerOut =
+    std::vector<std::size_t>, typename Container>
 ContainerOut find_all_instances_of_token(const Container& token,
         const Container& xs)
 {

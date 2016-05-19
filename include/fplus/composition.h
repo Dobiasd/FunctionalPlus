@@ -24,7 +24,8 @@ template <typename F, typename T,
 std::function<FOut(FIn1)> bind_1st_of_2(F f, T x)
 {
     static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
-    static_assert(std::is_convertible<T, FIn0>::value, "Function can not take bound parameter type.");
+    static_assert(std::is_convertible<T, FIn0>::value,
+        "Function can not take bound parameter type.");
     return [f, x]
            (FIn1 y)
            { return f(x, y); };
@@ -40,7 +41,8 @@ template <typename F, typename X,
 std::function<FOut(FIn1, FIn2)> bind_1st_of_3(F f, X x)
 {
     static_assert(utils::function_traits<F>::arity == 3, "Wrong arity.");
-    static_assert(std::is_convertible<X, FIn0>::value, "Function can not take bound parameter type.");
+    static_assert(std::is_convertible<X, FIn0>::value,
+        "Function can not take bound parameter type.");
     return [f, x]
            (FIn1 y, FIn2 z)
            { return f(x, y, z); };
@@ -56,8 +58,10 @@ template <typename F, typename X, typename Y,
 std::function<FOut(FIn2)> bind_1st_and_2nd_of_3(F f, X x, Y y)
 {
     static_assert(utils::function_traits<F>::arity == 3, "Wrong arity.");
-    static_assert(std::is_convertible<X, FIn0>::value, "Function can not take first bound parameter type.");
-    static_assert(std::is_convertible<Y, FIn1>::value, "Function can not take second bound parameter type.");
+    static_assert(std::is_convertible<X, FIn0>::value,
+        "Function can not take first bound parameter type.");
+    static_assert(std::is_convertible<Y, FIn1>::value,
+        "Function can not take second bound parameter type.");
     return [f, x, y]
            (FIn2 z)
            { return f(x, y, z); };
@@ -112,7 +116,8 @@ std::function<GOut(FIn)> compose(F f, G g)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
-    static_assert(std::is_convertible<FOut,GIn>::value, "Parameter types do not match");
+    static_assert(std::is_convertible<FOut,GIn>::value,
+        "Parameter types do not match");
     return [f, g](FIn x) { return g(f(x)); };
 }
 
@@ -130,8 +135,10 @@ std::function<HOut(FIn)> compose(F f, G g, H h)
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<H>::arity == 1, "Wrong arity.");
-    static_assert(std::is_convertible<FOut,GIn>::value, "Parameter types do not match");
-    static_assert(std::is_convertible<GOut,HIn>::value, "Parameter types do not match");
+    static_assert(std::is_convertible<FOut,GIn>::value,
+        "Parameter types do not match");
+    static_assert(std::is_convertible<GOut,HIn>::value,
+        "Parameter types do not match");
     return [f, g, h](FIn x) { return h(g(f(x))); };
 }
 
@@ -152,9 +159,12 @@ std::function<IOut(FIn)> compose(F f, G g, H h, I i)
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<H>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<I>::arity == 1, "Wrong arity.");
-    static_assert(std::is_convertible<FOut,GIn>::value, "Parameter types do not match");
-    static_assert(std::is_convertible<GOut,HIn>::value, "Parameter types do not match");
-    static_assert(std::is_convertible<HOut,IIn>::value, "Parameter types do not match");
+    static_assert(std::is_convertible<FOut,GIn>::value,
+        "Parameter types do not match");
+    static_assert(std::is_convertible<GOut,HIn>::value,
+        "Parameter types do not match");
+    static_assert(std::is_convertible<HOut,IIn>::value,
+        "Parameter types do not match");
     return [f, g, h, i](FIn x) { return i(h(g(f(x)))); };
 }
 
@@ -178,10 +188,14 @@ std::function<JOut(FIn)> compose(F f, G g, H h, I i, J j)
     static_assert(utils::function_traits<H>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<I>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<J>::arity == 1, "Wrong arity.");
-    static_assert(std::is_convertible<FOut,GIn>::value, "Parameter types do not match");
-    static_assert(std::is_convertible<GOut,HIn>::value, "Parameter types do not match");
-    static_assert(std::is_convertible<HOut,IIn>::value, "Parameter types do not match");
-    static_assert(std::is_convertible<IOut,JIn>::value, "Parameter types do not match");
+    static_assert(std::is_convertible<FOut,GIn>::value,
+        "Parameter types do not match");
+    static_assert(std::is_convertible<GOut,HIn>::value,
+        "Parameter types do not match");
+    static_assert(std::is_convertible<HOut,IIn>::value,
+        "Parameter types do not match");
+    static_assert(std::is_convertible<IOut,JIn>::value,
+        "Parameter types do not match");
     return [f, g, h, i, j](FIn x) { return j(i(h(g(f(x))))); };
 }
 
@@ -191,7 +205,8 @@ template <typename UnaryPredicate,
     typename X = typename utils::function_traits<UnaryPredicate>::template arg<0>::type>
 std::function<bool(X)> logical_not(UnaryPredicate f)
 {
-    static_assert(utils::function_traits<UnaryPredicate>::arity == 1, "Wrong arity.");
+    static_assert(utils::function_traits<UnaryPredicate>::arity == 1,
+        "Wrong arity.");
     typedef typename utils::function_traits<UnaryPredicate>::result_type Res;
     static_assert(std::is_same<Res, bool>::value, "Must return bool.");
     return [f](X x) { return !f(x); };
@@ -204,13 +219,16 @@ template <typename UnaryPredicateF, typename UnaryPredicateG,
     typename Y = typename utils::function_traits<UnaryPredicateG>::template arg<0>::type>
 std::function<bool(X)> logical_or(UnaryPredicateF f, UnaryPredicateG g)
 {
-    static_assert(std::is_convertible<X, Y>::value, "Parameter types do not match");
+    static_assert(std::is_convertible<X, Y>::value,
+        "Parameter types do not match");
     typedef typename utils::function_traits<UnaryPredicateF>::result_type FRes;
     typedef typename utils::function_traits<UnaryPredicateG>::result_type GRes;
     static_assert(std::is_same<FRes, bool>::value, "Must return bool.");
     static_assert(std::is_same<GRes, bool>::value, "Must return bool.");
-    static_assert(utils::function_traits<UnaryPredicateF>::arity == 1, "Wrong arity.");
-    static_assert(utils::function_traits<UnaryPredicateG>::arity == 1, "Wrong arity.");
+    static_assert(utils::function_traits<UnaryPredicateF>::arity == 1,
+        "Wrong arity.");
+    static_assert(utils::function_traits<UnaryPredicateG>::arity == 1,
+        "Wrong arity.");
     return [f, g](X x) { return f(x) || g(x); };
 }
 
@@ -221,13 +239,16 @@ template <typename UnaryPredicateF, typename UnaryPredicateG,
     typename Y = typename utils::function_traits<UnaryPredicateG>::template arg<0>::type>
 std::function<bool(X)> logical_and(UnaryPredicateF f, UnaryPredicateG g)
 {
-    static_assert(std::is_convertible<X, Y>::value, "Parameter types do not match");
+    static_assert(std::is_convertible<X, Y>::value,
+        "Parameter types do not match");
     typedef typename utils::function_traits<UnaryPredicateF>::result_type FRes;
     typedef typename utils::function_traits<UnaryPredicateG>::result_type GRes;
     static_assert(std::is_same<FRes, bool>::value, "Must return bool.");
     static_assert(std::is_same<GRes, bool>::value, "Must return bool.");
-    static_assert(utils::function_traits<UnaryPredicateF>::arity == 1, "Wrong arity.");
-    static_assert(utils::function_traits<UnaryPredicateG>::arity == 1, "Wrong arity.");
+    static_assert(utils::function_traits<UnaryPredicateF>::arity == 1,
+        "Wrong arity.");
+    static_assert(utils::function_traits<UnaryPredicateG>::arity == 1,
+        "Wrong arity.");
     return [f, g](X x) { return f(x) && g(x); };
 }
 
@@ -238,13 +259,16 @@ template <typename UnaryPredicateF, typename UnaryPredicateG,
     typename Y = typename utils::function_traits<UnaryPredicateG>::template arg<0>::type>
 std::function<bool(X)> logical_xor(UnaryPredicateF f, UnaryPredicateG g)
 {
-    static_assert(std::is_convertible<X, Y>::value, "Parameter types do not match");
+    static_assert(std::is_convertible<X, Y>::value,
+        "Parameter types do not match");
     typedef typename utils::function_traits<UnaryPredicateF>::result_type FRes;
     typedef typename utils::function_traits<UnaryPredicateG>::result_type GRes;
     static_assert(std::is_same<FRes, bool>::value, "Must return bool.");
     static_assert(std::is_same<GRes, bool>::value, "Must return bool.");
-    static_assert(utils::function_traits<UnaryPredicateF>::arity == 1, "Wrong arity.");
-    static_assert(utils::function_traits<UnaryPredicateG>::arity == 1, "Wrong arity.");
+    static_assert(utils::function_traits<UnaryPredicateF>::arity == 1,
+        "Wrong arity.");
+    static_assert(utils::function_traits<UnaryPredicateG>::arity == 1,
+        "Wrong arity.");
     return [f, g](X x)
     {
         auto fx = f(x);

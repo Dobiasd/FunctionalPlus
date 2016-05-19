@@ -109,7 +109,8 @@ Out ceil(X x)
 template <typename X>
 X int_power(X base, X exp)
 {
-    static_assert(std::is_integral<X>::value, "type must be unsigned integral");
+    static_assert(std::is_integral<X>::value,
+        "type must be unsigned integral");
     assert(!is_negative(exp));
     if (exp == 0)
         return 1;

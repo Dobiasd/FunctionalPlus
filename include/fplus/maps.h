@@ -61,7 +61,8 @@ template <typename F, typename MapIn,
     typename MapInPair = typename MapIn::value_type,
     typename Key = typename std::remove_const<typename MapInPair::first_type>::type,
     typename InVal = typename std::remove_const<typename MapInPair::second_type>::type,
-    typename OutVal = typename std::remove_reference<typename std::remove_const<typename utils::function_traits<F>::result_type>::type>::type,
+    typename OutVal = typename std::remove_reference<typename std::remove_const<
+        typename utils::function_traits<F>::result_type>::type>::type,
     typename MapOut = typename SameMapTypeNewTypes<MapIn, Key, OutVal>::type>
 MapOut transform_map_values(F f, const MapIn& map)
 {
@@ -76,7 +77,8 @@ MapOut transform_map_values(F f, const MapIn& map)
 template <typename F, typename MapIn,
     typename MapInPair = typename MapIn::value_type,
     typename Key = typename std::remove_const<typename MapInPair::first_type>::type,
-    typename OutVal = typename std::remove_reference<typename std::remove_const<typename utils::function_traits<F>::result_type>::type>::type,
+    typename OutVal = typename std::remove_reference<typename std::remove_const<
+        typename utils::function_traits<F>::result_type>::type>::type,
     typename MapOut = typename SameMapTypeNewTypes<MapIn, Key, OutVal>::type>
 MapOut map_union_with(F f, const MapIn& dict1, const MapIn& dict2)
 {

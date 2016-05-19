@@ -125,8 +125,11 @@ bool operator != (const maybe<T>& x, const maybe<T>& y)
 // now can convert a Maybe<int> into a Maybe<string>.
 // A nothings stays a nothing, regardless of the conversion.
 template <typename F,
-    typename A = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename B = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::result_type>::type>::type>
+    typename A = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<
+            F>::template arg<0>::type>::type>::type,
+    typename B = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::result_type>::type>::type>
 std::function<maybe<B>(const maybe<A>&)> lift_maybe(F f)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
@@ -145,16 +148,22 @@ std::function<maybe<B>(const maybe<A>&)> lift_maybe(F f)
 // is extracted and shoved into the second function.
 // If the first functions returns a nothing, it stays a nothing.
 template <typename F, typename G,
-    typename FIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename FOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::result_type>::type>::type,
-    typename GIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<G>::template arg<0>::type>::type>::type,
-    typename GOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<G>::result_type>::type>::type,
+    typename FIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<
+            F>::template arg<0>::type>::type>::type,
+    typename FOut = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::result_type>::type>::type,
+    typename GIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
+    typename GOut = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<G>::result_type>::type>::type,
     typename T = typename GOut::type>
 std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
-    static_assert(std::is_convertible<typename FOut::type,GIn>::value, "Function parameter types do not match");
+    static_assert(std::is_convertible<typename FOut::type,GIn>::value,
+        "Function parameter types do not match");
     return [f, g](const FIn& x)
     {
         auto maybeB = f(x);
@@ -167,8 +176,10 @@ std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g)
 // API search type: and_then_maybe : (a -> maybe b), (b -> maybe c), (c -> maybe d) -> (maybe a -> maybe d)
 // Monadic bind.
 template <typename F, typename G, typename H,
-    typename FIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename HOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<H>::result_type>::type>::type,
+    typename FIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename HOut = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<H>::result_type>::type>::type,
     typename T = typename HOut::type>
 std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g, H h)
 {
@@ -178,8 +189,10 @@ std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g, H h)
 // API search type: and_then_maybe : (a -> maybe b), (b -> maybe c), (c -> maybe d), (d -> maybe e) -> (maybe a -> maybe e)
 // Monadic bind.
 template <typename F, typename G, typename H, typename I,
-    typename FIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename IOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<I>::result_type>::type>::type,
+    typename FIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename IOut = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<I>::result_type>::type>::type,
     typename T = typename IOut::type>
 std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g, H h, I i)
 {

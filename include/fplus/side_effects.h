@@ -57,7 +57,8 @@ std::function<void()> sleep_for_n_microseconds(std::size_t microseconds)
 // Returns a function that executes the given side effects one after another.
 template <typename Container,
         typename Effect = typename Container::value_type,
-        typename Result = typename utils::function_traits<Effect>::result_type>
+        typename Result = typename utils::function_traits<
+            Effect>::result_type>
 std::function<std::vector<Result>()> execute_serially(const Container& effs)
 {
     return [effs]() -> std::vector<Result>
@@ -76,10 +77,12 @@ std::function<std::vector<Result>()> execute_serially(const Container& effs)
 // until one of it returns true.
 template <typename Container,
         typename Effect = typename Container::value_type,
-        typename Result = typename utils::function_traits<Effect>::result_type>
+        typename Result = typename utils::function_traits<
+            Effect>::result_type>
 std::function<bool()> execute_serially_until_success(const Container& effs)
 {
-    static_assert(std::is_convertible<Result, bool>::value, "Effects must return a boolish type.");
+    static_assert(std::is_convertible<Result, bool>::value,
+        "Effects must return a boolish type.");
     return [effs]() -> bool
     {
         for (const Effect& e : effs)
@@ -110,7 +113,8 @@ std::function<Result()> execute_and_return_fixed_value(
 
 // Converts an arbitrary callable effect to an std::function.
 template <typename Effect,
-        typename Result = typename utils::function_traits<Effect>::result_type>
+        typename Result = typename utils::function_traits<
+            Effect>::result_type>
 std::function<Result()> effect_to_std_function(Effect eff)
 {
     return [eff]() -> Result
@@ -120,10 +124,11 @@ std::function<Result()> effect_to_std_function(Effect eff)
 }
 
 // API search type: execute_max_n_times_until_success : int, io (), int -> io bool
-// Returns a function that executes a side effect until it succeds
-// with a maximum number of attempts and an optinal pause in milliseconds.
+// Returns a function that executes a side effect until it succeds once
+// or the maximum number of attempts with an optional pause in between.
 template <typename Effect,
-        typename Result = typename utils::function_traits<Effect>::result_type>
+        typename Result = typename utils::function_traits<
+            Effect>::result_type>
 std::function<bool()> execute_max_n_times_until_success(
         std::size_t n,
         const Effect& eff,
@@ -149,10 +154,12 @@ std::function<bool()> execute_max_n_times_until_success(
 // until one of them returns false.
 template <typename Container,
         typename Effect = typename Container::value_type,
-        typename Result = typename utils::function_traits<Effect>::result_type>
+        typename Result = typename utils::function_traits<
+            Effect>::result_type>
 std::function<bool()> execute_serially_until_failure(const Container& effs)
 {
-    static_assert(std::is_convertible<Result, bool>::value, "Effects must return a boolish type.");
+    static_assert(std::is_convertible<Result, bool>::value,
+        "Effects must return a boolish type.");
     return [effs]() -> bool
     {
         for (const Effect& e : effs)
@@ -172,7 +179,8 @@ std::function<bool()> execute_serially_until_failure(const Container& effs)
 // Can be used for something like MapReduce.
 template <typename Container,
         typename Effect = typename Container::value_type,
-        typename Result = typename utils::function_traits<Effect>::result_type>
+        typename Result = typename utils::function_traits<
+            Effect>::result_type>
 std::function<std::vector<Result>()> execute_parallelly(const Container& effs)
 {
     return [effs]() -> std::vector<Result>

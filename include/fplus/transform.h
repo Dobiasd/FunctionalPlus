@@ -35,7 +35,8 @@ ContainerOut transform_convert(F f, const ContainerIn& xs)
 // API search type: transform_with_idx : (int -> a -> b), [a] -> [b]
 // transform_with_idx(f, [6, 4, 7]) == [f(0, 6), f(1, 4), f(2, 7)]
 template <typename F, typename ContainerIn,
-    typename ContainerOut = typename same_cont_new_t_from_binary_f< ContainerIn, F, std::size_t, typename ContainerIn::value_type>::type>
+    typename ContainerOut = typename same_cont_new_t_from_binary_f<
+        ContainerIn, F, std::size_t, typename ContainerIn::value_type>::type>
 ContainerOut transform_with_idx(F f, const ContainerIn& xs)
 {
     static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
@@ -54,7 +55,8 @@ ContainerOut transform_with_idx(F f, const ContainerIn& xs)
 // Map function over values and drop resulting nothings.
 template <typename F, typename ContainerIn,
     typename FOut = typename utils::function_traits<F>::result_type,
-    typename ContainerOut = typename same_cont_new_t<ContainerIn, typename FOut::type>::type>
+    typename ContainerOut = typename same_cont_new_t<ContainerIn,
+        typename FOut::type>::type>
 ContainerOut transform_and_keep_justs(F f, const ContainerIn& xs)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
@@ -66,7 +68,8 @@ ContainerOut transform_and_keep_justs(F f, const ContainerIn& xs)
 // Map function over values and drop resulting errors.
 template <typename F, typename ContainerIn,
     typename FOut = typename utils::function_traits<F>::result_type,
-    typename ContainerOut = typename same_cont_new_t<ContainerIn, typename FOut::ok_t>::type>
+    typename ContainerOut = typename same_cont_new_t<
+        ContainerIn, typename FOut::ok_t>::type>
 ContainerOut transform_and_keep_oks(F f, const ContainerIn& xs)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
@@ -77,7 +80,8 @@ ContainerOut transform_and_keep_oks(F f, const ContainerIn& xs)
 // API search type: transform_and_concat : (a -> [b]), [a] -> [b]
 // Map function over values and concat results.
 template <typename F, typename ContainerIn,
-    typename ContainerOut = typename same_cont_new_t_from_unary_f<ContainerIn, F>::type::value_type>
+    typename ContainerOut = typename same_cont_new_t_from_unary_f<
+        ContainerIn, F>::type::value_type>
 ContainerOut transform_and_concat(F f, const ContainerIn& xs)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");

@@ -132,7 +132,9 @@ ContainerOut split_by
         (UnaryPredicate pred, bool allowEmpty, const ContainerIn& xs)
 {
     check_unary_predicate_for_container<UnaryPredicate, ContainerIn>();
-    static_assert(std::is_same<ContainerIn, typename ContainerOut::value_type>::value, "Containers do not match.");
+    static_assert(std::is_same<ContainerIn,
+        typename ContainerOut::value_type>::value,
+        "Containers do not match.");
 
     ContainerOut result;
     auto itOut = get_back_inserter(result);
@@ -158,14 +160,17 @@ ContainerOut split_by
 }
 
 // API search type: split_by_keep_separators : (a -> bool), [a] -> [[a]]
-// split_by_keep_separators(is_even, true, [1,3,2,2,5,5,3,6,7,9]) == [[1,3],[2],[2,5,5,3],[6,7,9]]
+// split_by_keep_separators(is_even, true, [1,3,2,2,5,5,3,6,7,9])
+// == [[1,3],[2],[2,5,5,3],[6,7,9]]
 template <typename UnaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut split_by_keep_separators
         (UnaryPredicate pred, const ContainerIn& xs)
 {
     check_unary_predicate_for_container<UnaryPredicate, ContainerIn>();
-    static_assert(std::is_same<ContainerIn, typename ContainerOut::value_type>::value, "Containers do not match.");
+    static_assert(std::is_same<ContainerIn,
+        typename ContainerOut::value_type>::value,
+        "Containers do not match.");
     ContainerOut result;
     if (is_empty(xs))
         return result;
@@ -232,7 +237,9 @@ template <typename ContainerIdxs, typename ContainerIn,
         typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut split_at_idxs(const ContainerIdxs& idxsIn, const ContainerIn& xs)
 {
-    static_assert(std::is_same<ContainerIn, typename ContainerOut::value_type>::value, "Containers do not match.");
+    static_assert(std::is_same<ContainerIn,
+        typename ContainerOut::value_type>::value,
+        "Containers do not match.");
     ContainerIdxs idxStartC = {0};
     ContainerIdxs idxEndC = {size_of_cont(xs)};
     std::vector<ContainerIdxs> containerIdxss = {idxStartC, idxsIn, idxEndC};
@@ -270,7 +277,9 @@ template <typename ContainerIn,
 ContainerOut split_by_token(const ContainerIn& token,
         bool allowEmpty, const ContainerIn& xs)
 {
-    static_assert(std::is_same<ContainerIn, typename ContainerOut::value_type>::value, "Containers do not match.");
+    static_assert(std::is_same<ContainerIn,
+        typename ContainerOut::value_type>::value,
+        "Containers do not match.");
     auto instances = find_all_instances_of_token_non_overlapping(token, xs);
     *get_back_inserter(instances) = size_of_cont(xs);
     ContainerOut result;
@@ -290,7 +299,8 @@ ContainerOut split_by_token(const ContainerIn& token,
 // API search type: count_occurrences : [a] -> map a int
 // count_occurrences([1,2,2,3,2)) == [(1, 1), (2, 3), (3, 1)]
 template <typename ContainerIn,
-        typename MapOut = typename std::map<typename ContainerIn::value_type, std::size_t>>
+        typename MapOut = typename std::map<
+            typename ContainerIn::value_type, std::size_t>>
 MapOut count_occurrences(const ContainerIn& xs)
 {
     MapOut result;
@@ -306,7 +316,8 @@ MapOut count_occurrences(const ContainerIn& xs)
 template <typename BinaryPredicate,
         typename ContainerIn,
         typename T = typename ContainerIn::value_type,
-        typename ContainerOut = typename std::vector<std::pair<std::size_t, T>>>
+        typename ContainerOut =
+            typename std::vector<std::pair<std::size_t, T>>>
 ContainerOut run_length_encode_by(BinaryPredicate pred, const ContainerIn& xs)
 {
     check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
@@ -323,7 +334,8 @@ ContainerOut run_length_encode_by(BinaryPredicate pred, const ContainerIn& xs)
 // run_length_encode([1,2,2,2,2,3,3,2)) == [(1,1),(4,2),(2,3),(1,2)]
 template <typename ContainerIn,
         typename T = typename ContainerIn::value_type,
-        typename ContainerOut = typename std::vector<std::pair<std::size_t, T>>>
+        typename ContainerOut =
+            typename std::vector<std::pair<std::size_t, T>>>
 ContainerOut run_length_encode(const ContainerIn& xs)
 {
     return run_length_encode_by(is_equal_by(identity<T>), xs);
@@ -338,7 +350,8 @@ template <typename ContainerIn,
         typename ContainerOut = typename std::vector<T>>
 ContainerOut run_length_decode(const ContainerIn& pairs)
 {
-    static_assert(std::is_convertible<Cnt, std::size_t>::value, "Count type must be convertible to std::size_t.");
+    static_assert(std::is_convertible<Cnt, std::size_t>::value,
+        "Count type must be convertible to std::size_t.");
     auto pair_to_vec = apply_to_pair(replicate<T>);
     return concat(transform(pair_to_vec, pairs));
 }
@@ -349,7 +362,8 @@ template <typename Container, typename UnaryPredicate>
 Container take_while(UnaryPredicate pred, const Container& xs)
 {
     auto maybeIdx = find_first_idx_by(logical_not(pred), xs);
-    return take(just_with_default<std::size_t>(size_of_cont(xs), maybeIdx), xs);
+    return take(just_with_default<std::size_t>(
+        size_of_cont(xs), maybeIdx), xs);
 }
 
 // API search type: drop_while : (a -> bool), [a] -> [a]
@@ -358,7 +372,8 @@ template <typename Container, typename UnaryPredicate>
 Container drop_while(UnaryPredicate pred, const Container& xs)
 {
     auto maybeIdx = find_first_idx_by(logical_not(pred), xs);
-    return drop(just_with_default<std::size_t>(size_of_cont(xs), maybeIdx), xs);
+    return drop(just_with_default<std::size_t>(
+        size_of_cont(xs), maybeIdx), xs);
 }
 
 // API search type: span : (a -> bool), [a] -> ([a], [a])

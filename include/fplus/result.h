@@ -32,8 +32,12 @@ class result
 public:
     bool is_ok() const { return static_cast<bool>(ptr_ok_); }
     bool is_error() const { return static_cast<bool>(ptr_error_); }
-    const Ok& unsafe_get_ok() const { check_either_or_invariant(); assert(is_ok()); return *ptr_ok_; }
-    const Error& unsafe_get_error() const { check_either_or_invariant(); assert(is_error()); return *ptr_error_; }
+    const Ok& unsafe_get_ok() const {
+        check_either_or_invariant(); assert(is_ok()); return *ptr_ok_;
+    }
+    const Error& unsafe_get_error() const {
+        check_either_or_invariant(); assert(is_error()); return *ptr_error_;
+    }
     typedef Ok ok_t;
     typedef Error error_t;
 
@@ -194,8 +198,10 @@ bool operator != (const result<Ok, Error>& x, const result<Ok, Error>& y)
 // An errors stays the same error, regardless of the conversion.
 template <typename Error,
     typename F,
-    typename A = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename B = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::result_type>::type>::type>
+    typename A = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename B = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::result_type>::type>::type>
 std::function<result<B, Error>(const result<A, Error>&)> lift_result(F f)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
@@ -214,17 +220,22 @@ std::function<result<B, Error>(const result<A, Error>&)> lift_result(F f)
 // is extracted and shoved into the second function.
 // If the first functions returns an error, the error is forwarded.
 template <typename F, typename G,
-    typename FIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename FOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::result_type>::type>::type,
-    typename GIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<G>::template arg<0>::type>::type>::type,
-    typename GOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<G>::result_type>::type>::type,
+    typename FIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename FOut = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::result_type>::type>::type,
+    typename GIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
+    typename GOut = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<G>::result_type>::type>::type,
     typename Ok = typename GOut::ok_t,
     typename Error = typename GOut::error_t>
 std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
-    static_assert(std::is_convertible<typename FOut::ok_t,GIn>::value, "Function parameter types do not match");
+    static_assert(std::is_convertible<typename FOut::ok_t,GIn>::value,
+        "Function parameter types do not match");
     return [f, g](const FIn& x)
     {
         auto resultB = f(x);
@@ -237,8 +248,10 @@ std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g)
 // API search type: and_then_result : (a -> result b c), (b -> result d c), (d -> result e c) -> (a -> result e c)
 // Monadic bind.
 template <typename F, typename G, typename H,
-    typename FIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename HOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<H>::result_type>::type>::type,
+    typename FIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename HOut = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<H>::result_type>::type>::type,
     typename Ok = typename HOut::ok_t,
     typename Error = typename HOut::error_t>
 std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g, H h)
@@ -249,11 +262,14 @@ std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g, H h)
 // API search type: and_then_result : (a -> result b c), (b -> result d c), (d -> result e c), (e -> result f c) -> (a -> result f c)
 // Monadic bind.
 template <typename F, typename G, typename H, typename I,
-    typename FIn = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename IOut = typename std::remove_const<typename std::remove_reference<typename utils::function_traits<I>::result_type>::type>::type,
+    typename FIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename IOut = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<I>::result_type>::type>::type,
     typename Ok = typename IOut::ok_t,
     typename Error = typename IOut::error_t>
-std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g, H h, I i)
+std::function<result<Ok, Error>(const FIn&)>
+and_then_result(F f, G g, H h, I i)
 {
     return and_then_result(and_then_result(and_then_result(f, g), h), i);
 }

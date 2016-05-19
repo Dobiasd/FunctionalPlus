@@ -24,15 +24,19 @@ template <typename ContainerIn1, typename ContainerIn2, typename F,
 ContainerOut zip_with(const F& f,
         const ContainerIn1& xs, const ContainerIn2& ys)
 {
-    static_assert(utils::function_traits<F>::arity == 2, "Function must take two parameters.");
+    static_assert(utils::function_traits<F>::arity == 2,
+        "Function must take two parameters.");
     typedef typename utils::function_traits<F>::result_type FOut;
     typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
     typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
     typedef typename ContainerIn1::value_type T1;
     typedef typename ContainerIn2::value_type T2;
-    static_assert(std::is_convertible<T1, FIn0>::value, "Function does not take elements from first Container as first Parameter.");
-    static_assert(std::is_convertible<T2, FIn1>::value, "Function does not take elements from second Container as second Parameter.");
-    static_assert(std::is_convertible<FOut, TOut>::value, "Elements produced by this function can not be stored in ContainerOut.");
+    static_assert(std::is_convertible<T1, FIn0>::value,
+        "Function does not take elements from first Container as first Parameter.");
+    static_assert(std::is_convertible<T2, FIn1>::value,
+        "Function does not take elements from second Container as second Parameter.");
+    static_assert(std::is_convertible<FOut, TOut>::value,
+        "Elements produced by this function can not be stored in ContainerOut.");
     static_assert(std::is_same<
         typename same_cont_new_t<ContainerIn1, void>::type,
         typename same_cont_new_t<ContainerIn2, void>::type>::value,
@@ -127,7 +131,8 @@ std::pair<X, ResultSecond> transform_snd(F f, const std::pair<X, Y>& pair)
 template <typename X, typename Y, typename F, typename G,
     typename ResultFirst = typename utils::function_traits<F>::result_type,
     typename ResultSecond = typename utils::function_traits<G>::result_type>
-std::pair<ResultFirst, ResultSecond> transform_pair(F f, G g, const std::pair<X, Y>& pair)
+std::pair<ResultFirst, ResultSecond> transform_pair(
+    F f, G g, const std::pair<X, Y>& pair)
 {
     return std::make_pair(f(pair.first), g(pair.second));
 }
@@ -147,7 +152,9 @@ template <typename ContainerOut, typename Container,
     typename Pair = typename std::pair<T, T>>
 ContainerOut overlapping_pairs(const Container& xs)
 {
-    static_assert(std::is_convertible<Pair, typename ContainerOut::value_type>::value, "ContainerOut can not store pairs of elements from ContainerIn.");
+    static_assert(std::is_convertible<Pair,
+        typename ContainerOut::value_type>::value,
+        "ContainerOut can not store pairs of elements from ContainerIn.");
     ContainerOut result;
     if (size_of_cont(xs) < 2)
         return result;

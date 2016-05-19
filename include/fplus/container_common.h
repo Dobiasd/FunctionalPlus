@@ -125,7 +125,9 @@ template <typename NewT, typename ContainerIn,
     typename ContainerOut = typename same_cont_new_t<ContainerIn, NewT>::type>
 ContainerOut convert_elems(const ContainerIn& xs)
 {
-    static_assert(std::is_constructible<NewT, typename ContainerIn::value_type>::value, "Elements not convertible.");
+    static_assert(std::is_constructible<NewT,
+        typename ContainerIn::value_type>::value,
+        "Elements not convertible.");
     ContainerOut ys;
     prepare_container(ys, size_of_cont(xs));
     auto it = get_back_inserter<ContainerOut>(ys);
@@ -163,7 +165,9 @@ ContainerOut convert_container(const ContainerIn& xs)
 template <typename ContainerOut, typename ContainerIn>
 ContainerOut convert_container_and_elems(const ContainerIn& xs)
 {
-    static_assert(std::is_convertible<typename ContainerIn::value_type, typename ContainerOut::value_type>::value, "Elements not convertible.");
+    static_assert(std::is_convertible<typename ContainerIn::value_type,
+        typename ContainerOut::value_type>::value,
+        "Elements not convertible.");
     typedef typename ContainerOut::value_type DestElem;
     ContainerOut ys;
     prepare_container(ys, size_of_cont(xs));
@@ -280,7 +284,8 @@ template <typename Container,
     typename ContainerOut = std::vector<T>>
 std::vector<T> elems_at_idxs(const ContainerIdxs& idxs, const Container& xs)
 {
-    static_assert(std::is_same<typename ContainerIdxs::value_type, std::size_t>::value, "Indices must be std::size_t");
+    static_assert(std::is_same<typename ContainerIdxs::value_type, std::size_t>::value,
+        "Indices must be std::size_t");
     ContainerOut result;
     prepare_container(result, size_of_cont(idxs));
     auto itOut = back_inserter(result);
@@ -320,7 +325,8 @@ std::function<T(std::size_t n)> nth_element_flipped(const Container& xs)
 // transform((*2), [1, 3, 4]) == [2, 6, 8]
 // Also known as map.
 template <typename F, typename ContainerIn,
-    typename ContainerOut = typename same_cont_new_t_from_unary_f<ContainerIn, F>::type>
+    typename ContainerOut = typename same_cont_new_t_from_unary_f<
+        ContainerIn, F>::type>
 ContainerOut transform(F f, const ContainerIn& xs)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");

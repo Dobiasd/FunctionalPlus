@@ -14,9 +14,14 @@ namespace fplus
 template <typename UnaryPredicate, typename T>
 void check_unary_predicate_for_type()
 {
-    static_assert(utils::function_traits<UnaryPredicate>::arity == 1,"Wrong arity.");
-    static_assert(std::is_convertible<T, typename utils::function_traits<UnaryPredicate>::template arg<0>::type>::value, "Unary predicate can not take these values.");
-    static_assert(std::is_convertible<typename utils::function_traits<UnaryPredicate>::result_type, bool>::value, "Predicate must return bool.");
+    static_assert(utils::function_traits<UnaryPredicate>::arity == 1,
+        "Wrong arity.");
+    static_assert(std::is_convertible<T,
+        typename utils::function_traits<UnaryPredicate>::template arg<0>::type>::value,
+        "Unary predicate can not take these values.");
+    static_assert(std::is_convertible<
+        typename utils::function_traits<UnaryPredicate>::result_type, bool>::value,
+        "Predicate must return bool.");
 }
 
 template <typename F, typename T>
@@ -25,20 +30,29 @@ void check_index_with_type_predicate_for_type()
     static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
     typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
     typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
-    static_assert(std::is_same<FIn0, std::size_t>::value, "First parameter of function must be std::size_t.");
-    static_assert(std::is_convertible<typename utils::function_traits<F>::result_type, bool>::value, "Function must return bool.");
-    static_assert(std::is_convertible<T, FIn1>::value, "Function does not work with elements of Container.");
+    static_assert(std::is_same<FIn0, std::size_t>::value,
+        "First parameter of function must be std::size_t.");
+    static_assert(std::is_convertible<
+        typename utils::function_traits<F>::result_type, bool>::value,
+        "Function must return bool.");
+    static_assert(std::is_convertible<T, FIn1>::value,
+        "Function does not work with elements of Container.");
 }
 
 template <typename BinaryPredicate, typename T>
 void check_binary_predicate_for_type()
 {
-    static_assert(utils::function_traits<BinaryPredicate>::arity == 2, "Wrong arity.");
+    static_assert(utils::function_traits<BinaryPredicate>::arity == 2,
+        "Wrong arity.");
     typedef typename utils::function_traits<BinaryPredicate>::template arg<0>::type FIn;
     typedef typename utils::function_traits<BinaryPredicate>::template arg<1>::type FIn1;
-    static_assert(std::is_same<FIn, FIn1>::value, "BinaryPredicate must take two similar types");
-    static_assert(std::is_convertible<typename utils::function_traits<BinaryPredicate>::result_type, bool>::value, "BinaryPredicate must return bool.");
-    static_assert(std::is_convertible<T, FIn>::value, "BinaryPredicate does not work with elements of Container.");
+    static_assert(std::is_same<FIn, FIn1>::value,
+        "BinaryPredicate must take two similar types");
+    static_assert(std::is_convertible<
+        typename utils::function_traits<BinaryPredicate>::result_type, bool>::value,
+        "BinaryPredicate must return bool.");
+    static_assert(std::is_convertible<T, FIn>::value,
+        "BinaryPredicate does not work with elements of Container.");
 }
 
 template <typename Compare, typename T>
@@ -47,9 +61,13 @@ void check_compare_for_type()
     static_assert(utils::function_traits<Compare>::arity == 2, "Wrong arity.");
     typedef typename utils::function_traits<Compare>::template arg<0>::type FIn;
     typedef typename utils::function_traits<Compare>::template arg<1>::type FIn1;
-    static_assert(std::is_same<FIn, FIn1>::value, "Compare must take two similar types");
-    static_assert(std::is_convertible<typename utils::function_traits<Compare>::result_type, bool>::value, "Compare must return bool.");
-    static_assert(std::is_convertible<T, FIn>::value, "Compare does not work with elements of Container.");
+    static_assert(std::is_same<FIn, FIn1>::value,
+        "Compare must take two similar types");
+    static_assert(std::is_convertible<
+        typename utils::function_traits<Compare>::result_type, bool>::value,
+        "Compare must return bool.");
+    static_assert(std::is_convertible<T, FIn>::value,
+        "Compare does not work with elements of Container.");
 }
 
 template <typename F, typename G, typename X, typename Y>
@@ -57,9 +75,15 @@ void check_compare_preprocessors_for_types()
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
-    static_assert(std::is_convertible<X, typename utils::function_traits<F>::template arg<0>::type>::value, "Function can note take elements of this type.");
-    static_assert(std::is_convertible<Y, typename utils::function_traits<G>::template arg<0>::type>::value, "Function can note take elements of this type.");
-    static_assert(std::is_same<typename utils::function_traits<F>::result_type, typename utils::function_traits<G>::result_type>::value, "Both functions must return same type.");
+    static_assert(std::is_convertible<X,
+        typename utils::function_traits<F>::template arg<0>::type>::value,
+        "Function can note take elements of this type.");
+    static_assert(std::is_convertible<Y,
+        typename utils::function_traits<G>::template arg<0>::type>::value,
+        "Function can note take elements of this type.");
+    static_assert(std::is_same<typename utils::function_traits<F>::result_type,
+        typename utils::function_traits<G>::result_type>::value,
+        "Both functions must return same type.");
 }
 
 // API search type: identity : a -> a
@@ -421,7 +445,8 @@ std::function<bool(const X&)> is_greater_or_equal_than(const X& x)
 template <typename T>
 bool xor_bools(const T& x, const T& y)
 {
-    static_assert(std::is_convertible<T, bool>::value, "Type must be convertible to bool.");
+    static_assert(std::is_convertible<T, bool>::value,
+        "Type must be convertible to bool.");
     return (x && !y) || (!x && y);
 }
 
@@ -435,7 +460,8 @@ std::function<FOut(FIn0, FIn1)> ord_to_eq(Compare comp)
 {
     static_assert(utils::function_traits<Compare>::arity == 2, "Wrong arity.");
     static_assert(std::is_same<FOut, bool>::value, "Function must return bool.");
-    static_assert(std::is_same<FIn0, FIn1>::value, "Function must take two equal types.");
+    static_assert(std::is_same<FIn0, FIn1>::value,
+        "Function must take two equal types.");
     return [comp]
            (FIn0 x, FIn1 y)
            { return !comp(x, y) && !comp(y, x); };
@@ -451,7 +477,8 @@ std::function<FOut(FIn0, FIn1)> ord_to_not_eq(Compare comp)
 {
     static_assert(utils::function_traits<Compare>::arity == 2, "Wrong arity.");
     static_assert(std::is_same<FOut, bool>::value, "Function must return bool.");
-    static_assert(std::is_same<FIn0, FIn1>::value, "Function must take two equal types.");
+    static_assert(std::is_same<FIn0, FIn1>::value,
+        "Function must take two equal types.");
     return [comp]
            (FIn0 x, FIn1 y)
            { return comp(x, y) || comp(y, x); };
@@ -467,7 +494,8 @@ std::function<FOut(FIn0, FIn1)> ord_eq_to_eq(Compare comp)
 {
     static_assert(utils::function_traits<Compare>::arity == 2, "Wrong arity.");
     static_assert(std::is_same<FOut, bool>::value, "Function must return bool.");
-    static_assert(std::is_same<FIn0, FIn1>::value, "Function must take two equal types.");
+    static_assert(std::is_same<FIn0, FIn1>::value,
+        "Function must take two equal types.");
     return [comp]
            (FIn0 x, FIn1 y)
            { return comp(x, y) && comp(y, x); };
@@ -483,7 +511,8 @@ std::function<FOut(FIn0, FIn1)> ord_eq_to_not_eq(Compare comp)
 {
     static_assert(utils::function_traits<Compare>::arity == 2, "Wrong arity.");
     static_assert(std::is_same<FOut, bool>::value, "Function must return bool.");
-    static_assert(std::is_same<FIn0, FIn1>::value, "Function must take two equal types.");
+    static_assert(std::is_same<FIn0, FIn1>::value,
+        "Function must take two equal types.");
     return [comp]
            (FIn0 x, FIn1 y)
            {
