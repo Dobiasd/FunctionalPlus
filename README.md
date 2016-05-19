@@ -68,41 +68,50 @@ int main()
 ```
 
 ### The I in our team
-There also are some convenience functions for strings.
+There also are some convenience functions for retrieving properties of containers. For example you can count the occurences of a character in a string.
 ```c++
 #include "fplus.h"
 #include <iostream>
 int main()
 {
-    std::string team = "Our team is great. I love everybody.";
-    if (fplus::is_elem_of("I", fplus::split_words(team, false)))
-        std::cout << "There actually is an I in team." << std::endl;
+    std::string team = "Our team is great. I love everybody I work with.";
+    std::cout << "There actually are this many 'I's in team: " <<
+        fplus::count("I", fplus::split_words(team, false)) << std::endl;
 }
 ```
 
-### Silent Night
-Predicates can be combined logically in a functional way.
+### The cutest cat
+Finding the highest rated element in a container is easy.
 ```c++
 #include "fplus.h"
 #include <iostream>
-struct Entity
+
+struct cat
 {
-    Entity() : calm_(true), bright_(true) {}
-    bool calm_;
-    bool bright_;
+    std::string name_;
+    double softness_;
+    double temperature_;
+    double size_;
+    double roundness_;
+    double fur_amount_;
 };
 
 int main()
 {
-    auto isCalm = [](const Entity& e) { return e.calm_; };
-    auto isBright = [](const Entity& e) { return e.bright_; };
-    std::vector<Entity> entities(4);
-    if (fplus::all_by(fplus::logical_and(isCalm, isBright), entities))
-        std::cout << "Silent night." << std::endl;
+    auto cuteness = [](const cat& c) -> double
+    {
+        return c.softness_ * c.temperature_ * c.roundness_ *
+            c.fur_amount_ - c.size_;
+    };
+    std::vector<cat> cats = {
+        {"Tigger",   5, 5, 5, 5, 5},
+        {"Simba",    2, 9, 9, 2, 7},
+        {"Muffin",   9, 4, 2, 8, 6},
+        {"Garfield", 6, 5, 7, 9, 5}};
+    std::cout << fplus::maximum_on(cuteness, cats).name_ <<
+        " is the cutest kitty." << std::endl;
 }
 ```
-
-`all_by` is a function that takes a unary predicate and checks if all elements in the container fulfill it. `logical_and` simply combines two unary predicates to one.
 
 ### Transformations, function composition and binding
 Let's say you have the following function [given](https://gist.github.com/Dobiasd/77587769cbc0e13ed582).

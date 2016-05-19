@@ -1269,9 +1269,9 @@ void Test_example_SameOldSameOld()
 
 void Test_example_IInTeam()
 {
-    std::string team = "Our team is great. I love everybody.";
-    if (fplus::is_elem_of("I", fplus::split_words(team, false)))
-        std::cout << "There actually is an I in team." << std::endl;
+    std::string team = "Our team is great. I love everybody I work with.";
+    std::cout << "There actually are this many 'I's in team: " <<
+        fplus::count("I", fplus::split_words(team, false)) << std::endl;
 }
 
 struct Entity
@@ -1288,6 +1288,32 @@ void Test_example_AllIsCalmAndBright()
     std::vector<Entity> entities(4);
     if (fplus::all_by(fplus::logical_and(isCalm, isBright), entities))
         std::cout << "Silent night." << std::endl;
+}
+
+struct cat
+{
+    std::string name_;
+    double softness_;
+    double temperature_;
+    double size_;
+    double roundness_;
+    double fur_amount_;
+};
+
+void Test_example_TheCutestCat()
+{
+    auto cuteness = [](const cat& c) -> double
+    {
+        return c.softness_ * c.temperature_ * c.roundness_ *
+            c.fur_amount_ - c.size_;
+    };
+    std::vector<cat> cats = {
+        {"Tigger",   5, 5, 5, 5, 5},
+        {"Simba",    2, 9, 9, 2, 7},
+        {"Muffin",   9, 4, 2, 8, 6},
+        {"Garfield", 6, 5, 7, 9, 5}};
+    std::cout << fplus::maximum_on(cuteness, cats).name_ <<
+        " is the cutest kitty." << std::endl;
 }
 
 std::list<std::uint64_t> collatz_seq(std::uint64_t x)
@@ -1387,6 +1413,7 @@ int main()
     Test_example_SameOldSameOld();
     Test_example_IInTeam();
     Test_example_AllIsCalmAndBright();
+    Test_example_TheCutestCat();
     Test_example_CollatzSequence();
     std::cout << "Applications OK." << std::endl;
     std::cout << "-------" << std::endl;
