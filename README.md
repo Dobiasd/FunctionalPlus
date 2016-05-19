@@ -1,8 +1,6 @@
-FunctionalPlus
-==============
-**helps you write concise and readable C++ code.**
-
 ![logo](logo/fplus.png)
+
+**helps you write concise and readable C++ code.**
 
 Introduction
 ------------
