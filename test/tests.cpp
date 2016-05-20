@@ -1313,7 +1313,7 @@ void Test_example_TheCutestCat()
         {"Muffin",   9, 4, 2, 8, 6},
         {"Garfield", 6, 5, 7, 9, 5}};
     std::cout << fplus::maximum_on(cuteness, cats).name_ <<
-        " is the cutest kitty." << std::endl;
+        " is happy and sleepy. *purr* *purr* *purr*" << std::endl;
 }
 
 std::list<std::uint64_t> collatz_seq(std::uint64_t x)

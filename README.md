@@ -87,8 +87,8 @@ Output:
 There actually are this many 'I's in team: 2
 ```
 
-### The cutest cat
-Finding the highest rated element in a container is easy.
+### The cutest kitty
+Finding the highest rated element in a container is very simple compared to [a hand-written version](https://gist.github.com/Dobiasd/a4e7aa9c25a3dd4c0522d75a71e2a867).
 ```c++
 #include "fplus.h"
 #include <iostream>
@@ -116,14 +116,14 @@ int main()
         {"Muffin",   9, 4, 2, 8, 6},
         {"Garfield", 6, 5, 7, 9, 5}};
     std::cout << fplus::maximum_on(cuteness, cats).name_ <<
-        " is the cutest kitty." << std::endl;
+        " is happy and sleepy. *purr* *purr* *purr*" << std::endl;
 }
 ```
 
 Output:
 
 ```
-Muffin is the cutest cat.
+Muffin is happy and sleepy. *purr* *purr* *purr*
 ```
 
 ### Transformations, function composition and binding
