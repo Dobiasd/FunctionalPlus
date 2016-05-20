@@ -199,8 +199,8 @@ void print_duplicates(const std::vector<std::string>& strs)
 int main()
 {
     const auto code_files = list_files(code_dir);
-    const auto functions = fplus::transform_and_concat(
-            parse_code_file, code_files);
+    const auto functions = fplus::sort_on(get_function_help_name,
+            fplus::transform_and_concat(parse_code_file, code_files));
     const auto broken = get_broken_function_helps(functions);
     if (fplus::is_not_empty(broken))
     {
