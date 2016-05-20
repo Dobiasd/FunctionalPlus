@@ -19,20 +19,27 @@ main =
         , view = view
         }
 
+
 maxVisibleFunctions : Int
-maxVisibleFunctions = 20
+maxVisibleFunctions =
+    20
+
 
 initModelAndCommands : ( Model, Cmd Msg )
 initModelAndCommands =
     ( defaultModel, cmdGetRandomNumbers )
 
+
 functionCnt : Int
-functionCnt = List.length functions
+functionCnt =
+    List.length functions
+
 
 cmdGetRandomNumbers : Cmd Msg
 cmdGetRandomNumbers =
     Random.list maxVisibleFunctions (Random.int 0 (functionCnt))
-    |> Random.generate RandomNumbers
+        |> Random.generate RandomNumbers
+
 
 type alias Model =
     { query : String
@@ -86,53 +93,51 @@ update action model =
             , Cmd.none
             )
 
+
 isElem : List a -> a -> Bool
 isElem xs elem =
     List.filter (\x -> x == elem) xs |> List.isEmpty |> not
 
-getRandomSearchResult : List Int -> List (Function, Float)
+
+getRandomSearchResult : List Int -> List ( Function, Float )
 getRandomSearchResult chosenIdxs =
     functions
-    |> List.map2 (,) [0..functionCnt]
-    |> List.filter (\(idx, _) -> isElem chosenIdxs idx)
-    |> List.map snd
-    |> List.take maxVisibleFunctions
-    |> List.map (\x -> (x, 0))
+        |> List.map2 (,) [0..functionCnt]
+        |> List.filter (\( idx, _ ) -> isElem chosenIdxs idx)
+        |> List.map snd
+        |> List.take maxVisibleFunctions
+        |> List.map (\x -> ( x, 0 ))
 
 
 view : Model -> Html Msg
 view model =
     div [ class "mainwrapper" ]
-        [
-            div [ class "main" ]
-            [
-                div [ class "githublink" ]
-                [
-                    let
-                        url = "https://github.com/dobiasd/"
-                    in
-                        a [ href url]
-                        [
-                            div [ class "logo" ]
-                            [
-                                img [ class "logo", src "fplus.png" ] []
+        [ div [ class "main" ]
+            [ div [ class "githublink" ]
+                [ let
+                    url =
+                        "https://github.com/dobiasd/"
+                  in
+                    a [ href url ]
+                        [ div [ class "logo" ]
+                            [ img [ class "logo", src "fplus.png" ] []
                             ]
-                          , text url
+                        , text url
                         ]
                 ]
-              , hr [] []
-              , input
-                  [ placeholder "search query"
-                  , autofocus True
-                  , style [ ( "width", "500px" ) ]
-                  , onInput UpdateQuery
-                  ]
-                  []
-              , hr [] []
-              , model.searchResult |> showFunctions
-              , hr [] []
-              , showFooter
-              ]
+            , hr [] []
+            , input
+                [ placeholder "search query"
+                , autofocus True
+                , style [ ( "width", "500px" ) ]
+                , onInput UpdateQuery
+                ]
+                []
+            , hr [] []
+            , model.searchResult |> showFunctions
+            , hr [] []
+            , showFooter
+            ]
         ]
 
 
