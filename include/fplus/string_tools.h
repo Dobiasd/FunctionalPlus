@@ -52,7 +52,7 @@ String clean_newlines(const String& str)
         replace_tokens(String("\r\n"), String("\n"), str));
 }
 
-// API search type: split_words : string, bool -> [string]
+// API search type: split_words : string -> bool -> [string]
 // Splits a string by non-letter and non-digit characters.
 // split_words("How are you?", false) == ["How", "are", "you"]
 template <typename String, typename ContainerOut = std::vector<String>>
@@ -61,7 +61,7 @@ ContainerOut split_words(const String& str, const bool allowEmpty)
     return split_by(logical_not(is_letter_or_digit<String>), allowEmpty, str);
 }
 
-// API search type: split_words_by : string, char, bool -> [string]
+// API search type: split_words_by : string -> char -> bool -> [string]
 // Splits a string by non-letter and non-digit characters.
 // split_words("How-are you?", ' ', false) == ["How-are", "you?"]
 template <typename String, typename ContainerOut = std::vector<String>>
@@ -76,7 +76,7 @@ ContainerOut split_words_by
     return split_by(comparator, allowEmpty, str);
 }
 
-// API search type: split_words_by_many : string, [char], bool -> [string]
+// API search type: split_words_by_many : string -> [char] -> bool -> [string]
 // Splits a string by the given delimiter(s).
 // split_words_by_many("How are u?", " o", false) == ["H","w","are","u?"]
 template <typename String, typename ContainerOut = std::vector<String>>
@@ -92,7 +92,7 @@ ContainerOut split_words_by_many
     return split_by(comparator, allowEmpty, str);
 }
 
-// API search type: split_lines : string, bool -> [string]
+// API search type: split_lines : string -> bool -> [string]
 // Splits a string by the found newlines.
 // split_lines("Hi,\nhow are you?", false) == ["Hi,", "How are you"]
 template <typename String, typename ContainerOut = std::vector<String>>
@@ -125,7 +125,7 @@ String trim_whitespace(const String& str)
     return trim_by(is_whitespace<String>, str);
 }
 
-// API search type: to_string_fill_left : char, int, a -> string
+// API search type: to_string_fill_left : char -> int -> a -> string
 // to_string_fill_left('0', 5, 42) == "00042"
 template <typename T>
 std::string to_string_fill_left( const std::string::value_type& filler,
@@ -134,7 +134,7 @@ std::string to_string_fill_left( const std::string::value_type& filler,
     return fill_left(filler, min_size, std::to_string(x));
 }
 
-// API search type: to_string_fill_right : char, int, a -> string
+// API search type: to_string_fill_right : char -> int -> a -> string
 // to_string_fill_right(' ', 5, 42) == "42   "
 template <typename T>
 std::string to_string_fill_right( const std::string::value_type& filler,

@@ -16,7 +16,7 @@
 namespace fplus
 {
 
-// API search type: keep_if : (a -> bool), [a] -> [a]
+// API search type: keep_if : (a -> bool) -> [a] -> [a]
 // keep_if(is_even, [1, 2, 3, 2, 4, 5]) == [2, 2, 4]
 // Also known as filter.
 template <typename Pred, typename Container>
@@ -29,7 +29,7 @@ Container keep_if(Pred pred, const Container& xs)
     return result;
 }
 
-// API search type: drop_if : (a -> bool), [a] -> [a]
+// API search type: drop_if : (a -> bool) -> [a] -> [a]
 // drop_if(is_even, [1, 2, 3, 2, 4, 5]) == [1, 3, 5]
 // Also known as reject.
 template <typename Pred, typename Container>
@@ -39,7 +39,7 @@ Container drop_if(Pred pred, const Container& xs)
     return keep_if(logical_not(pred), xs);
 }
 
-// API search type: without : a, [a] -> [a]
+// API search type: without : a -> [a] -> [a]
 // without(0, [1, 0, 0, 5, 3, 0, 1]) == [1, 5, 3, 1]
 template <typename Container,
     typename T = typename Container::value_type>
@@ -48,7 +48,7 @@ Container without(T elem, const Container& xs)
     return drop_if(is_equal_to(elem), xs);
 }
 
-// API search type: keep_if_with_idx : (int, a -> bool), [a] -> [a]
+// API search type: keep_if_with_idx : (int -> a -> bool) -> [a] -> [a]
 // Predicate takes index and value.
 // All elements fulfilling the predicate are kept.
 template <typename Pred, typename Container>
@@ -66,7 +66,7 @@ Container keep_if_with_idx(Pred pred, const Container& xs)
     return ys;
 }
 
-// API search type: drop_if_with_idx : (int, a -> bool), [a] -> [a]
+// API search type: drop_if_with_idx : (int -> a -> bool) -> [a] -> [a]
 // Predicate takes index and value.
 // All elements fulfilling the predicate are skipped.
 template <typename Pred, typename Container>
@@ -76,7 +76,7 @@ Container drop_if_with_idx(Pred pred, const Container& xs)
     return keep_if_with_idx(logical_not(pred), xs);
 }
 
-// API search type: keep_by_idx : (int -> bool), [a] -> [a]
+// API search type: keep_by_idx : (int -> bool) -> [a] -> [a]
 // Predicate takes an index and decides if an element is kept.
 template <typename UnaryPredicate, typename Container>
 Container keep_by_idx(UnaryPredicate pred, const Container& xs)
@@ -93,7 +93,7 @@ Container keep_by_idx(UnaryPredicate pred, const Container& xs)
     return ys;
 }
 
-// API search type: drop_by_idx : (int -> bool), [a] -> [a]
+// API search type: drop_by_idx : (int -> bool) -> [a] -> [a]
 // Predicate takes an index and decides if an element is dropped.
 template <typename UnaryPredicate, typename Container>
 Container drop_by_idx(UnaryPredicate pred, const Container& xs)
@@ -102,7 +102,7 @@ Container drop_by_idx(UnaryPredicate pred, const Container& xs)
     return keep_by_idx(logical_not(pred), xs);
 }
 
-// API search type: keep_idxs : [int], [a] -> [a]
+// API search type: keep_idxs : [int] -> [a] -> [a]
 // keep_idxs([2,5], [1,2,3,4,5,6,7]) == [3,6]
 template <typename ContainerIdxs, typename Container>
 Container keep_idxs(const ContainerIdxs& idxs_to_keep, const Container& xs)
@@ -124,7 +124,7 @@ Container keep_idxs(const ContainerIdxs& idxs_to_keep, const Container& xs)
     return ys;
 }
 
-// API search type: drop_idxs : [int], [a] -> [a]
+// API search type: drop_idxs : [int] -> [a] -> [a]
 // drop_idxs([2,5], [1,2,3,4,5,6,7]) == [1,2,4,5,7]
 template <typename ContainerIdxs, typename Container>
 Container drop_idxs(const ContainerIdxs& idxs_to_drop, const Container& xs)
@@ -209,7 +209,7 @@ ContainerOut errors(const ContainerIn& xs)
     return ys;
 }
 
-// API search type: trim_left_by : (a -> bool), [a] -> [a]
+// API search type: trim_left_by : (a -> bool) -> [a] -> [a]
 // trim_left_by(is_even, [0,2,4,5,6,7,8,6,4]) == [5,6,7,8,6,4]
 template <typename Container, typename UnaryPredicate>
 Container trim_left_by(UnaryPredicate p, const Container& xs)
@@ -221,7 +221,7 @@ Container trim_left_by(UnaryPredicate p, const Container& xs)
     return Container(itFirstNot, std::end(xs));
 }
 
-// API search type: trim_left : a, [a] -> [a]
+// API search type: trim_left : a -> [a] -> [a]
 // trim_left(0, [0,0,0,5,6,7,8,6,4]) == [5,6,7,8,6,4]
 template <typename Container,
         typename T = typename Container::value_type>
@@ -230,7 +230,7 @@ Container trim_left(const T& x, const Container& xs)
     return trim_left_by(is_equal_to(x), xs);
 }
 
-// API search type: trim_token_left : [a], [a] -> [a]
+// API search type: trim_token_left : [a] -> [a] -> [a]
 // trim_token_left([0,1,2], [0,1,2,0,1,2,7,5,9]) == [7,5,9]
 template <typename Container>
 Container trim_token_left(const Container& token, const Container& xs)
@@ -243,7 +243,7 @@ Container trim_token_left(const Container& token, const Container& xs)
     return result;
 }
 
-// API search type: trim_right_by : (a -> bool), [a] -> [a]
+// API search type: trim_right_by : (a -> bool) -> [a] -> [a]
 // trim_right_by(is_even, [0,2,4,5,6,7,8,6,4]) == [0,2,4,5,6,7]
 template <typename Container, typename UnaryPredicate>
 Container trim_right_by(UnaryPredicate p, const Container& xs)
@@ -252,7 +252,7 @@ Container trim_right_by(UnaryPredicate p, const Container& xs)
     return reverse(trim_left_by(p, reverse(xs)));
 }
 
-// API search type: trim_right : a, [a] -> [a]
+// API search type: trim_right : a -> [a] -> [a]
 // trim_right(4, [0,2,4,5,6,7,8,4,4]) == [0,2,4,5,6,7,8]
 template <typename Container,
         typename T = typename Container::value_type>
@@ -261,7 +261,7 @@ Container trim_right(const T& x, const Container& xs)
     return trim_right_by(is_equal_to(x), xs);
 }
 
-// API search type: trim_token_right : [a], [a] -> [a]
+// API search type: trim_token_right : [a] -> [a] -> [a]
 // trim_token_right([0,1,2], [7,5,9,0,1,2,0,1,2]) == [7,5,9]
 template <typename Container>
 Container trim_token_right(const Container& token, const Container& xs)
@@ -269,7 +269,7 @@ Container trim_token_right(const Container& token, const Container& xs)
     return reverse(trim_token_left(reverse(token), reverse(xs)));
 }
 
-// API search type: trim_by : (a -> bool), [a] -> [a]
+// API search type: trim_by : (a -> bool) -> [a] -> [a]
 // trim_by(is_even, [0,2,4,5,6,7,8,6,4]) == [5,6,7]
 template <typename Container, typename UnaryPredicate>
 Container trim_by(UnaryPredicate p, const Container& xs)
@@ -278,7 +278,7 @@ Container trim_by(UnaryPredicate p, const Container& xs)
     return trim_right_by(p, trim_left_by(p, xs));
 }
 
-// API search type: trim : a, [a] -> [a]
+// API search type: trim : a -> [a] -> [a]
 // trim(0, [0,2,4,5,6,7,8,0,0]) == [2,4,5,6,7,8]
 template <typename Container,
         typename T = typename Container::value_type>
@@ -287,7 +287,7 @@ Container trim(const T& x, const Container& xs)
     return trim_right(x, trim_left(x, xs));
 }
 
-// API search type: trim_token : [a], [a] -> [a]
+// API search type: trim_token : [a] -> [a] -> [a]
 // trim_token([0,1], [0,1,7,8,9,0,1]) == [7,8,9]
 template <typename Container>
 Container trim_token(const Container& token, const Container& xs)

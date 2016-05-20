@@ -49,7 +49,7 @@ ContainerOut generate_by_idx(F f, std::size_t amount)
     return ys;
 }
 
-// API search type: repeat : Int, [a] -> [a]
+// API search type: repeat : Int -> [a] -> [a]
 // repeat(3, [1, 2]) == [1, 2, 1, 2, 1, 2]
 template <typename Container>
 Container repeat(size_t n, const Container& xs)
@@ -58,7 +58,7 @@ Container repeat(size_t n, const Container& xs)
     return concat(xss);
 }
 
-// API search type: replicate : Int, a -> [a]
+// API search type: replicate : Int -> a -> [a]
 // replicate(3, 1) == [1, 1, 1]
 template <typename T,
         typename ContainerOut = std::vector<T>>
@@ -67,7 +67,7 @@ ContainerOut replicate(size_t n, const T& x)
     return ContainerOut(n, x);
 }
 
-// API search type: infixes : Int, [a] -> [[a]]
+// API search type: infixes : Int -> [a] -> [[a]]
 // infixes(3, [1,2,3,4,5,6]) == [[1,2,3], [2,3,4], [3,4,5], [4,5,6]]
 template <typename ContainerIn,
     typename ContainerOut = std::vector<ContainerIn>>
@@ -89,7 +89,7 @@ ContainerOut infixes(std::size_t length, const ContainerIn& xs)
     return result;
 }
 
-// API search type: carthesian_product_with_where : (a, b -> c), (a, b -> bool), [a], [b] -> [c]
+// API search type: carthesian_product_with_where : (a -> b -> c) -> (a -> b -> bool) -> [a] -> [b] -> [c]
 // carthesian_product_with_where(make_pair, always(true), "ABC", "XY")
 //   == [(A,X),(A,Y),(B,X),(B,Y),(C,X),(C,Y)]
 // same as (in Haskell):
@@ -124,7 +124,7 @@ ContainerOut carthesian_product_with_where(F f, Pred pred,
     return result;
 }
 
-// API search type: carthesian_product_with : (a, b -> c), [a], [b] -> [c]
+// API search type: carthesian_product_with : (a -> b -> c) -> [a] -> [b] -> [c]
 // carthesian_product_with(make_pair, "ABC", "XY")
 // == [(A,X),(A,Y),(B,X),(B,Y),(C,X),(C,Y)]
 template <typename F,
@@ -141,7 +141,7 @@ ContainerOut carthesian_product_with(F f,
     return carthesian_product_with_where(f, always_true_x_y, xs, ys);
 }
 
-// API search type: carthesian_product_where : (a, b -> bool), [a], [b] -> [(a, b)]
+// API search type: carthesian_product_where : (a -> b -> bool) -> [a] -> [b] -> [(a -> b)]
 // carthesian_product_where(always(true), "ABC", "XY")
 // == [(A,X),(A,Y),(B,X),(B,Y),(C,X),(C,Y)]
 template <typename Pred,
@@ -161,7 +161,7 @@ ContainerOut carthesian_product_where(Pred pred,
     return carthesian_product_with_where(make_res_pair, pred, xs, ys);
 }
 
-// API search type: carthesian_product : [a], [b] -> [(a, b)]
+// API search type: carthesian_product : [a] -> [b] -> [(a -> b)]
 // carthesian_product("ABC", "XY") == [(A,X),(A,Y),(B,X),(B,Y),(C,X),(C,Y)]
 template <typename Container1,
     typename Container2,
@@ -210,7 +210,7 @@ std::vector<std::vector<T>> internal_helper_carthesian_product_n_idxs
 }
 
 
-// API search type: carthesian_product_n : int, [a] -> [[a]]
+// API search type: carthesian_product_n : int -> [a] -> [[a]]
 // carthesian_product_n(2, "ABCD") == AA AB AC AD BA BB BC BD CA CB CC CD DA DB DC DD
 template <typename ContainerIn,
     typename T = typename ContainerIn::value_type,
@@ -231,7 +231,7 @@ ContainerOut carthesian_product_n(std::size_t power, const ContainerIn& xs_in)
     return transform(to_result_cont, result_idxss);
 }
 
-// API search type: permutations : int, [a] -> [[a]]
+// API search type: permutations : int -> [a] -> [[a]]
 // permutations(2, "ABCD") == AB AC AD BA BC BD CA CB CD DA DB DC
 template <typename ContainerIn,
     typename T = typename ContainerIn::value_type,
@@ -254,7 +254,7 @@ ContainerOut permutations(std::size_t power, const ContainerIn& xs_in)
     return transform(to_result_cont, result_idxss);
 }
 
-// API search type: combinations : int, [a] -> [[a]]
+// API search type: combinations : int -> [a] -> [[a]]
 // combinations(2, "ABCD") == AB AC AD BC BD CD
 template <typename ContainerIn,
     typename T = typename ContainerIn::value_type,
@@ -277,7 +277,7 @@ ContainerOut combinations(std::size_t power, const ContainerIn& xs_in)
     return transform(to_result_cont, result_idxss);
 }
 
-// API search type: combinations_with_replacement : int, [a] -> [[a]]
+// API search type: combinations_with_replacement : int -> [a] -> [[a]]
 // combinations_with_replacement(2, "ABCD") == AA AB AC AD BB BC BD CC CD DD
 template <typename ContainerIn,
     typename T = typename ContainerIn::value_type,
@@ -316,7 +316,7 @@ ContainerOut power_set(const ContainerIn& xs_in)
             size_of_cont(xs_in) + 1));
 }
 
-// API search type: iterate : (a -> a -> a), int, a -> [a]
+// API search type: iterate : (a -> a -> a) -> int -> a -> [a]
 // iterate((*2), 5, 3) = [3, 6, 12, 24, 48]
 // = [3, f(3), f(f(3)), f(f(f(3))), f(f(f(f(3))))]
 template <typename F,
@@ -389,7 +389,7 @@ ContainerOut rotations_right(const ContainerIn& xs_in)
     return iterate(rotate_right<ContainerIn>, size_of_cont(xs_in), xs_in);
 }
 
-// API search type: fill_left : a, int, [a] -> [a]
+// API search type: fill_left : a -> int -> [a] -> [a]
 // fill_left(0, 6, [1,2,3,4]) == [0,0,1,2,3,4]
 template <typename Container,
         typename T = typename Container::value_type>
@@ -400,7 +400,7 @@ Container fill_left(const T& x, std::size_t min_size, const Container& xs)
     return append(replicate<T, Container>(min_size - size_of_cont(xs), x), xs);
 }
 
-// API search type: fill_right : a, int, [a] -> [a]
+// API search type: fill_right : a -> int -> [a] -> [a]
 // fill_right(0, 6, [1,2,3,4]) == [1,2,3,4,0,0]
 template <typename Container,
         typename T = typename Container::value_type>

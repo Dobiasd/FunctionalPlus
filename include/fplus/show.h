@@ -46,7 +46,7 @@ std::string show(const std::pair<X, Y>& p)
     return std::string("(") + show(p.first) + ", " + show(p.second) + ")";
 }
 
-// API search type: show_cont_with_frame_and_newlines : string, string, string, [a], int -> string
+// API search type: show_cont_with_frame_and_newlines : string -> string -> string -> [a] -> int -> string
 // show_cont_with_frame_and_newlines (",", "(", ")", [1, 2, 3, 4, 5], 2)
 // == "(1,2)
 //      3,4)
@@ -84,7 +84,7 @@ std::string show_cont_with_frame_and_newlines(
     return prefix + join(separator, elemStrs) + suffix;
 }
 
-// API search type: show_cont_with_frame : string, string, string, [a] -> string
+// API search type: show_cont_with_frame : string -> string -> string -> [a] -> string
 // show_cont_with_frame (" => ", "{", "}", [1, 2, 3]) == "{1 => 2 => 3}"
 template <typename Container>
 std::string show_cont_with_frame(
@@ -96,7 +96,7 @@ std::string show_cont_with_frame(
         show_cont_with_frame_and_newlines( separator, prefix, suffix, xs, 0);
 }
 
-// API search type: show_cont_with : string, [a] -> string
+// API search type: show_cont_with : string -> [a] -> string
 // show_cont_with( " - ", [1, 2, 3]) == "[1 - 2 - 3]"
 template <typename Container>
 std::string show_cont_with(const std::string& separator, const Container& xs)

@@ -19,7 +19,7 @@
 namespace fplus
 {
 
-// API search type: transform_convert : (a -> b), [a] -> [b]
+// API search type: transform_convert : (a -> b) -> [a] -> [b]
 // transform_convert((*2), [1, 3, 4]) == [2, 6, 8]
 template <typename ContainerOut, typename F, typename ContainerIn>
 ContainerOut transform_convert(F f, const ContainerIn& xs)
@@ -32,7 +32,7 @@ ContainerOut transform_convert(F f, const ContainerIn& xs)
     return ys;
 }
 
-// API search type: transform_with_idx : (int -> a -> b), [a] -> [b]
+// API search type: transform_with_idx : (int -> a -> b) -> [a] -> [b]
 // transform_with_idx(f, [6, 4, 7]) == [f(0, 6), f(1, 4), f(2, 7)]
 template <typename F, typename ContainerIn,
     typename ContainerOut = typename same_cont_new_t_from_binary_f<
@@ -51,7 +51,7 @@ ContainerOut transform_with_idx(F f, const ContainerIn& xs)
     return ys;
 }
 
-// API search type: transform_and_keep_justs : (a -> maybe b), [a] -> [b]
+// API search type: transform_and_keep_justs : (a -> maybe b) -> [a] -> [b]
 // Map function over values and drop resulting nothings.
 template <typename F, typename ContainerIn,
     typename FOut = typename utils::function_traits<F>::result_type,
@@ -77,7 +77,7 @@ ContainerOut transform_and_keep_oks(F f, const ContainerIn& xs)
     return oks<decltype(transformed), ContainerOut>(transformed);
 }
 
-// API search type: transform_and_concat : (a -> [b]), [a] -> [b]
+// API search type: transform_and_concat : (a -> [b]) -> [a] -> [b]
 // Map function over values and concat results.
 template <typename F, typename ContainerIn,
     typename ContainerOut = typename same_cont_new_t_from_unary_f<
@@ -117,7 +117,7 @@ Container transpose(const Container& grid2d)
     return result;
 }
 
-// API search type: sample : int, [a] -> [a]
+// API search type: sample : int -> [a] -> [a]
 // Returns n random elements from xs.
 // n has to be smaller than or equal to the number of elements in xs.
 template <typename Container>

@@ -110,7 +110,8 @@ struct internal_helper_read_value_struct <long double>
     }
 };
 
-
+// API search type: read_value_result : string -> result a
+// Try to deserialize a value.
 template <typename T>
 result<T, std::string> read_value_result(const std::string& str)
 {
