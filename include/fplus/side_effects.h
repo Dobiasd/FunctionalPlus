@@ -20,7 +20,7 @@
 namespace fplus
 {
 
-// API search type: sleep_for_n_seconds : int -> io ()
+// API search type: sleep_for_n_seconds : Int -> Io ()
 // Returns a function that suspends the calling thread for n seconds.
 inline
 std::function<void()> sleep_for_n_seconds(std::size_t seconds)
@@ -31,7 +31,7 @@ std::function<void()> sleep_for_n_seconds(std::size_t seconds)
     };
 }
 
-// API search type: sleep_for_n_milliseconds : int -> io ()
+// API search type: sleep_for_n_milliseconds : Int -> Io ()
 // Returns a function that suspends the calling thread for n milliseconds.
 inline
 std::function<void()> sleep_for_n_milliseconds(std::size_t milliseconds)
@@ -42,7 +42,7 @@ std::function<void()> sleep_for_n_milliseconds(std::size_t milliseconds)
     };
 }
 
-// API search type: sleep_for_n_microseconds : int -> io ()
+// API search type: sleep_for_n_microseconds : Int -> Io ()
 // Returns a function that suspends the calling thread for n microseconds.
 inline
 std::function<void()> sleep_for_n_microseconds(std::size_t microseconds)
@@ -53,7 +53,7 @@ std::function<void()> sleep_for_n_microseconds(std::size_t microseconds)
     };
 }
 
-// API search type: execute_serially : [io ()] -> io ()
+// API search type: execute_serially : [Io ()] -> Io ()
 // Returns a function that executes the given side effects one after another.
 template <typename Container,
         typename Effect = typename Container::value_type,
@@ -72,7 +72,7 @@ std::function<std::vector<Result>()> execute_serially(const Container& effs)
     };
 }
 
-// API search type: execute_serially_until_success : [io bool] -> io bool
+// API search type: execute_serially_until_success : [Io Bool] -> Io Bool
 // Returns a function that executes the given side effects one after another
 // until one of it returns true.
 template <typename Container,
@@ -96,7 +96,7 @@ std::function<bool()> execute_serially_until_success(const Container& effs)
     };
 }
 
-// API search type: execute_and_return_fixed_value : a -> [io b] -> io a
+// API search type: execute_and_return_fixed_value : a -> [Io b] -> Io a
 // Returns a function that executes the given side effect
 // and returns a fixed value.
 template <typename Result, typename Effect>
@@ -123,7 +123,7 @@ std::function<Result()> effect_to_std_function(Effect eff)
     };
 }
 
-// API search type: execute_max_n_times_until_success : int -> io () -> int -> io bool
+// API search type: execute_max_n_times_until_success : Int -> Io () -> Int -> Io Bool
 // Returns a function that executes a side effect until it succeds once
 // or the maximum number of attempts with an optional pause in between.
 template <typename Effect,
@@ -149,7 +149,7 @@ std::function<bool()> execute_max_n_times_until_success(
         replicate(n, effect_to_std_function(eff)));
 }
 
-// API search type: execute_serially_until_failure : [io bool] -> io bool
+// API search type: execute_serially_until_failure : [Io Bool] -> Io Bool
 // Returns a function that executes the given side effects one after another
 // until one of them returns false.
 template <typename Container,
@@ -173,7 +173,7 @@ std::function<bool()> execute_serially_until_failure(const Container& effs)
     };
 }
 
-// API search type: execute_parallelly : [io a] -> io [a]
+// API search type: execute_parallelly : [Io a] -> Io [a]
 // Returns a function that executes the given side effects in parallel
 // and returns the collected results.
 // Can be used for something like MapReduce.
@@ -201,7 +201,7 @@ std::function<std::vector<Result>()> execute_parallelly(const Container& effs)
     };
 }
 
-// API search type: execute_fire_and_forget : io a -> io a
+// API search type: execute_fire_and_forget : Io a -> Io a
 // Returns a function that executes the given side effect in a new thread
 // and return immediately.
 template <typename Effect>
@@ -214,7 +214,7 @@ std::function<void()> execute_fire_and_forget(Effect eff)
     };
 }
 
-// API search type: read_text_file : string -> io string
+// API search type: read_text_file : String -> Io String
 // Returns a function that reads the content of a text file.
 inline
 std::function<std::string()> read_text_file(const std::string& filename)
@@ -228,7 +228,7 @@ std::function<std::string()> read_text_file(const std::string& filename)
     };
 }
 
-// API search type: read_text_file_lines : string -> io [string]
+// API search type: read_text_file_lines : String -> Io [String]
 // Returns a function that reads the content of a text file
 // and returns it line by line.
 inline
@@ -241,7 +241,7 @@ std::function<std::vector<std::string>()> read_text_file_lines(
     };
 }
 
-// API search type: write_text_file : string -> string -> io bool
+// API search type: write_text_file : String -> String -> Io Bool
 // Returns a function that writes content into a text file,
 // replacing it if it already exists.
 inline
@@ -256,7 +256,7 @@ std::function<bool()> write_text_file(const std::string& filename,
     };
 }
 
-// API search type: write_text_file_lines : string -> [string] -> bool -> io bool
+// API search type: write_text_file_lines : String -> [String] -> Bool -> Io Bool
 // Returns a function that writes lines into a text file,
 // replacing it if it already exists.
 inline

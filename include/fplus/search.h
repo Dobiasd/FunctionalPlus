@@ -17,7 +17,7 @@
 namespace fplus
 {
 
-// API search type: find_first_by : (a -> bool) -> [a] -> maybe a
+// API search type: find_first_by : (a -> Bool) -> [a] -> Maybe a
 // find_first_by(is_even, [1, 3, 4, 6, 9]) == Just(4)
 // find_first_by(is_even, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container, typename UnaryPredicate,
@@ -31,7 +31,7 @@ maybe<T> find_first_by(UnaryPredicate pred, const Container& xs)
     return just<T>(*it);
 }
 
-// API search type: find_last_by : (a -> bool) -> [a] -> maybe a
+// API search type: find_last_by : (a -> Bool) -> [a] -> Maybe a
 // find_last_by(is_even, [1, 3, 4, 6, 9]) == Just(6)
 // find_last_by(is_even, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container, typename UnaryPredicate,
@@ -42,7 +42,7 @@ maybe<T> find_last_by(UnaryPredicate pred, const Container& xs)
     return find_first_by(pred, reverse(xs));
 }
 
-// API search type: find_first_idx_by : (a -> bool) -> [a] -> maybe int
+// API search type: find_first_idx_by : (a -> Bool) -> [a] -> Maybe Int
 // find_first_idx_by(is_even, [1, 3, 4, 6, 9]) == Just(2)
 // find_first_idx_by(is_even, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container, typename UnaryPredicate>
@@ -56,7 +56,7 @@ maybe<std::size_t> find_first_idx_by
     return just<std::size_t>(std::distance(std::begin(xs), it));
 }
 
-// API search type: find_last_idx_by : (a -> bool) -> [a] -> maybe int
+// API search type: find_last_idx_by : (a -> Bool) -> [a] -> Maybe Int
 // find_last_idx_by(is_even, [1, 3, 4, 6, 9]) == Just(3)
 // find_last_idx_by(is_even, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container, typename UnaryPredicate>
@@ -72,7 +72,7 @@ maybe<std::size_t> find_last_idx_by
             (find_first_idx_by(pred, reverse(xs)));
 }
 
-// API search type: find_first_idx : a -> [a] -> maybe int
+// API search type: find_first_idx : a -> [a] -> Maybe Int
 // find_first_idx(4, [1, 3, 4, 4, 9]) == Just(2)
 // find_first_idx(4, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container>
@@ -82,7 +82,7 @@ maybe<std::size_t> find_first_idx
     return find_first_idx_by(is_equal_to(x), xs);
 }
 
-// API search type: find_last_idx : a -> [a] -> maybe int
+// API search type: find_last_idx : a -> [a] -> Maybe Int
 // find_last_idx(4, [1, 3, 4, 4, 9]) == Just(3)
 // find_last_idx(4, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container>
@@ -92,7 +92,7 @@ maybe<std::size_t> find_last_idx
     return find_last_idx_by(is_equal_to(x), xs);
 }
 
-// API search type: find_all_idxs_by : (a -> bool) -> [a] -> [int]
+// API search type: find_all_idxs_by : (a -> Bool) -> [a] -> [Int]
 // find_all_idxs_by(is_even, [1, 3, 4, 6, 9]) == [2, 3]
 template <typename ContainerOut = std::vector<std::size_t>,
         typename UnaryPredicate, typename Container>
@@ -111,7 +111,7 @@ ContainerOut find_all_idxs_by(UnaryPredicate p, const Container& xs)
     return result;
 }
 
-// API search type: find_all_idxs_of : a -> [a] -> [int]
+// API search type: find_all_idxs_of : a -> [a] -> [Int]
 // find_all_idxs_of(4, [1, 3, 4, 4, 9]) == [2, 3]
 template <typename ContainerOut = std::vector<std::size_t>,
         typename Container,
@@ -122,7 +122,7 @@ ContainerOut find_all_idxs_of
     return find_all_idxs_by(is_equal_to(x), xs);
 }
 
-// API search type: find_all_instances_of_token : [a] -> [a] -> [int]
+// API search type: find_all_instances_of_token : [a] -> [a] -> [Int]
 // find_all_instances_of_token("haha", "oh, hahaha!") == [4, 6]
 template <typename ContainerOut =
     std::vector<std::size_t>, typename Container>
@@ -158,7 +158,7 @@ ContainerOut find_all_instances_of_token(const Container& token,
     return result;
 }
 
-// API search type: find_all_instances_of_token_non_overlapping : [a] -> [a] -> [int]
+// API search type: find_all_instances_of_token_non_overlapping : [a] -> [a] -> [Int]
 // find_all_instances_of_token_non_overlapping("haha", "oh, hahaha!") == [4]
 template <typename ContainerOut = std::vector<std::size_t>, typename Container>
 ContainerOut find_all_instances_of_token_non_overlapping
@@ -179,7 +179,7 @@ ContainerOut find_all_instances_of_token_non_overlapping
     return result;
 }
 
-// API search type: find_first_instance_of_token : [a] -> [a] -> maybe int
+// API search type: find_first_instance_of_token : [a] -> [a] -> Maybe Int
 // find_first_instance_of_token("haha", "oh, hahaha!") == just 4
 template <typename Container>
 maybe<std::size_t> find_first_instance_of_token

@@ -13,7 +13,7 @@
 namespace fplus
 {
 
-// API search type: is_in_range : a -> a -> (a -> bool)
+// API search type: is_in_range : a -> a -> (a -> Bool)
 // Checks if x is in [low, high), i.e. left-closed and right-open.
 template <typename T>
 std::function<bool(const T&)>
@@ -37,7 +37,7 @@ std::function<T(const T&)>
     };
 }
 
-// API search type: is_negative : a -> bool
+// API search type: is_negative : a -> Bool
 // Checks if x < 0.
 template <typename X>
 bool is_negative(X x)
@@ -45,7 +45,7 @@ bool is_negative(X x)
     return x < 0;
 }
 
-// API search type: is_positive : a -> bool
+// API search type: is_positive : a -> Bool
 // Checks if x is not negative.
 template <typename X>
 bool is_positive(X x)
@@ -61,7 +61,7 @@ X abs(X x)
     return is_negative(x) ? -x : x;
 }
 
-// API search type: sign : a -> int
+// API search type: sign : a -> Int
 // Returns -1 for negative values, 1 otherwise.
 template <typename X>
 int sign(X x)
@@ -104,7 +104,7 @@ Out ceil(X x)
     return floor<Out>(x) + 1;
 }
 
-// API search type: int_power : int -> int -> int
+// API search type: int_power : Int -> Int -> Int
 // integer power
 template <typename X>
 X int_power(X base, X exp)
@@ -119,7 +119,7 @@ X int_power(X base, X exp)
     return base * int_power(base, exp - 1);
 }
 
-// API search type: min_2_on : (a -> b) -> (a -> a -> bool)
+// API search type: min_2_on : (a -> b) -> (a -> a -> Bool)
 // minimum of two values after transformation
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type>
@@ -132,7 +132,7 @@ std::function<const FIn&(const FIn& x, const FIn& y)>
     };
 }
 
-// API search type: max_2_on : (a -> b) -> (a -> a -> bool)
+// API search type: max_2_on : (a -> b) -> (a -> a -> Bool)
 // maximum of two values after transformation
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type>
@@ -145,7 +145,7 @@ std::function<const FIn&(const FIn& x, const FIn& y)>
     };
 }
 
-// API search type: min_3_on : (a -> b) -> (a -> a -> a -> bool)
+// API search type: min_3_on : (a -> b) -> (a -> a -> a -> Bool)
 // minimum of three values after transformation
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type>
@@ -158,7 +158,7 @@ std::function<const FIn&(const FIn& x, const FIn& y, const FIn& z)>
     };
 }
 
-// API search type: max_3_on : (a -> b) -> (a -> a -> a -> bool)
+// API search type: max_3_on : (a -> b) -> (a -> a -> a -> Bool)
 // maximum of three values after transformation
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type>
@@ -235,7 +235,7 @@ const X& max_5(const X& a, const X& b, const X& c, const X& d, const X& e)
     return max_3(max_3(a, b, c), d, e);
 }
 
-// API search type: cyclic_value : float -> float
+// API search type: cyclic_value : Float -> Float
 // Modulo for floating point values.
 // Only positive denominators allowed;
 // cyclic_value(8)(3) == 3
@@ -260,7 +260,7 @@ std::function<X(X)> cyclic_value(X circumfence)
     };
 }
 
-// API search type: cyclic_difference : float -> float -> float -> float
+// API search type: cyclic_difference : Float -> Float -> Float -> Float
 // circumfence has to be positive.
 // cyclic_difference(100)(5, 2) == 3
 // cyclic_difference(100)(2, 5) == 97
@@ -279,7 +279,7 @@ std::function<X(X, X)> cyclic_difference(X circumfence)
     };
 }
 
-// API search type: cyclic_shortest_difference : float -> float -> float -> float
+// API search type: cyclic_shortest_difference : Float -> Float -> Float -> Float
 // circumfence has to be positive.
 // cyclic_shortest_difference(100)(5, 2) == 3
 // cyclic_shortest_difference(100)(2, 5) == -3
@@ -300,7 +300,7 @@ std::function<X(X, X)> cyclic_shortest_difference(X circumfence)
     };
 }
 
-// API search type: cyclic_distance : float -> float -> float -> float
+// API search type: cyclic_distance : Float -> Float -> Float -> Float
 // circumfence has to be positive.
 // cyclic_distance(100)(2, 5) == 3
 // cyclic_distance(100)(5, 2) == 3

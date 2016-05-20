@@ -13,7 +13,7 @@
 namespace fplus
 {
 
-// API search type: replace_if : (a -> bool) -> a -> [a] -> [a]
+// API search type: replace_if : (a -> Bool) -> a -> [a] -> [a]
 // replace_if(is_even, 0, [1, 3, 4, 6, 7]) == [1, 3, 0, 0, 7]
 template <typename UnaryPredicate, typename Container>
 Container replace_if(UnaryPredicate p,

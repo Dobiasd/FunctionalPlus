@@ -32,7 +32,7 @@ ContainerOut transform_convert(F f, const ContainerIn& xs)
     return ys;
 }
 
-// API search type: transform_with_idx : (int -> a -> b) -> [a] -> [b]
+// API search type: transform_with_idx : (Int -> a -> b) -> [a] -> [b]
 // transform_with_idx(f, [6, 4, 7]) == [f(0, 6), f(1, 4), f(2, 7)]
 template <typename F, typename ContainerIn,
     typename ContainerOut = typename same_cont_new_t_from_binary_f<
@@ -51,7 +51,7 @@ ContainerOut transform_with_idx(F f, const ContainerIn& xs)
     return ys;
 }
 
-// API search type: transform_and_keep_justs : (a -> maybe b) -> [a] -> [b]
+// API search type: transform_and_keep_justs : (a -> Maybe b) -> [a] -> [b]
 // Map function over values and drop resulting nothings.
 template <typename F, typename ContainerIn,
     typename FOut = typename utils::function_traits<F>::result_type,
@@ -117,7 +117,7 @@ Container transpose(const Container& grid2d)
     return result;
 }
 
-// API search type: sample : int -> [a] -> [a]
+// API search type: sample : Int -> [a] -> [a]
 // Returns n random elements from xs.
 // n has to be smaller than or equal to the number of elements in xs.
 template <typename Container>

@@ -183,7 +183,7 @@ std::function<JOut(FIn)> compose(F f, G g, H h, I i, J j)
     return [f, g, h, i, j](FIn x) { return j(i(h(g(f(x))))); };
 }
 
-// API search type: logical_not : (a -> bool) -> (a -> bool)
+// API search type: logical_not : (a -> Bool) -> (a -> Bool)
 // logical_not(f) = \x -> !x
 template <typename UnaryPredicate,
     typename X = typename utils::function_traits<UnaryPredicate>::template arg<0>::type>
@@ -196,7 +196,7 @@ std::function<bool(X)> logical_not(UnaryPredicate f)
     return [f](X x) { return !f(x); };
 }
 
-// API search type: logical_or : (a -> bool) -> (a -> bool) -> (a -> bool)
+// API search type: logical_or : (a -> Bool) -> (a -> Bool) -> (a -> Bool)
 // logical_or(f, g) = \x -> f(x) or g(x)
 template <typename UnaryPredicateF, typename UnaryPredicateG,
     typename X = typename utils::function_traits<UnaryPredicateF>::template arg<0>::type,
@@ -216,7 +216,7 @@ std::function<bool(X)> logical_or(UnaryPredicateF f, UnaryPredicateG g)
     return [f, g](X x) { return f(x) || g(x); };
 }
 
-// API search type: logical_and : (a -> bool) -> (a -> bool) -> (a -> bool)
+// API search type: logical_and : (a -> Bool) -> (a -> Bool) -> (a -> Bool)
 // logical_and(f, g) = \x -> f(x) and g(x)
 template <typename UnaryPredicateF, typename UnaryPredicateG,
     typename X = typename utils::function_traits<UnaryPredicateF>::template arg<0>::type,
@@ -236,7 +236,7 @@ std::function<bool(X)> logical_and(UnaryPredicateF f, UnaryPredicateG g)
     return [f, g](X x) { return f(x) && g(x); };
 }
 
-// API search type: logical_xor : (a -> bool) -> (a -> bool) -> (a -> bool)
+// API search type: logical_xor : (a -> Bool) -> (a -> Bool) -> (a -> Bool)
 // logical_xor(f, g) = \x -> f(x) xor g(x)
 template <typename UnaryPredicateF, typename UnaryPredicateG,
     typename X = typename utils::function_traits<UnaryPredicateF>::template arg<0>::type,

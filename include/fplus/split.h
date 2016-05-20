@@ -13,7 +13,7 @@
 namespace fplus
 {
 
-// API search type: group_by : (a -> a -> bool) -> [a] -> [[a]]
+// API search type: group_by : (a -> a -> Bool) -> [a] -> [[a]]
 // group_by((==), [1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2],[3],[2,2],[4],[5,5]]
 // ContainerOut is not deduced to
 // SameContNewType(ContainerIn, ContainerIn)
@@ -64,7 +64,7 @@ ContainerOut group(const ContainerIn& xs)
     return group_by<decltype(pred), ContainerIn, ContainerOut>(pred, xs);
 }
 
-// API search type: group_globally_by : (a -> a -> bool) -> [a] -> [[a]]
+// API search type: group_globally_by : (a -> a -> Bool) -> [a] -> [[a]]
 // group_globally_by((==), [1,2,2,2,3,2,2,4,5,5])
 // == [[1],[2,2,2,2,2],[3],[4],[5,5]]
 // O(n^2)
@@ -123,7 +123,7 @@ ContainerOut group_globally(const ContainerIn& xs)
     return group_globally_by(pred, xs);
 }
 
-// API search type: split_by : (a -> bool) -> bool -> [a] -> [[a]]
+// API search type: split_by : (a -> Bool) -> Bool -> [a] -> [[a]]
 // split_by(is_even, true, [1,3,2,2,5,5,3,6,7,9]) == [[1,3],[],[5,5,3],[7,9]]
 // also known as split_when
 template <typename UnaryPredicate, typename ContainerIn,
@@ -159,7 +159,7 @@ ContainerOut split_by
     return result;
 }
 
-// API search type: split_by_keep_separators : (a -> bool) -> [a] -> [[a]]
+// API search type: split_by_keep_separators : (a -> Bool) -> [a] -> [[a]]
 // split_by_keep_separators(is_even, true, [1,3,2,2,5,5,3,6,7,9])
 // == [[1,3],[2],[2,5,5,3],[6,7,9]]
 template <typename UnaryPredicate, typename ContainerIn,
@@ -199,7 +199,7 @@ ContainerOut split(const T& x, bool allowEmpty, const ContainerIn& xs)
     return split_by(is_equal_to(x), allowEmpty, xs);
 }
 
-// API search type: split_at_idx : int -> [a] -> ([a] -> [a])
+// API search type: split_at_idx : Int -> [a] -> ([a] -> [a])
 // split_at_idx(2, [0,1,2,3,4]) == ([0,1],[2,3,4])
 template <typename Container>
 std::pair<Container, Container> split_at_idx
@@ -210,7 +210,7 @@ std::pair<Container, Container> split_at_idx
         get_range(idx, size_of_cont(xs), xs));
 }
 
-// API search type: partition : (a -> bool) -> [a] -> ([a] -> [a])
+// API search type: partition : (a -> Bool) -> [a] -> ([a] -> [a])
 // partition(is_even, [0,1,1,3,7,2,3,4]) == ([0,2,4],[1,1,3,7,3])
 template <typename UnaryPredicate, typename Container>
 std::pair<Container, Container> partition
@@ -231,7 +231,7 @@ std::pair<Container, Container> partition
     return make_pair(matching, notMatching);
 }
 
-// API search type: split_at_idxs : [int] -> [a] -> [[a]]
+// API search type: split_at_idxs : [Int] -> [a] -> [[a]]
 // split_at_idxs([2,5], [0,1,2,3,4,5,6,7]) == [[0,1],[2,3,4],[5,6,7]]
 template <typename ContainerIdxs, typename ContainerIn,
         typename ContainerOut = std::vector<ContainerIn>>
@@ -257,7 +257,7 @@ ContainerOut split_at_idxs(const ContainerIdxs& idxsIn, const ContainerIn& xs)
     return result;
 }
 
-// API search type: split_every : int -> [a] -> [[a]]
+// API search type: split_every : Int -> [a] -> [[a]]
 // split_every(3, [0,1,2,3,4,5,6,7]) == [[0,1,2],[3,4,5],[6,7]]
 // Also known as chunk.
 template <typename ContainerIn,
@@ -270,7 +270,7 @@ ContainerOut split_every(std::size_t n, const ContainerIn& xs)
         xs);
 }
 
-// API search type: split_by_token : [a] -> bool -> [a] -> [[a]]
+// API search type: split_by_token : [a] -> Bool -> [a] -> [[a]]
 // split_by_token(", ", "foo, bar, baz") == ["foo", "bar", "baz"]
 template <typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
@@ -296,7 +296,7 @@ ContainerOut split_by_token(const ContainerIn& token,
     return result;
 }
 
-// API search type: count_occurrences : [a] -> map a int
+// API search type: count_occurrences : [a] -> Map a Int
 // count_occurrences([1,2,2,3,2)) == [(1, 1), (2, 3), (3, 1)]
 template <typename ContainerIn,
         typename MapOut = typename std::map<
@@ -311,7 +311,7 @@ MapOut count_occurrences(const ContainerIn& xs)
     return result;
 }
 
-// API search type: run_length_encode_by : (a -> a -> bool) -> [a] -> [(int -> a)]
+// API search type: run_length_encode_by : (a -> a -> Bool) -> [a] -> [(Int -> a)]
 // run_length_encode_by((==),[1,2,2,2,2,3,3,2)) == [(1,1),(4,2),(2,3),(1,2)]
 template <typename BinaryPredicate,
         typename ContainerIn,
@@ -330,7 +330,7 @@ ContainerOut run_length_encode_by(BinaryPredicate pred, const ContainerIn& xs)
     return transform(group_to_pair, groups);
 }
 
-// API search type: run_length_encode : [a] -> [(int -> a)]
+// API search type: run_length_encode : [a] -> [(Int -> a)]
 // run_length_encode([1,2,2,2,2,3,3,2)) == [(1,1),(4,2),(2,3),(1,2)]
 template <typename ContainerIn,
         typename T = typename ContainerIn::value_type,
@@ -341,7 +341,7 @@ ContainerOut run_length_encode(const ContainerIn& xs)
     return run_length_encode_by(is_equal_by(identity<T>), xs);
 }
 
-// API search type: run_length_decode : [(int -> a)] -> [a]
+// API search type: run_length_decode : [(Int -> a)] -> [a]
 // run_length_decode([(1,1),(4,2),(2,3),(1,2)]) == [1,2,2,2,2,3,3,2)
 template <typename ContainerIn,
         typename Pair = typename ContainerIn::value_type,
@@ -356,7 +356,7 @@ ContainerOut run_length_decode(const ContainerIn& pairs)
     return concat(transform(pair_to_vec, pairs));
 }
 
-// API search type: take_while : (a -> bool) -> [a] -> [a]
+// API search type: take_while : (a -> Bool) -> [a] -> [a]
 // take_while(is_even, [0,2,4,5,6,7,8]) == [0,2,4]
 template <typename Container, typename UnaryPredicate>
 Container take_while(UnaryPredicate pred, const Container& xs)
@@ -366,7 +366,7 @@ Container take_while(UnaryPredicate pred, const Container& xs)
         size_of_cont(xs), maybeIdx), xs);
 }
 
-// API search type: drop_while : (a -> bool) -> [a] -> [a]
+// API search type: drop_while : (a -> Bool) -> [a] -> [a]
 // drop_while(is_even, [0,2,4,5,6,7,8]) == [5,6,7,8]
 template <typename Container, typename UnaryPredicate>
 Container drop_while(UnaryPredicate pred, const Container& xs)
@@ -376,7 +376,7 @@ Container drop_while(UnaryPredicate pred, const Container& xs)
         size_of_cont(xs), maybeIdx), xs);
 }
 
-// API search type: span : (a -> bool) -> [a] -> ([a] -> [a])
+// API search type: span : (a -> Bool) -> [a] -> ([a] -> [a])
 // span, applied to a predicate p and a list xs,
 // returns a tuple where first element is longest prefix (possibly empty)
 // of xs of elements that satisfy p
