@@ -80,7 +80,7 @@ ContainerOut transform_and_keep_oks(F f, const ContainerIn& xs)
 
 // API search type: transform_and_concat : (a -> [b]) -> [a] -> [b]
 // Map function over values and concat results.
-// Also known as flatmap.
+// Also known as flatMap or concatMap.
 template <typename F, typename ContainerIn,
     typename ContainerOut = typename same_cont_new_t_from_unary_f<
         ContainerIn, F>::type::value_type>
