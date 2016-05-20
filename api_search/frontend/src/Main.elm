@@ -94,18 +94,15 @@ update action model =
             )
 
 
-isElem : List a -> a -> Bool
-isElem xs elem =
-    List.filter (\x -> x == elem) xs |> List.isEmpty |> not
+nthElement : List a -> Int -> Maybe a
+nthElement xs idx =
+    List.drop idx xs |> List.head
 
 
 getRandomSearchResult : List Int -> List ( Function, Float )
 getRandomSearchResult chosenIdxs =
-    functions
-        |> List.map2 (,) [0..functionCnt]
-        |> List.filter (\( idx, _ ) -> isElem chosenIdxs idx)
-        |> List.map snd
-        |> List.take maxVisibleFunctions
+    chosenIdxs
+        |> List.filterMap (nthElement functions)
         |> List.map (\x -> ( x, 0 ))
 
 
