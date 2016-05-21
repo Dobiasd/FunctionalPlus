@@ -104,7 +104,7 @@ bool is_equal(const T& x, const T& y)
 }
 
 // API search type: always : a -> b -> a
-// always(x, y) == x
+// always(x)(y) == x
 template <typename Y, typename X>
 std::function<X(const Y&)> always(const X& x)
 {
