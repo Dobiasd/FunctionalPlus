@@ -203,6 +203,7 @@ functionRating query_orig function =
                 |> List.sum
 
         -- todo: type rating with parsing
+        --       cleanFunctionSignature destroys stuff like "Maybe a" anyway.
         typeRating =
             String.contains (cleanFunctionSignature query)
                 (function.signature |> cleanFunctionSignature |> String.toLower)
@@ -268,8 +269,8 @@ stringToCode language str =
         Markdown.toHtmlWith options [] taggedStr
 
 
-stringToDoc : String -> Html Msg
-stringToDoc str =
+docFromString : String -> Html Msg
+docFromString str =
     let
         taggedStr =
             "```" ++ str ++ "```"
@@ -279,7 +280,7 @@ stringToDoc str =
 
 ratingToHtml : Float -> Html Msg
 ratingToHtml rating =
-    "search rating: " ++ toString (round rating) |> stringToDoc
+    "search rating: " ++ toString (round rating) |> docFromString
 
 
 showRatedFunction : ( Function, Float ) -> Html Msg
@@ -296,7 +297,7 @@ showRatedFunction ( function, rating ) =
         functionDocumentation =
             div [ class "functiondoc" ]
                 [ function.documentation
-                    |> stringToDoc
+                    |> docFromString
                 ]
 
         functionDeclaration =
