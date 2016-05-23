@@ -1,4 +1,7 @@
-module TypeSignature exposing (..)
+module TypeSignature exposing (Signature, parseSignature, showSignature)
+
+{-| This module provides the possibility to parse Haskell and Elm type signatures.
+-}
 
 import Combine as C
 import Combine.Char as CC
@@ -12,16 +15,24 @@ import String
 
 type Signature
     = Arrow Signature Signature
-    | VariableType String
+    | ListType Signature
+      -- A Tuple with an empty List is the unit type.
+    | Tuple (List Signature)
     | TypeConstructor String
     | TypeApplication Signature Signature
-    | ListType Signature
-    | Tuple (List Signature)
+    | VariableType String
 
 
 simplify : Signature -> Signature
 simplify sig =
     case sig of
+        Arrow a b ->
+            Arrow (simplify a) (simplify b)
+
+        ListType x ->
+            ListType (simplify x)
+
+        -- Extract value from possible 1-tuples.
         Tuple xs ->
             case xs of
                 [ x ] ->
@@ -30,8 +41,8 @@ simplify sig =
                 _ ->
                     sig
 
-        Arrow a b ->
-            Arrow (simplify a) (simplify b)
+        TypeApplication a b ->
+            TypeApplication (simplify a) (simplify b)
 
         _ ->
             sig
@@ -64,11 +75,6 @@ showSignature sig =
                     str
                 else
                     "(" ++ str ++ ")"
-
-
-singletonList : a -> List a
-singletonList x =
-    [ x ]
 
 
 signatureInParensParser : C.Parser Signature
@@ -125,7 +131,7 @@ typeApplicationParser =
 
 typeStartsWithParser : C.Parser Char -> (String -> Signature) -> C.Parser Signature
 typeStartsWithParser p tagger =
-    [ p |> C.map singletonList
+    [ p |> C.map (\x -> [ x ])
     , C.many <| C.choice [ CC.lower, CC.upper ]
     ]
         |> C.sequence
@@ -141,24 +147,6 @@ variableTypeParser =
 fixedTypeParser : C.Parser Signature
 fixedTypeParser =
     typeStartsWithParser CC.upper TypeConstructor
-
-
-
--- todo raus
-
-
-try : C.Parser res -> C.Parser res
-try p =
-    let
-        f c =
-            case C.parse p c.input of
-                ( Result.Ok r, cRemaining ) ->
-                    ( Result.Ok r, cRemaining )
-
-                ( Result.Err e, cRemaining ) ->
-                    ( Result.Err e, c )
-    in
-        C.primitive f
 
 
 nonOpSignatureParser : C.Parser Signature
@@ -205,7 +193,3 @@ parseResultToMaybeSig parseResult =
 parseSignature : String -> Maybe Signature
 parseSignature =
     C.parse signatureParser >> parseResultToMaybeSig
-
-
-
--- todo: empty type: ()
