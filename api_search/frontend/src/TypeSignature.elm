@@ -13,7 +13,7 @@ import String
 type Signature
     = Arrow Signature Signature
     | VariableType String
-    | FixedType String
+    | TypeConstructor String
     | TypeApplication Signature Signature
     | ListType Signature
     | Tuple (List Signature)
@@ -43,7 +43,7 @@ showSignature sig =
         Arrow a b ->
             "(" ++ showSignature a ++ " -> " ++ showSignature b ++ ")"
 
-        FixedType x ->
+        TypeConstructor x ->
             x
 
         VariableType x ->
@@ -56,7 +56,14 @@ showSignature sig =
             "[" ++ showSignature x ++ "]"
 
         Tuple xs ->
-            "(" ++ String.join "," (List.map showSignature xs) ++ ")"
+            let
+                str =
+                    String.join "," (List.map showSignature xs)
+            in
+                if List.length xs == 1 then
+                    str
+                else
+                    "(" ++ str ++ ")"
 
 
 singletonList : a -> List a
@@ -133,7 +140,7 @@ variableTypeParser =
 
 fixedTypeParser : C.Parser Signature
 fixedTypeParser =
-    typeStartsWithParser CC.upper FixedType
+    typeStartsWithParser CC.upper TypeConstructor
 
 
 
@@ -182,10 +189,23 @@ signatureParser =
         |> C.map simplify
 
 
-parseSignature : String -> ( Result (List String) Signature, C.Context )
+parseResultToMaybeSig : ( Result (List String) Signature, C.Context ) -> Maybe Signature
+parseResultToMaybeSig parseResult =
+    case parseResult of
+        ( Ok s, { input } ) ->
+            if String.isEmpty input then
+                Maybe.Just s
+            else
+                Maybe.Nothing
+
+        _ ->
+            Maybe.Nothing
+
+
+parseSignature : String -> Maybe Signature
 parseSignature =
-    C.parse signatureParser
+    C.parse signatureParser >> parseResultToMaybeSig
 
 
 
--- todo: Sicherstellen dass bei type application der erste mit upper anfaengt
+-- todo: empty type: ()

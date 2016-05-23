@@ -1,6 +1,8 @@
 module FPlusApiSearch exposing (..)
 
 import Database exposing (Function, functions)
+import TypeSignature
+import Debug
 import Html exposing (..)
 import Html.App exposing (program)
 import Html.Attributes exposing (..)
@@ -20,6 +22,14 @@ main =
         }
 
 
+type alias WithSig a =
+    { a | parsedSignature : TypeSignature.Signature }
+
+
+type alias FunctionWithSig =
+    WithSig Database.Function
+
+
 maxVisibleFunctions : Int
 maxVisibleFunctions =
     20
@@ -30,9 +40,51 @@ initModelAndCommands =
     ( defaultModel, cmdGetRandomNumbers )
 
 
+type alias Function =
+    { name : String
+    , signature : String
+    , documentation : String
+    , declaration : String
+    }
+
+
+addParsedSignatureToFunction function sig =
+    { name = function.name
+    , signature = function.signature
+    , parsedSignature = sig
+    , documentation = function.documentation
+    , declaration = function.declaration
+    }
+
+
+functionToMaybeFunctionWithSig : Function -> Maybe FunctionWithSig
+functionToMaybeFunctionWithSig function =
+    let
+        maybeSig =
+            TypeSignature.parseSignature function.signature
+    in
+        case maybeSig of
+            Just sig ->
+                Just <| addParsedSignatureToFunction function sig
+
+            Nothing ->
+                Debug.log
+                    ("Error parsing signature of "
+                        ++ function.name
+                        ++ ": "
+                        ++ function.signature
+                    )
+                    Nothing
+
+
+functionsWithSig : List FunctionWithSig
+functionsWithSig =
+    List.filterMap functionToMaybeFunctionWithSig functions
+
+
 functionCnt : Int
 functionCnt =
-    List.length functions
+    List.length functionsWithSig
 
 
 cmdGetRandomNumbers : Cmd Msg

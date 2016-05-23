@@ -32,18 +32,6 @@ update action model =
             str
 
 
-parseResultToMaybeSig parseResult =
-    case parseResult of
-        ( Ok s, { input } ) ->
-            if String.isEmpty input then
-                Maybe.Just s
-            else
-                Maybe.Nothing
-
-        _ ->
-            Maybe.Nothing
-
-
 showMaybeSig maybeSig =
     case maybeSig of
         Maybe.Just s ->
@@ -59,7 +47,6 @@ view str =
         maybeSignature =
             str
                 |> TypeSignature.parseSignature
-                |> parseResultToMaybeSig
 
         signatureString =
             showMaybeSig maybeSignature
@@ -67,7 +54,6 @@ view str =
         maybeParsedAgainString =
             signatureString
                 |> TypeSignature.parseSignature
-                |> parseResultToMaybeSig
 
         signatureAgainString =
             showMaybeSig maybeParsedAgainString
@@ -83,7 +69,9 @@ view str =
                 , onInput UpdateStr
                 ]
                 []
-            , div [] [ "parse result: " ++ signatureString |> text ]
+            , div [ style [ ( "margin", "10px" ) ] ]
+                [ "parse result: " ++ (maybeSignature |> toString) |> text ]
+            , div [] [ "as string: " ++ signatureString |> text ]
             , if not isIdempotent then
                 div []
                     [ div [] [ signatureAgainString |> text ]
