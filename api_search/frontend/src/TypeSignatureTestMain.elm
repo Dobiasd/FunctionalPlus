@@ -32,6 +32,7 @@ update action model =
             str
 
 
+showMaybeSig : Maybe TypeSignature.Signature -> String
 showMaybeSig maybeSig =
     case maybeSig of
         Maybe.Just s ->
@@ -44,22 +45,40 @@ showMaybeSig maybeSig =
 view : Model -> Html Msg
 view str =
     let
+        parseResult =
+            str |> TypeSignature.parseSignature
+
         maybeSignature =
-            str
-                |> TypeSignature.parseSignature
+            parseResult |> TypeSignature.parseResultToMaybeSig
 
         signatureString =
             showMaybeSig maybeSignature
 
-        maybeParsedAgainString =
+        parsedAgainResult =
             signatureString
                 |> TypeSignature.parseSignature
+
+        maybeParsedAgainString =
+            parsedAgainResult
+                |> TypeSignature.parseResultToMaybeSig
 
         signatureAgainString =
             showMaybeSig maybeParsedAgainString
 
         isIdempotent =
             signatureString == signatureAgainString
+
+        signatureStringToDisplay =
+            if String.isEmpty signatureString then
+                toString parseResult
+            else
+                signatureString
+
+        signatureAgainStringToDisplay =
+            if String.isEmpty signatureAgainString then
+                toString parsedAgainResult
+            else
+                signatureAgainString
     in
         div []
             [ input
@@ -71,16 +90,14 @@ view str =
                 []
             , div [ style [ ( "margin", "10px" ) ] ]
                 [ "parse result: " ++ (maybeSignature |> toString) |> text ]
-            , div [] [ "as string: " ++ signatureString |> text ]
+            , div [] [ "as string: " ++ signatureStringToDisplay |> text ]
             , if not isIdempotent then
                 div []
-                    [ div [] [ signatureAgainString |> text ]
-                    , div []
-                        [ "isIdempotent (should always be True): "
-                            ++ toString isIdempotent
-                            |> text
-                        ]
-                    ]
+                    [
+                    div [] [ "Error: Parsing was not isIdempotent!" |> text ]
+                  , div [] [ signatureAgainString |> text ]
+                  , div [] [ signatureAgainStringToDisplay |> text ]
+                  ]
               else
-                div [] []
+                  div [] []
             ]

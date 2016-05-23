@@ -1,4 +1,4 @@
-module TypeSignature exposing (Signature, parseSignature, showSignature)
+module TypeSignature exposing (Signature, parseSignature, ParseResult, showSignature, parseResultToMaybeSig)
 
 {-| This module provides the possibility to parse Haskell and Elm type signatures.
 -}
@@ -21,6 +21,9 @@ type Signature
     | TypeConstructor String
     | TypeApplication Signature Signature
     | VariableType String
+
+
+type alias ParseResult = ( Result (List String) Signature, C.Context )
 
 
 simplify : Signature -> Signature
@@ -60,8 +63,8 @@ showSignature sig =
         VariableType x ->
             x
 
-        TypeApplication x y ->
-            showSignature x ++ " " ++ showSignature y
+        TypeApplication a b ->
+            "(" ++ showSignature a ++ " " ++ showSignature b ++ ")"
 
         ListType x ->
             "[" ++ showSignature x ++ "]"
@@ -75,11 +78,6 @@ showSignature sig =
                     str
                 else
                     "(" ++ str ++ ")"
-
-
-signatureInParensParser : C.Parser Signature
-signatureInParensParser =
-    C.parens (C.rec <| \() -> signatureParser)
 
 
 listParser : C.Parser Signature
@@ -103,7 +101,8 @@ tupleParser : C.Parser Signature
 tupleParser =
     let
         innerParser =
-            C.sepBy (trimSpaces <| CC.char ',') (C.rec <| \() -> signatureParser)
+            C.sepBy (trimSpaces <| CC.char ',')
+                    (C.rec <| \() -> signatureParser)
                 |> C.map Tuple
     in
         C.between (trimSpaces <| C.string "(")
@@ -154,7 +153,6 @@ nonOpSignatureParser =
     C.choice
         [ C.rec <| \() -> listParser
         , C.rec <| \() -> tupleParser
-        , C.rec <| \() -> signatureInParensParser
         , variableTypeParser
         , fixedTypeParser
         ]
@@ -177,7 +175,7 @@ signatureParser =
         |> C.map simplify
 
 
-parseResultToMaybeSig : ( Result (List String) Signature, C.Context ) -> Maybe Signature
+parseResultToMaybeSig : ParseResult -> Maybe Signature
 parseResultToMaybeSig parseResult =
     case parseResult of
         ( Ok s, { input } ) ->
@@ -190,6 +188,9 @@ parseResultToMaybeSig parseResult =
             Maybe.Nothing
 
 
-parseSignature : String -> Maybe Signature
+parseSignature : String -> ParseResult
 parseSignature =
-    C.parse signatureParser >> parseResultToMaybeSig
+    C.parse signatureParser
+
+
+-- todo: learn to parse "A (B c) d"

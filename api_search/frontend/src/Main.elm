@@ -61,7 +61,9 @@ functionToMaybeFunctionWithSig : Function -> Maybe FunctionWithSig
 functionToMaybeFunctionWithSig function =
     let
         maybeSig =
-            TypeSignature.parseSignature function.signature
+            function.signature
+            |> TypeSignature.parseSignature
+            |> TypeSignature.parseResultToMaybeSig
     in
         case maybeSig of
             Just sig ->
@@ -343,7 +345,7 @@ showRatedFunction ( function, rating ) =
                 [ function.name
                     ++ " : "
                     ++ function.signature
-                    |> stringToCode "elm"
+                    |> stringToCode "haskell"
                 ]
 
         functionDocumentation =
