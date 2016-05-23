@@ -97,7 +97,7 @@ tupleParser : C.Parser Signature
 tupleParser =
     let
         innerParser =
-            C.sepBy1 (trimSpaces <| CC.char ',') (C.rec <| \() -> signatureParser)
+            C.sepBy (trimSpaces <| CC.char ',') (C.rec <| \() -> signatureParser)
                 |> C.map Tuple
     in
         C.between (trimSpaces <| C.string "(")
