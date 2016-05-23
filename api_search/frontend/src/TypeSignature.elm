@@ -193,6 +193,6 @@ parseSignature =
     C.parse signatureParser
 
 
--- todo: fix parsing. Examples for current problems:
-    "A (B c) d" (incomplete parse)
-    "(a -> B c d)" (not idempotent)
+--todo: fix parsing. Examples for current problems:
+--    "A (B c) d" (incomplete parse)
+--    "(a -> B c d)" (not idempotent)
