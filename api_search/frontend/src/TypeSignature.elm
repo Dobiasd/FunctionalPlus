@@ -73,7 +73,7 @@ showSignature sig =
         Tuple xs ->
             let
                 str =
-                    String.join "," (List.map showSignature xs)
+                    String.join ", " (List.map showSignature xs)
             in
                 if List.length xs == 1 then
                     str
@@ -128,7 +128,7 @@ typeApplicationParser =
 typeStartsWithParser : C.Parser Char -> (String -> Signature) -> C.Parser Signature
 typeStartsWithParser p tagger =
     [ p |> C.map (\x -> [ x ])
-    , C.many <| C.choice [ CC.lower, CC.upper ]
+    , C.many <| C.choice [ CC.lower, CC.upper, CC.char '.' ]
     ]
         |> C.sequence
         |> C.map List.concat
