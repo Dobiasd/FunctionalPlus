@@ -23,7 +23,8 @@ type Signature
     | VariableType String
 
 
-type alias ParseResult = ( Result (List String) Signature, C.Context )
+type alias ParseResult =
+    ( Result (List String) Signature, C.Context )
 
 
 simplify : Signature -> Signature
@@ -82,9 +83,7 @@ showSignature sig =
 
 listParser : C.Parser Signature
 listParser =
-    C.between (trimSpaces <| C.string "[")
-        (trimSpaces <| C.string "]")
-        (C.rec <| \() -> signatureParser)
+    C.brackets (C.rec <| \() -> signatureParser)
         |> C.map ListType
 
 
@@ -102,12 +101,10 @@ tupleParser =
     let
         innerParser =
             C.sepBy (trimSpaces <| CC.char ',')
-                    (C.rec <| \() -> signatureParser)
+                (C.rec <| \() -> signatureParser)
                 |> C.map Tuple
     in
-        C.between (trimSpaces <| C.string "(")
-            (trimSpaces <| C.string ")")
-            innerParser
+        C.parens <| trimSpaces innerParser
 
 
 arrowParser : C.Parser Signature
@@ -191,8 +188,3 @@ parseResultToMaybeSig parseResult =
 parseSignature : String -> ParseResult
 parseSignature =
     C.parse signatureParser
-
-
---todo: fix parsing. Examples for current problems:
---    "A (B c) d" (incomplete parse)
---    "(a -> B c d)" (not idempotent)
