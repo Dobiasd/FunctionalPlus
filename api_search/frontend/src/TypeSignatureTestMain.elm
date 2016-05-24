@@ -1,5 +1,7 @@
 module TypeSignatureTestMain exposing (..)
 
+-- where -- todo remove this comment
+
 import TypeSignature
 import Html exposing (..)
 import Html.App exposing (beginnerProgram)
@@ -45,40 +47,21 @@ showMaybeSig maybeSig =
 view : Model -> Html Msg
 view str =
     let
-        parseResult =
-            str |> TypeSignature.parseSignature
-
         maybeSignature =
-            parseResult |> TypeSignature.parseResultToMaybeSig
+            str |> TypeSignature.parseSignature
 
         signatureString =
             showMaybeSig maybeSignature
 
-        parsedAgainResult =
+        maybeParsedAgainSignature =
             signatureString
                 |> TypeSignature.parseSignature
 
-        maybeParsedAgainString =
-            parsedAgainResult
-                |> TypeSignature.parseResultToMaybeSig
-
         signatureAgainString =
-            showMaybeSig maybeParsedAgainString
+            showMaybeSig maybeParsedAgainSignature
 
         isIdempotent =
             signatureString == signatureAgainString
-
-        signatureStringToDisplay =
-            if String.isEmpty signatureString then
-                toString parseResult
-            else
-                signatureString
-
-        signatureAgainStringToDisplay =
-            if String.isEmpty signatureAgainString then
-                toString parsedAgainResult
-            else
-                signatureAgainString
     in
         div []
             [ input
@@ -90,14 +73,12 @@ view str =
                 []
             , div [ style [ ( "margin", "10px" ) ] ]
                 [ "parse result: " ++ (maybeSignature |> toString) |> text ]
-            , div [] [ "as string: " ++ signatureStringToDisplay |> text ]
+            , div [] [ "as string: " ++ signatureString |> text ]
             , if not isIdempotent then
                 div []
-                    [
-                    div [] [ "Error: Parsing was not isIdempotent!" |> text ]
-                  , div [] [ signatureAgainString |> text ]
-                  , div [] [ signatureAgainStringToDisplay |> text ]
-                  ]
+                    [ div [] [ "Error: Parsing was not isIdempotent!" |> text ]
+                    , div [] [ signatureAgainString |> text ]
+                    ]
               else
-                  div [] []
+                div [] []
             ]

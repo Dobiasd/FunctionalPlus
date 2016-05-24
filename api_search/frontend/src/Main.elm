@@ -1,5 +1,7 @@
 module FPlusApiSearch exposing (..)
 
+-- where -- todo remove this comment
+
 import Database exposing (Function, functions)
 import TypeSignature
 import Debug
@@ -62,8 +64,7 @@ functionToMaybeFunctionWithSig function =
     let
         maybeSig =
             function.signature
-            |> TypeSignature.parseSignature
-            |> TypeSignature.parseResultToMaybeSig
+                |> TypeSignature.parseSignature
     in
         case maybeSig of
             Just sig ->

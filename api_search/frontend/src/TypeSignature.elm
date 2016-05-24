@@ -1,7 +1,9 @@
-module TypeSignature exposing (Signature, parseSignature, ParseResult, showSignature, parseResultToMaybeSig)
+module TypeSignature exposing (Signature, parseSignature, showSignature)
 
 {-| This module provides the possibility to parse Haskell and Elm type signatures.
 -}
+
+-- where -- todo remove this comment
 
 import Combine as C
 import Combine.Char as CC
@@ -25,6 +27,36 @@ type Signature
 
 type alias ParseResult =
     ( Result (List String) Signature, C.Context )
+
+
+isSignatureValid : Signature -> Bool
+isSignatureValid sig =
+    case sig of
+        Arrow a b ->
+            isSignatureValid a && isSignatureValid b
+
+        TypeConstructor x ->
+            True
+
+        VariableType x ->
+            True
+
+        TypeApplication a b ->
+            case a of
+                TypeConstructor _ ->
+                    isSignatureValid b
+
+                TypeApplication _ _ ->
+                    isSignatureValid a && isSignatureValid b
+
+                _ ->
+                    False
+
+        ListType x ->
+            isSignatureValid x
+
+        Tuple xs ->
+            List.all isSignatureValid xs
 
 
 simplify : Signature -> Signature
@@ -176,7 +208,7 @@ parseResultToMaybeSig : ParseResult -> Maybe Signature
 parseResultToMaybeSig parseResult =
     case parseResult of
         ( Ok s, { input } ) ->
-            if String.isEmpty input then
+            if String.isEmpty input && isSignatureValid s then
                 Maybe.Just s
             else
                 Maybe.Nothing
@@ -185,6 +217,6 @@ parseResultToMaybeSig parseResult =
             Maybe.Nothing
 
 
-parseSignature : String -> ParseResult
+parseSignature : String -> Maybe Signature
 parseSignature =
-    C.parse signatureParser
+    C.parse signatureParser >> parseResultToMaybeSig
