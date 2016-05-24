@@ -16,7 +16,7 @@ namespace fplus
 {
 
 // API search type: bind_1st_of_2 : (a -> b -> c) -> a -> (b -> c)
-// Bind first parameter or binary function.
+// Bind first parameter of binary function.
 template <typename F, typename T,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
@@ -28,6 +28,22 @@ std::function<FOut(FIn1)> bind_1st_of_2(F f, T x)
         "Function can not take bound parameter type.");
     return [f, x]
            (FIn1 y)
+           { return f(x, y); };
+}
+
+// API search type: bind_2nd_of_2 : (a -> b -> c) -> b -> (a -> c)
+// Bind second parameter of binary function.
+template <typename F, typename T,
+    typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
+    typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
+    typename FOut = typename utils::function_traits<F>::result_type>
+std::function<FOut(FIn0)> bind_2nd_of_2(F f, T y)
+{
+    static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
+    static_assert(std::is_convertible<T, FIn1>::value,
+        "Function can not take bound parameter type.");
+    return [f, y]
+           (FIn0 x)
            { return f(x, y); };
 }
 

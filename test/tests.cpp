@@ -169,6 +169,9 @@ void Test_Composition()
     Row squaredRow = squareRowElems(row);
     assert(squaredRow == Row({1,4,9}));
 
+    auto int_division = [](int x, int y) { return x / y; };
+    assert(bind_2nd_of_2(int_division, 2)(6) == 3);
+
     assert((compose(square, square)(2)) == 16);
     assert((compose(square, square, square)(2)) == 256);
     assert((compose(square, square, square, square)(2)) == 65536);
