@@ -102,6 +102,7 @@ showSignatureHelper arrowsInParens typeAppInParens sig =
                 addParenthesis
             else
                 identity
+
         optTypeApplicationParens =
             if typeAppInParens then
                 addParenthesis
@@ -122,8 +123,9 @@ showSignatureHelper arrowsInParens typeAppInParens sig =
                 x
 
             TypeApplication a b ->
-                showSignatureHelper False False a ++ " " ++
-                    showSignatureHelper True True b
+                showSignatureHelper False False a
+                    ++ " "
+                    ++ showSignatureHelper True True b
                     |> optTypeApplicationParens
 
             ListType x ->
@@ -223,6 +225,7 @@ signatureParser =
         [ C.rec <| \() -> arrowParser
         , nonAppSignatureParser
         ]
+        |> trimSpaces
         |> C.map simplify
 
 

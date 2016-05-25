@@ -54,7 +54,7 @@ bool is_positive(X x)
 }
 
 // API search type: abs : a -> a
-// Returns the absolute (always positive) value of x.
+// Returns the absolute (always non-negative) value of x.
 template <typename X>
 X abs(X x)
 {
