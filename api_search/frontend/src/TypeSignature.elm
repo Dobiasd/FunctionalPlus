@@ -59,31 +59,6 @@ isSignatureValid sig =
             List.all isSignatureValid xs
 
 
-simplify : Signature -> Signature
-simplify sig =
-    case sig of
-        Arrow a b ->
-            Arrow (simplify a) (simplify b)
-
-        ListType x ->
-            ListType (simplify x)
-
-        -- Extract value from possible 1-tuples.
-        Tuple xs ->
-            case xs of
-                [ x ] ->
-                    simplify x
-
-                _ ->
-                    sig
-
-        TypeApplication a b ->
-            TypeApplication (simplify a) (simplify b)
-
-        _ ->
-            sig
-
-
 showSignature : Signature -> String
 showSignature =
     showSignatureHelper False False
@@ -158,9 +133,18 @@ tupleParser =
         innerParser =
             C.sepBy (trimSpaces <| CC.char ',')
                 (C.rec <| \() -> signatureParser)
-                |> C.map Tuple
+                |> C.map simplify
+
+        simplify xs =
+            case xs of
+                [ x ] ->
+                    x
+
+                _ ->
+                    Tuple xs
     in
-        C.parens <| trimSpaces innerParser
+        trimSpaces innerParser
+            |> C.parens
 
 
 arrowParser : C.Parser Signature
@@ -226,7 +210,6 @@ signatureParser =
         , nonAppSignatureParser
         ]
         |> trimSpaces
-        |> C.map simplify
 
 
 parseResultToMaybeSig : ParseResult -> Maybe Signature
