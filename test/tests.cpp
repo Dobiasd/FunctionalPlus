@@ -721,6 +721,7 @@ void Test_ContainerTools()
     assert(show_float<double>(1, 3, '0')(pi) == "3.142");
     assert(show_float<double>(2, 3, '0')(pi) == "03.142");
     assert(show_float<double>(3, 3, '0')(pi) == "003.142");
+    assert(show_float<double>(3, 3, ' ')(pi) == "  3.142");
     assert(show_float<double>(1, 2, '0')(pi) == "3.14");
     assert(show_float<double>(1, 4, '0')(pi) == "3.1416");
     assert(show_float<double>(1, 7, '0')(pi) == "3.1415900");

@@ -40,6 +40,11 @@ std::string show(const std::string& str)
 
 // API search type: show : (a, b) -> String
 // {1, "one"} -> "(1, one)"
+// Useful to simply show values, e.g.:
+// - Int to String
+// - Float to String
+// - Double to String
+// - std::vector<T> to String
 template <typename X, typename Y>
 std::string show(const std::pair<X, Y>& p)
 {
@@ -135,6 +140,19 @@ std::string show_result(const result<Ok, Error>& result)
         return std::string("Ok " + show(unsafe_get_ok(result)));
 }
 
+// API search type: show_float : (Int -> Int -> Char) -> Float -> String
+// Can be used to show floating point values in a specific format
+// (Float to String, Double to String etc.)
+// Examples:
+// const double pi = 3.14159
+// show_float<double>(0, 3, '0')(pi) == "3.142"
+// show_float<double>(1, 3, '0')(pi) == "3.142"
+// show_float<double>(2, 3, '0')(pi) == "03.142"
+// show_float<double>(3, 3, '0')(pi) == "003.142"
+// show_float<double>(3, 3, ' ')(pi) == "  3.142"
+// show_float<double>(1, 2, '0')(pi) == "3.14"
+// show_float<double>(1, 4, '0')(pi) == "3.1416"
+// show_float<double>(1, 7, '0')(pi) == "3.1415900"
 template <typename T>
 std::function<std::string(const T&)>
 show_float(std::size_t min_left_chars, std::size_t right_char_count,
