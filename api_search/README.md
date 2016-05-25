@@ -12,6 +12,7 @@ todo:
     [Char] == String
     Double = Float
 
+- wenn das query geparsed werden kann, das irgendwo anzeigen
 
 http://ndmitchell.com/downloads/slides-hoogle-08_dec_2005.pdf
 http://ndmitchell.com/downloads/slides-hoogle_fast_type_searching-09_aug_2008.pdf
