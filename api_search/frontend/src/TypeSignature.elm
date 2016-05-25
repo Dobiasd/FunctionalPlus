@@ -83,12 +83,26 @@ simplify sig =
         _ ->
             sig
 
-
 showSignature : Signature -> String
-showSignature sig =
+showSignature = showSignatureHelper False
+
+addParenthesis : String -> String
+addParenthesis x = "(" ++ x ++ ")"
+
+showSignatureHelper : Bool -> Signature -> String
+showSignatureHelper arrowsInParens sig =
     case sig of
         Arrow a b ->
-            "(" ++ showSignature a ++ " -> " ++ showSignature b ++ ")"
+            let
+                optArrowParens =
+                    if arrowsInParens then
+                        addParenthesis
+                    else
+                        identity
+            in
+                showSignatureHelper True a ++ " -> " ++
+                    showSignatureHelper False b
+                    |> optArrowParens
 
         TypeConstructor x ->
             x
@@ -97,20 +111,14 @@ showSignature sig =
             x
 
         TypeApplication a b ->
-            "(" ++ showSignature a ++ " " ++ showSignature b ++ ")"
+            showSignatureHelper False a ++ " " ++ showSignatureHelper True b
 
         ListType x ->
-            "[" ++ showSignature x ++ "]"
+            "[" ++ showSignatureHelper False x ++ "]"
 
         Tuple xs ->
-            let
-                str =
-                    String.join ", " (List.map showSignature xs)
-            in
-                if List.length xs == 1 then
-                    str
-                else
-                    "(" ++ str ++ ")"
+            String.join ", " (List.map (showSignatureHelper False) xs)
+                |> addParenthesis
 
 
 listParser : C.Parser Signature
