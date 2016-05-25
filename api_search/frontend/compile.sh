@@ -15,3 +15,5 @@ then
   cp ./src/htmlmain.js ./build/js/htmlmain.js
   cp ./src/index.html ./build/index.html
 fi
+
+./TypeSignatureTestCompile.sh

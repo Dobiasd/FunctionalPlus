@@ -83,42 +83,56 @@ simplify sig =
         _ ->
             sig
 
+
 showSignature : Signature -> String
-showSignature = showSignatureHelper False
+showSignature =
+    showSignatureHelper False False
+
 
 addParenthesis : String -> String
-addParenthesis x = "(" ++ x ++ ")"
+addParenthesis x =
+    "(" ++ x ++ ")"
 
-showSignatureHelper : Bool -> Signature -> String
-showSignatureHelper arrowsInParens sig =
-    case sig of
-        Arrow a b ->
-            let
-                optArrowParens =
-                    if arrowsInParens then
-                        addParenthesis
-                    else
-                        identity
-            in
-                showSignatureHelper True a ++ " -> " ++
-                    showSignatureHelper False b
+
+showSignatureHelper : Bool -> Bool -> Signature -> String
+showSignatureHelper arrowsInParens typeAppInParens sig =
+    let
+        optArrowParens =
+            if arrowsInParens then
+                addParenthesis
+            else
+                identity
+        optTypeApplicationParens =
+            if typeAppInParens then
+                addParenthesis
+            else
+                identity
+    in
+        case sig of
+            Arrow a b ->
+                showSignatureHelper True False a
+                    ++ " -> "
+                    ++ showSignatureHelper False False b
                     |> optArrowParens
 
-        TypeConstructor x ->
-            x
+            TypeConstructor x ->
+                x
 
-        VariableType x ->
-            x
+            VariableType x ->
+                x
 
-        TypeApplication a b ->
-            showSignatureHelper False a ++ " " ++ showSignatureHelper True b
+            TypeApplication a b ->
+                showSignatureHelper False False a ++ " " ++
+                    showSignatureHelper True True b
+                    |> optTypeApplicationParens
 
-        ListType x ->
-            "[" ++ showSignatureHelper False x ++ "]"
+            ListType x ->
+                "[" ++ showSignatureHelper False False x ++ "]"
 
-        Tuple xs ->
-            String.join ", " (List.map (showSignatureHelper False) xs)
-                |> addParenthesis
+            Tuple xs ->
+                String.join ", "
+                    (List.map (showSignatureHelper False False) xs)
+                    |> addParenthesis
 
 
 listParser : C.Parser Signature
