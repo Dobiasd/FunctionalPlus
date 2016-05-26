@@ -101,7 +101,20 @@ mapLRS f s sig =
 
 nthVarName : Int -> String
 nthVarName i =
-    97 + i |> Char.fromCode |> String.fromChar
+    let
+        charPart =
+            97 + (i `rem` 26) |> Char.fromCode |> String.fromChar
+
+        addNumber =
+            i // 26
+
+        numStr =
+            if addNumber == 0 then
+                ""
+            else
+                toString addNumber
+    in
+        charPart ++ numStr
 
 
 
@@ -261,7 +274,7 @@ typeApplicationParser =
 typeStartsWithParser : C.Parser Char -> (String -> Signature) -> C.Parser Signature
 typeStartsWithParser p tagger =
     [ p |> C.map (\x -> [ x ])
-    , C.many <| C.choice [ CC.lower, CC.upper, CC.char '.' ]
+    , C.many <| C.choice [ CC.lower, CC.upper, CC.char '.', CC.digit ]
     ]
         |> C.sequence
         |> C.map List.concat
