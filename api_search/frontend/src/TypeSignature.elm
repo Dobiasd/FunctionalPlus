@@ -236,15 +236,7 @@ isValidTypeApplication sig =
             True
 
         TypeApplication a b ->
-            case a of
-                TypeApplication a _ ->
-                    isValidTypeApplication a
-
-                TypeConstructor _ ->
-                    True
-
-                _ ->
-                    False
+            isValidTypeApplication a
 
         _ ->
             False
