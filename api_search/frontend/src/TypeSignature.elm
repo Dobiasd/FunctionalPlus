@@ -29,36 +29,6 @@ type alias ParseResult =
     ( Result (List String) Signature, C.Context )
 
 
-isSignatureValid : Signature -> Bool
-isSignatureValid sig =
-    case sig of
-        Arrow a b ->
-            isSignatureValid a && isSignatureValid b
-
-        TypeConstructor x ->
-            True
-
-        VariableType x ->
-            True
-
-        TypeApplication a b ->
-            case a of
-                TypeConstructor _ ->
-                    isSignatureValid b
-
-                TypeApplication _ _ ->
-                    isSignatureValid a && isSignatureValid b
-
-                _ ->
-                    False
-
-        ListType x ->
-            isSignatureValid x
-
-        Tuple xs ->
-            List.all isSignatureValid xs
-
-
 showSignature : Signature -> String
 showSignature =
     showSignatureHelper False False
@@ -259,13 +229,41 @@ arrowParser =
         C.chainr (C.rec <| \() -> nonAppSignatureParser) arrowOp
 
 
+isValidTypeApplication : Signature -> Bool
+isValidTypeApplication sig =
+    case sig of
+        TypeConstructor _ ->
+            True
+
+        TypeApplication a b ->
+            case a of
+                TypeApplication a _ ->
+                    isValidTypeApplication a
+
+                TypeConstructor _ ->
+                    True
+
+                _ ->
+                    False
+
+        _ ->
+            False
+
+
 typeApplicationParser : C.Parser Signature
 typeApplicationParser =
     let
         typeApplyOp =
             TypeApplication <$ C.many1 CC.space
+
+        validate ta =
+            if isValidTypeApplication ta then
+                C.succeed ta
+            else
+                C.fail [ "invalid type application" ]
     in
-        C.chainl (C.rec <| \() -> nonOpSignatureParser) typeApplyOp
+        C.andThen (C.chainl (C.rec <| \() -> nonOpSignatureParser) typeApplyOp)
+            validate
 
 
 typeStartsWithParser : C.Parser Char -> (String -> Signature) -> C.Parser Signature
@@ -319,7 +317,7 @@ parseResultToMaybeSig : ParseResult -> Maybe Signature
 parseResultToMaybeSig parseResult =
     case parseResult of
         ( Ok s, { input } ) ->
-            if String.isEmpty input && isSignatureValid s then
+            if String.isEmpty input then
                 Maybe.Just s
             else
                 Maybe.Nothing
