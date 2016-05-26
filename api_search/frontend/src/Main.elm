@@ -1,7 +1,5 @@
 module FPlusApiSearch exposing (..)
 
--- where -- todo remove this comment
-
 import Database exposing (Function, functions)
 import TypeSignature
 import Debug
