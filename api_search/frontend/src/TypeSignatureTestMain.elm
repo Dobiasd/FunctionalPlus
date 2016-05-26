@@ -1,12 +1,11 @@
 module TypeSignatureTestMain exposing (..)
 
--- where -- todo remove this comment
-
 import TypeSignature
 import Html exposing (..)
 import Html.App exposing (beginnerProgram)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Maybe
 import Result
 import String
 
@@ -50,8 +49,11 @@ view str =
         maybeSignature =
             str |> TypeSignature.parseSignature
 
+        maybeSignatureNormalized =
+            maybeSignature |> Maybe.map TypeSignature.normalizeSignature
+
         signatureString =
-            showMaybeSig maybeSignature
+            maybeSignatureNormalized |> showMaybeSig
 
         maybeParsedAgainSignature =
             signatureString
@@ -73,6 +75,9 @@ view str =
                 []
             , div [ style [ ( "margin", "10px" ) ] ]
                 [ "parse result: " ++ (maybeSignature |> toString) |> text ]
+            , div [ style [ ( "margin", "10px" ) ] ]
+                [ "parse result: " ++
+                    (maybeSignatureNormalized |> toString) |> text ]
             , div [] [ "as string: " ++ signatureString |> text ]
             , if not isIdempotent then
                 div []

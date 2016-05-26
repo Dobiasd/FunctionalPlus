@@ -24,14 +24,6 @@ main =
         }
 
 
-type alias WithSig a =
-    { a | parsedSignature : TypeSignature.Signature }
-
-
-type alias FunctionWithSig =
-    WithSig Database.Function
-
-
 maxVisibleFunctions : Int
 maxVisibleFunctions =
     20
@@ -42,25 +34,7 @@ initModelAndCommands =
     ( defaultModel, cmdGetRandomNumbers )
 
 
-type alias Function =
-    { name : String
-    , signature : String
-    , documentation : String
-    , declaration : String
-    }
-
-
-addParsedSignatureToFunction function sig =
-    { name = function.name
-    , signature = function.signature
-    , parsedSignature = sig
-    , documentation = function.documentation
-    , declaration = function.declaration
-    }
-
-
-functionToMaybeFunctionWithSig : Function -> Maybe FunctionWithSig
-functionToMaybeFunctionWithSig function =
+normalizeFunctionSignature function =
     let
         maybeSig =
             function.signature
@@ -68,7 +42,12 @@ functionToMaybeFunctionWithSig function =
     in
         case maybeSig of
             Just sig ->
-                Just <| addParsedSignatureToFunction function sig
+                { function
+                    | signature =
+                        sig
+                            |> TypeSignature.normalizeSignature
+                            |> TypeSignature.showSignature
+                }
 
             Nothing ->
                 Debug.log
@@ -77,17 +56,17 @@ functionToMaybeFunctionWithSig function =
                         ++ ": "
                         ++ function.signature
                     )
-                    Nothing
+                    function
 
 
-functionsWithSig : List FunctionWithSig
-functionsWithSig =
-    List.filterMap functionToMaybeFunctionWithSig functions
+functions : List Function
+functions =
+    List.map normalizeFunctionSignature Database.functions
 
 
 functionCnt : Int
 functionCnt =
-    List.length functionsWithSig
+    List.length functions
 
 
 cmdGetRandomNumbers : Cmd Msg
