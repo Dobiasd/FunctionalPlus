@@ -111,6 +111,7 @@ std::string show_cont_with(const std::string& separator, const Container& xs)
 
 // API search type: show_cont : [a] -> String
 // show_cont [1, 2, 3] -> "[1, 2, 3]"
+// Can i.a show std::vector and std::map.
 template <typename Container>
 std::string show_cont(const Container& xs)
 {
