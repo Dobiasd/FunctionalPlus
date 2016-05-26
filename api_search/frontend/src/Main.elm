@@ -9,6 +9,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Markdown
 import Random
+import Regex
 import String
 import StringDistance
 
@@ -75,6 +76,7 @@ cmdGetRandomNumbers =
 
 type alias Model =
     { query : String
+    , querySigStr : String
     , searchResult : List ( Function, Float )
     }
 
@@ -82,6 +84,7 @@ type alias Model =
 defaultModel : Model
 defaultModel =
     { query = ""
+    , querySigStr = ""
     , searchResult = []
     }
 
@@ -102,6 +105,7 @@ update action model =
             if String.isEmpty str then
                 ( { model
                     | query = str
+                    , querySigStr = ""
                     , searchResult = []
                   }
                 , cmdGetRandomNumbers
@@ -109,6 +113,12 @@ update action model =
             else
                 ( { model
                     | query = str
+                    , querySigStr =
+                        str
+                            |> cleanFunctionSignature
+                            |> TypeSignature.parseSignature
+                            |> Maybe.map TypeSignature.normalizeSignature
+                            |> showMaybeSig
                     , searchResult = searchFunctions str
                   }
                 , Cmd.none
@@ -124,6 +134,16 @@ update action model =
               }
             , Cmd.none
             )
+
+
+showMaybeSig : Maybe TypeSignature.Signature -> String
+showMaybeSig maybeSig =
+    case maybeSig of
+        Maybe.Just s ->
+            TypeSignature.showSignature s
+
+        Maybe.Nothing ->
+            ""
 
 
 nthElement : List a -> Int -> Maybe a
@@ -158,10 +178,17 @@ view model =
             , input
                 [ placeholder "search query"
                 , autofocus True
+                , autocomplete True
                 , style [ ( "width", "500px" ) ]
                 , onInput UpdateQuery
                 ]
                 []
+            , if String.isEmpty model.querySigStr then
+                div [ class "queryhelper" ]
+                    [ text "You can search by function name, tags or type signature" ]
+              else
+                div [ class "parsedsignature" ]
+                    [ "as parsed type: " ++ model.querySigStr |> stringToCode "Haskell" ]
             , hr [] []
             , model.searchResult |> showFunctions
             , hr [] []
@@ -177,13 +204,72 @@ showFooter =
         ]
 
 
-cleanFunctionSignature : String -> String
-cleanFunctionSignature str =
+replaceInString : String -> String -> String -> String
+replaceInString pattern replacement =
+    Regex.replace Regex.All (Regex.regex pattern) (always replacement)
+
+
+replaceSubMatchInString : String -> (String -> String) -> String -> String
+replaceSubMatchInString pattern replacementFunc =
     let
-        isSpace c =
-            c == ' '
+        f { match, submatches } =
+            case submatches of
+                [ Maybe.Just sm ] ->
+                    replacementFunc sm
+
+                _ ->
+                    match
     in
-        String.filter (isSpace >> not) str
+        Regex.replace Regex.All (Regex.regex pattern) f
+
+
+replaceTwoSubMatchInString :
+    String
+    -> (String -> String -> String)
+    -> String
+    -> String
+replaceTwoSubMatchInString pattern replacementFunc =
+    let
+        f { match, submatches } =
+            case submatches of
+                [ Maybe.Just sm1, Maybe.Just sm2 ] ->
+                    replacementFunc sm1 sm2
+
+                _ ->
+                    match
+    in
+        Regex.replace Regex.All (Regex.regex pattern) f
+
+
+cleanFunctionSignature : String -> String
+cleanFunctionSignature =
+    String.toLower
+        >> replaceInString "std::" ""
+        >> replaceInString "fplus::" ""
+        >> replaceSubMatchInString "vector<([^>]*)>" (\sm -> "[" ++ sm ++ "]")
+        >> replaceSubMatchInString "list<([^>]*)>" (\sm -> "[" ++ sm ++ "]")
+        >> replaceSubMatchInString "set<([^>]*)>" (\sm -> "Set " ++ sm)
+        >> replaceTwoSubMatchInString "map<([^>]*),([^>]*)>" (\sm1 sm2 -> "Map " ++ sm1 ++ " " ++ sm2)
+        >> replaceInString "unsigned int" "Int"
+        >> replaceInString "unsigned" "Int"
+        >> replaceInString "size_t" "Int"
+        >> replaceInString "short" "Int"
+        >> replaceInString "signed" "Int"
+        >> replaceInString "long" "Int"
+        >> replaceInString "integer" "Int"
+        >> replaceInString "int" "Int"
+        >> replaceInString "double" "Float"
+        >> replaceInString "float" "Float"
+        >> replaceInString "boolean" "Bool"
+        >> replaceInString "bool" "Bool"
+        >> replaceInString "maybe" "Maybe"
+        >> replaceInString "either" "Result"
+        >> replaceInString "result" "Result"
+        >> replaceInString "map" "Map"
+        >> replaceInString "dict" "Map"
+        >> replaceInString "set" "Int"
+        >> replaceInString "string" "String"
+        >> replaceInString "\\[ *char *\\]" "String"
 
 
 searchFunctions : String -> List ( Function, Float )

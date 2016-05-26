@@ -49,9 +49,20 @@ code {
 .githublink a:hover   { color: #f8f8f2 }
 .githublink a:active  { color: #f8f8f2 }
 
-.function
+.functionnameandsig
 {
-    padding: 16px;
+}
+
+.parsedsignature
+{
+    color: #75715e;
+    margin: 8px;
+}
+
+.queryhelper
+{
+    color: #75715e;
+    margin: 8px;
 }
 
 .functionnameandsig

@@ -1,32 +1,5 @@
 todo:
 
-first all to lower case
-then remove "std::"
-then remove "fplus::"
-then replace:
-vector<([^>]*)> -> "\[\1\]"
-list<([^>]*)> -> "\[\1\]"
-map<([^>]*),([^>]*)> -> Map \1 \2
-set<([^>]*)> -> Set \1
-unsigned int -> Int
-unsigned -> Int
-size_t -> Int
-short -> Int
-signed -> Int
-long -> Int
-integer -> Int
-int -> Int
-double -> Float
-float -> Float
-bool -> Bool
-maybe -> Maybe
-result -> Result
-map -> Map
-dict -> Map
-set -> Set
-string -> String
-"\[ *char * \]" -> String
-
 equality (db == query):
 VariableType _ == TypeConstructor _
 TypeApplication (TypeConstructor "Maybe") (VariableType x) == x
