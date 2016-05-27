@@ -361,7 +361,6 @@ functionRating queryOrig querySigStr function =
 
 functionWordRating : Float -> Function -> String -> Float
 functionWordRating weight function query =
-    --StringDistance.sift3Distance query function.name
     let
         isSubStr =
             String.contains query function.name
