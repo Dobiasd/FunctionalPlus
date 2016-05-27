@@ -1,11 +1,9 @@
 todo:
 
-equality (db == query):
-VariableType _ == TypeConstructor _
-TypeApplication (TypeConstructor "Maybe") (VariableType x) == x
-TypeApplication (TypeConstructor "Maybe") (TypeConstructor x) == x
+fix (example fst):
+matches: (a,string)->string
+does not match: (string,a)->string
 
-search signature with query as subSignature (both normalized)
 
 hoogle talk slides:
 http://ndmitchell.com/downloads/slides-hoogle-08_dec_2005.pdf

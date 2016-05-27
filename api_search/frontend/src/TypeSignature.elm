@@ -365,6 +365,9 @@ areFunctionsCompatible db query =
         ( VariableType _, TypeConstructor _ ) ->
             True
 
+        ( VariableType _, ListType (TypeConstructor "Char") ) ->
+            True
+
         ( TypeApplication (TypeConstructor "Maybe") (VariableType x), VariableType y ) ->
             x == y
 
