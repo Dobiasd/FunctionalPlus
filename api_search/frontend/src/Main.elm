@@ -11,7 +11,6 @@ import Markdown
 import Random
 import Regex
 import String
-import StringDistance
 
 
 main =
