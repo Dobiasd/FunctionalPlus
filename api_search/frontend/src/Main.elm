@@ -76,6 +76,7 @@ cmdGetRandomNumbers =
 
 type alias Model =
     { query : String
+    , querySig : Maybe TypeSignature.Signature
     , querySigStr : String
     , searchResult : List ( Function, Float )
     }
@@ -84,6 +85,7 @@ type alias Model =
 defaultModel : Model
 defaultModel =
     { query = ""
+    , querySig = Nothing
     , querySigStr = ""
     , searchResult = []
     }
@@ -105,24 +107,31 @@ update action model =
             if String.isEmpty str then
                 ( { model
                     | query = str
+                    , querySig = Nothing
                     , querySigStr = ""
                     , searchResult = []
                   }
                 , cmdGetRandomNumbers
                 )
             else
-                ( { model
-                    | query = str
-                    , querySigStr =
+                let
+                    newQuerySig =
                         str
                             |> cleanFunctionSignature
                             |> TypeSignature.parseSignature
                             |> Maybe.map TypeSignature.normalizeSignature
-                            |> showMaybeSig
-                    , searchResult = searchFunctions str
-                  }
-                , Cmd.none
-                )
+
+                    newQuerySigStr =
+                        newQuerySig |> showMaybeSig
+                in
+                    ( { model
+                        | query = str
+                        , querySig = newQuerySig
+                        , querySigStr = newQuerySigStr
+                        , searchResult = searchFunctions str newQuerySigStr
+                      }
+                    , Cmd.none
+                    )
 
         RandomNumbers nums ->
             ( { model
@@ -185,7 +194,7 @@ view model =
                 []
             , if String.isEmpty model.querySigStr then
                 div [ class "queryhelper" ]
-                    [ text "You can search by function name, tags or type signature" ]
+                    [ text "You can search by function name, documentation tags or type signature" ]
               else
                 div [ class "parsedsignature" ]
                     [ "as parsed type: " ++ model.querySigStr |> stringToCode "Haskell" ]
@@ -244,23 +253,25 @@ replaceTwoSubMatchInString pattern replacementFunc =
 applyUntilIdempotent : (String -> String) -> String -> String
 applyUntilIdempotent f str =
     let
-        res = f str
+        res =
+            f str
     in
         if res == str then
             res
         else
             applyUntilIdempotent f res
 
+
 cleanFunctionSignature : String -> String
 cleanFunctionSignature =
     let
         recursiveCases =
             replaceSubMatchInString "vector<([^<>]*)>" (\sm -> "[" ++ sm ++ "]")
-            >> replaceSubMatchInString "list<([^<>]*)>" (\sm -> "[" ++ sm ++ "]")
-            >> replaceSubMatchInString "set<([^<>]*)>" (\sm -> "Set " ++ sm)
-            >> replaceTwoSubMatchInString "map<([^<>]*),([^<>]*)>" (\sm1 sm2 -> "Map " ++ sm1 ++ " " ++ sm2)
-            >> replaceTwoSubMatchInString "pair<([^<>]*),([^<>]*)>" (\sm1 sm2 -> "(" ++ sm1 ++ ", " ++ sm2 ++ ")")
-            |> applyUntilIdempotent
+                >> replaceSubMatchInString "list<([^<>]*)>" (\sm -> "[" ++ sm ++ "]")
+                >> replaceSubMatchInString "set<([^<>]*)>" (\sm -> "Set " ++ sm)
+                >> replaceTwoSubMatchInString "map<([^<>]*),([^<>]*)>" (\sm1 sm2 -> "Map " ++ sm1 ++ " " ++ sm2)
+                >> replaceTwoSubMatchInString "pair<([^<>]*),([^<>]*)>" (\sm1 sm2 -> "(" ++ sm1 ++ ", " ++ sm2 ++ ")")
+                |> applyUntilIdempotent
     in
         String.toLower
             >> replaceInString "std::" ""
@@ -277,6 +288,7 @@ cleanFunctionSignature =
             >> replaceInString "double" "Float"
             >> replaceInString "float" "Float"
             >> replaceInString "boolean" "Bool"
+            >> replaceInString "char" "Char"
             >> replaceInString "bool" "Bool"
             >> replaceInString "maybe" "Maybe"
             >> replaceInString "either" "Result"
@@ -285,15 +297,15 @@ cleanFunctionSignature =
             >> replaceInString "dict" "Map"
             >> replaceInString "set" "Int"
             >> replaceInString "string" "String"
-            >> replaceInString "\\[ *char *\\]" "String"
+            >> replaceInString "String" "[Char]"
 
 
-searchFunctions : String -> List ( Function, Float )
-searchFunctions query =
+searchFunctions : String -> String -> List ( Function, Float )
+searchFunctions query querySigStr =
     let
         ratedFunctions =
             functions
-                |> List.map (\f -> ( f, functionRating query f ))
+                |> List.map (\f -> ( f, functionRating query querySigStr f ))
     in
         ratedFunctions
             |> List.sortBy (\( _, rating ) -> 0 - rating)
@@ -309,11 +321,11 @@ boolToNum value b =
         0
 
 
-functionRating : String -> Function -> Float
-functionRating query_orig function =
+functionRating : String -> String -> Function -> Float
+functionRating queryOrig querySigStr function =
     let
         query =
-            query_orig |> String.toLower
+            queryOrig |> String.toLower
 
         queryWords =
             String.words query
@@ -336,11 +348,8 @@ functionRating query_orig function =
                     )
                 |> List.sum
 
-        -- todo: type rating with parsing
-        --       cleanFunctionSignature destroys stuff like "Maybe a" anyway.
         typeRating =
-            String.contains (cleanFunctionSignature query)
-                (function.signature |> cleanFunctionSignature |> String.toLower)
+            String.contains querySigStr function.signature
                 |> boolToNum 1000
     in
         wordRatingSum + typeRating

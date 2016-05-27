@@ -76,8 +76,10 @@ view str =
             , div [ style [ ( "margin", "10px" ) ] ]
                 [ "parse result: " ++ (maybeSignature |> toString) |> text ]
             , div [ style [ ( "margin", "10px" ) ] ]
-                [ "parse result: " ++
-                    (maybeSignatureNormalized |> toString) |> text ]
+                [ "parse result: "
+                    ++ (maybeSignatureNormalized |> toString)
+                    |> text
+                ]
             , div [] [ "as string: " ++ signatureString |> text ]
             , if not isIdempotent then
                 div []

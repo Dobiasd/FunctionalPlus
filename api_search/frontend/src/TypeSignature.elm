@@ -189,6 +189,9 @@ showSignatureHelper arrowsInParens typeAppInParens sig =
                     ++ showSignatureHelper True True b
                     |> optTypeApplicationParens
 
+            ListType (TypeConstructor "Char") ->
+                "String"
+
             ListType x ->
                 "[" ++ showSignatureHelper False False x ++ "]"
 
@@ -286,9 +289,19 @@ variableTypeParser =
     typeStartsWithParser CC.lower VariableType
 
 
+stringToListChar : Signature -> Signature
+stringToListChar sig =
+    case sig of
+        TypeConstructor "String" ->
+            ListType (TypeConstructor "Char")
+
+        _ ->
+            sig
+
+
 fixedTypeParser : C.Parser Signature
 fixedTypeParser =
-    typeStartsWithParser CC.upper TypeConstructor
+    typeStartsWithParser CC.upper TypeConstructor |> C.map stringToListChar
 
 
 nonOpSignatureParser : C.Parser Signature

@@ -7,8 +7,6 @@ TypeApplication (TypeConstructor "Maybe") (TypeConstructor x) == x
 
 search signature with query as subSignature (both normalized)
 
-remark if query parsed as signature (display pretty printed below)
-
 hoogle talk slides:
 http://ndmitchell.com/downloads/slides-hoogle-08_dec_2005.pdf
 http://ndmitchell.com/downloads/slides-hoogle_fast_type_searching-09_aug_2008.pdf
