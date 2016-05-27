@@ -250,6 +250,7 @@ cleanFunctionSignature =
         >> replaceSubMatchInString "list<([^>]*)>" (\sm -> "[" ++ sm ++ "]")
         >> replaceSubMatchInString "set<([^>]*)>" (\sm -> "Set " ++ sm)
         >> replaceTwoSubMatchInString "map<([^>]*),([^>]*)>" (\sm1 sm2 -> "Map " ++ sm1 ++ " " ++ sm2)
+        >> replaceTwoSubMatchInString "pair<([^>]*),([^>]*)>" (\sm1 sm2 -> "(" ++ sm1 ++ "," ++ sm2 ++ ")")
         >> replaceInString "unsigned int" "Int"
         >> replaceInString "unsigned" "Int"
         >> replaceInString "size_t" "Int"
