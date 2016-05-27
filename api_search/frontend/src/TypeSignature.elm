@@ -44,7 +44,7 @@ mapS f s =
             in
                 ( sig' :: sigs, s' )
     in
-        List.foldr go ( [], s )
+        List.foldl go ( [], s ) >> \(xs, s) -> (List.reverse xs, s)
 
 
 
