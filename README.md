@@ -115,7 +115,8 @@ int main()
         {"Simba",    2, 9, 9, 2, 7},
         {"Muffin",   9, 4, 2, 8, 6},
         {"Garfield", 6, 5, 7, 9, 5}};
-    std::cout << fplus::maximum_on(cuteness, cats).name_ <<
+    auto cutest_cat = fplus::maximum_on(cuteness, cats);
+    std::cout << cutest_cat.name_ <<
         " is happy and sleepy. *purr* *purr* *purr*" << std::endl;
 }
 ```
