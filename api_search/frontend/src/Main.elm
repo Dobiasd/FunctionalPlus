@@ -348,9 +348,13 @@ functionRating queryOrig querySigStr function =
                     )
                 |> List.sum
 
+        typeWeight =
+            stringLengthFloat querySigStr / stringLengthFloat function.signature
+
         typeRating =
             String.contains querySigStr function.signature
                 |> boolToNum 1000
+                |> (*) typeWeight
     in
         wordRatingSum + typeRating
 
