@@ -222,6 +222,7 @@ Container trim_left_by(UnaryPredicate p, const Container& xs)
 }
 
 // API search type: trim_left : a -> [a] -> [a]
+// trim_left('_', "___abc__") == "abc__"
 // trim_left(0, [0,0,0,5,6,7,8,6,4]) == [5,6,7,8,6,4]
 template <typename Container,
         typename T = typename Container::value_type>
@@ -253,6 +254,7 @@ Container trim_right_by(UnaryPredicate p, const Container& xs)
 }
 
 // API search type: trim_right : a -> [a] -> [a]
+// trim_right('_', "___abc__") == "___abc"
 // trim_right(4, [0,2,4,5,6,7,8,4,4]) == [0,2,4,5,6,7,8]
 template <typename Container,
         typename T = typename Container::value_type>
@@ -279,6 +281,7 @@ Container trim_by(UnaryPredicate p, const Container& xs)
 }
 
 // API search type: trim : a -> [a] -> [a]
+// trim('_', "___abc__") == "abc"
 // trim(0, [0,2,4,5,6,7,8,0,0]) == [2,4,5,6,7,8]
 template <typename Container,
         typename T = typename Container::value_type>
