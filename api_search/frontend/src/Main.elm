@@ -1,6 +1,6 @@
 module FPlusApiSearch exposing (..)
 
-import Database exposing (Function, functions)
+import Database
 import TypeSignature
 import Debug
 import Html exposing (..)
@@ -32,34 +32,52 @@ initModelAndCommands =
     ( defaultModel, cmdGetRandomNumbers )
 
 
-normalizeFunctionSignature function =
-    let
-        maybeSig =
-            function.signature
-                |> TypeSignature.parseSignature
-    in
-        case maybeSig of
-            Just sig ->
-                { function
-                    | signature =
-                        sig
-                            |> TypeSignature.normalizeSignature
-                            |> TypeSignature.showSignature
-                }
+generateSubSignatures : Database.Function -> List TypeSignature.Signature
+generateSubSignatures function =
+    function
+        |> parseSignatureCrashOnError
+        |> TypeSignature.generateSubSignatures
 
-            Nothing ->
-                Debug.log
-                    ("Error parsing signature of "
-                        ++ function.name
-                        ++ ": "
-                        ++ function.signature
-                    )
-                    function
+
+type alias WithSubSignatures a =
+    { a
+        | subSignatures : List TypeSignature.Signature
+        , parsedSignature : TypeSignature.Signature
+    }
+
+
+type alias Function =
+    WithSubSignatures Database.Function
+
+
+parseSignatureCrashOnError : Database.Function -> TypeSignature.Signature
+parseSignatureCrashOnError function =
+    case TypeSignature.parseSignature function.signature of
+        Just sig ->
+            sig
+
+        Nothing ->
+            "Error parsing signature of "
+                ++ function.name
+                ++ ": "
+                ++ function.signature
+                |> Debug.crash
+
+
+addSubSignaturesToFunction : Database.Function -> Function
+addSubSignaturesToFunction function =
+    { name = function.name
+    , signature = function.signature
+    , subSignatures = generateSubSignatures function
+    , parsedSignature = parseSignatureCrashOnError function
+    , documentation = function.documentation
+    , declaration = function.declaration
+    }
 
 
 functions : List Function
 functions =
-    List.map normalizeFunctionSignature Database.functions
+    List.map addSubSignaturesToFunction Database.functions
 
 
 functionCnt : Int
@@ -114,11 +132,18 @@ update action model =
                 )
             else
                 let
+                    singletonSignatureToNothing sig =
+                        if String.length (TypeSignature.showSignature sig) < 2 then
+                            Nothing
+                        else
+                            Just sig
+
                     newQuerySig =
                         str
                             |> cleanFunctionSignature
                             |> TypeSignature.parseSignature
                             |> Maybe.map TypeSignature.normalizeSignature
+                            |> \x -> Maybe.andThen x singletonSignatureToNothing
 
                     newQuerySigStr =
                         newQuerySig |> showMaybeSig
@@ -127,7 +152,7 @@ update action model =
                         | query = str
                         , querySig = newQuerySig
                         , querySigStr = newQuerySigStr
-                        , searchResult = searchFunctions str newQuerySigStr
+                        , searchResult = searchFunctions str newQuerySig
                       }
                     , Cmd.none
                     )
@@ -299,12 +324,12 @@ cleanFunctionSignature =
             >> replaceInString "String" "[Char]"
 
 
-searchFunctions : String -> String -> List ( Function, Float )
-searchFunctions query querySigStr =
+searchFunctions : String -> Maybe TypeSignature.Signature -> List ( Function, Float )
+searchFunctions query querySig =
     let
         ratedFunctions =
             functions
-                |> List.map (\f -> ( f, functionRating query querySigStr f ))
+                |> List.map (\f -> ( f, functionRating query querySig f ))
     in
         ratedFunctions
             |> List.sortBy (\( _, rating ) -> 0 - rating)
@@ -320,8 +345,13 @@ boolToNum value b =
         0
 
 
-functionRating : String -> String -> Function -> Float
-functionRating queryOrig querySigStr function =
+typeRating : Float -> TypeSignature.Signature -> TypeSignature.Signature -> Float
+typeRating weight query db =
+    TypeSignature.areFunctionsCompatible db query |> boolToNum 1000 |> (*) weight
+
+
+functionRating : String -> Maybe TypeSignature.Signature -> Function -> Float
+functionRating queryOrig querySig function =
     let
         query =
             queryOrig |> String.toLower
@@ -347,15 +377,24 @@ functionRating queryOrig querySigStr function =
                     )
                 |> List.sum
 
-        typeWeight =
-            stringLengthFloat querySigStr / stringLengthFloat function.signature
+        bestTypeRating =
+            case querySig of
+                Just sig ->
+                    let
+                        typeWeight =
+                            stringLengthFloat (TypeSignature.showSignature sig)
+                                / stringLengthFloat function.signature
 
-        typeRating =
-            String.contains querySigStr function.signature
-                |> boolToNum 1000
-                |> (*) typeWeight
+                        allRatings =
+                            List.map (typeRating typeWeight sig)
+                                function.subSignatures
+                    in
+                        allRatings |> List.maximum |> Maybe.withDefault 0
+
+                Nothing ->
+                    0
     in
-        wordRatingSum + typeRating
+        wordRatingSum + bestTypeRating
 
 
 functionWordRating : Float -> Function -> String -> Float
@@ -380,10 +419,10 @@ functionWordRating weight function query =
             lengthDiff / queryAndFunctionNameMaxLength
 
         nameRating =
-            weight * Basics.max 0 (boolToNum 1000 isSubStr - 50 * relLengthDiff)
+            weight * Basics.max 0 (boolToNum 100 isSubStr - 5 * relLengthDiff)
 
         docRating =
-            String.contains query (String.toLower function.documentation) |> boolToNum 10
+            String.contains query (String.toLower function.documentation) |> boolToNum 40
     in
         nameRating + docRating
 

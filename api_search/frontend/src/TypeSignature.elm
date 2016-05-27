@@ -1,4 +1,4 @@
-module TypeSignature exposing (Signature, parseSignature, showSignature, normalizeSignature)
+module TypeSignature exposing (Signature, parseSignature, showSignature, normalizeSignature, generateSubSignatures, areFunctionsCompatible)
 
 {-| This module provides the possibility to parse Haskell and Elm type signatures.
 -}
@@ -44,7 +44,7 @@ mapS f s =
             in
                 ( sig' :: sigs, s' )
     in
-        List.foldl go ( [], s ) >> \(xs, s) -> (List.reverse xs, s)
+        List.foldl go ( [], s ) >> \( xs, s ) -> ( List.reverse xs, s )
 
 
 
@@ -347,3 +347,49 @@ parseResultToMaybeSig parseResult =
 parseSignature : String -> Maybe Signature
 parseSignature =
     C.parse signatureParser >> parseResultToMaybeSig
+
+
+generateSubSignatures : Signature -> List Signature
+generateSubSignatures sig =
+    case sig of
+        Arrow a b ->
+            [ sig ] ++ generateSubSignatures a ++ generateSubSignatures b
+
+        x ->
+            [ normalizeSignature x ]
+
+
+areFunctionsCompatible : Signature -> Signature -> Bool
+areFunctionsCompatible db query =
+    case ( db, query ) of
+        ( VariableType _, TypeConstructor _ ) ->
+            True
+
+        ( TypeApplication (TypeConstructor "Maybe") (VariableType x), VariableType y ) ->
+            x == y
+
+        ( TypeApplication (TypeConstructor "Maybe") (TypeConstructor x), TypeConstructor y ) ->
+            x == y
+
+        ( Arrow a b, Arrow x y ) ->
+            areFunctionsCompatible a x && areFunctionsCompatible b y
+
+        ( TypeConstructor x, TypeConstructor y ) ->
+            x == y
+
+        ( VariableType x, VariableType y ) ->
+            x == y
+
+        ( TypeApplication a b, TypeApplication x y ) ->
+            areFunctionsCompatible a x && areFunctionsCompatible b y
+
+        ( ListType a, ListType x ) ->
+            areFunctionsCompatible a x
+
+        ( Tuple xs, Tuple ys ) ->
+            List.length xs
+                == List.length ys
+                && (List.map2 areFunctionsCompatible xs ys |> List.all identity)
+
+        _ ->
+            False
