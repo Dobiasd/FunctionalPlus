@@ -241,36 +241,51 @@ replaceTwoSubMatchInString pattern replacementFunc =
         Regex.replace Regex.All (Regex.regex pattern) f
 
 
+applyUntilIdempotent : (String -> String) -> String -> String
+applyUntilIdempotent f str =
+    let
+        res = f str
+    in
+        if res == str then
+            res
+        else
+            applyUntilIdempotent f res
+
 cleanFunctionSignature : String -> String
 cleanFunctionSignature =
-    String.toLower
-        >> replaceInString "std::" ""
-        >> replaceInString "fplus::" ""
-        >> replaceSubMatchInString "vector<([^>]*)>" (\sm -> "[" ++ sm ++ "]")
-        >> replaceSubMatchInString "list<([^>]*)>" (\sm -> "[" ++ sm ++ "]")
-        >> replaceSubMatchInString "set<([^>]*)>" (\sm -> "Set " ++ sm)
-        >> replaceTwoSubMatchInString "map<([^>]*),([^>]*)>" (\sm1 sm2 -> "Map " ++ sm1 ++ " " ++ sm2)
-        >> replaceTwoSubMatchInString "pair<([^>]*),([^>]*)>" (\sm1 sm2 -> "(" ++ sm1 ++ "," ++ sm2 ++ ")")
-        >> replaceInString "unsigned int" "Int"
-        >> replaceInString "unsigned" "Int"
-        >> replaceInString "size_t" "Int"
-        >> replaceInString "short" "Int"
-        >> replaceInString "signed" "Int"
-        >> replaceInString "long" "Int"
-        >> replaceInString "integer" "Int"
-        >> replaceInString "int" "Int"
-        >> replaceInString "double" "Float"
-        >> replaceInString "float" "Float"
-        >> replaceInString "boolean" "Bool"
-        >> replaceInString "bool" "Bool"
-        >> replaceInString "maybe" "Maybe"
-        >> replaceInString "either" "Result"
-        >> replaceInString "result" "Result"
-        >> replaceInString "map" "Map"
-        >> replaceInString "dict" "Map"
-        >> replaceInString "set" "Int"
-        >> replaceInString "string" "String"
-        >> replaceInString "\\[ *char *\\]" "String"
+    let
+        recursiveCases =
+            replaceSubMatchInString "vector<([^<>]*)>" (\sm -> "[" ++ sm ++ "]")
+            >> replaceSubMatchInString "list<([^<>]*)>" (\sm -> "[" ++ sm ++ "]")
+            >> replaceSubMatchInString "set<([^<>]*)>" (\sm -> "Set " ++ sm)
+            >> replaceTwoSubMatchInString "map<([^<>]*),([^<>]*)>" (\sm1 sm2 -> "Map " ++ sm1 ++ " " ++ sm2)
+            >> replaceTwoSubMatchInString "pair<([^<>]*),([^<>]*)>" (\sm1 sm2 -> "(" ++ sm1 ++ ", " ++ sm2 ++ ")")
+            |> applyUntilIdempotent
+    in
+        String.toLower
+            >> replaceInString "std::" ""
+            >> replaceInString "fplus::" ""
+            >> recursiveCases
+            >> replaceInString "unsigned int" "Int"
+            >> replaceInString "unsigned" "Int"
+            >> replaceInString "size_t" "Int"
+            >> replaceInString "short" "Int"
+            >> replaceInString "signed" "Int"
+            >> replaceInString "long" "Int"
+            >> replaceInString "integer" "Int"
+            >> replaceInString "int" "Int"
+            >> replaceInString "double" "Float"
+            >> replaceInString "float" "Float"
+            >> replaceInString "boolean" "Bool"
+            >> replaceInString "bool" "Bool"
+            >> replaceInString "maybe" "Maybe"
+            >> replaceInString "either" "Result"
+            >> replaceInString "result" "Result"
+            >> replaceInString "map" "Map"
+            >> replaceInString "dict" "Map"
+            >> replaceInString "set" "Int"
+            >> replaceInString "string" "String"
+            >> replaceInString "\\[ *char *\\]" "String"
 
 
 searchFunctions : String -> List ( Function, Float )
