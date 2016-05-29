@@ -76,7 +76,7 @@ bool is_ok(const result<Ok, Error>& result)
 }
 
 // API search type: is_error : Result a b -> Bool
-// Has no value?
+// Is not OK?
 template <typename Ok, typename Error>
 bool is_error(const result<Ok, Error>& result)
 {

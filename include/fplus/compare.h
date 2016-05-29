@@ -273,7 +273,7 @@ std::function<bool(const X&)> is_less_than(const X& x)
 }
 
 // API search type: is_less_or_equal : a -> a -> Bool
-// x < y
+// x <= y
 template <typename T>
 bool is_less_or_equal(const T& x, const T& y)
 {

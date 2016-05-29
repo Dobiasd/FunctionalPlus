@@ -72,7 +72,7 @@ MapOut transform_map_values(F f, const MapIn& map)
             map_to_pairs(map)));
 }
 
-// API search type: map_union_with : Map a b -> Map a b -> Map a b
+// API search type: map_union_with : (b -> b -> b) -> Map a b -> Map a b -> Map a b
 // map_union_with((++), [(0,a), (1,b)], [(0,c), (2,d)]) == [(0,ac), (1,b), (2,d)]
 template <typename F, typename MapIn,
     typename MapInPair = typename MapIn::value_type,
