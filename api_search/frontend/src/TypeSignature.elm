@@ -1,4 +1,4 @@
-module TypeSignature exposing (Signature, parseSignature, showSignature, normalizeSignature, generateSubSignatures, areFunctionsCompatible)
+module TypeSignature exposing (Signature, parseSignature, showSignature, normalizeSignature, generateSubSignatures, functionCompatibility)
 
 {-| This module provides the possibility to parse Haskell and Elm type signatures.
 -}
@@ -29,9 +29,9 @@ type alias ParseResult =
     ( Result (List String) Signature, C.Context )
 
 
-showSignature : Signature -> String
-showSignature =
-    showSignatureHelper False False
+showSignature : Bool -> Signature -> String
+showSignature charListAsString =
+    showSignatureHelper charListAsString False False
 
 
 mapS : (s -> String -> ( s, String )) -> s -> List Signature -> ( List Signature, s )
@@ -155,8 +155,8 @@ addParenthesis x =
     "(" ++ x ++ ")"
 
 
-showSignatureHelper : Bool -> Bool -> Signature -> String
-showSignatureHelper arrowsInParens typeAppInParens sig =
+showSignatureHelper : Bool -> Bool -> Bool -> Signature -> String
+showSignatureHelper charListAsString arrowsInParens typeAppInParens sig =
     let
         optArrowParens =
             if arrowsInParens then
@@ -172,9 +172,9 @@ showSignatureHelper arrowsInParens typeAppInParens sig =
     in
         case sig of
             Arrow a b ->
-                showSignatureHelper True False a
+                showSignatureHelper charListAsString True False a
                     ++ " -> "
-                    ++ showSignatureHelper False False b
+                    ++ showSignatureHelper charListAsString False False b
                     |> optArrowParens
 
             TypeConstructor x ->
@@ -184,20 +184,23 @@ showSignatureHelper arrowsInParens typeAppInParens sig =
                 x
 
             TypeApplication a b ->
-                showSignatureHelper False False a
+                showSignatureHelper charListAsString False False a
                     ++ " "
-                    ++ showSignatureHelper True True b
+                    ++ showSignatureHelper charListAsString True True b
                     |> optTypeApplicationParens
 
             ListType (TypeConstructor "Char") ->
-                "String"
+                if charListAsString then
+                    "String"
+                else
+                    "[Char]"
 
             ListType x ->
-                "[" ++ showSignatureHelper False False x ++ "]"
+                "[" ++ showSignatureHelper charListAsString False False x ++ "]"
 
             Tuple xs ->
                 String.join ", "
-                    (List.map (showSignatureHelper False False) xs)
+                    (List.map (showSignatureHelper charListAsString False False) xs)
                     |> addParenthesis
 
 
@@ -359,40 +362,44 @@ generateSubSignatures sig =
             [ normalizeSignature x ]
 
 
-areFunctionsCompatible : Signature -> Signature -> Bool
-areFunctionsCompatible db query =
+equalityToFloat : a -> a -> Float
+equalityToFloat x y =
+    if x == y then
+        1
+    else
+        0
+
+
+functionCompatibility : Signature -> Signature -> Float
+functionCompatibility db query =
     case ( db, query ) of
         ( VariableType _, TypeConstructor _ ) ->
-            True
-
-        ( VariableType _, ListType (TypeConstructor "Char") ) ->
-            True
+            0.5
 
         ( TypeApplication (TypeConstructor "Maybe") (VariableType x), VariableType y ) ->
-            x == y
+            0.8 * equalityToFloat x y
 
         ( TypeApplication (TypeConstructor "Maybe") (TypeConstructor x), TypeConstructor y ) ->
-            x == y
+            0.8 * equalityToFloat x y
 
         ( Arrow a b, Arrow x y ) ->
-            areFunctionsCompatible a x && areFunctionsCompatible b y
+            functionCompatibility a x * functionCompatibility b y
 
         ( TypeConstructor x, TypeConstructor y ) ->
-            x == y
+            equalityToFloat x y
 
         ( VariableType x, VariableType y ) ->
-            x == y
+            equalityToFloat x y
 
         ( TypeApplication a b, TypeApplication x y ) ->
-            areFunctionsCompatible a x && areFunctionsCompatible b y
+            functionCompatibility a x * functionCompatibility b y
 
         ( ListType a, ListType x ) ->
-            areFunctionsCompatible a x
+            functionCompatibility a x
 
         ( Tuple xs, Tuple ys ) ->
-            List.length xs
-                == List.length ys
-                && (List.map2 areFunctionsCompatible xs ys |> List.all identity)
+            equalityToFloat (List.length xs) (List.length ys)
+                * (List.map2 functionCompatibility xs ys |> List.product)
 
         _ ->
-            False
+            0.0

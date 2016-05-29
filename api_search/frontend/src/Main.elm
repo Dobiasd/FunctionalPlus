@@ -32,7 +32,9 @@ initModelAndCommands =
     ( defaultModel, cmdGetRandomNumbers )
 
 
-generateSubSignatures : Database.Function -> List TypeSignature.Signature
+generateSubSignatures :
+    Database.Function
+    -> List TypeSignature.Signature
 generateSubSignatures function =
     function
         |> parseSignatureCrashOnError
@@ -50,7 +52,9 @@ type alias Function =
     WithSubSignatures Database.Function
 
 
-parseSignatureCrashOnError : Database.Function -> TypeSignature.Signature
+parseSignatureCrashOnError :
+    Database.Function
+    -> TypeSignature.Signature
 parseSignatureCrashOnError function =
     case TypeSignature.parseSignature function.signature of
         Just sig ->
@@ -93,7 +97,6 @@ cmdGetRandomNumbers =
 
 type alias Model =
     { query : String
-    , querySig : Maybe TypeSignature.Signature
     , querySigStr : String
     , searchResult : List ( Function, Float )
     }
@@ -102,7 +105,6 @@ type alias Model =
 defaultModel : Model
 defaultModel =
     { query = ""
-    , querySig = Nothing
     , querySigStr = ""
     , searchResult = []
     }
@@ -124,7 +126,6 @@ update action model =
             if String.isEmpty str then
                 ( { model
                     | query = str
-                    , querySig = Nothing
                     , querySigStr = ""
                     , searchResult = []
                   }
@@ -133,7 +134,10 @@ update action model =
             else
                 let
                     singletonSignatureToNothing sig =
-                        if String.length (TypeSignature.showSignature sig) < 2 then
+                        if
+                            String.length (TypeSignature.showSignature True sig)
+                                < 2
+                        then
                             Nothing
                         else
                             Just sig
@@ -145,14 +149,29 @@ update action model =
                             |> Maybe.map TypeSignature.normalizeSignature
                             |> \x -> Maybe.andThen x singletonSignatureToNothing
 
+                    newQuerySigLower =
+                        newQuerySig
+                            |> Maybe.map
+                                (TypeSignature.showSignature False
+                                    >> String.toLower
+                                )
+                            |> (\x ->
+                                    Maybe.andThen x
+                                        (TypeSignature.parseSignature
+                                            >> Maybe.map TypeSignature.normalizeSignature
+                                        )
+                               )
+
                     newQuerySigStr =
                         newQuerySig |> showMaybeSig
                 in
                     ( { model
                         | query = str
-                        , querySig = newQuerySig
                         , querySigStr = newQuerySigStr
-                        , searchResult = searchFunctions str newQuerySig
+                        , searchResult =
+                            searchFunctions str
+                                newQuerySig
+                                newQuerySigLower
                       }
                     , Cmd.none
                     )
@@ -173,7 +192,7 @@ showMaybeSig : Maybe TypeSignature.Signature -> String
 showMaybeSig maybeSig =
     case maybeSig of
         Maybe.Just s ->
-            TypeSignature.showSignature s
+            TypeSignature.showSignature True s
 
         Maybe.Nothing ->
             ""
@@ -221,7 +240,10 @@ view model =
                     [ text "You can search by function name, documentation tags or type signature" ]
               else
                 div [ class "parsedsignature" ]
-                    [ "as parsed type: " ++ model.querySigStr |> stringToCode "Haskell" ]
+                    [ "as parsed type: "
+                        ++ model.querySigStr
+                        |> stringToCode "Haskell"
+                    ]
             , hr [] []
             , model.searchResult |> showFunctions
             , hr [] []
@@ -324,12 +346,16 @@ cleanFunctionSignature =
             >> replaceInString "String" "[Char]"
 
 
-searchFunctions : String -> Maybe TypeSignature.Signature -> List ( Function, Float )
-searchFunctions query querySig =
+searchFunctions :
+    String
+    -> Maybe TypeSignature.Signature
+    -> Maybe TypeSignature.Signature
+    -> List ( Function, Float )
+searchFunctions query querySig querySigLower =
     let
         ratedFunctions =
             functions
-                |> List.map (\f -> ( f, functionRating query querySig f ))
+                |> List.map (\f -> ( f, functionRating query querySig querySigLower f ))
     in
         ratedFunctions
             |> List.sortBy (\( _, rating ) -> 0 - rating)
@@ -345,13 +371,25 @@ boolToNum value b =
         0
 
 
-typeRating : Float -> TypeSignature.Signature -> TypeSignature.Signature -> Float
-typeRating weight query db =
-    TypeSignature.areFunctionsCompatible db query |> boolToNum 1000 |> (*) weight
+typeRating :
+    Float
+    -> Float
+    -> TypeSignature.Signature
+    -> TypeSignature.Signature
+    -> Float
+typeRating weight factor query db =
+    TypeSignature.functionCompatibility db query
+        |> (*) factor
+        |> (*) weight
 
 
-functionRating : String -> Maybe TypeSignature.Signature -> Function -> Float
-functionRating queryOrig querySig function =
+functionRating :
+    String
+    -> Maybe TypeSignature.Signature
+    -> Maybe TypeSignature.Signature
+    -> Function
+    -> Float
+functionRating queryOrig querySig querySigLower function =
     let
         query =
             queryOrig |> String.toLower
@@ -378,23 +416,30 @@ functionRating queryOrig querySig function =
                 |> List.sum
 
         bestTypeRating =
-            case querySig of
-                Just sig ->
-                    let
-                        typeWeight =
-                            stringLengthFloat (TypeSignature.showSignature sig)
-                                / stringLengthFloat function.signature
+            let
+                maybeSigRating factor maybeSig =
+                    case maybeSig of
+                        Just sig ->
+                            let
+                                typeWeight =
+                                    stringLengthFloat (TypeSignature.showSignature True sig)
+                                        / stringLengthFloat function.signature
 
-                        allRatings =
-                            List.map (typeRating typeWeight sig)
-                                function.subSignatures
-                    in
-                        allRatings |> List.maximum |> Maybe.withDefault 0
+                                allRatings =
+                                    List.map (typeRating factor typeWeight sig)
+                                        function.subSignatures
+                            in
+                                allRatings
+                                    |> List.maximum
+                                    |> Maybe.withDefault 0
 
-                Nothing ->
-                    0
+                        _ ->
+                            0
+            in
+                Basics.max (maybeSigRating 1000 querySig)
+                    (maybeSigRating 400 querySigLower)
     in
-        wordRatingSum + bestTypeRating
+        Debug.log (querySigLower |> toString) (wordRatingSum + bestTypeRating)
 
 
 functionWordRating : Float -> Function -> String -> Float
@@ -422,13 +467,10 @@ functionWordRating weight function query =
             weight * Basics.max 0 (boolToNum 100 isSubStr - 5 * relLengthDiff)
 
         docRating =
-            String.contains query (String.toLower function.documentation) |> boolToNum 40
+            String.contains query (String.toLower function.documentation)
+                |> boolToNum 40
     in
         nameRating + docRating
-
-
-
---StringDistance.lcs (String.toList query) (String.toList function.name) |> List.length |> toFloat
 
 
 showFunctions : List ( Function, Float ) -> Html Msg
