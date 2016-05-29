@@ -336,6 +336,7 @@ cleanFunctionSignature =
             >> replaceInString "boolean" "Bool"
             >> replaceInString "char" "Char"
             >> replaceInString "bool" "Bool"
+            >> replaceInString "io" "Io"
             >> replaceInString "maybe" "Maybe"
             >> replaceInString "either" "Result"
             >> replaceInString "result" "Result"
