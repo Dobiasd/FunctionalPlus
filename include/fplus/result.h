@@ -246,7 +246,7 @@ std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g)
 }
 
 // API search type: and_then_result : (a -> Result b c) -> (b -> Result d c) -> (d -> Result e c) -> (a -> Result e c)
-// Monadic bind.
+// Monadic bind three functions.
 template <typename F, typename G, typename H,
     typename FIn = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<F>::template arg<0>::type>::type>::type,
@@ -260,7 +260,7 @@ std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g, H h)
 }
 
 // API search type: and_then_result : (a -> Result b c) -> (b -> Result d c) -> (d -> Result e c) -> (e -> Result f c) -> (a -> Result f c)
-// Monadic bind.
+// Monadic bind four functions.
 template <typename F, typename G, typename H, typename I,
     typename FIn = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<F>::template arg<0>::type>::type>::type,

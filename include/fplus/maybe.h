@@ -174,7 +174,7 @@ std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g)
 }
 
 // API search type: and_then_maybe : (a -> Maybe b) -> (b -> Maybe c) -> (c -> Maybe d) -> (Maybe a -> Maybe d)
-// Monadic bind.
+// Monadic bind three functions.
 template <typename F, typename G, typename H,
     typename FIn = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<F>::template arg<0>::type>::type>::type,
@@ -187,7 +187,7 @@ std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g, H h)
 }
 
 // API search type: and_then_maybe : (a -> Maybe b) -> (b -> Maybe c) -> (c -> Maybe d) -> (d -> Maybe e) -> (Maybe a -> Maybe e)
-// Monadic bind.
+// Monadic bind four functions.
 template <typename F, typename G, typename H, typename I,
     typename FIn = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<F>::template arg<0>::type>::type>::type,
