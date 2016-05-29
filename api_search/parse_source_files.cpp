@@ -43,17 +43,17 @@ std::string get_function_help_name(const function_help& f)
 
 std::string get_function_help_signature(const function_help& f)
 {
-    return f.name;
+    return f.signature;
 }
 
 std::string get_function_help_documentation(const function_help& f)
 {
-    return f.name;
+    return f.documentation;
 }
 
 std::string get_function_help_declaration(const function_help& f)
 {
-    return f.name;
+    return f.declaration;
 }
 
 std::ostream & operator<<(std::ostream &os, const function_help& f)
@@ -213,7 +213,7 @@ int main()
 
     using fplus::transform;
     print_duplicates(transform(get_function_help_name, functions));
-    print_duplicates(transform(get_function_help_signature, functions));
+    //print_duplicates(transform(get_function_help_signature, functions));
     print_duplicates(transform(get_function_help_documentation, functions));
     print_duplicates(transform(get_function_help_declaration, functions));
 
