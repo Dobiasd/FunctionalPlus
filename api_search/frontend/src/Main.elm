@@ -2,7 +2,6 @@ module FPlusApiSearch exposing (..)
 
 import Database
 import TypeSignature
-import Debug
 import Html exposing (..)
 import Html.App exposing (program)
 import Html.Attributes exposing (..)
@@ -237,7 +236,7 @@ view model =
                 []
             , if String.isEmpty model.querySigStr then
                 div [ class "queryhelper" ]
-                    [ text "You can search by function name, documentation tags or type signature" ]
+                    [ text "search by function name, docs or type signature, e.g. (a -> [b]) -> [a] -> [b]" ]
               else
                 div [ class "parsedsignature" ]
                     [ "as parsed type: "
@@ -439,8 +438,9 @@ functionRating queryOrig querySig querySigLower function =
             in
                 Basics.max (maybeSigRating 1000 querySig)
                     (maybeSigRating 400 querySigLower)
+        functionNameLengthRating = -0.1 * stringLengthFloat function.name
     in
-        Debug.log (querySigLower |> toString) (wordRatingSum + bestTypeRating)
+        wordRatingSum + bestTypeRating + functionNameLengthRating
 
 
 functionWordRating : Float -> Function -> String -> Float
