@@ -21,6 +21,7 @@ namespace fplus
 
 // API search type: transform_convert : (a -> b) -> [a] -> [b]
 // transform_convert((*2), [1, 3, 4]) == [2, 6, 8]
+// same as transform, but allows to
 template <typename ContainerOut, typename F, typename ContainerIn>
 ContainerOut transform_convert(F f, const ContainerIn& xs)
 {
