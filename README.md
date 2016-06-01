@@ -194,7 +194,7 @@ By changing the way you think about programming from "writing your own loops and
 
 Finding the functions you need
 ------------------------------
-If you are looking for a specific FunctionalPlus function you do not know the name of yet, you can of course use the autocomplete feature of your IDE to browse the content of the namespace `fplus`. But the recommended way is to simply use the [FunctionalPlus API search website](http://www.editgym.com/fplus-api-search/). You can quickly search by keywords or (curried) function type signatures there.
+If you are looking for a specific FunctionalPlus function you do not know the name of yet, you can of course use the autocomplete feature of your IDE to browse the content of the namespace `fplus`. But the recommended way is to simply use the **[FunctionalPlus API search website](http://www.editgym.com/fplus-api-search/)**. You can quickly search by keywords or (curried) function type signatures there.
 
 
 Performance
@@ -220,7 +220,7 @@ Installation/Requirements
 -------------------------
 Just [download](https://github.com/Dobiasd/FunctionalPlus/archive/master.zip) FunctionalPlus and tell your compile to use the `include` directory.
 
-A ***C++11***-compatible compiler is needed. The tests run successfully on GCC 4.9, Clang 3.6 and Visual C++ 2015.
+A **C++11**-compatible compiler is needed. The tests run successfully on GCC 4.9, Clang 3.6 and Visual C++ 2015.
 
 
 Disclaimer
