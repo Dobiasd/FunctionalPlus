@@ -21,7 +21,7 @@ int main()
 }
 ```
 
-There are different possiblities to obtain your goal. Some of them are:
+There are different possibilities to obtain your goal. Some of them are:
 
 1. write a (range based) for loop
  ```c++
@@ -69,7 +69,7 @@ int main()
 ```
 
 ### The I in our team
-There also are some convenience functions for retrieving properties of containers. For example you can count the occurences of a character in a string.
+There also are some convenience functions for retrieving properties of containers. For example you can count the occurrences of a character in a string.
 ```c++
 #include "fplus.h"
 #include <iostream>
@@ -209,7 +209,7 @@ The basic functions are fast, thanks to C++'s concept of abstraction without ove
 |               0.632 s |      0.641 s |        0.627 s |
 ```
 
-So the compiler seems to do a very good job in optimizing and inlining everthing to basically equal machine code performance-wise.
+So the compiler seems to do a very good job in optimizing and inlining everything to basically equal machine code performance-wise.
 
 The more complex functions though sometimes can be written in a more optimized way. If you use FunctionalPlus in a performance-critical scenario and profiling shows you need a faster version of a function [please let me know](https://github.com/Dobiasd/FunctionalPlus/issues) or [even help improving FunctionalPlus](https://github.com/Dobiasd/FunctionalPlus/pulls).
 
