@@ -579,6 +579,10 @@ void Test_ContainerTools()
 
     auto int_mod_10 = [](int x) -> int { return x % 10; };
 
+    std::initializer_list<int> initListInts = { 1,2,2,3,2 };
+    assert(transform(squareLambda, std::vector<int>(initListInts)) == IntVector({1,4,4,9,4}));
+    assert(transform_convert<std::vector<int>>(squareLambda, initListInts) == IntVector({1,4,4,9,4}));
+
     assert(transform(squareLambda, xs) == IntVector({1,4,4,9,4}));
     assert(keep_if(is_even, xs) == IntVector({2,2,2}));
     assert(drop_if(is_even, xs) == IntVector({1,3}));
