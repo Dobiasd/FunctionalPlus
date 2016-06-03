@@ -592,7 +592,7 @@ std::list<T> sort_by(Compare comp, const std::list<T>& xs)
     return result;
 }
 
-// API search type: sort_by : (((a. a) -> Bool), [a]) -> [a]
+// API search type: sort_by : (((a, a) -> Bool), [a]) -> [a]
 // sort by given less comparator
 template <typename Compare, typename Container>
 Container sort_by(Compare comp, const Container& xs)
