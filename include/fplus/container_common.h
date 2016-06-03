@@ -675,6 +675,7 @@ Container intersperse(const X& value, const Container& xs)
 // API search type: join : ([a], [[a]]) -> [a]
 // Also known as intercalate.
 // join([0, 0], [[1], [2], [3, 4]]) == [1, 0, 0, 2, 0, 0, 3, 4]
+// join(", ", "["a", "b", "sea"]) == "a, b, sea"
 template <typename Container,
     typename X = typename Container::value_type>
 X join(const X& separator, const Container& xs)

@@ -705,8 +705,8 @@ void Test_ContainerTools()
     assert(scan_left_1(std::plus<int>(), xs) == IntVector({ 1,3,5,8,10 }));
     assert(scan_right_1(std::plus<int>(), xs) == IntVector({ 10,9,7,5,2 }));
 
-    assert(join(IntList({0}), intLists)
-            == IntList({1,0,2,2,0,3,0,2}));
+    assert(join(IntList({0}), intLists) == IntList({1,0,2,2,0,3,0,2}));
+    assert(join(std::string(", "), std::vector<std::string>({"a", "b", "sea"})) == std::string("a, b, see"));
     std::map<int, std::string> mapToShow = {{1, "one"}, {2, "two"}};
     assert(show_cont(mapToShow) == "[(1, one), (2, two)]");
     assert(show_cont(xs) == xsShown);
