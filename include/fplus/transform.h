@@ -55,7 +55,7 @@ ContainerOut transform_with_idx(F f, const ContainerIn& xs)
 
 // API search type: transform_and_keep_justs : (a -> Maybe b) -> [a] -> [b]
 // Map function over values and drop resulting nothings.
-// Also known as filterMap.
+// Also known as filter_map.
 template <typename F, typename ContainerIn,
     typename FOut = typename utils::function_traits<F>::result_type,
     typename ContainerOut = typename same_cont_new_t<ContainerIn,
@@ -82,7 +82,7 @@ ContainerOut transform_and_keep_oks(F f, const ContainerIn& xs)
 
 // API search type: transform_and_concat : (a -> [b]) -> [a] -> [b]
 // Map function over values and concat results.
-// Also known as flatMap or concatMap.
+// Also known as flat_map or concat_map.
 template <typename F, typename ContainerIn,
     typename ContainerOut = typename same_cont_new_t_from_unary_f<
         ContainerIn, F>::type::value_type>
