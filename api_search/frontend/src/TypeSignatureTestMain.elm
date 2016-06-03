@@ -37,7 +37,7 @@ showMaybeSig : Maybe TypeSignature.Signature -> String
 showMaybeSig maybeSig =
     case maybeSig of
         Maybe.Just s ->
-            TypeSignature.showSignature s
+            TypeSignature.showSignature True s
 
         Maybe.Nothing ->
             ""
