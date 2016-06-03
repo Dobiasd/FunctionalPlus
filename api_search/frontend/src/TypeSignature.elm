@@ -370,6 +370,11 @@ equalityToFloat x y =
         0
 
 
+sortSignatures : List Signature -> List Signature
+sortSignatures =
+    List.sortBy (showSignature True)
+
+
 functionCompatibility : Signature -> Signature -> Float
 functionCompatibility db query =
     case ( db, query ) of
@@ -398,8 +403,13 @@ functionCompatibility db query =
             functionCompatibility a x
 
         ( Tuple xs, Tuple ys ) ->
-            equalityToFloat (List.length xs) (List.length ys)
-                * (List.map2 functionCompatibility xs ys |> List.product)
+            if List.length xs /= List.length ys then
+                0
+            else
+                List.map2 functionCompatibility
+                    (sortSignatures xs)
+                    (sortSignatures ys)
+                    |> List.product
 
         _ ->
             0.0
