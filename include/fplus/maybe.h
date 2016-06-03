@@ -67,7 +67,7 @@ T unsafe_get_just(const maybe<T>& maybe)
     return maybe.unsafe_get_just();
 }
 
-// API search type: just_with_default : a -> Maybe a -> a
+// API search type: just_with_default : (a, Maybe a) -> a
 // Get the value from a maybe or the default in case it is nothing.
 template <typename T>
 T just_with_default(const T& defaultValue, const maybe<T>& maybe)
@@ -77,7 +77,7 @@ T just_with_default(const T& defaultValue, const maybe<T>& maybe)
     return defaultValue;
 }
 
-// API search type: throw_on_nothing : e -> Maybe a -> a
+// API search type: throw_on_nothing : (e, Maybe a) -> a
 // Throw exception if nothing. Return value if just.
 template <typename E, typename T>
 T throw_on_nothing(const E& e, const maybe<T>& maybe)
@@ -141,7 +141,7 @@ std::function<maybe<B>(const maybe<A>&)> lift_maybe(F f)
     };
 }
 
-// API search type: and_then_maybe : (a -> Maybe b) -> (b -> Maybe c) -> (a -> Maybe c)
+// API search type: and_then_maybe : ((a -> Maybe b), (b -> Maybe c)) -> (a -> Maybe c)
 // Monadic bind.
 // Composes two functions taking a value and returning Maybe.
 // If the first function returns a just, the value from the just
@@ -173,7 +173,7 @@ std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g)
     };
 }
 
-// API search type: and_then_maybe : (a -> Maybe b) -> (b -> Maybe c) -> (c -> Maybe d) -> (Maybe a -> Maybe d)
+// API search type: and_then_maybe : ((a -> Maybe b), (b -> Maybe c), (c -> Maybe d)) -> (Maybe a -> Maybe d)
 // Monadic bind three functions.
 template <typename F, typename G, typename H,
     typename FIn = typename std::remove_const<typename std::remove_reference<
@@ -186,7 +186,7 @@ std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g, H h)
     return and_then_maybe(and_then_maybe(f, g), h);
 }
 
-// API search type: and_then_maybe : (a -> Maybe b) -> (b -> Maybe c) -> (c -> Maybe d) -> (d -> Maybe e) -> (Maybe a -> Maybe e)
+// API search type: and_then_maybe : ((a -> Maybe b), (b -> Maybe c), (c -> Maybe d), (d -> Maybe e)) -> (Maybe a -> Maybe e)
 // Monadic bind four functions.
 template <typename F, typename G, typename H, typename I,
     typename FIn = typename std::remove_const<typename std::remove_reference<

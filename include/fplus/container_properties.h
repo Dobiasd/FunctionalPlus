@@ -20,7 +20,7 @@
 namespace fplus
 {
 
-// API search type: any_by : (a -> Bool) -> [a] -> Bool
+// API search type: any_by : ((a -> Bool), [a]) -> Bool
 // any_by(is_odd, [2, 4, 6]) == false
 template <typename UnaryPredicate, typename Container>
 bool any_by(UnaryPredicate p, const Container& xs)
@@ -38,7 +38,7 @@ bool any(const Container& xs)
     return any_by(identity<T>, xs);
 }
 
-// API search type: none_by : (a -> Bool) -> [a] -> Bool
+// API search type: none_by : ((a -> Bool), [a]) -> Bool
 // none_by(is_even, [3, 4, 5]) == false
 template <typename UnaryPredicate, typename Container>
 bool none_by(UnaryPredicate p, const Container& xs)
@@ -103,7 +103,7 @@ typename std::size_t maximum_idx(const Container& xs)
 }
 
 
-// API search type: minimum_idx_on : (a -> b) -> [a] -> Int
+// API search type: minimum_idx_on : ((a -> b), [a]) -> Int
 // minimum_idx_on(length, ["123", "12", "1234", "123"]) -> "1"
 // return index of first minimum element
 template <typename F, typename Container>
@@ -114,7 +114,7 @@ typename std::size_t minimum_idx_on(F f, const Container& xs)
     return minimum_idx(transformed);
 }
 
-// API search type: maximum_idx_on : (a -> b) -> [a] -> Int
+// API search type: maximum_idx_on : ((a -> b), [a]) -> Int
 // maximum_idx_on(length, ["123", "12", "1234", "123"]) == "2"
 // return index of first maximum element
 template <typename F, typename Container>
@@ -126,7 +126,7 @@ typename std::size_t maximum_idx_on(F f, const Container& xs)
 }
 
 
-// API search type: minimum_by : (a -> a -> Bool) -> [a] -> a
+// API search type: minimum_by : (((a, a) -> Bool), [a]) -> a
 // minimum_by(lessLength, ["123", "12", "1234", "123"]) -> "12"
 template <typename Compare, typename Container>
 typename Container::value_type minimum_by(Compare comp,
@@ -137,7 +137,7 @@ typename Container::value_type minimum_by(Compare comp,
     return *std::min_element(std::begin(xs), std::end(xs), comp);
 }
 
-// API search type: maximum_by : (a -> a -> Bool) -> [a] -> a
+// API search type: maximum_by : (((a, a) -> Bool), [a]) -> a
 // maximum_by(lessLength, ["123", "12", "1234", "123"]) == "1234"
 template <typename Compare, typename Container>
 typename Container::value_type maximum_by(Compare comp,
@@ -166,7 +166,7 @@ typename Container::value_type maximum(const Container& xs)
 }
 
 
-// API search type: minimum_on : (a -> b) -> [a] -> a
+// API search type: minimum_on : ((a -> b), [a]) -> a
 // minimum_on(length, ["123", "12", "1234", "123"]) -> "12"
 template <typename F, typename Container>
 typename Container::value_type minimum_on(F f, const Container& xs)
@@ -174,7 +174,7 @@ typename Container::value_type minimum_on(F f, const Container& xs)
     return elem_at_idx(minimum_idx_on(f, xs), xs);
 }
 
-// API search type: maximum_on : (a -> b) -> [a] -> a
+// API search type: maximum_on : ((a -> b), [a]) -> a
 // maximum_on(length, ["123", "12", "1234", "123"]) == "1234"
 template <typename F, typename Container>
 typename Container::value_type maximum_on(F f, const Container& xs)
@@ -237,7 +237,7 @@ Result median(const Container& xs)
     }
 }
 
-// API search type: all_unique_by_less : (a -> a -> Bool) -> [a] -> Bool
+// API search type: all_unique_by_less : (((a, a) -> Bool), [a]) -> Bool
 // Returns true for empty containers.
 // O(n*log(n))
 template <typename Container, typename Compare>
@@ -260,7 +260,7 @@ bool all_unique_less(const Container& xs)
     return all_unique_by_less(comp, xs);
 }
 
-// API search type: is_infix_of : [a] -> [a] -> Bool
+// API search type: is_infix_of : ([a], [a]) -> Bool
 // is_infix_of("ion", "FunctionalPlus") == true
 template <typename Container>
 bool is_infix_of(const Container& token, const Container& xs)
@@ -268,7 +268,7 @@ bool is_infix_of(const Container& token, const Container& xs)
     return is_just(find_first_instance_of_token(token, xs));
 }
 
-// API search type: is_subsequence_of : [a] -> [a] -> Bool
+// API search type: is_subsequence_of : ([a], [a]) -> Bool
 // is_subsequence_of("Final", "FunctionalPlus") == true
 template <typename Container>
 bool is_subsequence_of(const Container& seq, const Container& xs)
@@ -291,7 +291,7 @@ bool is_subsequence_of(const Container& seq, const Container& xs)
     return false;
 }
 
-// API search type: count_if : (a -> Bool) -> [a] -> Int
+// API search type: count_if : ((a -> Bool), [a]) -> Int
 // count_if(is_even, [1, 2, 3, 5, 7, 8]) == 2
 template <typename UnaryPredicate, typename Container>
 std::size_t count_if(UnaryPredicate p, const Container& xs)
@@ -300,7 +300,7 @@ std::size_t count_if(UnaryPredicate p, const Container& xs)
     return size_of_cont(find_all_idxs_by(p, xs));
 }
 
-// API search type: count : a -> [a] -> Int
+// API search type: count : (a, [a]) -> Int
 // count(2, [1, 2, 3, 5, 7, 2, 2]) == 3
 template <typename Container>
 std::size_t count

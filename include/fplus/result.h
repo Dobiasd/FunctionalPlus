@@ -99,7 +99,7 @@ Error unsafe_get_error(const result<Ok, Error>& result)
     return result.unsafe_get_error();
 }
 
-// API search type: ok_with_default : a -> Result a b -> a
+// API search type: ok_with_default : (a, Result a b) -> a
 // Get the value from a result or the default in case it is error.
 template <typename Ok, typename Error>
 Ok ok_with_default(const Ok& defaultValue, const result<Ok, Error>& result)
@@ -140,7 +140,7 @@ maybe<Ok> to_maybe(const result<Ok, Error>& result)
         return nothing<Ok>();
 }
 
-// API search type: from_maybe : Maybe a -> b -> Result a b
+// API search type: from_maybe : (Maybe a, b) -> Result a b
 // Convert just to ok, nothing to error.
 template <typename Ok, typename Error>
 result<Ok, Error> from_maybe(const maybe<Ok>& maybe, const Error& err)
@@ -151,7 +151,7 @@ result<Ok, Error> from_maybe(const maybe<Ok>& maybe, const Error& err)
         return error<Ok, Error>(err);
 }
 
-// API search type: throw_on_error : e -> Result a b -> a
+// API search type: throw_on_error : (e, Result a b) -> a
 // Throws the given exception in case of error.
 // Return ok value if ok.
 template <typename E, typename Ok, typename Error>
@@ -213,7 +213,7 @@ std::function<result<B, Error>(const result<A, Error>&)> lift_result(F f)
     };
 }
 
-// API search type: and_then_result : (a -> Result b c) -> (b -> Result d c) -> (a -> Result d c)
+// API search type: and_then_result : ((a -> Result b c), (b -> Result d c)) -> (a -> Result d c)
 // Monadic bind.
 // Composes two functions taking a value and returning result.
 // If the first function returns a ok, the value from the ok
@@ -245,7 +245,7 @@ std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g)
     };
 }
 
-// API search type: and_then_result : (a -> Result b c) -> (b -> Result d c) -> (d -> Result e c) -> (a -> Result e c)
+// API search type: and_then_result : ((a -> Result b c), (b -> Result d c), (d -> Result e c)) -> (a -> Result e c)
 // Monadic bind three functions.
 template <typename F, typename G, typename H,
     typename FIn = typename std::remove_const<typename std::remove_reference<
@@ -259,7 +259,7 @@ std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g, H h)
     return and_then_result(and_then_result(f, g), h);
 }
 
-// API search type: and_then_result : (a -> Result b c) -> (b -> Result d c) -> (d -> Result e c) -> (e -> Result f c) -> (a -> Result f c)
+// API search type: and_then_result : ((a -> Result b c), (b -> Result d c), (d -> Result e c), (e -> Result f c)) -> (a -> Result f c)
 // Monadic bind four functions.
 template <typename F, typename G, typename H, typename I,
     typename FIn = typename std::remove_const<typename std::remove_reference<

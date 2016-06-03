@@ -96,7 +96,7 @@ std::function<bool()> execute_serially_until_success(const Container& effs)
     };
 }
 
-// API search type: execute_and_return_fixed_value : a -> [Io b] -> Io a
+// API search type: execute_and_return_fixed_value : (a, [Io b]) -> Io a
 // Returns a function that executes the given side effect
 // and returns a fixed value.
 template <typename Result, typename Effect>
@@ -123,7 +123,7 @@ std::function<Result()> effect_to_std_function(Effect eff)
     };
 }
 
-// API search type: execute_max_n_times_until_success : Int -> Io () -> Int -> Io Bool
+// API search type: execute_max_n_times_until_success : (Int, Io (), Int) -> Io Bool
 // Returns a function that executes a side effect until it succeds once
 // or the maximum number of attempts with an optional pause in between.
 template <typename Effect,
@@ -241,7 +241,7 @@ std::function<std::vector<std::string>()> read_text_file_lines(
     };
 }
 
-// API search type: write_text_file : String -> String -> Io Bool
+// API search type: write_text_file : (String, String) -> Io Bool
 // Returns a function that writes content into a text file,
 // replacing it if it already exists.
 inline
@@ -256,7 +256,7 @@ std::function<bool()> write_text_file(const std::string& filename,
     };
 }
 
-// API search type: write_text_file_lines : String -> [String] -> Bool -> Io Bool
+// API search type: write_text_file_lines : (String, [String], Bool) -> Io Bool
 // Returns a function that writes lines into a text file,
 // replacing it if it already exists.
 inline

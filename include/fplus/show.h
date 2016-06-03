@@ -51,7 +51,7 @@ std::string show(const std::pair<X, Y>& p)
     return std::string("(") + show(p.first) + ", " + show(p.second) + ")";
 }
 
-// API search type: show_cont_with_frame_and_newlines : String -> String -> String -> [a] -> Int -> String
+// API search type: show_cont_with_frame_and_newlines : (String, String, String, [a], Int) -> String
 // show_cont_with_frame_and_newlines (",", "(", ")", [1, 2, 3, 4, 5], 2)
 // == "(1,2)
 //      3,4)
@@ -89,7 +89,7 @@ std::string show_cont_with_frame_and_newlines(
     return prefix + join(separator, elemStrs) + suffix;
 }
 
-// API search type: show_cont_with_frame : String -> String -> String -> [a] -> String
+// API search type: show_cont_with_frame : (String, String, String, [a]) -> String
 // show_cont_with_frame (" => ", "{", "}", [1, 2, 3]) == "{1 => 2 => 3}"
 template <typename Container>
 std::string show_cont_with_frame(
@@ -101,7 +101,7 @@ std::string show_cont_with_frame(
         show_cont_with_frame_and_newlines( separator, prefix, suffix, xs, 0);
 }
 
-// API search type: show_cont_with : String -> [a] -> String
+// API search type: show_cont_with : (String, [a]) -> String
 // show_cont_with( " - ", [1, 2, 3]) == "[1 - 2 - 3]"
 template <typename Container>
 std::string show_cont_with(const std::string& separator, const Container& xs)
@@ -141,7 +141,7 @@ std::string show_result(const result<Ok, Error>& result)
         return std::string("Ok " + show(unsafe_get_ok(result)));
 }
 
-// API search type: show_float : (Int -> Int -> Char) -> Float -> String
+// API search type: show_float : ((Int, Int, Char) -> (Float -> String)
 // Can be used to show floating point values in a specific format
 // (Float to String, Double to String etc.)
 // Examples:

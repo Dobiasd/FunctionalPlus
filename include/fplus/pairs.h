@@ -14,7 +14,7 @@
 namespace fplus
 {
 
-// API search type: apply_to_pair : (a -> b -> c) -> (a, b) -> c
+// API search type: apply_to_pair : ((a, b) -> c) -> (((a, b)) -> c)
 // Apply binary function to parts of a pair.
 template <typename F,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
@@ -30,7 +30,7 @@ ResFunc apply_to_pair(F f)
     };
 }
 
-// API search type: zip_with : (a -> b -> c) -> [a] -> [b] -> [c]
+// API search type: zip_with : (((a, b) -> c), [a], [b]) -> [c]
 // zip_with((+), [1, 2, 3], [5, 6]) == [6, 8]
 template <typename ContainerIn1, typename ContainerIn2, typename F,
     typename X = typename ContainerIn1::value_type,
@@ -70,7 +70,7 @@ ContainerOut zip_with(const F& f,
     return result;
 }
 
-// API search type: zip : [a] -> [b] -> [(a, b)]
+// API search type: zip : ([a], [b]) -> [(a, b)]
 // zip([1, 2, 3], [5, 6]) == [(1, 5), (2, 6)]
 template <typename ContainerIn1, typename ContainerIn2,
     typename X = typename ContainerIn1::value_type,
@@ -108,7 +108,7 @@ std::pair<ContainerOutX, ContainerOutY> unzip(const ContainerIn& pairs)
     return std::make_pair(firsts, seconds);
 }
 
-// API search type: fst : (a, b) -> a
+// API search type: fst : ((a, b)) -> a
 // fst((0, 1)) == 0
 template <typename X, typename Y>
 X fst(const std::pair<X, Y>& pair)
@@ -116,7 +116,7 @@ X fst(const std::pair<X, Y>& pair)
     return pair.first;
 }
 
-// API search type: snd : (a, b) -> b
+// API search type: snd : ((a, b)) -> b
 // snd((0, 1)) == 1
 template <typename X, typename Y>
 Y snd(const std::pair<X, Y>& pair)
@@ -124,7 +124,7 @@ Y snd(const std::pair<X, Y>& pair)
     return pair.second;
 }
 
-// API search type: transform_fst : (a -> c) -> (a, b) -> (c, b)
+// API search type: transform_fst : ((a -> c), (a, b)) -> (c, b)
 // transform_fst(square, (4, 5)) == (16, 5)
 template <typename X, typename Y, typename F,
     typename ResultFirst = typename utils::function_traits<F>::result_type>
@@ -133,7 +133,7 @@ std::pair<ResultFirst, Y> transform_fst(F f, const std::pair<X, Y>& pair)
     return std::make_pair(f(pair.first), pair.second);
 }
 
-// API search type: transform_snd : (b -> c) -> (a, b) -> (a, c)
+// API search type: transform_snd : ((b -> c), (a, b)) -> (a, c)
 // transform_snd(square, (4, 5)) == (4, 25)
 template <typename X, typename Y, typename F,
     typename ResultSecond = typename utils::function_traits<F>::result_type>
@@ -142,7 +142,7 @@ std::pair<X, ResultSecond> transform_snd(F f, const std::pair<X, Y>& pair)
     return std::make_pair(pair.first, f(pair.second));
 }
 
-// API search type: transform_pair : (a -> c) -> (b -> d) -> (a, b) -> (c, d)
+// API search type: transform_pair : ((a -> c), (b -> d), (a, b)) -> (c, d)
 // transform_pair(square, square, (4, 5)) == (16, 25)
 template <typename X, typename Y, typename F, typename G,
     typename ResultFirst = typename utils::function_traits<F>::result_type,

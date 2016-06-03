@@ -19,7 +19,7 @@
 namespace fplus
 {
 
-// API search type: transform_convert : (a -> b) -> [a] -> [b]
+// API search type: transform_convert : ((a -> b), [a]) -> [b]
 // transform_convert((*2), [1, 3, 4]) == [2, 6, 8]
 // Same as transform, but makes it easy to
 // use an output container type different from the input container type.
@@ -34,7 +34,7 @@ ContainerOut transform_convert(F f, const ContainerIn& xs)
     return ys;
 }
 
-// API search type: transform_with_idx : (Int -> a -> b) -> [a] -> [b]
+// API search type: transform_with_idx : (((Int, a) -> b), [a]) -> [b]
 // transform_with_idx(f, [6, 4, 7]) == [f(0, 6), f(1, 4), f(2, 7)]
 template <typename F, typename ContainerIn,
     typename ContainerOut = typename same_cont_new_t_from_binary_f<
@@ -53,7 +53,7 @@ ContainerOut transform_with_idx(F f, const ContainerIn& xs)
     return ys;
 }
 
-// API search type: transform_and_keep_justs : (a -> Maybe b) -> [a] -> [b]
+// API search type: transform_and_keep_justs : ((a -> Maybe b), [a]) -> [b]
 // Map function over values and drop resulting nothings.
 // Also known as filter_map.
 template <typename F, typename ContainerIn,
@@ -67,7 +67,7 @@ ContainerOut transform_and_keep_justs(F f, const ContainerIn& xs)
     return justs<decltype(transformed), ContainerOut>(transformed);
 }
 
-// API search type: transform_and_keep_oks : (a -> Result b) -> [a] -> [b]
+// API search type: transform_and_keep_oks : ((a -> Result b), [a]) -> [b]
 // Map function over values and drop resulting errors.
 template <typename F, typename ContainerIn,
     typename FOut = typename utils::function_traits<F>::result_type,
@@ -80,7 +80,7 @@ ContainerOut transform_and_keep_oks(F f, const ContainerIn& xs)
     return oks<decltype(transformed), ContainerOut>(transformed);
 }
 
-// API search type: transform_and_concat : (a -> [b]) -> [a] -> [b]
+// API search type: transform_and_concat : ((a -> [b]), [a]) -> [b]
 // Map function over values and concat results.
 // Also known as flat_map or concat_map.
 template <typename F, typename ContainerIn,
@@ -121,7 +121,7 @@ Container transpose(const Container& grid2d)
     return result;
 }
 
-// API search type: sample : Int -> [a] -> [a]
+// API search type: sample : (Int, [a]) -> [a]
 // Returns n random elements from xs.
 // n has to be smaller than or equal to the number of elements in xs.
 template <typename Container>

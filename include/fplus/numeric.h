@@ -13,7 +13,7 @@
 namespace fplus
 {
 
-// API search type: is_in_range : a -> a -> (a -> Bool)
+// API search type: is_in_range : (a, a) -> (a -> Bool)
 // Checks if x is in [low, high), i.e. left-closed and right-open.
 template <typename T>
 std::function<bool(const T&)>
@@ -25,7 +25,7 @@ std::function<bool(const T&)>
     };
 }
 
-// API search type: clamp : a -> a -> (a -> a)
+// API search type: clamp : (a, a) -> (a -> a)
 // Puts value into [low, high], i.e. left-closed and right-closed.
 template <typename T>
 std::function<T(const T&)>
@@ -104,7 +104,7 @@ Out ceil(X x)
     return floor<Out>(x) + 1;
 }
 
-// API search type: int_power : Int -> Int -> Int
+// API search type: int_power : (Int, Int) -> Int
 // integer power
 template <typename X>
 X int_power(X base, X exp)
@@ -119,7 +119,7 @@ X int_power(X base, X exp)
     return base * int_power(base, exp - 1);
 }
 
-// API search type: min_2_on : (a -> b) -> (a -> a -> Bool)
+// API search type: min_2_on : (a -> b) -> ((a, a) -> a)
 // minimum of two values after transformation
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type>
@@ -132,7 +132,7 @@ std::function<const FIn&(const FIn& x, const FIn& y)>
     };
 }
 
-// API search type: max_2_on : (a -> b) -> (a -> a -> Bool)
+// API search type: max_2_on : (a -> b) -> ((a, a) -> a)
 // maximum of two values after transformation
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type>
@@ -145,7 +145,7 @@ std::function<const FIn&(const FIn& x, const FIn& y)>
     };
 }
 
-// API search type: min_3_on : (a -> b) -> (a -> a -> a -> Bool)
+// API search type: min_3_on : (a -> b) -> ((a, a, a) -> a)
 // minimum of three values after transformation
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type>
@@ -158,7 +158,7 @@ std::function<const FIn&(const FIn& x, const FIn& y, const FIn& z)>
     };
 }
 
-// API search type: max_3_on : (a -> b) -> (a -> a -> a -> Bool)
+// API search type: max_3_on : (a -> b) -> ((a, a, a) -> a)
 // maximum of three values after transformation
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type>
@@ -171,7 +171,7 @@ std::function<const FIn&(const FIn& x, const FIn& y, const FIn& z)>
     };
 }
 
-// API search type: min_2 : a -> a -> a
+// API search type: min_2 : (a, a) -> a
 // Minimum of two values.
 template <typename X>
 const X& min_2(const X& a, const X& b)
@@ -179,7 +179,7 @@ const X& min_2(const X& a, const X& b)
     return std::min(a, b);
 }
 
-// API search type: min_3 : a -> a -> a -> a
+// API search type: min_3 : (a, a, a) -> a
 // Minimum of three values.
 template <typename X>
 const X& min_3(const X& a, const X& b, const X& c)
@@ -187,7 +187,7 @@ const X& min_3(const X& a, const X& b, const X& c)
     return min_2(min_2(a, b), c);
 }
 
-// API search type: min_4 : a -> a -> a -> a -> a
+// API search type: min_4 : (a, a, a, a) -> a
 // Minimum of four values.
 template <typename X>
 const X& min_4(const X& a, const X& b, const X& c, const X& d)
@@ -195,7 +195,7 @@ const X& min_4(const X& a, const X& b, const X& c, const X& d)
     return min_2(min_3(a, b, c), d);
 }
 
-// API search type: min_5 : a -> a -> a -> a -> a -> a
+// API search type: min_5 : (a, a, a, a, a) -> a
 // Minimum of five values.
 template <typename X>
 const X& min_5(const X& a, const X& b, const X& c, const X& d, const X& e)
@@ -203,7 +203,7 @@ const X& min_5(const X& a, const X& b, const X& c, const X& d, const X& e)
     return min_3(min_3(a, b, c), d, e);
 }
 
-// API search type: max_2 : a -> a -> a
+// API search type: max_2 : (a, a) -> a
 // Maximum of two values.
 template <typename X>
 const X& max_2(const X& a, const X& b)
@@ -211,7 +211,7 @@ const X& max_2(const X& a, const X& b)
     return std::max(a, b);
 }
 
-// API search type: max_3 : a -> a -> a -> a
+// API search type: max_3 : (a, a, a) -> a
 // Maximum of three values.
 template <typename X>
 const X& max_3(const X& a, const X& b, const X& c)
@@ -219,7 +219,7 @@ const X& max_3(const X& a, const X& b, const X& c)
     return max_2(max_2(a, b), c);
 }
 
-// API search type: max_4 : a -> a -> a -> a -> a
+// API search type: max_4 : (a, a, a, a) -> a
 // Maximum of four values.
 template <typename X>
 const X& max_4(const X& a, const X& b, const X& c, const X& d)
@@ -227,7 +227,7 @@ const X& max_4(const X& a, const X& b, const X& c, const X& d)
     return max_2(max_3(a, b, c), d);
 }
 
-// API search type: max_5 : a -> a -> a -> a -> a -> a
+// API search type: max_5 : (a, a, a, a, a) -> a
 // Maximum of five values.
 template <typename X>
 const X& max_5(const X& a, const X& b, const X& c, const X& d, const X& e)
@@ -260,7 +260,7 @@ std::function<X(X)> cyclic_value(X circumfence)
     };
 }
 
-// API search type: cyclic_difference : Float -> Float -> Float -> Float
+// API search type: cyclic_difference : Float -> ((Float, Float) -> Float)
 // circumfence has to be positive.
 // cyclic_difference(100)(5, 2) == 3
 // cyclic_difference(100)(2, 5) == 97
@@ -279,7 +279,7 @@ std::function<X(X, X)> cyclic_difference(X circumfence)
     };
 }
 
-// API search type: cyclic_shortest_difference : Float -> Float -> Float -> Float
+// API search type: cyclic_shortest_difference : Float -> ((Float, Float) -> Float)
 // circumfence has to be positive.
 // cyclic_shortest_difference(100)(5, 2) == 3
 // cyclic_shortest_difference(100)(2, 5) == -3
@@ -300,7 +300,7 @@ std::function<X(X, X)> cyclic_shortest_difference(X circumfence)
     };
 }
 
-// API search type: cyclic_distance : Float -> Float -> Float -> Float
+// API search type: cyclic_distance : Float -> ((Float, Float) -> Float)
 // circumfence has to be positive.
 // cyclic_distance(100)(2, 5) == 3
 // cyclic_distance(100)(5, 2) == 3
