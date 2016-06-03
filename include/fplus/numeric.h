@@ -319,12 +319,19 @@ std::function<X(X, X)> cyclic_distance(X circumfence)
     };
 }
 
+// API search type: pi : () -> Float
+// Pi.
+inline double pi()
+{
+    return 3.14159265358979323846;
+}
+
 // API search type: deg_to_rad : Float -> Float
 // converts degrees to radians
 template <typename T>
 T deg_to_rad(T x)
 {
-    return static_cast<T>(x * 3.14159265358979323846 / 180.0);
+    return static_cast<T>(x * pi() / 180.0);
 }
 
 // API search type: rad_to_deg : Float -> Float
@@ -332,7 +339,7 @@ T deg_to_rad(T x)
 template <typename T>
 T rad_to_deg(T x)
 {
-    return static_cast<T>(x * 180.0 / 3.14159265358979323846);
+    return static_cast<T>(x * 180.0 / pi());
 }
 
 } // namespace fplus
