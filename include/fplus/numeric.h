@@ -235,7 +235,7 @@ const X& max_5(const X& a, const X& b, const X& c, const X& d, const X& e)
     return max_3(max_3(a, b, c), d, e);
 }
 
-// API search type: cyclic_value : Float -> Float
+// API search type: cyclic_value : Float -> (Float -> Float)
 // Modulo for floating point values.
 // Only positive denominators allowed;
 // cyclic_value(8)(3) == 3
