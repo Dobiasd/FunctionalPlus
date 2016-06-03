@@ -134,8 +134,7 @@ update action model =
                 let
                     singletonSignatureToNothing sig =
                         if
-                            String.contains
-                                "->"
+                            String.contains "->"
                                 (TypeSignature.showSignature True sig)
                         then
                             Just sig
@@ -158,8 +157,7 @@ update action model =
                             |> (\x ->
                                     Maybe.andThen x
                                         (TypeSignature.parseSignature
-                                        >> Maybe.map
-                                            TypeSignature.normalizeSignature
+                                            >> Maybe.map TypeSignature.normalizeSignature
                                         )
                                )
 
@@ -238,8 +236,11 @@ view model =
                 []
             , if String.isEmpty model.querySigStr then
                 div [ class "queryhelper" ]
-                    [ text ("search by function name, docs or type signature,"
-                           ++ " e.g. (a -> [b]) -> [a] -> [b]") ]
+                    [ text
+                        ("search by function name, docs or type signature,"
+                            ++ " e.g. (a -> [b]) -> [a] -> [b]"
+                        )
+                    ]
               else
                 div [ class "parsedsignature" ]
                     [ "as parsed type: "
@@ -386,6 +387,16 @@ typeRating weight factor query db =
         |> (*) weight
 
 
+adjustQuery : String -> String
+adjustQuery query =
+    case query of
+        "map" ->
+            "transform"
+
+        _ ->
+            query
+
+
 functionRating :
     String
     -> Maybe TypeSignature.Signature
@@ -396,8 +407,8 @@ functionRating queryOrig querySig querySigLower function =
     let
         query =
             queryOrig
-            |> String.toLower
-            |> \q -> if q == "map" then "transform" else q
+                |> String.toLower
+                |> adjustQuery
 
         queryWords =
             String.words query
@@ -414,8 +425,10 @@ functionRating queryOrig querySig querySigLower function =
             queryWords
                 |> List.map
                     (\queryWord ->
-                        functionWordRating (stringLengthFloat queryWord /
-                                queryWordLengthSum)
+                        functionWordRating
+                            (stringLengthFloat queryWord
+                                / queryWordLengthSum
+                            )
                             function
                             queryWord
                     )
@@ -428,8 +441,7 @@ functionRating queryOrig querySig querySigLower function =
                         Just sig ->
                             let
                                 typeWeight =
-                                    stringLengthFloat
-                                        (TypeSignature.showSignature True sig)
+                                    stringLengthFloat (TypeSignature.showSignature True sig)
                                         / stringLengthFloat function.signature
 
                                 allRatings =
@@ -445,7 +457,9 @@ functionRating queryOrig querySig querySigLower function =
             in
                 Basics.max (maybeSigRating 1000 querySig)
                     (maybeSigRating 400 querySigLower)
-        functionNameLengthRating = -0.1 * stringLengthFloat function.name
+
+        functionNameLengthRating =
+            -0.1 * stringLengthFloat function.name
     in
         wordRatingSum + bestTypeRating + functionNameLengthRating
 
