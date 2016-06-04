@@ -238,7 +238,7 @@ view model =
                 div [ class "queryhelper" ]
                     [ text
                         ("search by function name, docs or type signature,"
-                            ++ " e.g. (a -> [b]) -> [a] -> [b]"
+                            ++ " e.g. ((a -> [b]), [a]) -> [b]"
                         )
                     ]
               else
