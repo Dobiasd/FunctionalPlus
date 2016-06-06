@@ -378,8 +378,14 @@ sortSignatures =
 functionCompatibility : Signature -> Signature -> Float
 functionCompatibility db query =
     case ( db, query ) of
+        ( VariableType _, TypeConstructor "String" ) ->
+            1.0
+
         ( VariableType _, TypeConstructor _ ) ->
-            0.5
+            0.6
+
+        ( VariableType _, ListType _ ) ->
+            0.7
 
         ( TypeApplication (TypeConstructor "Maybe") (VariableType x), VariableType y ) ->
             0.8 * equalityToFloat x y
@@ -406,12 +412,12 @@ functionCompatibility db query =
             if List.length xs /= List.length ys then
                 0
             else
-                Basics.max
-                    (List.map2 functionCompatibility xs ys |> List.product)
+                Basics.max (List.map2 functionCompatibility xs ys |> List.product)
                     (List.map2 functionCompatibility
                         (sortSignatures xs)
                         (sortSignatures ys)
-                        |> List.product)
+                        |> List.product
+                    )
 
         _ ->
             0.0
