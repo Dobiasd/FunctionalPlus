@@ -41,10 +41,10 @@ std::string show(const std::string& str)
 // API search type: show : (a, b) -> String
 // {1, "one"} -> "(1, one)"
 // Useful to simply show values, e.g.:
-// - Int to String
-// - Float to String
-// - Double to String
-// - std::vector<T> to String
+// Int to String
+// Float to String
+// Double to String
+// std::vector<T> to String
 template <typename X, typename Y>
 std::string show(const std::pair<X, Y>& p)
 {
