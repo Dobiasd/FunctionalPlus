@@ -406,10 +406,12 @@ functionCompatibility db query =
             if List.length xs /= List.length ys then
                 0
             else
-                List.map2 functionCompatibility
-                    (sortSignatures xs)
-                    (sortSignatures ys)
-                    |> List.product
+                Basics.max
+                    (List.map2 functionCompatibility xs ys |> List.product)
+                    (List.map2 functionCompatibility
+                        (sortSignatures xs)
+                        (sortSignatures ys)
+                        |> List.product)
 
         _ ->
             0.0
