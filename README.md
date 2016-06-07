@@ -222,6 +222,29 @@ Just [download](https://github.com/Dobiasd/FunctionalPlus/archive/master.zip) Fu
 
 A **C++11**-compatible compiler is needed. The tests run successfully on GCC 4.9, Clang 3.6 and Visual C++ 2015.
 
+With [cmake](https://cmake.org/) the tests can be ran and the library installed following these steps:
+
+```
+mkdir build
+cd build
+# Set cxx flags if they are not already set by the toolchain
+CXXFLAGS='-std=c++11' cmake ..
+# Build and run the tests
+cmake --build . --target check
+# Install the library
+cmake --build . --target install
+```
+
+For MSVC, the `CXXFLAGS='-std=c++11'` setting can be omitted.
+
+It can also be installed directly using [cget](https://github.com/pfultz2/cget/):
+
+```
+# Setup up toolchain to use c++11
+cget init --std=c++11
+# Test and install
+cget install Dobiasd/FunctionalPlus
+```
 
 Disclaimer
 ----------
