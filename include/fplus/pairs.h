@@ -186,4 +186,13 @@ ContainerOut overlapping_pairs(const Container& xs)
     return result;
 }
 
+// API search type: enumerate : [a] -> [(Int, a)]
+// enumerate([6,4,7,6]) == [(0, 6), (1, 4), (2, 7), (3, 6)]
+template <typename Container,
+    typename T = typename Container::value_type>
+std::vector<std::pair<std::size_t, T>> enumerate(const Container& xs)
+{
+    return zip(all_idxs(xs), xs);
+}
+
 } // namespace fplus

@@ -910,6 +910,8 @@ void Test_ContainerTools()
         == std::vector<std::size_t>({ 1, 4 }));
     assert(find_first_instance_of_token(std::string("haha"), std::string("oh, hahaha!"))
         == just<std::size_t>(4));
+    assert(enumerate(xs)
+        ==(std::vector<std::pair<std::size_t, int>>({{0,1}, {1,2}, {2,2}, {3,3}, {4,2}})));
 
     IntList v789 = { 7,8,9 };
     assert(set_range(1, v789, intList) == IntList({ 1,7,8,9,2 }));
