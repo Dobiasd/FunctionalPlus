@@ -222,7 +222,7 @@ Just [download](https://github.com/Dobiasd/FunctionalPlus/archive/master.zip) Fu
 
 A **C++11**-compatible compiler is needed. The tests run successfully on GCC 4.9, Clang 3.6 and Visual C++ 2015.
 
-With [cmake](https://cmake.org/) the tests can be ran and the library installed following these steps:
+With [cmake](https://cmake.org/) the tests can be run and the library installed following these steps:
 
 ```
 mkdir build
