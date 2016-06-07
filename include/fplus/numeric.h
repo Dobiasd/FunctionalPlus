@@ -331,6 +331,7 @@ inline double pi()
 template <typename T>
 T deg_to_rad(T x)
 {
+    static_assert(std::is_floating_point<T>::value, "Please use a floating-point type.");
     return static_cast<T>(x * pi() / 180.0);
 }
 
