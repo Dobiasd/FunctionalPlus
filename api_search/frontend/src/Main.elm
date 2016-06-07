@@ -55,7 +55,11 @@ parseSignatureCrashOnError :
     Database.Function
     -> TypeSignature.Signature
 parseSignatureCrashOnError function =
-    case TypeSignature.parseSignature function.signature of
+    case
+        (TypeSignature.parseSignature function.signature
+            |> Maybe.map TypeSignature.normalizeSignature
+        )
+    of
         Just sig ->
             sig
 

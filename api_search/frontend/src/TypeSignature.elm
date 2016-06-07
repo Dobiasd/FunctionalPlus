@@ -280,7 +280,7 @@ typeApplicationParser =
 typeStartsWithParser : C.Parser Char -> (String -> Signature) -> C.Parser Signature
 typeStartsWithParser p tagger =
     [ p |> C.map (\x -> [ x ])
-    , C.many <| C.choice [ CC.lower, CC.upper, CC.char '.', CC.digit ]
+    , C.many <| C.choice [ CC.lower, CC.upper, CC.char '.', CC.char '_', CC.digit ]
     ]
         |> C.sequence
         |> C.map List.concat

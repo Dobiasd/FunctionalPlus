@@ -17,7 +17,7 @@
 namespace fplus
 {
 
-// API search type: pairs_to_map : [(a, b)] -> Map a b
+// API search type: pairs_to_map : [(key, val)] -> Map key val
 // Converts a Container of pairs (key, value) into a dictionary.
 template <typename MapOut, typename ContainerIn>
 MapOut pairs_to_map(const ContainerIn& pairs)
@@ -25,7 +25,7 @@ MapOut pairs_to_map(const ContainerIn& pairs)
     return convert_container_and_elems<MapOut>(pairs);
 }
 
-// API search type: pairs_to_map_grouped : [(a, b)] -> Map a [b]
+// API search type: pairs_to_map_grouped : [(key, val)] -> Map key [val]
 // pairs_to_map_grouped([("a", 1), ("a", 2), ("b", 6), ("a", 4)])
 //     -> [("a", [1, 2, 4]), ("b", [6])]
 template <typename ContainerIn,
@@ -42,7 +42,7 @@ MapOut pairs_to_map_grouped(const ContainerIn& pairs)
     return result;
 }
 
-// API search type: map_to_pairs : Map a b -> [(a, b)]
+// API search type: map_to_pairs : Map key val -> [(key, val)]
 // Converts a dictionary into a Container of pairs (key, value).
 template <typename MapType,
     typename MapPair = typename MapType::value_type,
@@ -55,7 +55,7 @@ ContainerOut map_to_pairs(const MapType& dict)
     return convert_container_and_elems<ContainerOut>(dict);
 }
 
-// API search type: transform_map_values : ((b -> c), Map a b) -> Map a c
+// API search type: transform_map_values : (old_val -> new_val, Map key old_val) -> Map key new_val
 // transform_map_values((*2), {(0, 2), (1, 3)}) == {(0, 4), (1, 6)}
 template <typename F, typename MapIn,
     typename MapInPair = typename MapIn::value_type,
@@ -72,7 +72,7 @@ MapOut transform_map_values(F f, const MapIn& map)
             map_to_pairs(map)));
 }
 
-// API search type: map_union_with : (((b, b) -> b), Map a b, Map a b) -> Map a b
+// API search type: map_union_with : (((val, val) -> val), Map key val, Map key val) -> Map key val
 // map_union_with((++), [(0,a), (1,b)], [(0,c), (2,d)]) == [(0,ac), (1,b), (2,d)]
 template <typename F, typename MapIn,
     typename MapInPair = typename MapIn::value_type,
@@ -87,7 +87,7 @@ MapOut map_union_with(F f, const MapIn& dict1, const MapIn& dict2)
     return transform_map_values(f, full_map);
 }
 
-// API search type: map_union : (Map a b, Map a b) -> Map a b
+// API search type: map_union : (Map key val, Map key val) -> Map key val
 // map_union([(0,a), (1,b)], [(0,c), (2,d)]) == [(0,a), (1,b), (2,d)]
 template <typename MapType,
     typename MapInPair = typename MapType::value_type,
@@ -99,7 +99,7 @@ MapType map_union(const MapType& dict1, const MapType& dict2)
     return map_union_with(nth_element<values>(0), dict1, dict2);
 }
 
-// API search type: get_map_keys : Map a b -> [a]
+// API search type: get_map_keys : Map key val -> [key]
 // Returns all keys used in a map.
 template <typename MapType,
     typename ContainerOut =
@@ -112,7 +112,7 @@ ContainerOut get_map_keys(const MapType& dict)
     return transform(fst<FirstType, SecondType>, map_to_pairs(dict));
 }
 
-// API search type: get_map_values : Map a b -> [b]
+// API search type: get_map_values : Map key val -> [val]
 // Returns all values present in a map.
 template <typename MapType,
     typename ContainerOut =
@@ -142,7 +142,7 @@ MapOut swap_keys_and_values(const MapIn& dict)
     return pairs_to_map<MapOut>(outAsPairs);
 }
 
-// API search type: create_map : ([a], [b]) -> Map a b
+// API search type: create_map : ([key], [val]) -> Map key val
 // create_map([1,2,3], ["one", "two"]) == { {1,"one"}, {2,"two"} }
 template <typename ContainerIn1, typename ContainerIn2,
     typename Key = typename std::remove_const<typename ContainerIn1::value_type>::type,
@@ -154,7 +154,7 @@ MapOut create_map(const ContainerIn1& keys, const ContainerIn2& values)
     return pairs_to_map<MapOut>(pairs);
 }
 
-// API search type: create_unordered_map : ([a], [b]) -> Map a b
+// API search type: create_unordered_map : ([key], [val]) -> Map key val
 // create_unordered_map([1,2,3], ["one", "two"]) == { {1,"one"}, {2,"two"} }
 template <typename ContainerIn1, typename ContainerIn2,
     typename Key = typename std::remove_const<typename ContainerIn1::value_type>::type,
@@ -168,7 +168,7 @@ MapOut create_unordered_map(
     return pairs_to_map<MapOut>(pairs);
 }
 
-// API search type: get_from_map : (Map a b, a) -> Maybe b
+// API search type: get_from_map : (Map key val, key) -> Maybe val
 // Returns just the value of a key if key is present.
 // Otherwise returns nothing.
 template <typename MapType,
@@ -182,7 +182,7 @@ maybe<Val> get_from_map(const MapType& map, const Key& key)
     return just(it->second);
 }
 
-// API search type: get_from_map_with_def : (Map a b, b, a) -> b
+// API search type: get_from_map_with_def : (Map key val, val, key) -> val
 // Returns the value of a key if key is present.
 // Otherwise returns the provided default.
 template <typename MapType,
@@ -194,7 +194,7 @@ Val get_from_map_with_def(const MapType& map, const Val& defVal,
     return just_with_default(defVal, get_from_map(map, key));
 }
 
-// API search type: map_contains : (Map a b, a) -> Bool
+// API search type: map_contains : (Map key val, key) -> Bool
 // Checks if a map contains a key.
 template <typename MapType, typename Key = typename MapType::key_type>
 bool map_contains(const MapType& map, const Key& key)
