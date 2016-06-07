@@ -18,6 +18,7 @@ namespace fplus
 // ContainerOut is not deduced to
 // SameContNewType(ContainerIn, ContainerIn)
 // here, since ContainerIn could be a std::string.
+// O(n)
 template <typename BinaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
@@ -43,6 +44,7 @@ ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
 
 // API search type: group_on : ((a -> b), [a]) -> [[a]]
 // group_on((mod 10), [12,22,34]) == [[12,22],[34]]
+// O(n)
 template <typename F, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group_on(F f, const ContainerIn& xs)
@@ -52,6 +54,7 @@ ContainerOut group_on(F f, const ContainerIn& xs)
 
 // API search type: group : [a] -> [[a]]
 // group([1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2],[3],[2,2],[4],[5,5]]
+// O(n)
 template <typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group(const ContainerIn& xs)
@@ -126,6 +129,7 @@ ContainerOut group_globally(const ContainerIn& xs)
 // API search type: split_by : ((a -> Bool), Bool, [a]) -> [[a]]
 // split_by(is_even, true, [1,3,2,2,5,5,3,6,7,9]) == [[1,3],[],[5,5,3],[7,9]]
 // also known as split_when
+// O(n)
 template <typename UnaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut split_by
@@ -162,6 +166,7 @@ ContainerOut split_by
 // API search type: split_by_keep_separators : ((a -> Bool), [a]) -> [[a]]
 // split_by_keep_separators(is_even, true, [1,3,2,2,5,5,3,6,7,9])
 // == [[1,3],[2],[2,5,5,3],[6,7,9]]
+// O(n)
 template <typename UnaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut split_by_keep_separators
@@ -194,6 +199,7 @@ ContainerOut split_by_keep_separators
 template <typename ContainerIn,
         typename T = typename ContainerIn::value_type,
         typename ContainerOut = typename std::vector<ContainerIn>>
+// O(n)
 ContainerOut split(const T& x, bool allowEmpty, const ContainerIn& xs)
 {
     return split_by(is_equal_to(x), allowEmpty, xs);
@@ -298,6 +304,7 @@ ContainerOut split_by_token(const ContainerIn& token,
 
 // API search type: count_occurrences : [a] -> Map a Int
 // count_occurrences([1,2,2,3,2)) == [(1, 1), (2, 3), (3, 1)]
+// O(n)
 template <typename ContainerIn,
         typename MapOut = typename std::map<
             typename ContainerIn::value_type, std::size_t>>

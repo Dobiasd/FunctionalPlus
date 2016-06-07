@@ -621,6 +621,7 @@ Container sort(const Container& xs)
 
 // API search type: unique_by : (((a, a) -> Bool), [a]) -> [a]
 // Like unique but with user supplied equality predicate.
+// O(n)
 template <typename Container, typename BinaryPredicate>
 Container unique_by(BinaryPredicate p, const Container& xs)
 {
@@ -633,6 +634,7 @@ Container unique_by(BinaryPredicate p, const Container& xs)
 
 // API search type: unique_on : ((a -> b), [a]) -> [a]
 // Like unique but with user supplied transformation (e.g. getter).
+// O(n)
 template <typename Container, typename F>
 Container unique_on(F f, const Container& xs)
 {
@@ -641,6 +643,7 @@ Container unique_on(F f, const Container& xs)
 
 // API search type: unique : [a] -> [a]
 // unique([1,2,2,3,2]) == [1,2,3,2]
+// O(n)
 template <typename Container>
 Container unique(const Container& xs)
 {
@@ -703,6 +706,7 @@ bool is_elem_of(const typename Container::value_type& x, const Container& xs)
 
 // API search type: nub_by : (((a, a) -> Bool), [a]) -> [a]
 // nub_by((==), [1,2,2,3,2]) == [1,2,3]
+// O(n^2)
 template <typename Container, typename BinaryPredicate>
 Container nub_by(BinaryPredicate p, const Container& xs)
 {
@@ -721,6 +725,7 @@ Container nub_by(BinaryPredicate p, const Container& xs)
 
 // API search type: nub_on : ((a -> b), [a]) -> [a]
 // nub_on((mod 10), [12,32,15]) == [12,15]
+// O(n^2)
 template <typename Container, typename F>
 Container nub_on(F f, const Container& xs)
 {
@@ -729,6 +734,7 @@ Container nub_on(F f, const Container& xs)
 
 // API search type: nub : [a] -> [a]
 // nub([1,2,2,3,2]) == [1,2,3]
+// O(n^2)
 template <typename Container>
 Container nub(const Container& xs)
 {
