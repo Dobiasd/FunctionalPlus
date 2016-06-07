@@ -21,7 +21,7 @@ template <typename UnaryPredicate, typename Container>
 void check_unary_predicate_for_container()
 {
     check_unary_predicate_for_type<UnaryPredicate,
-     typename Container::value_type>();
+        typename Container::value_type>();
 }
 
 template <typename UnaryPredicate, typename Container>
