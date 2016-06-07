@@ -218,7 +218,7 @@ Additionally keep in mind that FunctionalPlus always produces copies and never o
 
 Installation/Requirements
 -------------------------
-Just [download](https://github.com/Dobiasd/FunctionalPlus/archive/master.zip) FunctionalPlus and tell your compile to use the `include` directory.
+Just [download](https://github.com/Dobiasd/FunctionalPlus/archive/master.zip) FunctionalPlus and tell your compiler to use the `include` directory.
 
 A **C++11**-compatible compiler is needed. The tests run successfully on GCC 4.9, Clang 3.6 and Visual C++ 2015.
 
