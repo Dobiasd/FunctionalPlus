@@ -11,21 +11,92 @@
 namespace fplus
 {
 
-template <typename UnaryPredicate, typename T>
-void check_unary_predicate_for_type()
+// Checks if a type has a non-template call operator.
+// source: http://stackoverflow.com/a/8907461/1866775
+template <typename F, typename... Args>
+class Callable{
+    static int tester[1];
+    typedef char yes;
+    typedef yes (&no)[2];
+
+    template <typename G, typename... Brgs, typename C>
+    static typename std::enable_if<!std::is_same<G,C>::value, char>::type
+        sfinae(decltype(std::declval<G>()(std::declval<Brgs>()...)) (C::*pfn)(Brgs...));
+
+    template <typename G, typename... Brgs, typename C>
+    static typename std::enable_if<!std::is_same<G,C>::value, char>::type
+        sfinae(decltype(std::declval<G>()(std::declval<Brgs>()...)) (C::*pfn)(Brgs...) const);
+
+    template <typename G, typename... Brgs>
+    static char sfinae(decltype(std::declval<G>()(std::declval<Brgs>()...)) (G::*pfn)(Brgs...));
+
+    template <typename G, typename... Brgs>
+    static char sfinae(decltype(std::declval<G>()(std::declval<Brgs>()...)) (G::*pfn)(Brgs...) const);
+
+    template <typename G, typename... Brgs>
+    static yes test(int (&a)[sizeof(sfinae<G,Brgs...>(&G::operator()))]);
+
+    template <typename G, typename... Brgs>
+    static no test(...);
+public:
+    static bool const value = sizeof(test<F, Args...>(tester)) == sizeof(yes);
+};
+
+template<int TargetArity, typename F>
+void check_arity_helper(std::true_type)
 {
-    static_assert(utils::function_traits<UnaryPredicate>::arity == 1,
+    static_assert(utils::function_traits<F>::arity == TargetArity,
         "Wrong arity.");
-    static_assert(std::is_convertible<T,
+}
+
+template<int TargetArity, typename F>
+void check_arity_helper(std::false_type)
+{
+}
+
+template<int TargetArity, typename F>
+void check_arity()
+{
+    check_arity_helper<TargetArity, F>(
+        std::integral_constant<bool, Callable<F>::value>());
+}
+
+template<class R, class... Args>
+struct Helper{ R operator()(Args...); };
+
+template<typename R, typename... FArgs, typename... Args>
+class Callable<R(*)(FArgs...), Args...>
+  : public Callable<Helper<R, FArgs...>, Args...>
+{};
+
+
+template <typename UnaryPredicate, typename T>
+void check_unary_predicate_for_type_helper(std::true_type)
+{
+    static_assert(Callable<UnaryPredicate>::value && utils::function_traits<UnaryPredicate>::arity == 1,
+        "Wrong arity.");
+    static_assert(Callable<UnaryPredicate>::value && std::is_convertible<T,
         typename utils::function_traits<UnaryPredicate>::template arg<0>::type>::value,
         "Unary predicate can not take these values.");
-    static_assert(std::is_convertible<
+    static_assert(Callable<UnaryPredicate>::value && std::is_convertible<
         typename utils::function_traits<UnaryPredicate>::result_type, bool>::value,
         "Predicate must return bool.");
 }
 
+template <typename UnaryPredicate, typename T>
+void check_unary_predicate_for_type_helper(std::false_type)
+{
+}
+
+template <typename UnaryPredicate, typename T>
+void check_unary_predicate_for_type()
+{
+    check_unary_predicate_for_type_helper<UnaryPredicate, T>(
+        std::integral_constant<bool, Callable<UnaryPredicate>::value>());
+}
+
 template <typename F, typename T>
-void check_index_with_type_predicate_for_type()
+void check_index_with_type_predicate_for_type_helper(std::true_type)
 {
     static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
     typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
@@ -39,8 +110,20 @@ void check_index_with_type_predicate_for_type()
         "Function does not work with elements of Container.");
 }
 
+template <typename F, typename T>
+void check_index_with_type_predicate_for_type_helper(std::false_type)
+{
+}
+
+template <typename F, typename T>
+void check_index_with_type_predicate_for_type()
+{
+    check_index_with_type_predicate_for_type_helper<F, T>(
+        std::integral_constant<bool, Callable<F>::value>());
+}
+
 template <typename BinaryPredicate, typename T>
-void check_binary_predicate_for_type()
+void check_binary_predicate_for_type_helper(std::true_type)
 {
     static_assert(utils::function_traits<BinaryPredicate>::arity == 2,
         "Wrong arity.");
@@ -55,8 +138,20 @@ void check_binary_predicate_for_type()
         "BinaryPredicate does not work with elements of Container.");
 }
 
+template <typename BinaryPredicate, typename T>
+void check_binary_predicate_for_type_helper(std::false_type)
+{
+}
+
+template <typename BinaryPredicate, typename T>
+void check_binary_predicate_for_type()
+{
+    check_binary_predicate_for_type_helper<BinaryPredicate, T>(
+        std::integral_constant<bool, Callable<BinaryPredicate>::value>());
+}
+
 template <typename Compare, typename T>
-void check_compare_for_type()
+void check_compare_for_type_helper(std::true_type)
 {
     static_assert(utils::function_traits<Compare>::arity == 2, "Wrong arity.");
     typedef typename utils::function_traits<Compare>::template arg<0>::type FIn;
@@ -70,8 +165,21 @@ void check_compare_for_type()
         "Compare does not work with elements of Container.");
 }
 
+template <typename Compare, typename T>
+void check_compare_for_type_helper(std::false_type)
+{
+}
+
+template <typename Compare, typename T>
+void check_compare_for_type()
+{
+    check_compare_for_type_helper<Compare, T>(
+        std::integral_constant<bool, Callable<Compare>::value>());
+}
+
 template <typename F, typename G, typename X, typename Y>
-void check_compare_preprocessors_for_types()
+void check_compare_preprocessors_for_types_helper(
+    std::true_type, std::true_type)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
@@ -84,6 +192,20 @@ void check_compare_preprocessors_for_types()
     static_assert(std::is_same<typename utils::function_traits<F>::result_type,
         typename utils::function_traits<G>::result_type>::value,
         "Both functions must return same type.");
+}
+
+template <typename F, typename G, typename X, typename Y,
+    typename FC, typename GC>
+void check_compare_preprocessors_for_types_helper(FC, GC)
+{
+}
+
+template <typename F, typename G, typename X, typename Y>
+void check_compare_preprocessors_for_types()
+{
+    check_compare_preprocessors_for_types_helper<F, G, X, Y>(
+        std::integral_constant<bool, Callable<F>::value>(),
+        std::integral_constant<bool, Callable<G>::value>());
 }
 
 // API search type: identity : a -> a
@@ -458,7 +580,7 @@ template <typename Compare,
     typename FOut = typename utils::function_traits<Compare>::result_type>
 std::function<FOut(FIn0, FIn1)> ord_to_eq(Compare comp)
 {
-    static_assert(utils::function_traits<Compare>::arity == 2, "Wrong arity.");
+    check_arity<2, Compare>();
     static_assert(std::is_same<FOut, bool>::value, "Function must return bool.");
     static_assert(std::is_same<FIn0, FIn1>::value,
         "Function must take two equal types.");
@@ -475,7 +597,7 @@ template <typename Compare,
     typename FOut = typename utils::function_traits<Compare>::result_type>
 std::function<FOut(FIn0, FIn1)> ord_to_not_eq(Compare comp)
 {
-    static_assert(utils::function_traits<Compare>::arity == 2, "Wrong arity.");
+    check_arity<2, Compare>();
     static_assert(std::is_same<FOut, bool>::value, "Function must return bool.");
     static_assert(std::is_same<FIn0, FIn1>::value,
         "Function must take two equal types.");
@@ -492,7 +614,7 @@ template <typename Compare,
     typename FOut = typename utils::function_traits<Compare>::result_type>
 std::function<FOut(FIn0, FIn1)> ord_eq_to_eq(Compare comp)
 {
-    static_assert(utils::function_traits<Compare>::arity == 2, "Wrong arity.");
+    check_arity<2, Compare>();
     static_assert(std::is_same<FOut, bool>::value, "Function must return bool.");
     static_assert(std::is_same<FIn0, FIn1>::value,
         "Function must take two equal types.");
@@ -509,7 +631,7 @@ template <typename Compare,
     typename FOut = typename utils::function_traits<Compare>::result_type>
 std::function<FOut(FIn0, FIn1)> ord_eq_to_not_eq(Compare comp)
 {
-    static_assert(utils::function_traits<Compare>::arity == 2, "Wrong arity.");
+    check_arity<2, Compare>();
     static_assert(std::is_same<FOut, bool>::value, "Function must return bool.");
     static_assert(std::is_same<FIn0, FIn1>::value,
         "Function must take two equal types.");

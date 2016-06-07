@@ -579,6 +579,9 @@ void Test_ContainerTools()
 
     auto int_mod_10 = [](int x) -> int { return x % 10; };
 
+    // The following works with C++14.
+    // assert(transform([](auto x) { return x*x; }, xs) == IntVector({1,4,4,9,4}));
+
     std::initializer_list<int> initListInts = { 1,2,2,3,2 };
     assert(transform(squareLambda, std::vector<int>(initListInts)) == IntVector({1,4,4,9,4}));
     assert(transform_convert<std::vector<int>>(squareLambda, initListInts) == IntVector({1,4,4,9,4}));

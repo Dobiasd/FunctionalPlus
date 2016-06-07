@@ -26,7 +26,7 @@ namespace fplus
 template <typename ContainerOut, typename F, typename ContainerIn>
 ContainerOut transform_convert(F f, const ContainerIn& xs)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    check_arity<1, F>();
     ContainerOut ys;
     prepare_container(ys, size_of_cont(xs));
     auto it = get_back_inserter<ContainerOut>(ys);
@@ -41,7 +41,7 @@ template <typename F, typename ContainerIn,
         ContainerIn, F, std::size_t, typename ContainerIn::value_type>::type>
 ContainerOut transform_with_idx(F f, const ContainerIn& xs)
 {
-    static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
+    check_arity<2, F>();
     ContainerOut ys;
     prepare_container(ys, size_of_cont(xs));
     auto it = get_back_inserter<ContainerOut>(ys);
@@ -62,7 +62,7 @@ template <typename F, typename ContainerIn,
         typename FOut::type>::type>
 ContainerOut transform_and_keep_justs(F f, const ContainerIn& xs)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    check_arity<1, F>();
     auto transformed = transform(f, xs);
     return justs<decltype(transformed), ContainerOut>(transformed);
 }
@@ -75,7 +75,7 @@ template <typename F, typename ContainerIn,
         ContainerIn, typename FOut::ok_t>::type>
 ContainerOut transform_and_keep_oks(F f, const ContainerIn& xs)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    check_arity<1, F>();
     auto transformed = transform(f, xs);
     return oks<decltype(transformed), ContainerOut>(transformed);
 }
@@ -88,7 +88,7 @@ template <typename F, typename ContainerIn,
         ContainerIn, F>::type::value_type>
 ContainerOut transform_and_concat(F f, const ContainerIn& xs)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    check_arity<1, F>();
     return concat(transform(f, xs));
 }
 

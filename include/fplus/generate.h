@@ -19,7 +19,7 @@ namespace fplus
 template <typename ContainerOut, typename F>
 ContainerOut generate(F f, std::size_t amount)
 {
-    static_assert(utils::function_traits<F>::arity == 0, "Wrong arity.");
+    check_arity<0, F>();
     ContainerOut ys;
     prepare_container(ys, amount);
     auto it = get_back_inserter<ContainerOut>(ys);
@@ -35,7 +35,7 @@ ContainerOut generate(F f, std::size_t amount)
 template <typename ContainerOut, typename F>
 ContainerOut generate_by_idx(F f, std::size_t amount)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    check_arity<1, F>();
     typedef typename utils::function_traits<F>::template arg<0>::type FIn;
     static_assert(std::is_convertible<std::size_t, FIn>::value,
         "Function does not take std::size_t or compatible type.");

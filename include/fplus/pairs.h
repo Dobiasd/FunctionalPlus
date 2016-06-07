@@ -23,7 +23,7 @@ template <typename F,
     typename ResFunc = typename std::function<FuncRes(const std::pair<FIn0, FIn1>&)>>
 ResFunc apply_to_pair(F f)
 {
-    static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
+    check_arity<2, F>();
     return [f](const std::pair<FIn0, FIn1>& pair)
     {
         return f(pair.first, pair.second);

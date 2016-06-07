@@ -329,7 +329,7 @@ template <typename F, typename ContainerIn,
         ContainerIn, F>::type>
 ContainerOut transform(F f, const ContainerIn& xs)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    check_arity<1, F>();
     ContainerOut ys;
     prepare_container(ys, size_of_cont(xs));
     auto it = get_back_inserter<ContainerOut>(ys);
