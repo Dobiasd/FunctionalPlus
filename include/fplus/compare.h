@@ -14,7 +14,7 @@ namespace fplus
 // Checks if a type has a non-template call operator.
 // source: http://stackoverflow.com/a/8907461/1866775
 template <typename F, typename... Args>
-class Callable{
+class check_callable{
     static int tester[1];
     typedef char yes;
     typedef yes (&no)[2];
@@ -42,6 +42,15 @@ public:
     static bool const value = sizeof(test<F, Args...>(tester)) == sizeof(yes);
 };
 
+template<class R, class... Args>
+struct check_callable_helper{ R operator()(Args...); };
+
+template<typename R, typename... FArgs, typename... Args>
+class check_callable<R(*)(FArgs...), Args...>
+  : public check_callable<check_callable_helper<R, FArgs...>, Args...>
+{};
+
+
 template<int TargetArity, typename F>
 void check_arity_helper(std::true_type)
 {
@@ -58,27 +67,19 @@ template<int TargetArity, typename F>
 void check_arity()
 {
     check_arity_helper<TargetArity, F>(
-        std::integral_constant<bool, Callable<F>::value>());
+        std::integral_constant<bool, check_callable<F>::value>());
 }
-
-template<class R, class... Args>
-struct Helper{ R operator()(Args...); };
-
-template<typename R, typename... FArgs, typename... Args>
-class Callable<R(*)(FArgs...), Args...>
-  : public Callable<Helper<R, FArgs...>, Args...>
-{};
 
 
 template <typename UnaryPredicate, typename T>
 void check_unary_predicate_for_type_helper(std::true_type)
 {
-    static_assert(Callable<UnaryPredicate>::value && utils::function_traits<UnaryPredicate>::arity == 1,
+    static_assert(check_callable<UnaryPredicate>::value && utils::function_traits<UnaryPredicate>::arity == 1,
         "Wrong arity.");
-    static_assert(Callable<UnaryPredicate>::value && std::is_convertible<T,
+    static_assert(check_callable<UnaryPredicate>::value && std::is_convertible<T,
         typename utils::function_traits<UnaryPredicate>::template arg<0>::type>::value,
         "Unary predicate can not take these values.");
-    static_assert(Callable<UnaryPredicate>::value && std::is_convertible<
+    static_assert(check_callable<UnaryPredicate>::value && std::is_convertible<
         typename utils::function_traits<UnaryPredicate>::result_type, bool>::value,
         "Predicate must return bool.");
 }
@@ -92,7 +93,7 @@ template <typename UnaryPredicate, typename T>
 void check_unary_predicate_for_type()
 {
     check_unary_predicate_for_type_helper<UnaryPredicate, T>(
-        std::integral_constant<bool, Callable<UnaryPredicate>::value>());
+        std::integral_constant<bool, check_callable<UnaryPredicate>::value>());
 }
 
 template <typename F, typename T>
@@ -119,7 +120,7 @@ template <typename F, typename T>
 void check_index_with_type_predicate_for_type()
 {
     check_index_with_type_predicate_for_type_helper<F, T>(
-        std::integral_constant<bool, Callable<F>::value>());
+        std::integral_constant<bool, check_callable<F>::value>());
 }
 
 template <typename BinaryPredicate, typename T>
@@ -147,7 +148,7 @@ template <typename BinaryPredicate, typename T>
 void check_binary_predicate_for_type()
 {
     check_binary_predicate_for_type_helper<BinaryPredicate, T>(
-        std::integral_constant<bool, Callable<BinaryPredicate>::value>());
+        std::integral_constant<bool, check_callable<BinaryPredicate>::value>());
 }
 
 template <typename Compare, typename T>
@@ -174,7 +175,7 @@ template <typename Compare, typename T>
 void check_compare_for_type()
 {
     check_compare_for_type_helper<Compare, T>(
-        std::integral_constant<bool, Callable<Compare>::value>());
+        std::integral_constant<bool, check_callable<Compare>::value>());
 }
 
 template <typename F, typename G, typename X, typename Y>
@@ -204,8 +205,8 @@ template <typename F, typename G, typename X, typename Y>
 void check_compare_preprocessors_for_types()
 {
     check_compare_preprocessors_for_types_helper<F, G, X, Y>(
-        std::integral_constant<bool, Callable<F>::value>(),
-        std::integral_constant<bool, Callable<G>::value>());
+        std::integral_constant<bool, check_callable<F>::value>(),
+        std::integral_constant<bool, check_callable<G>::value>());
 }
 
 // API search type: identity : a -> a
