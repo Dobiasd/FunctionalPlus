@@ -227,12 +227,11 @@ With [cmake](https://cmake.org/) the tests can be run and the library installed 
 ```
 mkdir build
 cd build
-# Set cxx flags if they are not already set by the toolchain
-CXXFLAGS='-std=c++11' cmake ..
+cmake ..
 # Build and run the tests
-cmake --build . --target check
+make check
 # Install the library
-cmake --build . --target install
+make install
 ```
 
 For MSVC, the `CXXFLAGS='-std=c++11'` setting can be omitted.
