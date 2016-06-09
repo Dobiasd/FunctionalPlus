@@ -234,8 +234,6 @@ make check
 make install
 ```
 
-For MSVC, the `CXXFLAGS='-std=c++11'` setting can be omitted.
-
 It can also be installed directly using [cget](https://github.com/pfultz2/cget/):
 
 ```
