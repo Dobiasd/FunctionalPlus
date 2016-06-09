@@ -604,6 +604,9 @@ void Test_ContainerTools()
     assert(trim_token_right(IntVector({3,2}), xs) == IntVector({1,2,2}));
     assert(trim_token(IntVector({0,1}), IntVector({0,1,7,8,9,0,1})) == IntVector({7,8,9}));
 
+    auto abs_diff_less_or_equal_3 = [](int a, int b) { return fplus::abs(b - a) <= 3; };
+    assert(group_by(abs_diff_less_or_equal_3, IntVector({2,3,6,4,22,21,8,5})) == IntVectors({{2,3,6,4},{22,21},{8,5}}));
+
     typedef std::pair<std::size_t, int> rle_pair_int;
     typedef std::vector<rle_pair_int> rle_list_int;
     IntVector rle_input = {1,2,2,2,2,3,3,2};

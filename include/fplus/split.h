@@ -18,6 +18,7 @@ namespace fplus
 // ContainerOut is not deduced to
 // SameContNewType(ContainerIn, ContainerIn)
 // here, since ContainerIn could be a std::string.
+// BinaryPredicate p is a (not neccessarily assoziative) connectivity check.
 // O(n)
 template <typename BinaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
@@ -34,7 +35,7 @@ ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
     *get_back_inserter(result) = InnerContainerOut(1, xs.front());
     for (auto it = ++std::begin(xs); it != std::end(xs); ++it)
     {
-        if (p(*it, result.back().front()))
+        if (p(*it, result.back().back()))
             *get_back_inserter(result.back()) = *it;
         else
             *get_back_inserter(result) = InnerContainerOut(1, *it);
@@ -70,6 +71,7 @@ ContainerOut group(const ContainerIn& xs)
 // API search type: group_globally_by : (((a, a) -> Bool), [a]) -> [[a]]
 // group_globally_by((==), [1,2,2,2,3,2,2,4,5,5])
 // == [[1],[2,2,2,2,2],[3],[4],[5,5]]
+// BinaryPredicate p is an assoziative equality check.
 // O(n^2)
 template <typename BinaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
