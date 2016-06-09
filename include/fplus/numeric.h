@@ -9,6 +9,7 @@
 #include "function_traits.h"
 #include <functional>
 #include <limits>
+#include <cmath>
 
 namespace fplus
 {
