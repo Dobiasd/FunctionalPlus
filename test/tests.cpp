@@ -566,6 +566,7 @@ void Test_ContainerTools()
     typedef std::vector<bool> BoolVector;
     typedef std::vector<std::size_t> IdxVector;
     IntVector xs = {1,2,2,3,2};
+    std::array<int, 5> xs_array = {{1,2,2,3,2}};
     IntVector xsSorted = {1,2,2,2,3};
     std::string xsShown("[1, 2, 2, 3, 2]");
     IntVector xs2Times = {1,2,2,3,2,1,2,2,3,2};
@@ -585,6 +586,7 @@ void Test_ContainerTools()
     std::initializer_list<int> initListInts = { 1,2,2,3,2 };
     assert(transform(squareLambda, std::vector<int>(initListInts)) == IntVector({1,4,4,9,4}));
     assert(transform_convert<std::vector<int>>(squareLambda, initListInts) == IntVector({1,4,4,9,4}));
+    assert(transform_convert<std::vector<int>>(squareLambda, xs_array) == IntVector({1,4,4,9,4}));
 
     assert(transform(squareLambda, xs) == IntVector({1,4,4,9,4}));
     assert(keep_if(is_even, xs) == IntVector({2,2,2}));
@@ -606,6 +608,8 @@ void Test_ContainerTools()
 
     auto abs_diff_less_or_equal_3 = [](int a, int b) { return fplus::abs(b - a) <= 3; };
     assert(group_by(abs_diff_less_or_equal_3, IntVector({2,3,6,4,22,21,8,5})) == IntVectors({{2,3,6,4},{22,21},{8,5}}));
+
+    //assert(cluster_by(abs_diff_less_or_equal_3, IntVector({2,3,6,4,12,11,20,23,8,4})) == IntVectors({{2,3,6,4,12,11,8,4},{20,23}}));
 
     typedef std::pair<std::size_t, int> rle_pair_int;
     typedef std::vector<rle_pair_int> rle_list_int;

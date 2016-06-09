@@ -7,6 +7,7 @@
 #pragma once
 
 #include "container_common.h"
+#include "generate.h"
 #include "search.h"
 #include "pairs.h"
 
@@ -88,7 +89,7 @@ ContainerOut group_globally_by(BinaryPredicate p, const ContainerIn& xs)
         bool found = false;
         for (auto& ys : result)
         {
-            if (p(x, ys.front()))
+            if (p(x, ys.back()))
             {
                 *get_back_inserter(ys) = x;
                 found = true;
@@ -126,6 +127,102 @@ ContainerOut group_globally(const ContainerIn& xs)
     typedef typename ContainerIn::value_type T;
     auto pred = [](const T& x, const T& y) { return x == y; };
     return group_globally_by(pred, xs);
+}
+
+// API search type: cluster_by : (((a, a) -> Bool), [a]) -> [[a]]
+// cluster_by(\x y -> abs (y - x) <= 3), [2,3,6,4,12,11,20,23,8,4])
+// == [[2,3,6,4,12,11,8,4],[20,23]]
+// BinaryPredicate p is a (not neccessarily assoziative) connectivity check.
+// O(c^n)
+// WARNING: now working yet!
+template <typename BinaryPredicate, typename ContainerIn,
+        typename ContainerOut = typename std::vector<ContainerIn>>
+ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
+{
+    check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
+    static_assert(std::is_same<ContainerIn,
+        typename ContainerOut::value_type>::value,
+        "Containers do not match.");
+
+    typedef std::vector<unsigned char> bools;
+    bools zero_filled_row(size_of_cont(xs), 0);
+    typedef std::vector<bools> boolss;
+    boolss table(size_of_cont(xs), zero_filled_row);
+
+    for (const auto& idx_and_val_y : enumerate(xs))
+    {
+        auto idx_y = idx_and_val_y.first;
+        auto val_y = idx_and_val_y.second;
+        for (const auto& idx_and_val_x : enumerate(xs))
+        {
+            auto idx_x = idx_and_val_x.first;
+            auto val_x = idx_and_val_x.second;
+            if (p(val_y, val_x))
+            {
+                table[idx_y][idx_x] = true;
+            }
+        }
+    }
+
+    bools already_used = zero_filled_row;
+    auto is_already_used = [&](std::size_t i) -> bool
+    {
+        return already_used[i] != 0;
+    };
+
+    typedef std::vector<std::size_t> idxs;
+    typedef std::vector<idxs> idxss;
+
+    auto bools_to_idxs = [](const bools& activations) -> idxs
+    {
+        return find_all_idxs_by(identity<bool>, activations);
+    };
+
+    idxss idx_clusters;
+    std::function<void(std::size_t)> process_idx = [&](std::size_t idx) -> void
+    {
+        auto connected_idxs = bools_to_idxs(table[idx]);
+        auto new_connected_idxs = keep_by_idx(is_already_used, connected_idxs);
+        idx_clusters.back() = append(idx_clusters.back(), new_connected_idxs);
+        for (const auto& new_idx : new_connected_idxs)
+        {
+            if (is_already_used(new_idx))
+            {
+                return;
+            }
+            *get_back_inserter(idx_clusters.back()) = new_idx;
+            already_used[new_idx] = 1;
+            process_idx(new_idx);
+        }
+    };
+
+    typedef typename ContainerOut::value_type InnerContainerOut;
+
+    for (const auto& idx : all_idxs(xs))
+    {
+        if (is_already_used(idx))
+        {
+            continue;
+        }
+        *get_back_inserter(idx_clusters) = idxs();
+        *get_back_inserter(idx_clusters.back()) = idx;
+        already_used[idx] = 1;
+        process_idx(idx);
+    }
+
+    typedef typename ContainerIn::value_type T;
+
+    auto idx_to_val = [&](std::size_t idx) -> T
+    {
+        return elem_at_idx(idx, xs);
+    };
+
+    auto idxs_to_vals = [&](const idxs& val_idxs) -> InnerContainerOut
+    {
+        return transform_convert<InnerContainerOut>(idx_to_val, val_idxs);
+    };
+
+    return transform_convert<ContainerOut>(idxs_to_vals, idx_clusters);
 }
 
 // API search type: split_by : ((a -> Bool), Bool, [a]) -> [[a]]
