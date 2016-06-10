@@ -609,7 +609,7 @@ void Test_ContainerTools()
     auto abs_diff_less_or_equal_3 = [](int a, int b) { return fplus::abs(b - a) <= 3; };
     assert(group_by(abs_diff_less_or_equal_3, IntVector({2,3,6,4,22,21,8,5})) == IntVectors({{2,3,6,4},{22,21},{8,5}}));
 
-    //assert(cluster_by(abs_diff_less_or_equal_3, IntVector({2,3,6,4,12,11,20,23,8,4})) == IntVectors({{2,3,6,4,12,11,8,4},{20,23}}));
+    assert(cluster_by(abs_diff_less_or_equal_3, IntVector({2,3,6,4,12,11,20,23,8,4})) == IntVectors({{2,3,6,4,12,11,8,4},{20,23}}));
 
     typedef std::pair<std::size_t, int> rle_pair_int;
     typedef std::vector<rle_pair_int> rle_list_int;

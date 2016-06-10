@@ -19,7 +19,7 @@ namespace fplus
 // ContainerOut is not deduced to
 // SameContNewType(ContainerIn, ContainerIn)
 // here, since ContainerIn could be a std::string.
-// BinaryPredicate p is a (not neccessarily assoziative) connectivity check.
+// BinaryPredicate p is a (not neccessarily transitive) connectivity check.
 // O(n)
 template <typename BinaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
@@ -72,7 +72,7 @@ ContainerOut group(const ContainerIn& xs)
 // API search type: group_globally_by : (((a, a) -> Bool), [a]) -> [[a]]
 // group_globally_by((==), [1,2,2,2,3,2,2,4,5,5])
 // == [[1],[2,2,2,2,2],[3],[4],[5,5]]
-// BinaryPredicate p is an assoziative equality check.
+// BinaryPredicate p is a transitive equality check.
 // O(n^2)
 template <typename BinaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
@@ -130,11 +130,14 @@ ContainerOut group_globally(const ContainerIn& xs)
 }
 
 // API search type: cluster_by : (((a, a) -> Bool), [a]) -> [[a]]
+// Groups connected components, stable regarding initial order.
 // cluster_by(\x y -> abs (y - x) <= 3), [2,3,6,4,12,11,20,23,8,4])
 // == [[2,3,6,4,12,11,8,4],[20,23]]
-// BinaryPredicate p is a (not neccessarily assoziative) connectivity check.
-// O(c^n)
-// WARNING: now working yet!
+// BinaryPredicate p is a connectivity check, being
+//  - commutative
+//  - reflexive
+//  - not neccessarily transitive, but can be
+// O(n^2), memory complexity also O(n^2)
 template <typename BinaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
@@ -146,8 +149,10 @@ ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
 
     typedef std::vector<unsigned char> bools;
     bools zero_filled_row(size_of_cont(xs), 0);
+
+    // adjecency matrix
     typedef std::vector<bools> boolss;
-    boolss table(size_of_cont(xs), zero_filled_row);
+    boolss adj_mat(size_of_cont(xs), zero_filled_row);
 
     for (const auto& idx_and_val_y : enumerate(xs))
     {
@@ -159,7 +164,7 @@ ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
             auto val_x = idx_and_val_x.second;
             if (p(val_y, val_x))
             {
-                table[idx_y][idx_x] = true;
+                adj_mat[idx_y][idx_x] = 1;
             }
         }
     }
@@ -175,23 +180,25 @@ ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
 
     auto bools_to_idxs = [](const bools& activations) -> idxs
     {
-        return find_all_idxs_by(identity<bool>, activations);
+        auto unsigned_char_to_bool = [](unsigned char x)
+        {
+            return x != 0;
+        };
+        return find_all_idxs_by(unsigned_char_to_bool, activations);
     };
 
     idxss idx_clusters;
     std::function<void(std::size_t)> process_idx = [&](std::size_t idx) -> void
     {
-        auto connected_idxs = bools_to_idxs(table[idx]);
-        auto new_connected_idxs = keep_by_idx(is_already_used, connected_idxs);
+        auto connected_idxs = bools_to_idxs(adj_mat[idx]);
+        auto new_connected_idxs = drop_if(is_already_used, connected_idxs);
         idx_clusters.back() = append(idx_clusters.back(), new_connected_idxs);
         for (const auto& new_idx : new_connected_idxs)
         {
-            if (is_already_used(new_idx))
-            {
-                return;
-            }
-            *get_back_inserter(idx_clusters.back()) = new_idx;
             already_used[new_idx] = 1;
+        }
+        for (const auto& new_idx : new_connected_idxs)
+        {
             process_idx(new_idx);
         }
     };
@@ -219,7 +226,7 @@ ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
 
     auto idxs_to_vals = [&](const idxs& val_idxs) -> InnerContainerOut
     {
-        return transform_convert<InnerContainerOut>(idx_to_val, val_idxs);
+        return transform_convert<InnerContainerOut>(idx_to_val, sort(val_idxs));
     };
 
     return transform_convert<ContainerOut>(idxs_to_vals, idx_clusters);
