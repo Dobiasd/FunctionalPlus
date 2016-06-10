@@ -375,6 +375,10 @@ void Test_Maybe()
     maybe<int> maybe_int_nothing_copy_2;
     maybe_int_nothing_copy_2 = maybe_int_nothing_copy;
     assert(maybe_int_nothing_copy_2 == nothing<int>());
+    assert(flatten_maybe(maybe<maybe<int>>(maybe<int>(1))) == maybe<int>(1));
+    assert(flatten_maybe(maybe<maybe<int>>(maybe<int>())) == nothing<int>());
+    assert(flatten_maybe(maybe<maybe<int>>()) == nothing<int>());
+    assert(flatten_maybe(maybe<maybe<maybe<int>>>(maybe<int>(maybe<int>(1)))) == maybe<int>(1));
 }
 
 void Test_Result()

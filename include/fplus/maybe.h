@@ -199,4 +199,14 @@ std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g, H h, I i)
     return and_then_maybe(and_then_maybe(and_then_maybe(f, g), h), i);
 }
 
+// API search type: flatten_maybe : (Maybe (Maybe a)) -> Maybe a
+// Also known as join.
+template <typename T>
+maybe<T> flatten_maybe(const maybe<maybe<T>>& maybe_maybe)
+{
+    if (is_nothing(maybe_maybe))
+        return nothing<T>();
+    return unsafe_get_just(maybe_maybe);
+}
+
 } // namespace fplus
