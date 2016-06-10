@@ -705,6 +705,7 @@ bool is_elem_of(const typename Container::value_type& x, const Container& xs)
 }
 
 // API search type: nub_by : (((a, a) -> Bool), [a]) -> [a]
+// Makes the elements in a container unique with respect to a predicate
 // nub_by((==), [1,2,2,3,2]) == [1,2,3]
 // O(n^2)
 template <typename Container, typename BinaryPredicate>
@@ -724,6 +725,7 @@ Container nub_by(BinaryPredicate p, const Container& xs)
 }
 
 // API search type: nub_on : ((a -> b), [a]) -> [a]
+// Makes the elements in a container unique with respect to their function value
 // nub_on((mod 10), [12,32,15]) == [12,15]
 // O(n^2)
 template <typename Container, typename F>
@@ -733,6 +735,7 @@ Container nub_on(F f, const Container& xs)
 }
 
 // API search type: nub : [a] -> [a]
+// Makes the elements in a container unique
 // nub([1,2,2,3,2]) == [1,2,3]
 // O(n^2)
 template <typename Container>
@@ -743,6 +746,7 @@ Container nub(const Container& xs)
 }
 
 // API search type: all_unique_by_eq : (((a, a) -> Bool), [a]) -> Bool
+// Checks if all elements in a container are unique with respect to a predicate
 // Returns true for empty containers.
 // O(n^2)
 template <typename Container, typename BinaryPredicate>
@@ -753,6 +757,7 @@ bool all_unique_by_eq(BinaryPredicate p, const Container& xs)
 }
 
 // API search type: all_unique_on : ((a -> b), [a]) -> Bool
+// Checks if all elements in a container are unique with respect to their function value
 // Returns true for empty containers.
 // O(n^2)
 template <typename Container, typename F>
@@ -762,6 +767,7 @@ bool all_unique_on(F f, const Container& xs)
 }
 
 // API search type: all_unique : [a] -> Bool
+// Checks if all elements in a container are unique
 // Returns true for empty containers.
 // O(n^2)
 template <typename Container>
