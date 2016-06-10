@@ -192,6 +192,10 @@ ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
     {
         auto connected_idxs = bools_to_idxs(adj_mat[idx]);
         auto new_connected_idxs = drop_if(is_already_used, connected_idxs);
+        if (is_empty(new_connected_idxs))
+        {
+            return;
+        }
         idx_clusters.back() = append(idx_clusters.back(), new_connected_idxs);
         for (const auto& new_idx : new_connected_idxs)
         {
