@@ -223,10 +223,10 @@ ContainerOut carthesian_product_n(std::size_t power, const ContainerIn& xs_in)
     auto idxs = all_idxs(xs);
     auto result_idxss = internal_helper_carthesian_product_n_idxs(power, idxs);
     typedef typename ContainerOut::value_type ContainerOutInner;
-    auto to_result_cont = [&](const std::vector<std::size_t>& idxs)
+    auto to_result_cont = [&](const std::vector<std::size_t>& indices)
     {
         return convert_container_and_elems<ContainerOutInner>(
-            elems_at_idxs(idxs, xs));
+            elems_at_idxs(indices, xs));
     };
     return transform(to_result_cont, result_idxss);
 }
@@ -246,10 +246,10 @@ ContainerOut permutations(std::size_t power, const ContainerIn& xs_in)
     auto result_idxss = keep_if(all_unique<idx_vec>,
         internal_helper_carthesian_product_n_idxs(power, idxs));
     typedef typename ContainerOut::value_type ContainerOutInner;
-    auto to_result_cont = [&](const std::vector<std::size_t>& idxs)
+    auto to_result_cont = [&](const std::vector<std::size_t>& indices)
     {
         return convert_container_and_elems<ContainerOutInner>(
-            elems_at_idxs(idxs, xs));
+            elems_at_idxs(indices, xs));
     };
     return transform(to_result_cont, result_idxss);
 }
@@ -269,10 +269,10 @@ ContainerOut combinations(std::size_t power, const ContainerIn& xs_in)
     auto result_idxss = keep_if(is_strictly_sorted<idx_vec>,
         internal_helper_carthesian_product_n_idxs(power, idxs));
     typedef typename ContainerOut::value_type ContainerOutInner;
-    auto to_result_cont = [&](const std::vector<std::size_t>& idxs)
+    auto to_result_cont = [&](const std::vector<std::size_t>& indices)
     {
         return convert_container_and_elems<ContainerOutInner>(
-            elems_at_idxs(idxs, xs));
+            elems_at_idxs(indices, xs));
     };
     return transform(to_result_cont, result_idxss);
 }
@@ -293,10 +293,10 @@ ContainerOut combinations_with_replacement(std::size_t power,
     auto result_idxss = keep_if(is_sorted<idx_vec>,
         internal_helper_carthesian_product_n_idxs(power, idxs));
     typedef typename ContainerOut::value_type ContainerOutInner;
-    auto to_result_cont = [&](const std::vector<std::size_t>& idxs)
+    auto to_result_cont = [&](const std::vector<std::size_t>& indices)
     {
         return convert_container_and_elems<ContainerOutInner>(
-            elems_at_idxs(idxs, xs));
+            elems_at_idxs(indices, xs));
     };
     return transform(to_result_cont, result_idxss);
 }
