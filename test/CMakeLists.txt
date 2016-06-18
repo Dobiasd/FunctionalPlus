@@ -21,11 +21,12 @@ endmacro()
 
 _add_test(filter_test)
 _add_test(generate_test)
+_add_test(numeric_test)
 
 
 add_custom_target(unittest filter_test
                         COMMAND generate_test
+                        COMMAND numeric_test
                         COMMENT "Running unittests\n\n"
                         VERBATIM
                         )
-
