@@ -72,6 +72,17 @@ int sign(X x)
     return is_negative(x) ? -1 : 1;
 }
 
+// API search type: sign_with_zero : a -> Int
+// Returns -1 for negative values, 0 for zero, 1 for positive values.
+// sign_with_zero(-3) == -1
+// sign_with_zero(0) == 0
+// sign_with_zero(16) == 1
+template <typename X>
+int sign_with_zero(X x)
+{
+    return x == 0 ? 0 : sign(x);
+}
+
 // API search type: round : a -> b
 // Converts a value to the nearest integer.
 template <typename Out, typename X>
