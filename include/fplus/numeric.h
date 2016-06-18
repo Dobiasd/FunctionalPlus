@@ -10,6 +10,7 @@
 
 #include <functional>
 #include <limits>
+#include <cmath>
 
 namespace fplus
 {
