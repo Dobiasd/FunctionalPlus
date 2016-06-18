@@ -1,6 +1,10 @@
 
 cmake_minimum_required(VERSION 2.8)
 
+
+option(UNITTEST "Build unit tests" OFF)
+
+
 install (DIRECTORY include/fplus DESTINATION include)
 install (FILES include/fplus.h DESTINATION include)
 
@@ -28,3 +32,9 @@ find_package(Threads)
 include_directories(include)
 add_test_executable(tests test/tests.cpp)
 target_link_libraries(tests ${CMAKE_THREAD_LIBS_INIT})
+
+if( UNITTEST )
+    enable_testing()
+    subdirs(test)
+endif()
+
