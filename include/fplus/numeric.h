@@ -219,6 +219,17 @@ const X& min_5(const X& a, const X& b, const X& c, const X& d, const X& e)
     return min_3(min_3(a, b, c), d, e);
 }
 
+// API search type: min : (a, ...) -> a
+// Minimum of x number of values
+template <typename U, typename... V>
+auto min(const U& u, const V&... v) -> typename std::common_type<U, V...>::type
+{
+  using rettype = typename std::common_type<U, V...>::type;
+  rettype result = static_cast<rettype>(u);
+  (void)std::initializer_list<int>{((v < result) ? (result = static_cast<rettype>(v), 0) : 0)...};
+  return result;
+}
+
 // API search type: max_2 : (a, a) -> a
 // Maximum of two values.
 template <typename X>
@@ -249,6 +260,17 @@ template <typename X>
 const X& max_5(const X& a, const X& b, const X& c, const X& d, const X& e)
 {
     return max_3(max_3(a, b, c), d, e);
+}
+
+// API search type: max : (a, ...) -> a
+// Maximum of x number of values.
+template <typename U, typename... V>
+auto max(const U& u, const V&... v) -> typename std::common_type<U, V...>::type
+{
+  using rettype = typename std::common_type<U, V...>::type;
+  rettype result = static_cast<rettype>(u);
+  (void)std::initializer_list<int>{((v > result) ? (result = static_cast<rettype>(v), 0) : 0)...};
+  return result;
 }
 
 // API search type: cyclic_value : Float -> (Float -> Float)
