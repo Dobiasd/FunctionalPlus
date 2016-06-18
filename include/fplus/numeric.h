@@ -7,6 +7,7 @@
 #pragma once
 
 #include "function_traits.h"
+
 #include <functional>
 #include <limits>
 

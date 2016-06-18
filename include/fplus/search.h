@@ -6,13 +6,12 @@
 
 #pragma once
 
-#include <algorithm>
-
 #include "container_common.h"
 #include "composition.h"
 #include "generate.h"
 #include "maybe.h"
 
+#include <algorithm>
 
 namespace fplus
 {

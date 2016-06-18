@@ -6,11 +6,11 @@
 
 #pragma once
 
+#include "function_traits.h"
+
 #include <functional>
 #include <type_traits>
 #include <utility>
-
-#include "function_traits.h"
 
 namespace fplus
 {

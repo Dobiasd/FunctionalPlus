@@ -6,9 +6,6 @@
 
 #pragma once
 
-#include <algorithm>
-#include <type_traits>
-
 #include "container_common.h"
 #include "compare.h"
 #include "generate.h"
@@ -16,6 +13,9 @@
 #include "numeric.h"
 #include "search.h"
 #include "composition.h"
+
+#include <algorithm>
+#include <type_traits>
 
 namespace fplus
 {
