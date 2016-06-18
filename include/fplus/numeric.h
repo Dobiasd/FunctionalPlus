@@ -9,7 +9,6 @@
 #include "function_traits.h"
 #include <functional>
 #include <limits>
-#include <cmath>
 
 namespace fplus
 {
@@ -64,6 +63,9 @@ X abs(X x)
 
 // API search type: sign : a -> Int
 // Returns -1 for negative values, 1 otherwise.
+// sign(-3) == -1
+// sign(0) == 1
+// sign(16) == 1
 template <typename X>
 int sign(X x)
 {
