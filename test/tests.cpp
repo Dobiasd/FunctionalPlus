@@ -18,91 +18,6 @@
 #include <string>
 #include <vector>
 
-void Test_Numeric()
-{
-    using namespace fplus;
-
-    assert(is_in_range(1, 3)(1) == true);
-    assert(is_in_range(1, 3)(2) == true);
-    assert(is_in_range(1, 3)(0) == false);
-    assert(is_in_range(1, 3)(3) == false);
-
-    assert(is_negative(0.1) == false);
-    assert(is_positive(0.1) == true);
-    assert(is_negative(-0.1) == true);
-    assert(is_positive(-0.1) == false);
-
-    assert(is_in_range(0.09, 0.11)(fplus::abs( 0.1)) == true);
-    assert(is_in_range(0.09, 0.11)(fplus::abs(-0.1)) == true);
-
-    assert(sign(0.1) == 1);
-    assert(sign(-0.1) == -1);
-
-    assert(cyclic_value(8)(3) == 3);
-    assert(cyclic_value(8)(11) == 3);
-    assert(cyclic_value(8)(19) == 3);
-    assert(cyclic_value(8)(-2) == 6);
-    assert(cyclic_value(8)(-5) == 3);
-    assert(cyclic_value(8)(-13) == 3);
-    assert(is_in_range(3.19, 3.21)(cyclic_value(8.1)(3.2)));
-
-    assert(cyclic_difference(100)(5, 2) == 3);
-    assert(cyclic_difference(100)(2, 5) == 97);
-    assert(cyclic_difference(100)(3, -2) == 5);
-    assert(cyclic_difference(100)(-2, 3) == 95);
-    assert(cyclic_difference(100)(90, 10) == 80);
-    assert(cyclic_difference(100)(10, 90) == 20);
-
-    assert(cyclic_shortest_difference(100)(5, 2) == 3);
-    assert(cyclic_shortest_difference(100)(2, 5) == -3);
-    assert(cyclic_shortest_difference(100)(3, -2) == 5);
-    assert(cyclic_shortest_difference(100)(-2, 3) == -5);
-    assert(cyclic_shortest_difference(100)(90, 10) == -20);
-    assert(cyclic_shortest_difference(100)(10, 90) == 20);
-
-    assert(cyclic_distance(100)(2, 5) == 3);
-    assert(cyclic_distance(100)(5, 2) == 3);
-    assert(cyclic_distance(100)(-2, 3) == 5);
-    assert(cyclic_distance(100)(3, -2) == 5);
-    assert(cyclic_distance(100)(10, 90) == 20);
-    assert(cyclic_distance(100)(90, 10) == 20);
-
-    assert(round<int>(1.4) == 1);
-    assert(round<int>(1.5) == 2);
-    assert(round<int>(1.6) == 2);
-    assert(floor<int>(1.4) == 1);
-    assert(ceil<int>(1.4) == 2);
-
-    assert(round<unsigned char>(300.0) == 255);
-    assert(round<unsigned char>(-5.0) == 0);
-
-    assert(round<int>(-1.4) == -1);
-    assert(round<int>(-1.6) == -2);
-    assert(floor<int>(-1.4) == -2);
-    assert(ceil<int>(-1.4) == -1);
-
-    assert(clamp(2, 6)(5) == 5);
-    assert(clamp(2, 6)(1) == 2);
-    assert(clamp(2, 6)(8) == 6);
-
-    assert(int_power(3, 0) == 1);
-    assert(int_power(3, 1) == 3);
-    assert(int_power(3, 2) == 9);
-    assert(int_power(3, 3) == 27);
-    assert(int_power(3, 4) == 81);
-
-    auto mod2 = [](int x) {return x % 2; };
-    assert(min_2_on(mod2)(4, 3) == 4);
-    assert(max_2_on(mod2)(4, 3) == 3);
-    assert(min_3_on(mod2)(4, 3, 7) == 4);
-    assert(max_3_on(mod2)(4, 3, 6) == 3);
-
-    std::string str1 = "hello";
-    std::string str2 = "hi";
-    auto str_length = [](const std::string& str) { return str.size(); };
-    assert(min_2_on(str_length)(str1, str2) == "hi");
-}
-
 int APlusTwoTimesBFunc(int a, int b) { return a + 2 * b; }
 
 std::string CcI2SFree(const std::string& str, int x)
@@ -1407,10 +1322,6 @@ void Test_VariadicNumericTools()
 int main()
 {
     std::cout << "Running all tests." << std::endl;
-
-    std::cout << "Testing Numeric." << std::endl;
-    Test_Numeric();
-    std::cout << "Numeric OK." << std::endl;
 
     std::cout << "Testing FunctionTraits." << std::endl;
     Test_FunctionTraits();
