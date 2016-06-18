@@ -181,34 +181,36 @@ ContainerOut carthesian_product(const Container1& xs, const Container2& ys)
 }
 
 
-// productN :: Int -> [a] -> [[a]]
-// productN n = foldr go [[]] . replicate n
-//     where go elems acc = [x:xs | x <- elems, xs <- acc]
-template <typename T>
-std::vector<std::vector<T>> internal_helper_carthesian_product_n_idxs
-        (std::size_t power, const std::vector<T>& xs)
+namespace internal
 {
-    static_assert(std::is_same<T, std::size_t>::value,
-        "T must be std::size_t");
-    typedef std::vector<T> Vec;
-    typedef std::vector<Vec> VecVec;
-    if (power == 0)
-        return VecVec();
-    auto go = [](const Vec& elems, const VecVec& acc)
+    // productN :: Int -> [a] -> [[a]]
+    // productN n = foldr go [[]] . replicate n
+    //     where go elems acc = [x:xs | x <- elems, xs <- acc]
+    template <typename T>
+    std::vector<std::vector<T>> helper_carthesian_product_n_idxs
+            (std::size_t power, const std::vector<T>& xs)
     {
-        VecVec result;
-        for (const T& x : elems)
+        static_assert(std::is_same<T, std::size_t>::value,
+            "T must be std::size_t");
+        typedef std::vector<T> Vec;
+        typedef std::vector<Vec> VecVec;
+        if (power == 0)
+            return VecVec();
+        auto go = [](const Vec& elems, const VecVec& acc)
         {
-            for (const Vec& tail : acc)
+            VecVec result;
+            for (const T& x : elems)
             {
-                result.push_back(append(Vec(1, x), tail));
+                for (const Vec& tail : acc)
+                {
+                    result.push_back(append(Vec(1, x), tail));
+                }
             }
-        }
-        return result;
-    };
-    return fold_right(go, VecVec(1), replicate(power, xs));
+            return result;
+        };
+        return fold_right(go, VecVec(1), replicate(power, xs));
+    }
 }
-
 
 // API search type: carthesian_product_n : (Int, [a]) -> [[a]]
 // carthesian_product_n(2, "ABCD") == AA AB AC AD BA BB BC BD CA CB CC CD DA DB DC DD
@@ -221,7 +223,7 @@ ContainerOut carthesian_product_n(std::size_t power, const ContainerIn& xs_in)
         return ContainerOut(1);
     std::vector<T> xs = convert_container<std::vector<T>>(xs_in);
     auto idxs = all_idxs(xs);
-    auto result_idxss = internal_helper_carthesian_product_n_idxs(power, idxs);
+    auto result_idxss = internal::helper_carthesian_product_n_idxs(power, idxs);
     typedef typename ContainerOut::value_type ContainerOutInner;
     auto to_result_cont = [&](const std::vector<std::size_t>& indices)
     {
@@ -244,7 +246,7 @@ ContainerOut permutations(std::size_t power, const ContainerIn& xs_in)
     auto idxs = all_idxs(xs);
     typedef std::vector<std::size_t> idx_vec;
     auto result_idxss = keep_if(all_unique<idx_vec>,
-        internal_helper_carthesian_product_n_idxs(power, idxs));
+        internal::helper_carthesian_product_n_idxs(power, idxs));
     typedef typename ContainerOut::value_type ContainerOutInner;
     auto to_result_cont = [&](const std::vector<std::size_t>& indices)
     {
@@ -267,7 +269,7 @@ ContainerOut combinations(std::size_t power, const ContainerIn& xs_in)
     auto idxs = all_idxs(xs);
     typedef std::vector<std::size_t> idx_vec;
     auto result_idxss = keep_if(is_strictly_sorted<idx_vec>,
-        internal_helper_carthesian_product_n_idxs(power, idxs));
+        internal::helper_carthesian_product_n_idxs(power, idxs));
     typedef typename ContainerOut::value_type ContainerOutInner;
     auto to_result_cont = [&](const std::vector<std::size_t>& indices)
     {
@@ -291,7 +293,7 @@ ContainerOut combinations_with_replacement(std::size_t power,
     auto idxs = all_idxs(xs);
     typedef std::vector<std::size_t> idx_vec;
     auto result_idxss = keep_if(is_sorted<idx_vec>,
-        internal_helper_carthesian_product_n_idxs(power, idxs));
+        internal::helper_carthesian_product_n_idxs(power, idxs));
     typedef typename ContainerOut::value_type ContainerOutInner;
     auto to_result_cont = [&](const std::vector<std::size_t>& indices)
     {
