@@ -1,7 +1,7 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include "fplus.h"
+#include "fplus/fplus.h"
 #include <vector>
 
 using namespace testing;
