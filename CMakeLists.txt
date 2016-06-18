@@ -4,6 +4,8 @@ cmake_minimum_required(VERSION 2.8)
 install (DIRECTORY include/fplus DESTINATION include)
 install (FILES include/fplus.h DESTINATION include)
 
+add_definitions(-Wall -Wextra -pedantic -Wshadow -Werror)
+
 include(CTest)
 
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} -VV -C ${CMAKE_CFG_INTDIR})
