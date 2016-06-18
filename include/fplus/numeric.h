@@ -187,68 +187,30 @@ std::function<const FIn&(const FIn& x, const FIn& y, const FIn& z)>
     };
 }
 
-// API search type: min_2 : (a, a) -> a
-// Minimum of two values.
-template <typename X>
-const X& min_2(const X& a, const X& b)
+// API search type: min : (a, a) -> a
+// Minimum of x number of values
+// min(4, 3) == 3
+// min(4, 3, 6, 2, 3) == 2
+template <typename U, typename... V>
+auto min(const U& u, const V&... v) -> typename std::common_type<U, V...>::type
 {
-    return std::min(a, b);
+  using rettype = typename std::common_type<U, V...>::type;
+  rettype result = static_cast<rettype>(u);
+  (void)std::initializer_list<int>{((v < result) ? (result = static_cast<rettype>(v), 0) : 0)...};
+  return result;
 }
 
-// API search type: min_3 : (a, a, a) -> a
-// Minimum of three values.
-template <typename X>
-const X& min_3(const X& a, const X& b, const X& c)
+// API search type: max : (a, a) -> a
+// Maximum of x number of values.
+// max(4, 3) == 4
+// max(4, 3, 6, 2, 3) == 6
+template <typename U, typename... V>
+auto max(const U& u, const V&... v) -> typename std::common_type<U, V...>::type
 {
-    return min_2(min_2(a, b), c);
-}
-
-// API search type: min_4 : (a, a, a, a) -> a
-// Minimum of four values.
-template <typename X>
-const X& min_4(const X& a, const X& b, const X& c, const X& d)
-{
-    return min_2(min_3(a, b, c), d);
-}
-
-// API search type: min_5 : (a, a, a, a, a) -> a
-// Minimum of five values.
-template <typename X>
-const X& min_5(const X& a, const X& b, const X& c, const X& d, const X& e)
-{
-    return min_3(min_3(a, b, c), d, e);
-}
-
-// API search type: max_2 : (a, a) -> a
-// Maximum of two values.
-template <typename X>
-const X& max_2(const X& a, const X& b)
-{
-    return std::max(a, b);
-}
-
-// API search type: max_3 : (a, a, a) -> a
-// Maximum of three values.
-template <typename X>
-const X& max_3(const X& a, const X& b, const X& c)
-{
-    return max_2(max_2(a, b), c);
-}
-
-// API search type: max_4 : (a, a, a, a) -> a
-// Maximum of four values.
-template <typename X>
-const X& max_4(const X& a, const X& b, const X& c, const X& d)
-{
-    return max_2(max_3(a, b, c), d);
-}
-
-// API search type: max_5 : (a, a, a, a, a) -> a
-// Maximum of five values.
-template <typename X>
-const X& max_5(const X& a, const X& b, const X& c, const X& d, const X& e)
-{
-    return max_3(max_3(a, b, c), d, e);
+  using rettype = typename std::common_type<U, V...>::type;
+  rettype result = static_cast<rettype>(u);
+  (void)std::initializer_list<int>{((v > result) ? (result = static_cast<rettype>(v), 0) : 0)...};
+  return result;
 }
 
 // API search type: cyclic_value : Float -> (Float -> Float)
