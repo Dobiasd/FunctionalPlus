@@ -1,6 +1,6 @@
 ![logo](logo/fplus.png)
 
-![travis](https://travis-ci.org/quchen/amoeba.png?branch=master)
+![travis](https://travis-ci.org/Dobiasd/FunctionalPlus.png?branch=master)
 
 FunctionalPlus
 ==============
