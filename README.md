@@ -1,6 +1,9 @@
 ![logo](logo/fplus.png)
 
-![travis](https://travis-ci.org/Dobiasd/FunctionalPlus.png?branch=master)
+
+[![(Travis image broken)](https://travis-ci.org/Dobiasd/FunctionalPlus.png?branch=master)][travis]
+
+[travis]: https://travis-ci.org/Dobiasd/FunctionalPlus
 
 FunctionalPlus
 ==============
