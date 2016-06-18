@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include "container_common.h"
-#include "filter.h"
-#include "maybe.h"
-#include "result.h"
-#include "composition.h"
-#include "function_traits.h"
+#include "fplus/container_common.h"
+#include "fplus/filter.h"
+#include "fplus/maybe.h"
+#include "fplus/result.h"
+#include "fplus/composition.h"
+#include "fplus/function_traits.h"
 
 #include <algorithm>
 #include <random>

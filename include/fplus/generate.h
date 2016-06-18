@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include "filter.h"
-#include "numeric.h"
-#include "transform.h"
-#include "composition.h"
+#include "fplus/filter.h"
+#include "fplus/numeric.h"
+#include "fplus/transform.h"
+#include "fplus/composition.h"
 
 namespace fplus
 {

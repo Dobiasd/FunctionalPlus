@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "container_traits.h"
-#include "maybe.h"
-#include "compare.h"
+#include "fplus/container_traits.h"
+#include "fplus/maybe.h"
+#include "fplus/compare.h"
 
 #include <algorithm>
 #include <cassert>
