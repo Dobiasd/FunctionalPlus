@@ -1,5 +1,7 @@
 ![logo](logo/fplus.png)
 
+[![(Travis image broken)](https://travis-ci.org/quchen/amoeba.png?branch=master)][travis]
+
 FunctionalPlus
 ==============
 **helps you write concise and readable C++ code.**
