@@ -989,6 +989,7 @@ void Test_ContainerTools()
     auto sumis_even = [&](std::size_t x, int y) { return is_even(x + y); };
     assert(keep_by_idx(is_even, xs) == IntVector({ 1,2,2 }));
     assert(keep_if_with_idx(sumis_even, xs) == IntVector({ 2,3,2 }));
+    assert(drop_if_with_idx(sumis_even, xs) == IntVector({ 1,2 }));
 
     assert(nub(xs) == IntVector({ 1,2,3 }));
     auto bothEven = is_equal_by(is_even);

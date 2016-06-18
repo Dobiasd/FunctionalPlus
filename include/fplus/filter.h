@@ -73,7 +73,13 @@ template <typename Pred, typename Container>
 Container drop_if_with_idx(Pred pred, const Container& xs)
 {
     check_index_with_type_predicate_for_container<Pred, Container>();
-    return keep_if_with_idx(logical_not(pred), xs);
+    typedef typename utils::function_traits<Pred>::template arg<0>::type Idx;
+    typedef typename utils::function_traits<Pred>::template arg<1>::type T;
+    const auto inverse_pred = [pred](Idx idx, const T& x)
+    {
+        return !pred(idx, x);
+    };
+    return keep_if_with_idx(inverse_pred, xs);
 }
 
 // API search type: keep_by_idx : ((Int -> Bool), [a]) -> [a]
