@@ -1,6 +1,6 @@
 ![logo](logo/fplus.png)
 
-[![(Travis image broken)](https://travis-ci.org/quchen/amoeba.png?branch=master)][travis]
+![travis](https://travis-ci.org/quchen/amoeba.png?branch=master)
 
 FunctionalPlus
 ==============
