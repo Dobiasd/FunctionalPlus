@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include "composition.h"
-#include "container_common.h"
-#include "transform.h"
-#include "pairs.h"
+#include "fplus/composition.h"
+#include "fplus/container_common.h"
+#include "fplus/transform.h"
+#include "fplus/pairs.h"
 
 #include <map>
 #include <unordered_map>

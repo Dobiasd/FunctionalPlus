@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "function_traits.h"
+#include "fplus/function_traits.h"
 
 #include <cassert>
 #include <exception>

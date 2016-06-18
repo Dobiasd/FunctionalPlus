@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "replace.h"
-#include "split.h"
-#include "transform.h"
+#include "fplus/replace.h"
+#include "fplus/split.h"
+#include "fplus/transform.h"
 
 #include <string>
 

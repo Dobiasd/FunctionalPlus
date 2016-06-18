@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include "container_common.h"
-#include "compare.h"
-#include "generate.h"
-#include "maybe.h"
-#include "numeric.h"
-#include "search.h"
-#include "composition.h"
+#include "fplus/container_common.h"
+#include "fplus/compare.h"
+#include "fplus/generate.h"
+#include "fplus/maybe.h"
+#include "fplus/numeric.h"
+#include "fplus/search.h"
+#include "fplus/composition.h"
 
 #include <algorithm>
 #include <type_traits>

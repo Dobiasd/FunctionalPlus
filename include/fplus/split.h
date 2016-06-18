@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include "container_common.h"
-#include "generate.h"
-#include "search.h"
-#include "pairs.h"
+#include "fplus/container_common.h"
+#include "fplus/generate.h"
+#include "fplus/search.h"
+#include "fplus/pairs.h"
 
 namespace fplus
 {
