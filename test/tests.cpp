@@ -18,107 +18,6 @@
 #include <string>
 #include <vector>
 
-void Test_Result()
-{
-    using namespace fplus;
-    auto square = [](int x){ return x*x; };
-    auto sqrtToResult = [](float x) {
-        return x < 0.0f ? error<float>(std::string("no sqrt of negative numbers")) :
-                ok<float, std::string>(static_cast<float>(sqrt(static_cast<float>(x))));
-    };
-    auto sqrtToResultInt = [](int x) {
-        return x < 0 ? error<int>(std::string("no sqrt of negative numbers")) :
-                ok<int, std::string>(fplus::round<int>(sqrt(static_cast<float>(x))));
-    };
-    auto IntToFloat = [](const int& x) { return static_cast<float>(x); };
-
-    auto x = ok<int, std::string>(2);
-    auto y = error<int, std::string>("an error");
-    auto Or42 = bind_1st_of_2(ok_with_default<int, std::string>, 42);
-    auto SquareAndSquare = compose(square, square);
-    assert(Or42(x) == 2);
-    assert(Or42(y) == 42);
-
-    auto squareResult = lift_result<std::string>(square);
-    auto sqrtAndSqrt = and_then_result(sqrtToResult, sqrtToResult);
-    assert(squareResult(x) == (ok<int, std::string>(4)));
-    assert(squareResult(y) == (error<int>(std::string("an error"))));
-
-    auto sqrtIntAndSqrtIntAndSqrtInt = and_then_result(sqrtToResultInt, sqrtToResultInt, sqrtToResultInt);
-    assert(sqrtIntAndSqrtIntAndSqrtInt(256) == (ok<int, std::string>(2)));
-    auto sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt = and_then_result(sqrtToResultInt, sqrtToResultInt, sqrtToResultInt, sqrtToResultInt);
-    assert(sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt(65536) == (ok<int, std::string>(2)));
-
-    assert((lift_result<std::string>(SquareAndSquare))(x) == (ok<int, std::string>(16)));
-    auto LiftedIntToFloat = lift_result<std::string>(IntToFloat);
-    auto OkInt = ok<int, std::string>;
-    auto IntToResultFloat = compose(OkInt, LiftedIntToFloat);
-    auto IntToFloatAndSqrtAndSqrt = and_then_result(IntToResultFloat, sqrtAndSqrt);
-    assert(is_in_range(1.41f, 1.42f)(unsafe_get_ok<float>
-            (IntToFloatAndSqrtAndSqrt(4))));
-
-    typedef std::vector<result<int, std::string>> IntResults;
-    typedef std::vector<int> Ints;
-    typedef std::vector<std::string> Strings;
-    IntResults results = {ok<int, std::string>(1), error<int>(std::string("no sqrt of negative numbers")), ok<int, std::string>(2)};
-
-    assert(oks(results) == Ints({ 1,2 }));
-    assert(errors(results) == Strings({std::string("no sqrt of negative numbers")}));
-
-    assert((ok<int, std::string>(1)) == (ok<int, std::string>(1)));
-    assert((ok<int, std::string>(1)) != (ok<int, std::string>(2)));
-    assert((ok<int, std::string>(1)) != (error<int, std::string>(std::string("fail"))));
-    assert(error<int>(std::string("fail")) == (error<int>(std::string("fail"))));
-    assert(error<int>(std::string("fail 1")) != (error<int>(std::string("fail 2"))));
-
-    Ints wholeNumbers = { -3, 4, 16, -1 };
-    assert(transform_and_keep_oks(sqrtToResultInt, wholeNumbers)
-            == Ints({2,4}));
-
-    assert(transform_and_concat(bind_1st_of_2(replicate<int>, 3), Ints{ 1,2 })
-            == Ints({ 1,1,1,2,2,2 }));
-    assert(show_result(ok<int, std::string>(42)) == std::string("Ok 42"));
-    assert(show_result(error<int, std::string>("fail")) == std::string("Error fail"));
-    assert((to_maybe<int, std::string>(x)) == just(2));
-    assert((from_maybe<int, std::string>(just(2), std::string("no error"))) == x);
-
-    std::string thrown_str;
-    try
-    {
-        throw_on_error(std::invalid_argument("exception string"), error<int, std::string>("failed"));
-    }
-    catch (const std::exception& e)
-    {
-        thrown_str = e.what();
-    }
-    assert(thrown_str == "exception string");
-    thrown_str.clear();
-
-    try
-    {
-        throw_type_on_error<std::invalid_argument>(error<int, std::string>("failed"));
-    }
-    catch (const std::exception& e)
-    {
-        thrown_str = e.what();
-    }
-    assert(thrown_str == "failed");
-    thrown_str.clear();
-
-    result<int, std::string> result_4 = ok<int, std::string>(4);
-    result<int, std::string> result_4_copy(result_4);
-    result<int, std::string> result_4_copy_2 = error<int, std::string>("dummy");
-    result_4_copy_2 = result_4_copy;
-    assert(result_4_copy_2 == (ok<int, std::string>(4)));
-
-    result<int, std::string> result_int_string_error = error<int, std::string>("error");
-    result<int, std::string> result_int_string_error_copy(result_int_string_error);
-    result<int, std::string> result_int_string_error_copy_2 = ok<int, std::string>(9999);
-    result_int_string_error_copy_2 = result_int_string_error_copy;
-    assert(result_int_string_error_copy_2 == (error<int, std::string>("error")));
-}
-
-
 void Test_Compare()
 {
     using namespace fplus;
@@ -1057,10 +956,6 @@ void Test_VariadicNumericTools()
 int main()
 {
     std::cout << "Running all tests." << std::endl;
-
-    std::cout << "Testing Result." << std::endl;
-    Test_Result();
-    std::cout << "Result OK." << std::endl;
 
     std::cout << "Testing Compare." << std::endl;
     Test_Compare();
