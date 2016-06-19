@@ -20,6 +20,7 @@ macro(_add_test _NAME)
 endmacro()
 
 _add_test(composition_test)
+_add_test(function_traits_test)
 _add_test(filter_test)
 _add_test(generate_test)
 _add_test(numeric_test)
@@ -27,6 +28,7 @@ _add_test(numeric_test)
 
 add_custom_target(unittest composition_test
                         COMMAND filter_test
+                        COMMAND function_traits_test
                         COMMAND generate_test
                         COMMAND numeric_test
                         COMMENT "Running unittests\n\n"
