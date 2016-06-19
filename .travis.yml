@@ -1,5 +1,7 @@
 language: generic
 
+sudo: required
+
 cache:
     apt: true
 
@@ -37,20 +39,7 @@ matrix:
           sources: *sources
 
 script:
-    - mkdir build && cd build
-    - cmake -DUNITTEST=ON ..
-    - make
-    - make unittest
+    - ./build_and_test.sh
 
 before_install:
-    # Install GTest
-    - export GTEST_VERSION=master
-    - export GTEST=googletest-${GTEST_VERSION}
-    - wget https://github.com/google/googletest/archive/${GTEST_VERSION}.tar.gz
-    - tar -xzvf *.tar.gz
-    - cd ${GTEST}
-    - mkdir build && cd build
-    - cmake ..
-    - make -j4 && sudo make install && cd ../..
-
-
+    - ./before_install.sh

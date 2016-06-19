@@ -6,28 +6,13 @@
 
 using namespace testing;
 
-class function_traits_test : public testing::Test
-{
-protected:
-
-    void SetUp() override
-    {
-    }
-
-    void TearDown() override
-    {
-    }
-
-    static int APlusTwoTimesBFunc(int a, int b)
-    {
-        return a + 2 * b;
-    }
+namespace {
 
     typedef std::deque<int> IntDeq;
     typedef std::deque<IntDeq> IntContCont;
     typedef IntDeq IntCont;
     typedef IntCont Row;
-};
+}
 
 std::string CcI2SFree(const std::string& str, int x)
 {
@@ -54,7 +39,7 @@ struct CcI2SStrct {
     { return CcI2SFree(str, x); }
 };
 
-TEST_F(function_traits_test, static_asserts)
+TEST(function_traits_test, static_asserts)
 {
     using namespace fplus;
     static_assert(std::is_same<

@@ -6,45 +6,35 @@
 
 using namespace testing;
 
-class compare_test : public testing::Test
-{
-protected:
+namespace {
 
-    void SetUp() override
-    {
-    }
-
-    void TearDown() override
-    {
-    }
-
-    static bool int_less(int x, int y)
+    bool int_less(int x, int y)
     {
         return x < y;
-    };
+    }
 
-    static bool int_less_eq(int x, int y)
+    bool int_less_eq(int x, int y)
     {
         return x <= y;
-    };
-};
+    }
+}
 
 
-TEST_F(compare_test, is_equal_to)
+TEST(compare_test, is_equal_to)
 {
     using namespace fplus;
     EXPECT_TRUE(is_equal_to(2)(2));
     EXPECT_FALSE(is_equal_to(2)(3));
 }
 
-TEST_F(compare_test, is_not_equal_to)
+TEST(compare_test, is_not_equal_to)
 {
     using namespace fplus;
     EXPECT_FALSE(is_not_equal_to(2)(2));
     EXPECT_TRUE(is_not_equal_to(2)(3));
 }
 
-TEST_F(compare_test, is_less)
+TEST(compare_test, is_less)
 {
     using namespace fplus;
     EXPECT_FALSE(is_less(2, 2));
@@ -53,7 +43,7 @@ TEST_F(compare_test, is_less)
     EXPECT_TRUE(is_less_than(3)(2));
 }
 
-TEST_F(compare_test, is_less_or_equal)
+TEST(compare_test, is_less_or_equal)
 {
     using namespace fplus;
     EXPECT_TRUE(is_less_or_equal(2, 2));
@@ -62,7 +52,7 @@ TEST_F(compare_test, is_less_or_equal)
     EXPECT_TRUE(is_less_or_equal_than(3)(2));
 }
 
-TEST_F(compare_test, is_greater)
+TEST(compare_test, is_greater)
 {
     using namespace fplus;
     EXPECT_FALSE(is_greater(2, 2));
@@ -71,7 +61,7 @@ TEST_F(compare_test, is_greater)
     EXPECT_FALSE(is_greater_than(3)(2));
 }
 
-TEST_F(compare_test, is_greater_or_equal)
+TEST(compare_test, is_greater_or_equal)
 {
     using namespace fplus;
     EXPECT_TRUE(is_greater_or_equal(2, 2));
@@ -80,7 +70,7 @@ TEST_F(compare_test, is_greater_or_equal)
     EXPECT_FALSE(is_greater_or_equal_than(3)(2));
 }
 
-TEST_F(compare_test, is_equal_by)
+TEST(compare_test, is_equal_by)
 {
     using namespace fplus;
     EXPECT_THAT(identity(2), Eq(2));
@@ -92,7 +82,7 @@ TEST_F(compare_test, is_equal_by)
     EXPECT_TRUE(is_not_equal_by(square)(2, 3));
 }
 
-TEST_F(compare_test, xor_bools)
+TEST(compare_test, xor_bools)
 {
     using namespace fplus;
     EXPECT_TRUE(xor_bools(false, false) == false);
@@ -101,7 +91,7 @@ TEST_F(compare_test, xor_bools)
     EXPECT_TRUE(xor_bools(true, true) == false);
 }
 
-TEST_F(compare_test, ord_to_eq)
+TEST(compare_test, ord_to_eq)
 {
     using namespace fplus;
     EXPECT_TRUE(ord_to_eq(int_less)(1, 2) == false);
@@ -109,7 +99,7 @@ TEST_F(compare_test, ord_to_eq)
     EXPECT_TRUE(ord_to_eq(int_less)(2, 1) == false);
 }
 
-TEST_F(compare_test, ord_to_not_eq)
+TEST(compare_test, ord_to_not_eq)
 {
     using namespace fplus;
     EXPECT_TRUE(ord_to_not_eq(int_less)(1, 2) == true);
@@ -117,7 +107,7 @@ TEST_F(compare_test, ord_to_not_eq)
     EXPECT_TRUE(ord_to_not_eq(int_less)(2, 1) == true);
 }
 
-TEST_F(compare_test, ord_eq_to_eq)
+TEST(compare_test, ord_eq_to_eq)
 {
     using namespace fplus;
     EXPECT_TRUE(ord_eq_to_eq(int_less_eq)(1, 2) == false);
@@ -125,7 +115,7 @@ TEST_F(compare_test, ord_eq_to_eq)
     EXPECT_TRUE(ord_eq_to_eq(int_less_eq)(2, 1) == false);
 }
 
-TEST_F(compare_test, ord_eq_to_not_eq)
+TEST(compare_test, ord_eq_to_not_eq)
 {
     using namespace fplus;
     EXPECT_TRUE(ord_eq_to_not_eq(int_less_eq)(1, 2) == true);

@@ -6,42 +6,32 @@
 
 using namespace testing;
 
-class maybe_test : public testing::Test
-{
-protected:
+namespace {
 
-    void SetUp() override
-    {
-    }
-
-    void TearDown() override
-    {
-    }
-
-    static int square(int x){
+    int square(int x){
         return x*x;
-    };
+    }
 
-    static fplus::maybe<float> sqrtToMaybe(float x)
+    fplus::maybe<float> sqrtToMaybe(float x)
     {
         return x < 0.0f ? fplus::nothing<float>() :
                 fplus::just(static_cast<float>(sqrt(static_cast<float>(x))));
-    };
+    }
 
-    static fplus::maybe<int> sqrtToMaybeInt(int x)
+    fplus::maybe<int> sqrtToMaybeInt(int x)
     {
         return x < 0 ? fplus::nothing<int>() :
                 fplus::just(fplus::round<int>(sqrt(static_cast<float>(x))));
-    };
+    }
 
-    static float IntToFloat(const int& x)
+    float IntToFloat(const int& x)
     {
         return static_cast<float>(x);
-    };
+    }
 
     typedef std::vector<fplus::maybe<int>> IntMaybes;
     typedef std::vector<int> Ints;
-};
+}
 
 class maybeTestState {
 public:
@@ -52,13 +42,13 @@ private:
     int x_;
 };
 
-TEST_F(maybe_test, ctor)
+TEST(maybe_test, ctor)
 {
     using namespace fplus;
     EXPECT_THAT(maybe<int>(4), Eq(just<int>(4)));
 }
 
-TEST_F(maybe_test, just_with_default)
+TEST(maybe_test, just_with_default)
 {
     using namespace fplus;
     auto x = just<int>(2);
@@ -68,7 +58,7 @@ TEST_F(maybe_test, just_with_default)
     EXPECT_THAT(Or42(y), Eq(42));
 }
 
-TEST_F(maybe_test, lift)
+TEST(maybe_test, lift)
 {
     using namespace fplus;
     auto x = just<int>(2);
@@ -80,7 +70,7 @@ TEST_F(maybe_test, lift)
     EXPECT_THAT((lift_maybe(SquareAndSquare))(x), Eq(just(16)));
 }
 
-TEST_F(maybe_test, and_then)
+TEST(maybe_test, and_then)
 {
     using namespace fplus;
     auto sqrtAndSqrt = and_then_maybe(sqrtToMaybe, sqrtToMaybe);
@@ -97,7 +87,7 @@ TEST_F(maybe_test, and_then)
             (IntToFloatAndSqrtAndSqrt(4))));
 }
 
-TEST_F(maybe_test, equality)
+TEST(maybe_test, equality)
 {
     using namespace fplus;
     IntMaybes maybes = {just(1), nothing<int>(), just(2)};
@@ -108,7 +98,7 @@ TEST_F(maybe_test, equality)
     EXPECT_TRUE(nothing<int>() == nothing<int>());
 }
 
-TEST_F(maybe_test, transform_and_keep_justs)
+TEST(maybe_test, transform_and_keep_justs)
 {
     using namespace fplus;
     Ints wholeNumbers = { -3, 4, 16, -1 };
@@ -118,14 +108,14 @@ TEST_F(maybe_test, transform_and_keep_justs)
            , Eq(Ints({ 1,1,1,2,2,2 })));
 }
 
-TEST_F(maybe_test, show_maybe)
+TEST(maybe_test, show_maybe)
 {
     using namespace fplus;
     EXPECT_THAT(show_maybe(just<int>(42)), Eq(std::string("Just 42")));
     EXPECT_THAT(show_maybe(nothing<int>()), Eq(std::string("Nothing")));
 }
 
-TEST_F(maybe_test, exceptions)
+TEST(maybe_test, exceptions)
 {
     using namespace fplus;
     std::string thrown_str;
@@ -140,7 +130,7 @@ TEST_F(maybe_test, exceptions)
     EXPECT_THAT(thrown_str, Eq("raised"));
 }
 
-TEST_F(maybe_test, copy)
+TEST(maybe_test, copy)
 {
     using namespace fplus;
     maybe<int> maybe_4(4);
@@ -150,7 +140,7 @@ TEST_F(maybe_test, copy)
     EXPECT_THAT(maybe_4_copy_2, Eq(just<int>(4)));
 }
 
-TEST_F(maybe_test, flatten)
+TEST(maybe_test, flatten)
 {
     using namespace fplus;
     maybe<int> maybe_int_nothing;

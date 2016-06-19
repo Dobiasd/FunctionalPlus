@@ -6,19 +6,9 @@
 
 using namespace testing;
 
-class composition_test : public testing::Test
-{
-protected:
+namespace {
 
-    void SetUp() override
-    {
-    }
-
-    void TearDown() override
-    {
-    }
-
-    static int APlusTwoTimesBFunc(int a, int b)
+    int APlusTwoTimesBFunc(int a, int b)
     {
         return a + 2 * b;
     }
@@ -27,7 +17,7 @@ protected:
     typedef std::deque<IntDeq> IntContCont;
     typedef IntDeq IntCont;
     typedef IntCont Row;
-};
+}
 
 class CompositionTestState {
 public:
@@ -38,7 +28,7 @@ private:
     int x_;
 };
 
-TEST_F(composition_test, forward_apply)
+TEST(composition_test, forward_apply)
 {
     using namespace fplus;
     auto square = [](int x){ return x*x; };
@@ -46,7 +36,7 @@ TEST_F(composition_test, forward_apply)
     EXPECT_THAT(forward_apply(3, square), Eq(9));
 }
 
-TEST_F(composition_test, parameter_binding)
+TEST(composition_test, parameter_binding)
 {
     using namespace fplus;
     Row row = {1,2,3};
@@ -66,7 +56,7 @@ TEST_F(composition_test, parameter_binding)
     EXPECT_THAT(bind_1st_and_2nd_of_3(add3, 3, 5)(7), Eq(15));
 }
 
-TEST_F(composition_test, compose)
+TEST(composition_test, compose)
 {
     using namespace fplus;
     auto square = [](int x){ return x*x; };
@@ -76,7 +66,7 @@ TEST_F(composition_test, compose)
     EXPECT_THAT((compose(square, square, square, square, square)(1)), Eq(1));
 }
 
-TEST_F(composition_test, flip)
+TEST(composition_test, flip)
 {
     using namespace fplus;
 
@@ -86,7 +76,7 @@ TEST_F(composition_test, flip)
     EXPECT_THAT((flip(TwoTimesAPlusB)(1, 2)), Eq(5));
 }
 
-TEST_F(composition_test, logical)
+TEST(composition_test, logical)
 {
     using namespace fplus;
     auto is1 = [](int x) { return x == 1; };
@@ -105,7 +95,7 @@ TEST_F(composition_test, logical)
 
 }
 
-TEST_F(composition_test, apply_to_pair)
+TEST(composition_test, apply_to_pair)
 {
     using namespace fplus;
     auto APlusTwoTimesB = [](int a, int b) { return a + 2 * b; };
@@ -113,7 +103,7 @@ TEST_F(composition_test, apply_to_pair)
     EXPECT_THAT((apply_to_pair(APlusTwoTimesBFunc)(std::make_pair(1, 2))), Eq(5));
 }
 
-TEST_F(composition_test, state)
+TEST(composition_test, state)
 {
     using namespace fplus;
     CompositionTestState state(1);
