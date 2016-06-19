@@ -18,8 +18,6 @@
 #include <string>
 #include <vector>
 
-int APlusTwoTimesBFunc(int a, int b) { return a + 2 * b; }
-
 std::string CcI2SFree(const std::string& str, int x)
 {
     return str + std::to_string(x);
@@ -44,78 +42,6 @@ struct CcI2SStrct {
     static std::string sttcMemF (const std::string& str, int x)
     { return CcI2SFree(str, x); }
 };
-
-class State {
-public:
-    explicit State(int x) : x_(x) {}
-    void Add(int y) { x_ += y; }
-    int Get() const { return x_; }
-private:
-    int x_;
-};
-
-template <typename IntCont, typename IntContCont>
-void Test_Composition()
-{
-    using namespace fplus;
-    auto square = [](int x){ return x*x; };
-
-    assert(forward_apply(3, square) == 9);
-
-    typedef IntCont Row;
-    Row row = {1,2,3};
-
-    typedef IntContCont Mat;
-    Mat mat;
-    auto squareRowElems = bind_1st_of_2(transform<decltype(square), Row>,
-            square);
-    Row squaredRow = squareRowElems(row);
-    assert(squaredRow == Row({1,4,9}));
-
-    auto int_division = [](int x, int y) { return x / y; };
-    assert(bind_2nd_of_2(int_division, 2)(6) == 3);
-
-    assert((compose(square, square)(2)) == 16);
-    assert((compose(square, square, square)(2)) == 256);
-    assert((compose(square, square, square, square)(2)) == 65536);
-    assert((compose(square, square, square, square, square)(1)) == 1);
-
-    auto add3 = [](int x, int y, int z) { return x + y + z; };
-    assert(bind_1st_and_2nd_of_3(add3, 3, 5)(7) == 15);
-    auto APlusTwoTimesB = [](int a, int b) { return a + 2 * b; };
-    auto TwoTimesAPlusB = [](int a, int b) { return 2 * a + b; };
-    assert((flip(APlusTwoTimesB)(2, 1)) == 5);
-    assert((flip(TwoTimesAPlusB)(1, 2)) == 5);
-    auto is1 = [](int x) { return x == 1; };
-    auto is2 = [](int x) { return x == 2; };
-    assert((logical_not(is1)(1)) == false);
-    assert((logical_not(is1)(2)) == true);
-
-    assert((logical_or(is1, is2)(1)) == true);
-    assert((logical_or(is1, is2)(2)) == true);
-    assert((logical_or(is1, is2)(3)) == false);
-    assert((logical_and(is1, is2)(1)) == false);
-    assert((logical_and(is1, is1)(1)) == true);
-    assert((logical_xor(is1, is1)(1)) == false);
-    assert((logical_xor(is2, is1)(1)) == true);
-    assert((logical_xor(is2, is2)(1)) == false);
-
-    assert((apply_to_pair(APlusTwoTimesB)(std::make_pair(1, 2))) == 5);
-    assert((apply_to_pair(APlusTwoTimesBFunc)(std::make_pair(1, 2))) == 5);
-
-    State state(1);
-    assert(state.Get() == 1);
-    auto stateAdd = std::mem_fn(&State::Add);
-
-    stateAdd(state, 2);
-    assert(state.Get() == 3);
-
-    //auto stateAddBoundFPP = Bind1of2(stateAdd, &state); // crashes VC2015 compiler
-    //stateAddBoundFPP(3);
-    auto stateAddBoundStl = std::bind(&State::Add, std::placeholders::_1, std::placeholders::_2);
-    stateAddBoundStl(state, 3);
-    assert(state.Get() == 6);
-}
 
 void Test_FunctionTraits()
 {
@@ -1326,18 +1252,6 @@ int main()
     std::cout << "Testing FunctionTraits." << std::endl;
     Test_FunctionTraits();
     std::cout << "FunctionTraits OK." << std::endl;
-
-    std::cout << "Testing Composition." << std::endl;
-    typedef std::vector<int> IntVec;
-    typedef std::vector<IntVec> IntVecVec;
-    typedef std::list<int> IntList;
-    typedef std::list<IntList> IntListList;
-    typedef std::deque<int> IntDeq;
-    typedef std::deque<IntDeq> IntDeqDeq;
-    Test_Composition<IntVec, IntVecVec>();
-    Test_Composition<IntList, IntListList>();
-    Test_Composition<IntDeq, IntDeqDeq>();
-    std::cout << "Composition OK." << std::endl;
 
     std::cout << "Testing Maybe." << std::endl;
     Test_Maybe();
