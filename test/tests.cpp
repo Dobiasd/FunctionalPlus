@@ -18,87 +18,6 @@
 #include <string>
 #include <vector>
 
-void Test_Maybe()
-{
-    using namespace fplus;
-    auto square = [](int x){ return x*x; };
-    auto sqrtToMaybe = [](float x) {
-        return x < 0.0f ? nothing<float>() :
-                just(static_cast<float>(sqrt(static_cast<float>(x))));
-    };
-    auto sqrtToMaybeInt = [](int x) {
-        return x < 0 ? nothing<int>() :
-                just(fplus::round<int>(sqrt(static_cast<float>(x))));
-    };
-    auto IntToFloat = [](const int& x) { return static_cast<float>(x); };
-
-    assert(maybe<int>(4) == just<int>(4));
-
-    auto x = just<int>(2);
-    maybe<int> y = nothing<int>();
-    auto Or42 = bind_1st_of_2(just_with_default<int>, 42);
-    auto SquareAndSquare = compose(square, square);
-    assert(Or42(x) == 2);
-    assert(Or42(y) == 42);
-    auto squareMaybe = lift_maybe(square);
-    auto sqrtAndSqrt = and_then_maybe(sqrtToMaybe, sqrtToMaybe);
-    auto sqrtIntAndSqrtIntAndSqrtInt = and_then_maybe(sqrtToMaybeInt, sqrtToMaybeInt, sqrtToMaybeInt);
-    assert(sqrtIntAndSqrtIntAndSqrtInt(256) == just(2));
-    auto sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt = and_then_maybe(sqrtToMaybeInt, sqrtToMaybeInt, sqrtToMaybeInt, sqrtToMaybeInt);
-    assert(sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt(65536) == just(2));
-    assert(squareMaybe(x) == just(4));
-    assert(squareMaybe(y) == nothing<int>());
-    assert((lift_maybe(SquareAndSquare))(x) == just(16));
-    auto LiftedIntToFloat = lift_maybe(IntToFloat);
-    auto JustInt = just<int>;
-    auto IntToMaybeFloat = compose(JustInt, LiftedIntToFloat);
-    auto IntToFloatAndSqrtAndSqrt = and_then_maybe(IntToMaybeFloat, sqrtAndSqrt);
-    assert(is_in_range(1.41f, 1.42f)(unsafe_get_just<float>
-            (IntToFloatAndSqrtAndSqrt(4))));
-    typedef std::vector<maybe<int>> IntMaybes;
-    typedef std::vector<int> Ints;
-    IntMaybes maybes = {just(1), nothing<int>(), just(2)};
-    assert(justs(maybes) == Ints({ 1,2 }));
-    assert(just(1) == just(1));
-    assert(just(1) != just(2));
-    assert(just(1) != nothing<int>());
-    assert(nothing<int>() == nothing<int>());
-
-    Ints wholeNumbers = { -3, 4, 16, -1 };
-    assert(transform_and_keep_justs(sqrtToMaybeInt, wholeNumbers)
-            == Ints({2,4}));
-    assert(transform_and_concat(bind_1st_of_2(replicate<int>, 3), Ints{ 1,2 })
-            == Ints({ 1,1,1,2,2,2 }));
-    assert(show_maybe(just<int>(42)) == std::string("Just 42"));
-    assert(show_maybe(nothing<int>()) == std::string("Nothing"));
-
-    std::string thrown_str;
-    try
-    {
-        throw_on_nothing(std::invalid_argument("raised"), nothing<int>());
-    }
-    catch (const std::exception& e)
-    {
-        thrown_str = e.what();
-    }
-    assert(thrown_str == "raised");
-
-    maybe<int> maybe_4(4);
-    maybe<int> maybe_4_copy(maybe_4);
-    maybe<int> maybe_4_copy_2;
-    maybe_4_copy_2 = maybe_4_copy;
-    assert(maybe_4_copy_2 == just<int>(4));
-
-    maybe<int> maybe_int_nothing;
-    maybe<int> maybe_int_nothing_copy(maybe_int_nothing);
-    maybe<int> maybe_int_nothing_copy_2;
-    maybe_int_nothing_copy_2 = maybe_int_nothing_copy;
-    assert(maybe_int_nothing_copy_2 == nothing<int>());
-    assert(flatten_maybe(maybe<maybe<int>>(maybe<int>(1))) == maybe<int>(1));
-    assert(flatten_maybe(maybe<maybe<int>>(maybe<int>())) == nothing<int>());
-    assert(flatten_maybe(maybe<maybe<int>>()) == nothing<int>());
-}
-
 void Test_Result()
 {
     using namespace fplus;
@@ -1138,10 +1057,6 @@ void Test_VariadicNumericTools()
 int main()
 {
     std::cout << "Running all tests." << std::endl;
-
-    std::cout << "Testing Maybe." << std::endl;
-    Test_Maybe();
-    std::cout << "Maybe OK." << std::endl;
 
     std::cout << "Testing Result." << std::endl;
     Test_Result();
