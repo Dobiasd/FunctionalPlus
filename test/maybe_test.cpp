@@ -18,11 +18,6 @@ protected:
     {
     }
 
-    static int APlusTwoTimesBFunc(int a, int b)
-    {
-        return a + 2 * b;
-    }
-
     static int square(int x){
         return x*x;
     };
