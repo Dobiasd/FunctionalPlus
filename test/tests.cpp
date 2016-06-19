@@ -18,63 +18,6 @@
 #include <string>
 #include <vector>
 
-void Test_Compare()
-{
-    using namespace fplus;
-    assert(is_equal_to(2)(2));
-    assert(!is_equal_to(2)(3));
-    assert(!is_not_equal_to(2)(2));
-    assert(is_not_equal_to(2)(3));
-
-    assert(!is_less(2, 2));
-    assert(is_less(2, 3));
-    assert(!is_less(3, 2));
-    assert(is_less_than(3)(2));
-
-    assert(is_less_or_equal(2, 2));
-    assert(is_less_or_equal(2, 3));
-    assert(!is_less_or_equal(3, 2));
-    assert(is_less_or_equal_than(3)(2));
-
-    assert(!is_greater(2, 2));
-    assert(!is_greater(2, 3));
-    assert(is_greater(3, 2));
-    assert(!is_greater_than(3)(2));
-
-    assert(is_greater_or_equal(2, 2));
-    assert(!is_greater_or_equal(2, 3));
-    assert(is_greater_or_equal(3, 2));
-    assert(!is_greater_or_equal_than(3)(2));
-
-    assert(identity(2) == 2);
-    assert(always<int>(2)(5) == 2);
-    auto square = [](int x){ return x*x; };
-    assert(is_equal_by_and_by(square, square)(2, -2));
-    assert(is_equal_by(square)(2, -2));
-    assert(is_not_equal_by_and_by(square, square)(2, 3));
-    assert(is_not_equal_by(square)(2, 3));
-
-    assert(xor_bools(false, false) == false);
-    assert(xor_bools(true, false) == true);
-    assert(xor_bools(false, true) == true);
-    assert(xor_bools(true, true) == false);
-
-    auto int_less = [](int x, int y) { return x < y; };
-    auto int_less_eq = [](int x, int y) { return x <= y; };
-    assert(ord_to_eq(int_less)(1, 2) == false);
-    assert(ord_to_eq(int_less)(2, 2) == true);
-    assert(ord_to_eq(int_less)(2, 1) == false);
-    assert(ord_to_not_eq(int_less)(1, 2) == true);
-    assert(ord_to_not_eq(int_less)(2, 2) == false);
-    assert(ord_to_not_eq(int_less)(2, 1) == true);
-    assert(ord_eq_to_eq(int_less_eq)(1, 2) == false);
-    assert(ord_eq_to_eq(int_less_eq)(2, 2) == true);
-    assert(ord_eq_to_eq(int_less_eq)(2, 1) == false);
-    assert(ord_eq_to_not_eq(int_less_eq)(1, 2) == true);
-    assert(ord_eq_to_not_eq(int_less_eq)(2, 2) == false);
-    assert(ord_eq_to_not_eq(int_less_eq)(2, 1) == true);
-}
-
 struct ExplicitFromIntStruct
 {
     explicit ExplicitFromIntStruct(int x) : x_(x) {}
@@ -956,10 +899,6 @@ void Test_VariadicNumericTools()
 int main()
 {
     std::cout << "Running all tests." << std::endl;
-
-    std::cout << "Testing Compare." << std::endl;
-    Test_Compare();
-    std::cout << "Compare OK." << std::endl;
 
     std::cout << "Testing ContainerTools." << std::endl;
     Test_ContainerTools();
