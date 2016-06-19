@@ -7,31 +7,21 @@
 
 using namespace testing;
 
-class generate_test : public testing::Test
-{
-protected:
+namespace {
 
-    void SetUp() override
-    {
-    }
-
-    void TearDown() override
-    {
-    }
-
-    static bool compare_not_eq(char c1, char c2)
+    bool compare_not_eq(char c1, char c2)
     {
         return c1 != c2;
     }
 
-    static std::pair<char, char> as_pair(char c1, char c2)
+    std::pair<char, char> as_pair(char c1, char c2)
     {
         return std::make_pair(c1, c2);
     }
 
-};
+}
 
-TEST_F(generate_test, generate)
+TEST(generate_test, generate)
 {
     int value = 0;
     auto f = [&] { return value++; };
@@ -39,27 +29,27 @@ TEST_F(generate_test, generate)
     EXPECT_THAT(result, ElementsAre(0, 1, 2, 3, 4 ,5));
 }
 
-TEST_F(generate_test, generate_by_idx)
+TEST(generate_test, generate_by_idx)
 {
     auto f = [](size_t value) { return value + 10; };
     auto result = fplus::generate_by_idx<std::vector<int>>(f, 6);
     EXPECT_THAT(result, ElementsAre(10, 11, 12, 13, 14 ,15));
 }
 
-TEST_F(generate_test, repeat)
+TEST(generate_test, repeat)
 {
     const std::vector<int> v = { 1, 2 };
     auto result = fplus::repeat(3, v);
     EXPECT_THAT(result, ElementsAre(1, 2, 1, 2, 1, 2));
 }
 
-TEST_F(generate_test, replicate)
+TEST(generate_test, replicate)
 {
     auto result = fplus::replicate(3, 1);
     EXPECT_THAT(result, ElementsAre(1, 1, 1));
 }
 
-TEST_F(generate_test, infixes)
+TEST(generate_test, infixes)
 {
     const std::vector<int> v = { 1, 2, 3, 4, 5, 6 };
     auto result = fplus::infixes(3, v);
@@ -70,7 +60,7 @@ TEST_F(generate_test, infixes)
     EXPECT_THAT(result[3], ElementsAre(4, 5, 6));
 }
 
-TEST_F(generate_test, carthesian_product_with_where)
+TEST(generate_test, carthesian_product_with_where)
 {
     const std::vector<char> v1 = { 'A', 'B', 'C' };
     const std::vector<char> v2 = { 'X', 'Y' };
@@ -80,7 +70,7 @@ TEST_F(generate_test, carthesian_product_with_where)
                                     Pair('C', 'X'), Pair('C', 'Y')));
 }
 
-TEST_F(generate_test, carthesian_product_with)
+TEST(generate_test, carthesian_product_with)
 {
     const std::vector<char> v1 = { 'A', 'B', 'C' };
     const std::vector<char> v2 = { 'X', 'Y' };
@@ -90,7 +80,7 @@ TEST_F(generate_test, carthesian_product_with)
                                     Pair('C', 'X'), Pair('C', 'Y')));
 }
 
-TEST_F(generate_test, carthesian_product_where)
+TEST(generate_test, carthesian_product_where)
 {
     const std::vector<char> v1 = { 'A', 'B', 'C' };
     const std::vector<char> v2 = { 'X', 'Y' };
@@ -100,7 +90,7 @@ TEST_F(generate_test, carthesian_product_where)
                                     Pair('C', 'X'), Pair('C', 'Y')));
 }
 
-TEST_F(generate_test, carthesian_product)
+TEST(generate_test, carthesian_product)
 {
     const std::vector<char> v1 = { 'A', 'B', 'C' };
     const std::vector<char> v2 = { 'X', 'Y' };
@@ -110,7 +100,7 @@ TEST_F(generate_test, carthesian_product)
                                     Pair('C', 'X'), Pair('C', 'Y')));
 }
 
-TEST_F(generate_test, carthesian_product_n)
+TEST(generate_test, carthesian_product_n)
 {
     const std::vector<char> v = { 'A', 'B' };
     auto result = fplus::carthesian_product_n(2, v);
@@ -121,7 +111,7 @@ TEST_F(generate_test, carthesian_product_n)
     EXPECT_THAT(result[3], ElementsAre('B', 'B'));
 }
 
-TEST_F(generate_test, carthesian_product_n_with_power_0)
+TEST(generate_test, carthesian_product_n_with_power_0)
 {
     const std::vector<char> v = { 'A', 'B' };
     auto result = fplus::carthesian_product_n(0, v);
@@ -129,7 +119,7 @@ TEST_F(generate_test, carthesian_product_n_with_power_0)
     EXPECT_THAT(result[0], IsEmpty());
 }
 
-TEST_F(generate_test, permutations)
+TEST(generate_test, permutations)
 {
     const std::vector<char> v = { 'A', 'B' };
     auto result = fplus::permutations(2, v);
@@ -138,7 +128,7 @@ TEST_F(generate_test, permutations)
     EXPECT_THAT(result[1], ElementsAre('B', 'A'));
 }
 
-TEST_F(generate_test, permutations_with_power_0)
+TEST(generate_test, permutations_with_power_0)
 {
     const std::vector<char> v = { 'A', 'B' };
     auto result = fplus::permutations(0, v);
@@ -146,7 +136,7 @@ TEST_F(generate_test, permutations_with_power_0)
     EXPECT_THAT(result[0], IsEmpty());
 }
 
-TEST_F(generate_test, combinations)
+TEST(generate_test, combinations)
 {
     const std::vector<char> v = { 'A', 'B', 'C' };
     auto result = fplus::combinations(2, v);
@@ -156,7 +146,7 @@ TEST_F(generate_test, combinations)
     EXPECT_THAT(result[2], ElementsAre('B', 'C'));
 }
 
-TEST_F(generate_test, combinations_with_power_0)
+TEST(generate_test, combinations_with_power_0)
 {
     const std::vector<char> v = { 'A', 'B' };
     auto result = fplus::combinations(0, v);
@@ -164,7 +154,7 @@ TEST_F(generate_test, combinations_with_power_0)
     EXPECT_THAT(result[0], IsEmpty());
 }
 
-TEST_F(generate_test, combinations_with_replacement)
+TEST(generate_test, combinations_with_replacement)
 {
     const std::vector<char> v = { 'A', 'B' };
     auto result = fplus::combinations_with_replacement(2, v);
@@ -174,7 +164,7 @@ TEST_F(generate_test, combinations_with_replacement)
     EXPECT_THAT(result[2], ElementsAre('B', 'B'));
 }
 
-TEST_F(generate_test, combinations_with_replacement_with_power_0)
+TEST(generate_test, combinations_with_replacement_with_power_0)
 {
     const std::vector<char> v = { 'A', 'B' };
     auto result = fplus::combinations_with_replacement(0, v);
@@ -182,7 +172,7 @@ TEST_F(generate_test, combinations_with_replacement_with_power_0)
     EXPECT_THAT(result[0], IsEmpty());
 }
 
-TEST_F(generate_test, power_set)
+TEST(generate_test, power_set)
 {
     const std::vector<char> v = { 'x', 'y' };
     auto result = fplus::power_set(v);
@@ -193,7 +183,7 @@ TEST_F(generate_test, power_set)
     EXPECT_THAT(result[3], ElementsAre('x', 'y'));
 }
 
-TEST_F(generate_test, iterate)
+TEST(generate_test, iterate)
 {
     auto f = [](int value) { return value * 2; };
     auto result = fplus::iterate(f, 5, 3);
@@ -201,42 +191,42 @@ TEST_F(generate_test, iterate)
     EXPECT_THAT(result, ElementsAre(3, 6, 12, 24, 48));
 }
 
-TEST_F(generate_test, iterate_with_size_0)
+TEST(generate_test, iterate_with_size_0)
 {
     auto f = [](int value) { return value * 2; };
     auto result = fplus::iterate(f, 0, 3);
     EXPECT_THAT(result, IsEmpty());
 }
 
-TEST_F(generate_test, rotate_left)
+TEST(generate_test, rotate_left)
 {
     const std::vector<char> v = { 'x', 'y', 'z' };
     auto result = fplus::rotate_left(v);
     EXPECT_THAT(result, ElementsAre('y', 'z', 'x'));
 }
 
-TEST_F(generate_test, rotate_left_with_empty)
+TEST(generate_test, rotate_left_with_empty)
 {
     const std::vector<char> v = { };
     auto result = fplus::rotate_left(v);
     EXPECT_THAT(result, IsEmpty());
 }
 
-TEST_F(generate_test, rotate_right)
+TEST(generate_test, rotate_right)
 {
     const std::vector<char> v = { 'x', 'y', 'z' };
     auto result = fplus::rotate_right(v);
     EXPECT_THAT(result, ElementsAre('z', 'x', 'y'));
 }
 
-TEST_F(generate_test, rotate_right_with_empty)
+TEST(generate_test, rotate_right_with_empty)
 {
     const std::vector<char> v = { };
     auto result = fplus::rotate_right(v);
     EXPECT_THAT(result, IsEmpty());
 }
 
-TEST_F(generate_test, rotations_left)
+TEST(generate_test, rotations_left)
 {
     const std::vector<char> v = { 'a', 'b', 'c', 'd' };
     auto result = fplus::rotations_left(v);
@@ -247,14 +237,14 @@ TEST_F(generate_test, rotations_left)
     EXPECT_THAT(result[3], ElementsAre('d', 'a', 'b', 'c'));
 }
 
-TEST_F(generate_test, rotations_left_with_empty)
+TEST(generate_test, rotations_left_with_empty)
 {
     const std::vector<char> v = { };
     auto result = fplus::rotations_left(v);
     EXPECT_THAT(result, IsEmpty());
 }
 
-TEST_F(generate_test, rotations_right)
+TEST(generate_test, rotations_right)
 {
     const std::vector<char> v = { 'a', 'b', 'c', 'd' };
     auto result = fplus::rotations_right(v);
@@ -265,42 +255,42 @@ TEST_F(generate_test, rotations_right)
     EXPECT_THAT(result[3], ElementsAre('b', 'c', 'd', 'a'));
 }
 
-TEST_F(generate_test, rotations_right_with_empty)
+TEST(generate_test, rotations_right_with_empty)
 {
     const std::vector<char> v = { };
     auto result = fplus::rotations_right(v);
     EXPECT_THAT(result, IsEmpty());
 }
 
-TEST_F(generate_test, fill_left)
+TEST(generate_test, fill_left)
 {
     const std::vector<int> v = { 1, 2, 3, 4 };
     auto result = fplus::fill_left(0, 6, v);
     EXPECT_THAT(result, ElementsAre(0, 0, 1, 2, 3, 4));
 }
 
-TEST_F(generate_test, fill_left_with_min_size)
+TEST(generate_test, fill_left_with_min_size)
 {
     const std::vector<int> v = { 1, 2, 3, 4 };
     auto result = fplus::fill_left(0, 4, v);
     EXPECT_THAT(result, ElementsAre(1, 2, 3, 4));
 }
 
-TEST_F(generate_test, fill_right)
+TEST(generate_test, fill_right)
 {
     const std::vector<int> v = { 1, 2, 3, 4 };
     auto result = fplus::fill_right(0, 6, v);
     EXPECT_THAT(result, ElementsAre(1, 2, 3, 4, 0, 0));
 }
 
-TEST_F(generate_test, fill_right_with_min_size)
+TEST(generate_test, fill_right_with_min_size)
 {
     const std::vector<int> v = { 1, 2, 3, 4 };
     auto result = fplus::fill_right(0, 4, v);
     EXPECT_THAT(result, ElementsAre(1, 2, 3, 4));
 }
 
-TEST_F(generate_test, inits)
+TEST(generate_test, inits)
 {
     const std::vector<int> v = { 0, 1, 2, 3 };
     auto result = fplus::inits(v);
@@ -312,7 +302,7 @@ TEST_F(generate_test, inits)
     EXPECT_THAT(result[4], ElementsAre(0, 1, 2, 3));
 }
 
-TEST_F(generate_test, tails)
+TEST(generate_test, tails)
 {
     const std::vector<int> v = { 0, 1, 2, 3 };
     auto result = fplus::tails(v);

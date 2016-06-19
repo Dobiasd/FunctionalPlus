@@ -6,44 +6,34 @@
 
 using namespace testing;
 
-class result_test : public testing::Test
-{
-protected:
+namespace {
 
-    void SetUp() override
-    {
-    }
-
-    void TearDown() override
-    {
-    }
-
-    static int square(int x)
+    int square(int x)
     {
         return x*x;
-    };
+    }
 
-    static fplus::result<float, std::string> sqrtToResult(float x)
+    fplus::result<float, std::string> sqrtToResult(float x)
     {
         return x < 0.0f ? fplus::error<float>(std::string("no sqrt of negative numbers")) :
                 fplus::ok<float, std::string>(static_cast<float>(sqrt(static_cast<float>(x))));
-    };
+    }
 
-    static fplus::result<int, std::string> sqrtToResultInt(int x)
+    fplus::result<int, std::string> sqrtToResultInt(int x)
     {
         return x < 0 ? fplus::error<int>(std::string("no sqrt of negative numbers")) :
                 fplus::ok<int, std::string>(fplus::round<int>(sqrt(static_cast<float>(x))));
-    };
+    }
 
-    static float IntToFloat(const int& x)
+    float IntToFloat(const int& x)
     {
         return static_cast<float>(x);
-    };
+    }
 
     typedef std::vector<fplus::result<int, std::string>> IntResults;
     typedef std::vector<int> Ints;
     typedef std::vector<std::string> Strings;
-};
+}
 
 class resultTestState {
 public:
@@ -54,7 +44,7 @@ private:
     int x_;
 };
 
-TEST_F(result_test, ok_with_default)
+TEST(result_test, ok_with_default)
 {
     using namespace fplus;
     auto x = ok<int, std::string>(2);
@@ -65,7 +55,7 @@ TEST_F(result_test, ok_with_default)
     EXPECT_THAT(Or42(y), Eq(42));
 }
 
-TEST_F(result_test, and_then_result)
+TEST(result_test, and_then_result)
 {
     using namespace fplus;
     auto x = ok<int, std::string>(2);
@@ -88,7 +78,7 @@ TEST_F(result_test, and_then_result)
             (IntToFloatAndSqrtAndSqrt(4))));
 }
 
-TEST_F(result_test, lift)
+TEST(result_test, lift)
 {
     using namespace fplus;
     auto x = ok<int, std::string>(2);
@@ -97,7 +87,7 @@ TEST_F(result_test, lift)
     EXPECT_THAT((lift_result<std::string>(SquareAndSquare))(x), Eq((ok<int, std::string>(16))));
 }
 
-TEST_F(result_test, equality)
+TEST(result_test, equality)
 {
     using namespace fplus;
     IntResults results = {ok<int, std::string>(1), error<int>(std::string("no sqrt of negative numbers")), ok<int, std::string>(2)};
@@ -113,7 +103,7 @@ TEST_F(result_test, equality)
 
 }
 
-TEST_F(result_test, transform_and_keep_oks)
+TEST(result_test, transform_and_keep_oks)
 {
     using namespace fplus;
     Ints wholeNumbers = { -3, 4, 16, -1 };
@@ -124,7 +114,7 @@ TEST_F(result_test, transform_and_keep_oks)
            , Eq(Ints({ 1,1,1,2,2,2 })));
 }
 
-TEST_F(result_test, show_result)
+TEST(result_test, show_result)
 {
     using namespace fplus;
     EXPECT_THAT(show_result(ok<int, std::string>(42)), Eq(std::string("Ok 42")));
@@ -134,7 +124,7 @@ TEST_F(result_test, show_result)
     EXPECT_THAT((from_maybe<int, std::string>(just(2), std::string("no error"))), Eq(x));
 }
 
-TEST_F(result_test, exceptions)
+TEST(result_test, exceptions)
 {
     using namespace fplus;
     std::string thrown_str;
@@ -161,7 +151,7 @@ TEST_F(result_test, exceptions)
     thrown_str.clear();
 }
 
-TEST_F(result_test, copy)
+TEST(result_test, copy)
 {
     using namespace fplus;
     result<int, std::string> result_4 = ok<int, std::string>(4);

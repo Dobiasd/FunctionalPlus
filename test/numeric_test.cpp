@@ -6,25 +6,15 @@
 
 using namespace testing;
 
-class numeric_test : public testing::Test
-{
-protected:
+namespace {
 
-    void SetUp() override
-    {
-    }
-
-    void TearDown() override
-    {
-    }
-
-    static int mod2(int x)
+    int mod2(int x)
     {
         return x % 2;
-    };
-};
+    }
+}
 
-TEST_F(numeric_test, is_in_range)
+TEST(numeric_test, is_in_range)
 {
     EXPECT_TRUE(fplus::is_in_range(1, 3)(1));
     EXPECT_TRUE(fplus::is_in_range(1, 3)(2));
@@ -34,25 +24,25 @@ TEST_F(numeric_test, is_in_range)
     EXPECT_TRUE(fplus::is_in_range(0.09, 0.11)(fplus::abs( 0.1)));
 }
 
-TEST_F(numeric_test, is_negative)
+TEST(numeric_test, is_negative)
 {
     EXPECT_TRUE(fplus::is_negative(-0.1));
     EXPECT_FALSE(fplus::is_negative(0.1));
 }
 
-TEST_F(numeric_test, is_positive)
+TEST(numeric_test, is_positive)
 {
     EXPECT_TRUE(fplus::is_positive(0.1));
     EXPECT_FALSE(fplus::is_positive(-0.1));
 }
 
-TEST_F(numeric_test, sign)
+TEST(numeric_test, sign)
 {
     EXPECT_THAT(fplus::sign(0.1), Eq(1));
     EXPECT_THAT(fplus::sign(-0.1), Eq(-1));
 }
 
-TEST_F(numeric_test, cyclic_value)
+TEST(numeric_test, cyclic_value)
 {
     using namespace fplus;
     EXPECT_THAT(cyclic_value(8)(3), Eq(3));
@@ -64,7 +54,7 @@ TEST_F(numeric_test, cyclic_value)
     EXPECT_TRUE(is_in_range(3.19, 3.21)(cyclic_value(8.1)(3.2)));
 }
 
-TEST_F(numeric_test, cyclic_difference)
+TEST(numeric_test, cyclic_difference)
 {
     using namespace fplus;
     EXPECT_THAT(cyclic_difference(100)(5, 2), Eq(3));
@@ -75,7 +65,7 @@ TEST_F(numeric_test, cyclic_difference)
     EXPECT_THAT(cyclic_difference(100)(10, 90), Eq(20));
 }
 
-TEST_F(numeric_test, cyclic_shortest_difference)
+TEST(numeric_test, cyclic_shortest_difference)
 {
     using namespace fplus;
     EXPECT_THAT(cyclic_shortest_difference(100)(5, 2), Eq(3));
@@ -86,7 +76,7 @@ TEST_F(numeric_test, cyclic_shortest_difference)
     EXPECT_THAT(cyclic_shortest_difference(100)(10, 90), Eq(20));
 }
 
-TEST_F(numeric_test, cyclic_distance)
+TEST(numeric_test, cyclic_distance)
 {
     using namespace fplus;
     EXPECT_THAT(cyclic_distance(100)(2, 5), Eq(3));
@@ -97,7 +87,7 @@ TEST_F(numeric_test, cyclic_distance)
     EXPECT_THAT(cyclic_distance(100)(90, 10), Eq(20));
 }
 
-TEST_F(numeric_test, round)
+TEST(numeric_test, round)
 {
     using namespace fplus;
     EXPECT_THAT(round<int>(1.4), Eq(1));
@@ -111,21 +101,21 @@ TEST_F(numeric_test, round)
     EXPECT_THAT(round<int>(-1.6), Eq(-2));
 }
 
-TEST_F(numeric_test, ceil)
+TEST(numeric_test, ceil)
 {
     using namespace fplus;
     EXPECT_THAT(ceil<int>(1.4), Eq(2));
     EXPECT_THAT(ceil<int>(-1.4), Eq(-1));
 }
 
-TEST_F(numeric_test, floow)
+TEST(numeric_test, floow)
 {
     using namespace fplus;
     EXPECT_THAT(floor<int>(1.4), Eq(1));
     EXPECT_THAT(floor<int>(-1.4), Eq(-2));
 }
 
-TEST_F(numeric_test, clamp)
+TEST(numeric_test, clamp)
 {
     using namespace fplus;
     EXPECT_THAT(clamp(2, 6)(5), Eq(5));
@@ -133,7 +123,7 @@ TEST_F(numeric_test, clamp)
     EXPECT_THAT(clamp(2, 6)(8), Eq(6));
 }
 
-TEST_F(numeric_test, int_power)
+TEST(numeric_test, int_power)
 {
     using namespace fplus;
     EXPECT_THAT(int_power(3, 0), Eq(1));
@@ -143,7 +133,7 @@ TEST_F(numeric_test, int_power)
     EXPECT_THAT(int_power(3, 4), Eq(81));
 }
 
-TEST_F(numeric_test, min_2_on)
+TEST(numeric_test, min_2_on)
 {
     EXPECT_THAT(fplus::min_2_on(mod2)(4, 3), Eq(4));
     std::string str1 = "hello";
@@ -152,17 +142,17 @@ TEST_F(numeric_test, min_2_on)
     EXPECT_THAT(fplus::min_2_on(str_length)(str1, str2), Eq(std::string("hi")));
 }
 
-TEST_F(numeric_test, max_2_on)
+TEST(numeric_test, max_2_on)
 {
     EXPECT_THAT(fplus::max_2_on(mod2)(4, 3), Eq(3));
 }
 
-TEST_F(numeric_test, min_3_on)
+TEST(numeric_test, min_3_on)
 {
     EXPECT_THAT(fplus::min_3_on(mod2)(4, 3, 7), Eq(4));
 }
 
-TEST_F(numeric_test, max_3_on)
+TEST(numeric_test, max_3_on)
 {
     EXPECT_THAT(fplus::max_3_on(mod2)(4, 3, 6), Eq(3));
 }
