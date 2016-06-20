@@ -60,6 +60,13 @@ TEST(generate_test, infixes)
     EXPECT_THAT(result[3], ElementsAre(4, 5, 6));
 }
 
+TEST(generate_test, infixes_with_size_less_than_length)
+{
+    const std::vector<int> v = { 1, 2 };
+    auto result = fplus::infixes(3, v);
+    EXPECT_THAT(result, IsEmpty());
+}
+
 TEST(generate_test, carthesian_product_with_where)
 {
     const std::vector<char> v1 = { 'A', 'B', 'C' };

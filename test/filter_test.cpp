@@ -124,6 +124,13 @@ TEST(filter_test, trim_left_by)
     EXPECT_THAT(result, ElementsAre(5, 6, 7, 8, 6, 4));
 }
 
+TEST(filter_test, trim_left_by_trims_all)
+{
+    const std::vector<int> v = { 4, 8 };
+    auto result = fplus::trim_left_by(is_even, v);
+    EXPECT_THAT(result, IsEmpty());
+}
+
 TEST(filter_test, trim_left)
 {
     const std::vector<int> v = { 0, 0, 0, 5, 6, 7, 8, 6, 4 };
@@ -144,6 +151,13 @@ TEST(filter_test, trim_right_by)
     const std::vector<int> v = { 0, 2, 4, 5, 6, 7, 8, 6, 4 };
     auto result = fplus::trim_right_by(is_even, v);
     EXPECT_THAT(result, ElementsAre(0, 2, 4, 5, 6, 7));
+}
+
+TEST(filter_test, trim_right_by_trims_all)
+{
+    const std::vector<int> v = { 4, 8 };
+    auto result = fplus::trim_right_by(is_even, v);
+    EXPECT_THAT(result, IsEmpty());
 }
 
 TEST(filter_test, trim_right)
