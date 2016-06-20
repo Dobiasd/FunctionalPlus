@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 2.8.11)
 
+project(FunctionalPlus)
+set(PROJECT_VERSION 0.1)
+
+message(STATUS "===( ${PROJECT_NAME} ${PROJECT_VERSION} )===")
+
 
 option(UNITTEST "Build unit tests" OFF)
 
