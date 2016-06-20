@@ -135,6 +135,107 @@ X int_power(X base, X exp)
     return base * int_power(base, exp - 1);
 }
 
+template <typename... Conds>
+struct and_ : std::true_type
+{
+};
+
+template <typename Cond, typename... Conds>
+struct and_<Cond, Conds...> : std::conditional<Cond::value, and_<Conds...>, std::false_type>::type
+{
+};
+
+template <typename... T>
+using are_all_pod = and_<std::is_pod<T>...>;
+
+// API search type: min_on : (a -> b) -> ((a, a) -> a)
+// minimum of x values after transformation for POD types
+// min_on(mod2, 4, 3) == 4
+// min_on(mod7, 3, 5, 7, 3) == 7
+template <typename F,
+          typename FirstT,
+          typename... FIn,
+          typename = typename std::enable_if<fplus::are_all_pod<FirstT, FIn...>::type>>
+auto min_on(F f, FirstT first, FIn... v) -> typename std::common_type<FirstT, FIn...>::type
+{
+  using rettype = typename std::common_type<FirstT, FIn...>::type;
+  using f_rettype = decltype(f(first));
+
+  rettype result = first;
+  f_rettype result_trans = f(first);
+  f_rettype v_trans;
+  (void)std::initializer_list<int>{
+      ((v_trans = f(v), v_trans < result_trans)
+           ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
+           : 0)...};
+  return result;
+}
+
+// API search type: min_on : (a -> b) -> ((a, a) -> a)
+// minimum of x values after transformation for non POD types
+// min_on(mod2, 4, 3) == 4
+// min_on(mod7, 3, 5, 7, 3) == 7
+template <typename F, typename FirstT, typename... FIn>
+auto min_on(F f, const FirstT& first, const FIn&... v) ->
+    typename std::common_type<FirstT, FIn...>::type
+{
+  using rettype = typename std::common_type<FirstT, FIn...>::type;
+  using f_rettype = decltype(f(first));
+
+  rettype result = first;
+  f_rettype result_trans = f(first);
+  f_rettype v_trans;
+  (void)std::initializer_list<int>{
+      ((v_trans = f(v), v_trans < result_trans)
+           ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
+           : 0)...};
+  return result;
+}
+
+// API search type: max_on : (a -> b) -> ((a, a) -> a)
+// maximum of x values after transformation for POD types
+// max_on(mod2, 4, 3) == 3
+// max_on(mod7, 3, 5, 7, 3) == 5
+template <typename F,
+          typename FirstT,
+          typename... FIn,
+          typename = typename std::enable_if<are_all_pod<FirstT, FIn...>::type>>
+auto max_on(F f, FirstT first, FIn... v) -> typename std::common_type<FirstT, FIn...>::type
+{
+  using rettype = typename std::common_type<FirstT, FIn...>::type;
+  using f_rettype = decltype(f(first));
+
+  rettype result = first;
+  f_rettype result_trans = f(first);
+  f_rettype v_trans;
+  (void)std::initializer_list<int>{
+      ((v_trans = f(v), v_trans > result_trans)
+           ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
+           : 0)...};
+  return result;
+}
+
+// API search type: max_on : (a -> b) -> ((a, a) -> a)
+// maximum of x values after transformation for non POD types
+// max_on(mod2, 4, 3) == 3
+// max_on(mod7, 3, 5, 7, 3) == 5
+template <typename F, typename FirstT, typename... FIn>
+auto max_on(F f, const FirstT& first, const FIn&... v) ->
+    typename std::common_type<FirstT, FIn...>::type
+{
+  using rettype = typename std::common_type<FirstT, FIn...>::type;
+  using f_rettype = decltype(f(first));
+
+  rettype result = first;
+  f_rettype result_trans = f(first);
+  f_rettype v_trans;
+  (void)std::initializer_list<int>{
+      ((v_trans = f(v), v_trans > result_trans)
+           ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
+           : 0)...};
+  return result;
+}
+
 // API search type: min_2_on : (a -> b) -> ((a, a) -> a)
 // minimum of two values after transformation
 template <typename F,
