@@ -148,8 +148,9 @@ struct and_<Cond, Conds...> : std::conditional<Cond::value, and_<Conds...>, std:
 template <typename... T>
 using are_all_pod = and_<std::is_pod<T>...>;
 
-// API search type: min_on : (a -> b) -> ((a, a) -> a)
+// API search type: min_on : ((a -> b), a, a) -> a)
 // minimum of x values after transformation for POD types
+// (has an overload for non POD types)
 // min_on(mod2, 4, 3) == 4
 // min_on(mod7, 3, 5, 7, 3) == 7
 template <typename F,
@@ -171,10 +172,7 @@ auto min_on(F f, FirstT first, FIn... v) -> typename std::common_type<FirstT, FI
   return result;
 }
 
-// API search type: min_on : (a -> b) -> ((a, a) -> a)
-// minimum of x values after transformation for non POD types
-// min_on(mod2, 4, 3) == 4
-// min_on(mod7, 3, 5, 7, 3) == 7
+// minimum of x values after transformation for non-POD types
 template <typename F, typename FirstT, typename... FIn>
 auto min_on(F f, const FirstT& first, const FIn&... v) ->
     typename std::common_type<FirstT, FIn...>::type
@@ -192,8 +190,9 @@ auto min_on(F f, const FirstT& first, const FIn&... v) ->
   return result;
 }
 
-// API search type: max_on : (a -> b) -> ((a, a) -> a)
+// API search type: max_on : ((a -> b), a, a) -> a)
 // maximum of x values after transformation for POD types
+// (has an overload for non POD types)
 // max_on(mod2, 4, 3) == 3
 // max_on(mod7, 3, 5, 7, 3) == 5
 template <typename F,
@@ -215,10 +214,7 @@ auto max_on(F f, FirstT first, FIn... v) -> typename std::common_type<FirstT, FI
   return result;
 }
 
-// API search type: max_on : (a -> b) -> ((a, a) -> a)
-// maximum of x values after transformation for non POD types
-// max_on(mod2, 4, 3) == 3
-// max_on(mod7, 3, 5, 7, 3) == 5
+// maximum of x values after transformation for non-POD types
 template <typename F, typename FirstT, typename... FIn>
 auto max_on(F f, const FirstT& first, const FIn&... v) ->
     typename std::common_type<FirstT, FIn...>::type
