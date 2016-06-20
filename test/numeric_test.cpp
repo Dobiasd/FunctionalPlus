@@ -108,7 +108,7 @@ TEST(numeric_test, ceil)
     EXPECT_THAT(ceil<int>(-1.4), Eq(-1));
 }
 
-TEST(numeric_test, floow)
+TEST(numeric_test, floor)
 {
     using namespace fplus;
     EXPECT_THAT(floor<int>(1.4), Eq(1));
