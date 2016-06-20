@@ -148,7 +148,7 @@ struct and_<Cond, Conds...> : std::conditional<Cond::value, and_<Conds...>, std:
 template <typename... T>
 using are_all_pod = and_<std::is_pod<T>...>;
 
-// API search type: min_on : ((a -> b), a, a) -> a)
+// API search type: min_on : ((a -> b), a, a) -> a
 // minimum of x values after transformation for POD types
 // (has an overload for non POD types)
 // min_on(mod2, 4, 3) == 4
@@ -190,7 +190,7 @@ auto min_on(F f, const FirstT& first, const FIn&... v) ->
   return result;
 }
 
-// API search type: max_on : ((a -> b), a, a) -> a)
+// API search type: max_on : ((a -> b), a, a) -> a
 // maximum of x values after transformation for POD types
 // (has an overload for non POD types)
 // max_on(mod2, 4, 3) == 3
