@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 2.8)
 
 message(STATUS "Building Unit Tests ${UNITTEST}")
 
@@ -41,3 +40,19 @@ add_custom_target(unittest compare_test
                         COMMENT "Running unittests\n\n"
                         VERBATIM
                         )
+
+
+
+function(add_test_executable TEST_NAME)
+    add_executable (${TEST_NAME} EXCLUDE_FROM_ALL ${ARGN})
+    if(WIN32)
+        add_test(NAME ${TEST_NAME} WORKING_DIRECTORY ${LIBRARY_OUTPUT_PATH} COMMAND ${TEST_NAME}${CMAKE_EXECUTABLE_SUFFIX})
+    else()
+        add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+    endif()
+    add_dependencies(check ${TEST_NAME})
+endfunction(add_test_executable)
+
+add_test_executable(tests tests.cpp)
+target_link_libraries(tests ${CMAKE_THREAD_LIBS_INIT})
+
