@@ -27,6 +27,7 @@ _add_test(generate_test)
 _add_test(maybe_test)
 _add_test(numeric_test)
 _add_test(result_test)
+_add_test(replace_test)
 
 
 add_custom_target(unittest compare_test
@@ -37,6 +38,7 @@ add_custom_target(unittest compare_test
                         COMMAND maybe_test
                         COMMAND numeric_test
                         COMMAND result_test
+                        COMMAND replace_test
                         COMMENT "Running unittests\n\n"
                         VERBATIM
                         )
