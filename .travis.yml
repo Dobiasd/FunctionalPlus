@@ -1,5 +1,6 @@
 language: generic
 
+dist: trusty
 sudo: required
 
 cache:
@@ -12,30 +13,25 @@ matrix:
         apt:
           packages:
             - g++-6
-            - cmake
           sources: &sources
             - ubuntu-toolchain-r-test
-            - kalakris-cmake
     - env: CXX=g++-5 CC=gcc-5
       addons:
         apt:
           packages:
             - g++-5
-            - cmake
           sources: *sources
     - env: CXX=g++-4.9 CC=gcc-4.9
       addons:
         apt:
           packages:
             - g++-4.9
-            - cmake
           sources: *sources
     - env: CXX=g++-4.8 CC=gcc-4.8
       addons:
         apt:
           packages:
             - g++-4.8
-            - cmake
           sources: *sources
 
 script:
