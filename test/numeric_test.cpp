@@ -143,30 +143,6 @@ TEST(numeric_test, int_power)
     EXPECT_THAT(int_power(3, 4), Eq(81));
 }
 
-TEST(numeric_test, min_2_on)
-{
-    EXPECT_THAT(fplus::min_2_on(mod2)(4, 3), Eq(4));
-    std::string str1 = "hello";
-    std::string str2 = "hi";
-    auto str_length = [](const std::string& str) { return str.size(); };
-    EXPECT_THAT(fplus::min_2_on(str_length)(str1, str2), Eq(std::string("hi")));
-}
-
-TEST(numeric_test, max_2_on)
-{
-    EXPECT_THAT(fplus::max_2_on(mod2)(4, 3), Eq(3));
-}
-
-TEST(numeric_test, min_3_on)
-{
-    EXPECT_THAT(fplus::min_3_on(mod2)(4, 3, 7), Eq(4));
-}
-
-TEST(numeric_test, max_3_on)
-{
-    EXPECT_THAT(fplus::max_3_on(mod2)(4, 3, 6), Eq(3));
-}
-
 TEST(numeric_test, min_on)
 {
     EXPECT_THAT(fplus::min_on(mod2, 4, 4), Eq(4));

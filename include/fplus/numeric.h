@@ -283,58 +283,6 @@ auto max_on(F f) -> max_on_t<F>
   return max_on_t<F>{f};
 }
 
-// API search type: min_2_on : (a -> b) -> ((a, a) -> a)
-// minimum of two values after transformation
-template <typename F,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type>
-std::function<const FIn&(const FIn& x, const FIn& y)>
-        min_2_on(F f)
-{
-    return [f](const FIn& x, const FIn& y) -> const FIn&
-    {
-        return f(x) < f(y) ? x : y;
-    };
-}
-
-// API search type: max_2_on : (a -> b) -> ((a, a) -> a)
-// maximum of two values after transformation
-template <typename F,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type>
-std::function<const FIn&(const FIn& x, const FIn& y)>
-        max_2_on(F f)
-{
-    return [f](const FIn& x, const FIn& y) -> const FIn&
-    {
-        return f(x) > f(y) ? x : y;
-    };
-}
-
-// API search type: min_3_on : (a -> b) -> ((a, a, a) -> a)
-// minimum of three values after transformation
-template <typename F,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type>
-std::function<const FIn&(const FIn& x, const FIn& y, const FIn& z)>
-        min_3_on(F f)
-{
-    return [f](const FIn& x, const FIn& y, const FIn& z) -> const FIn&
-    {
-        return min_2_on(f)(min_2_on(f)(x, y), z);
-    };
-}
-
-// API search type: max_3_on : (a -> b) -> ((a, a, a) -> a)
-// maximum of three values after transformation
-template <typename F,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type>
-std::function<const FIn&(const FIn& x, const FIn& y, const FIn& z)>
-        max_3_on(F f)
-{
-    return [f](const FIn& x, const FIn& y, const FIn& z) -> const FIn&
-    {
-        return max_2_on(f)(max_2_on(f)(x, y), z);
-    };
-}
-
 // API search type: min : (a, a) -> a
 // Minimum of x number of values
 // min(4, 3) == 3
