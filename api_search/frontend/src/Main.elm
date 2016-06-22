@@ -381,13 +381,11 @@ boolToNum value b =
 
 typeRating :
     Float
-    -> Float
     -> TypeSignature.Signature
     -> TypeSignature.Signature
     -> Float
-typeRating weight factor query db =
+typeRating weight query db =
     TypeSignature.functionCompatibility db query
-        |> (*) factor
         |> (*) weight
 
 
@@ -444,12 +442,8 @@ functionRating queryOrig querySig querySigLower function =
                     case maybeSig of
                         Just sig ->
                             let
-                                typeWeight =
-                                    stringLengthFloat (TypeSignature.showSignature True sig)
-                                        / stringLengthFloat function.signature
-
                                 allRatings =
-                                    List.map (typeRating factor typeWeight sig)
+                                    List.map (typeRating factor sig)
                                         function.subSignatures
                             in
                                 allRatings
