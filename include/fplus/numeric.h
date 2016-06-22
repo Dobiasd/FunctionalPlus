@@ -190,7 +190,32 @@ auto min_on(F f, const FirstT& first, const FIn&... v) ->
   return result;
 }
 
-// API search type: max_on : ((a -> b), a, a) -> a
+template <typename F>
+struct min_on_t
+{
+  min_on_t(F _f) : f(_f) {}
+
+  template <typename T, typename... Ts>
+  auto operator()(T&& x, Ts&&... xs) -> typename std::common_type<T, Ts...>::type
+  {
+    return min_on(std::forward<F>(f), std::forward<T>(x), std::forward<Ts>(xs)...);
+  }
+
+private:
+  F f;
+};
+
+// API search type: min_on : ((a -> b), a, a) -> a
+// minimum of x values after transformation  (curried version)
+// min_on(mod2)(4, 3) == 4
+// min_on(mod7)(3, 5, 7, 3) == 7
+template <typename F>
+auto min_on(F f) -> min_on_t<F>
+{
+  return min_on_t<F>{f};
+}
+
+// API search type: max_on : (a -> b) -> ((a, a) -> a)
 // maximum of x values after transformation for POD types
 // (has an overload for non POD types)
 // max_on(mod2, 4, 3) == 3
@@ -230,6 +255,32 @@ auto max_on(F f, const FirstT& first, const FIn&... v) ->
            ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
            : 0)...};
   return result;
+}
+
+template <typename F>
+struct max_on_t
+{
+  max_on_t(F _f) : f(_f) {}
+
+  template <typename T, typename... Ts>
+  auto operator()(T&& x, Ts&&... xs) -> typename std::common_type<T, Ts...>::type
+  {
+    return max_on(std::forward<F>(f), std::forward<T>(x), std::forward<Ts>(xs)...);
+  }
+
+private:
+  F f;
+};
+
+// API search type: max_on : (a -> b) -> ((a, a) -> a)
+// maximum of x values after transformation (curried version)
+// (has an overload for non POD types)
+// max_on(mod2)(4, 3) == 3
+// max_on(mod7)(3, 5, 7, 3) == 5
+template <typename F>
+auto max_on(F f) -> max_on_t<F>
+{
+  return max_on_t<F>{f};
 }
 
 // API search type: min_2_on : (a -> b) -> ((a, a) -> a)

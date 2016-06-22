@@ -190,6 +190,16 @@ TEST(numeric_test, min_on)
     EXPECT_THAT(fplus::min_on(string_length, s2, s3), Eq(s2));
     EXPECT_THAT(fplus::min_on(string_length, s1, s2, s3), Eq(s1));
     EXPECT_THAT(fplus::min_on(string_length, s1, s3), Eq(s1));
+
+    auto l1_min_on = fplus::min_on(mod7);
+    EXPECT_THAT(l1_min_on(1), Eq(1));
+    EXPECT_THAT(l1_min_on(1, 2), Eq(1));
+    EXPECT_THAT(l1_min_on(1, 2, 3, 7), Eq(7));
+    EXPECT_THAT(l1_min_on(1, 2, 3, 6, 77), Eq(77));
+    EXPECT_THAT(fplus::min_on(mod7)(1), Eq(1));
+    EXPECT_THAT(fplus::min_on(mod7)(1, 2), Eq(1));
+    EXPECT_THAT(fplus::min_on(mod7)(1, 2, 3, 7), Eq(7));
+    EXPECT_THAT(fplus::min_on(mod7)(1, 2, 3, 6, 77), Eq(77));
 }
 
 TEST(numeric_test, max_on)
@@ -215,4 +225,14 @@ TEST(numeric_test, max_on)
     EXPECT_THAT(fplus::max_on(string_length, s2, s3), Eq(s3));
     EXPECT_THAT(fplus::max_on(string_length, s1, s2, s3), Eq(s3));
     EXPECT_THAT(fplus::max_on(string_length, s1, s3), Eq(s3));
+
+    auto l1_max_on = fplus::max_on(mod7);
+    EXPECT_THAT(l1_max_on(1), Eq(1));
+    EXPECT_THAT(l1_max_on(1, 2), Eq(2));
+    EXPECT_THAT(l1_max_on(1, 2, 3, 7), Eq(3));
+    EXPECT_THAT(l1_max_on(1, 2, 3, 6, 77), Eq(6));
+    EXPECT_THAT(fplus::max_on(mod7)(1), Eq(1));
+    EXPECT_THAT(fplus::max_on(mod7)(1, 2), Eq(2));
+    EXPECT_THAT(fplus::max_on(mod7)(1, 2, 3, 7), Eq(3));
+    EXPECT_THAT(fplus::max_on(mod7)(1, 2, 3, 6, 77), Eq(6));
 }
