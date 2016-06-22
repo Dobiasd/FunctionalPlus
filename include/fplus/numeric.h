@@ -135,142 +135,145 @@ X int_power(X base, X exp)
     return base * int_power(base, exp - 1);
 }
 
-template <typename... Conds>
-struct and_ : std::true_type
+namespace internal
 {
-};
+    template <typename... Conds>
+    struct and_ : std::true_type
+    {
+    };
 
-template <typename Cond, typename... Conds>
-struct and_<Cond, Conds...> : std::conditional<Cond::value, and_<Conds...>, std::false_type>::type
-{
-};
+    template <typename Cond, typename... Conds>
+    struct and_<Cond, Conds...> : std::conditional<Cond::value, and_<Conds...>, std::false_type>::type
+    {
+    };
 
-template <typename... T>
-using are_all_pod = and_<std::is_pod<T>...>;
-
-// API search type: min_on : ((a -> b), a, a) -> a
-// minimum of x values after transformation for POD types
-// (has an overload for non POD types)
-// min_on(mod2, 4, 3) == 4
-// min_on(mod7, 3, 5, 7, 3) == 7
-template <typename F,
-          typename FirstT,
-          typename... FIn,
-          typename = typename std::enable_if<fplus::are_all_pod<FirstT, FIn...>::type>>
-auto min_on(F f, FirstT first, FIn... v) -> typename std::common_type<FirstT, FIn...>::type
-{
-  using rettype = typename std::common_type<FirstT, FIn...>::type;
-  using f_rettype = decltype(f(first));
-
-  rettype result = first;
-  f_rettype result_trans = f(first);
-  f_rettype v_trans;
-  (void)std::initializer_list<int>{
-      ((v_trans = f(v), v_trans < result_trans)
-           ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
-           : 0)...};
-  return result;
+    template <typename... T>
+    using are_all_pod = and_<std::is_pod<T>...>;
 }
 
-// minimum of x values after transformation for non-POD types
-template <typename F, typename FirstT, typename... FIn>
-auto min_on(F f, const FirstT& first, const FIn&... v) ->
-    typename std::common_type<FirstT, FIn...>::type
+namespace internal
 {
-  using rettype = typename std::common_type<FirstT, FIn...>::type;
-  using f_rettype = decltype(f(first));
+    // minimum of x values after transformation for POD types
+    // (has an overload for non-POD types)
+    // min_on(mod2, 4, 3) == 4
+    // min_on(mod7, 3, 5, 7, 3) == 7
+    template <typename F,
+              typename FirstT,
+              typename... FIn,
+              typename = typename std::enable_if<are_all_pod<FirstT, FIn...>::type>>
+    auto helper_min_on(F f, FirstT first, FIn... v) -> typename std::common_type<FirstT, FIn...>::type
+    {
+      using rettype = typename std::common_type<FirstT, FIn...>::type;
+      using f_rettype = decltype(f(first));
 
-  rettype result = first;
-  f_rettype result_trans = f(first);
-  f_rettype v_trans;
-  (void)std::initializer_list<int>{
-      ((v_trans = f(v), v_trans < result_trans)
-           ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
-           : 0)...};
-  return result;
+      rettype result = first;
+      f_rettype result_trans = f(first);
+      f_rettype v_trans;
+      (void)std::initializer_list<int>{
+          ((v_trans = f(v), v_trans < result_trans)
+               ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
+               : 0)...};
+      return result;
+    }
+
+    // minimum of x values after transformation for non-POD types
+    template <typename F, typename FirstT, typename... FIn>
+    auto helper_min_on(F f, const FirstT& first, const FIn&... v) ->
+        typename std::common_type<FirstT, FIn...>::type
+    {
+      using rettype = typename std::common_type<FirstT, FIn...>::type;
+      using f_rettype = decltype(f(first));
+
+      rettype result = first;
+      f_rettype result_trans = f(first);
+      f_rettype v_trans;
+      (void)std::initializer_list<int>{
+          ((v_trans = f(v), v_trans < result_trans)
+               ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
+               : 0)...};
+      return result;
+    }
+
+    template <typename F>
+    struct helper_min_on_t
+    {
+        helper_min_on_t(F _f) : f(_f) {}
+        template <typename T, typename... Ts>
+        auto operator()(T&& x, Ts&&... xs) -> typename std::common_type<T, Ts...>::type
+        {
+            return helper_min_on(std::forward<F>(f), std::forward<T>(x), std::forward<Ts>(xs)...);
+        }
+    private:
+        F f;
+    };
 }
-
-template <typename F>
-struct min_on_t
-{
-  min_on_t(F _f) : f(_f) {}
-
-  template <typename T, typename... Ts>
-  auto operator()(T&& x, Ts&&... xs) -> typename std::common_type<T, Ts...>::type
-  {
-    return min_on(std::forward<F>(f), std::forward<T>(x), std::forward<Ts>(xs)...);
-  }
-
-private:
-  F f;
-};
 
 // API search type: min_on : ((a -> b), a, a) -> a
 // minimum of x values after transformation  (curried version)
 // min_on(mod2)(4, 3) == 4
 // min_on(mod7)(3, 5, 7, 3) == 7
 template <typename F>
-auto min_on(F f) -> min_on_t<F>
+auto min_on(F f) -> internal::helper_min_on_t<F>
 {
-  return min_on_t<F>{f};
+    return internal::helper_min_on_t<F>{f};
 }
 
-// API search type: max_on : (a -> b) -> ((a, a) -> a)
-// maximum of x values after transformation for POD types
-// (has an overload for non POD types)
-// max_on(mod2, 4, 3) == 3
-// max_on(mod7, 3, 5, 7, 3) == 5
-template <typename F,
-          typename FirstT,
-          typename... FIn,
-          typename = typename std::enable_if<are_all_pod<FirstT, FIn...>::type>>
-auto max_on(F f, FirstT first, FIn... v) -> typename std::common_type<FirstT, FIn...>::type
+namespace internal
 {
-  using rettype = typename std::common_type<FirstT, FIn...>::type;
-  using f_rettype = decltype(f(first));
+    // maximum of x values after transformation for POD types
+    // (has an overload for non-POD types)
+    // max_on(mod2, 4, 3) == 3
+    // max_on(mod7, 3, 5, 7, 3) == 5
+    template <typename F,
+              typename FirstT,
+              typename... FIn,
+              typename = typename std::enable_if<are_all_pod<FirstT, FIn...>::type>>
+    auto helper_max_on(F f, FirstT first, FIn... v) -> typename std::common_type<FirstT, FIn...>::type
+    {
+      using rettype = typename std::common_type<FirstT, FIn...>::type;
+      using f_rettype = decltype(f(first));
 
-  rettype result = first;
-  f_rettype result_trans = f(first);
-  f_rettype v_trans;
-  (void)std::initializer_list<int>{
-      ((v_trans = f(v), v_trans > result_trans)
-           ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
-           : 0)...};
-  return result;
+      rettype result = first;
+      f_rettype result_trans = f(first);
+      f_rettype v_trans;
+      (void)std::initializer_list<int>{
+          ((v_trans = f(v), v_trans > result_trans)
+               ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
+               : 0)...};
+      return result;
+    }
+
+    // maximum of x values after transformation for non-POD types
+    template <typename F, typename FirstT, typename... FIn>
+    auto helper_max_on(F f, const FirstT& first, const FIn&... v) ->
+        typename std::common_type<FirstT, FIn...>::type
+    {
+      using rettype = typename std::common_type<FirstT, FIn...>::type;
+      using f_rettype = decltype(f(first));
+
+      rettype result = first;
+      f_rettype result_trans = f(first);
+      f_rettype v_trans;
+      (void)std::initializer_list<int>{
+          ((v_trans = f(v), v_trans > result_trans)
+               ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
+               : 0)...};
+      return result;
+    }
+
+    template <typename F>
+    struct helper_max_on_t
+    {
+        helper_max_on_t(F _f) : f(_f) {}
+        template <typename T, typename... Ts>
+        auto operator()(T&& x, Ts&&... xs) -> typename std::common_type<T, Ts...>::type
+        {
+            return helper_max_on(std::forward<F>(f), std::forward<T>(x), std::forward<Ts>(xs)...);
+        }
+    private:
+        F f;
+    };
 }
-
-// maximum of x values after transformation for non-POD types
-template <typename F, typename FirstT, typename... FIn>
-auto max_on(F f, const FirstT& first, const FIn&... v) ->
-    typename std::common_type<FirstT, FIn...>::type
-{
-  using rettype = typename std::common_type<FirstT, FIn...>::type;
-  using f_rettype = decltype(f(first));
-
-  rettype result = first;
-  f_rettype result_trans = f(first);
-  f_rettype v_trans;
-  (void)std::initializer_list<int>{
-      ((v_trans = f(v), v_trans > result_trans)
-           ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
-           : 0)...};
-  return result;
-}
-
-template <typename F>
-struct max_on_t
-{
-  max_on_t(F _f) : f(_f) {}
-
-  template <typename T, typename... Ts>
-  auto operator()(T&& x, Ts&&... xs) -> typename std::common_type<T, Ts...>::type
-  {
-    return max_on(std::forward<F>(f), std::forward<T>(x), std::forward<Ts>(xs)...);
-  }
-
-private:
-  F f;
-};
 
 // API search type: max_on : (a -> b) -> ((a, a) -> a)
 // maximum of x values after transformation (curried version)
@@ -278,9 +281,9 @@ private:
 // max_on(mod2)(4, 3) == 3
 // max_on(mod7)(3, 5, 7, 3) == 5
 template <typename F>
-auto max_on(F f) -> max_on_t<F>
+auto max_on(F f) -> internal::helper_max_on_t<F>
 {
-  return max_on_t<F>{f};
+    return internal::helper_max_on_t<F>{f};
 }
 
 // API search type: min : (a, a) -> a

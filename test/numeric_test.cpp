@@ -145,27 +145,27 @@ TEST(numeric_test, int_power)
 
 TEST(numeric_test, min_on)
 {
-    EXPECT_THAT(fplus::min_on(mod2, 4, 4), Eq(4));
-    EXPECT_THAT(fplus::min_on(mod2, 4, 3), Eq(4));
-    EXPECT_THAT(fplus::min_on(mod2, 4, 3, 7), Eq(4));
-    EXPECT_THAT(fplus::min_on(mod2, 5, 3, 7), Eq(5));
-    EXPECT_THAT(fplus::min_on(mod2, 5, 3, 7, 9, 2), Eq(2));
-    EXPECT_THAT(fplus::min_on(mod2, 5, 3, 7, 13, 19, 4), Eq(4));
+    EXPECT_THAT(fplus::min_on(mod2)(4, 4), Eq(4));
+    EXPECT_THAT(fplus::min_on(mod2)(4, 3), Eq(4));
+    EXPECT_THAT(fplus::min_on(mod2)(4, 3, 7), Eq(4));
+    EXPECT_THAT(fplus::min_on(mod2)(5, 3, 7), Eq(5));
+    EXPECT_THAT(fplus::min_on(mod2)(5, 3, 7, 9, 2), Eq(2));
+    EXPECT_THAT(fplus::min_on(mod2)(5, 3, 7, 13, 19, 4), Eq(4));
 
-    EXPECT_THAT(fplus::min_on(mod7, 4, 4), Eq(4));
-    EXPECT_THAT(fplus::min_on(mod7, 4, 3), Eq(3));
-    EXPECT_THAT(fplus::min_on(mod7, 4, 3, 7), Eq(7));
-    EXPECT_THAT(fplus::min_on(mod7, 5, 3, 7, 9, 9), Eq(7));
-    EXPECT_THAT(fplus::min_on(mod7, 5, 3, 7, 9, 9, 6, 6, 6, 6, 6, 6), Eq(7));
-    EXPECT_THAT(fplus::min_on(mod7, 70, 3, 7, 9, 9, 6, 6, 6, 6, 6, 6), Eq(70));
+    EXPECT_THAT(fplus::min_on(mod7)(4, 4), Eq(4));
+    EXPECT_THAT(fplus::min_on(mod7)(4, 3), Eq(3));
+    EXPECT_THAT(fplus::min_on(mod7)(4, 3, 7), Eq(7));
+    EXPECT_THAT(fplus::min_on(mod7)(5, 3, 7, 9, 9), Eq(7));
+    EXPECT_THAT(fplus::min_on(mod7)(5, 3, 7, 9, 9, 6, 6, 6, 6, 6, 6), Eq(7));
+    EXPECT_THAT(fplus::min_on(mod7)(70, 3, 7, 9, 9, 6, 6, 6, 6, 6, 6), Eq(70));
 
     const std::string s1("AAA");
     const std::string s2("AAABB");
     const std::string s3("AAABBCCC");
-    EXPECT_THAT(fplus::min_on(string_length, s1, s2), Eq(s1));
-    EXPECT_THAT(fplus::min_on(string_length, s2, s3), Eq(s2));
-    EXPECT_THAT(fplus::min_on(string_length, s1, s2, s3), Eq(s1));
-    EXPECT_THAT(fplus::min_on(string_length, s1, s3), Eq(s1));
+    EXPECT_THAT(fplus::min_on(string_length)(s1, s2), Eq(s1));
+    EXPECT_THAT(fplus::min_on(string_length)(s2, s3), Eq(s2));
+    EXPECT_THAT(fplus::min_on(string_length)(s1, s2, s3), Eq(s1));
+    EXPECT_THAT(fplus::min_on(string_length)(s1, s3), Eq(s1));
 
     auto l1_min_on = fplus::min_on(mod7);
     EXPECT_THAT(l1_min_on(1), Eq(1));
@@ -180,27 +180,27 @@ TEST(numeric_test, min_on)
 
 TEST(numeric_test, max_on)
 {
-    EXPECT_THAT(fplus::max_on(mod2, 4, 4), Eq(4));
-    EXPECT_THAT(fplus::max_on(mod2, 4, 3), Eq(3));
-    EXPECT_THAT(fplus::max_on(mod2, 4, 3, 7), Eq(3));
-    EXPECT_THAT(fplus::max_on(mod2, 5, 3, 7), Eq(5));
-    EXPECT_THAT(fplus::max_on(mod2, 5, 3, 7, 9, 2), Eq(5));
-    EXPECT_THAT(fplus::max_on(mod2, 5, 3, 7, 13, 19, 4), Eq(5));
+    EXPECT_THAT(fplus::max_on(mod2)(4, 4), Eq(4));
+    EXPECT_THAT(fplus::max_on(mod2)(4, 3), Eq(3));
+    EXPECT_THAT(fplus::max_on(mod2)(4, 3, 7), Eq(3));
+    EXPECT_THAT(fplus::max_on(mod2)(5, 3, 7), Eq(5));
+    EXPECT_THAT(fplus::max_on(mod2)(5, 3, 7, 9, 2), Eq(5));
+    EXPECT_THAT(fplus::max_on(mod2)(5, 3, 7, 13, 19, 4), Eq(5));
 
-    EXPECT_THAT(fplus::max_on(mod7, 4, 4), Eq(4));
-    EXPECT_THAT(fplus::max_on(mod7, 4, 3), Eq(4));
-    EXPECT_THAT(fplus::max_on(mod7, 4, 3, 7), Eq(4));
-    EXPECT_THAT(fplus::max_on(mod7, 5, 3, 7, 9, 9), Eq(5));
-    EXPECT_THAT(fplus::max_on(mod7, 5, 3, 7, 9, 9, 6, 6, 6, 6, 6, 6), Eq(6));
-    EXPECT_THAT(fplus::max_on(mod7, 70, 3, 7, 9, 9, 6, 6, 6, 6, 6, 6), Eq(6));
+    EXPECT_THAT(fplus::max_on(mod7)(4, 4), Eq(4));
+    EXPECT_THAT(fplus::max_on(mod7)(4, 3), Eq(4));
+    EXPECT_THAT(fplus::max_on(mod7)(4, 3, 7), Eq(4));
+    EXPECT_THAT(fplus::max_on(mod7)(5, 3, 7, 9, 9), Eq(5));
+    EXPECT_THAT(fplus::max_on(mod7)(5, 3, 7, 9, 9, 6, 6, 6, 6, 6, 6), Eq(6));
+    EXPECT_THAT(fplus::max_on(mod7)(70, 3, 7, 9, 9, 6, 6, 6, 6, 6, 6), Eq(6));
 
     const std::string s1("AAA");
     const std::string s2("AAABB");
     const std::string s3("AAABBCCC");
-    EXPECT_THAT(fplus::max_on(string_length, s1, s2), Eq(s2));
-    EXPECT_THAT(fplus::max_on(string_length, s2, s3), Eq(s3));
-    EXPECT_THAT(fplus::max_on(string_length, s1, s2, s3), Eq(s3));
-    EXPECT_THAT(fplus::max_on(string_length, s1, s3), Eq(s3));
+    EXPECT_THAT(fplus::max_on(string_length)(s1, s2), Eq(s2));
+    EXPECT_THAT(fplus::max_on(string_length)(s2, s3), Eq(s3));
+    EXPECT_THAT(fplus::max_on(string_length)(s1, s2, s3), Eq(s3));
+    EXPECT_THAT(fplus::max_on(string_length)(s1, s3), Eq(s3));
 
     auto l1_max_on = fplus::max_on(mod7);
     EXPECT_THAT(l1_max_on(1), Eq(1));
