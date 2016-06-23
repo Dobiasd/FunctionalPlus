@@ -25,16 +25,6 @@ struct ExplicitFromIntStruct
 };
 bool operator == (const ExplicitFromIntStruct &lhs, const ExplicitFromIntStruct & rhs) { return lhs.x_ == rhs.x_; }
 
-int squareFunc(int x)
-{
-    return x * x;
-}
-
-struct squareStruct
-{
-    int operator()(int x) { return x*x; }
-};
-
 void Test_ContainerTools()
 {
     using namespace fplus;
