@@ -45,8 +45,6 @@ public:
     static bool const value = sizeof(test<F, Args...>(tester)) == sizeof(yes);
 };
 
-#pragma GCC diagnostic pop
-
 template<class R, class... Args>
 struct check_callable_helper{ R operator()(Args...); };
 
@@ -55,6 +53,7 @@ class check_callable<R(*)(FArgs...), Args...>
   : public check_callable<check_callable_helper<R, FArgs...>, Args...>
 {};
 
+#pragma GCC diagnostic pop
 
 template<int TargetArity, typename F>
 void check_arity_helper(std::true_type)
