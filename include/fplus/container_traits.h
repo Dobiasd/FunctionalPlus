@@ -20,8 +20,10 @@
 namespace fplus
 {
 
+#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Weffc++"
+#endif
 
 template<class T> struct has_order : public std::false_type {};
 template<class T, std::size_t N> struct has_order<std::array<T, N>> : public std::true_type {};
@@ -50,7 +52,9 @@ template<class Cont, class NewKey, class NewVal> struct SameMapTypeNewTypes : pu
 template<class Key, class T, class Compare, class Alloc, class NewKey, class NewVal> struct SameMapTypeNewTypes<std::map<Key, T, Compare, Alloc>, NewKey, NewVal> { typedef typename std::map<NewKey, NewVal> type; };
 template<class Key, class T, class Compare, class Alloc, class NewKey, class NewVal> struct SameMapTypeNewTypes<std::unordered_map<Key, T, Compare, Alloc>, NewKey, NewVal> { typedef typename std::unordered_map<NewKey, NewVal> type; };
 
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
+#endif
 
 template<
     typename ContIn,
