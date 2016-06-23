@@ -73,7 +73,7 @@ int main()
 }
 ```
 
-### The I in our team
+### The I in our `team`
 There also are some convenience functions for retrieving properties of containers. For example you can count the occurrences of a character in a string.
 ```c++
 #include "fplus/fplus.h"
@@ -135,9 +135,9 @@ Muffin is happy and sleepy. *purr* *purr* *purr*
 ```
 
 ### Transformations, function composition and binding
-Let's say you have the following function [given](https://gist.github.com/Dobiasd/77587769cbc0e13ed582).
+Let's say you have the following function [given](https://gist.github.com/Dobiasd/17f5eeab2ba0ee6631394f149fc61ce2).
 ```c++
-std::list<std::uint64_t> collatz_seq(std::uint64_t x);
+std::list<int> collatz_seq(int x);
 ```
 
 And you want to create an `std::map<std::uint64_t, std::string>` containing string representations of the [Collatz sequences](https://en.wikipedia.org/wiki/Collatz_conjecture) for all numbers below 30. You can implement this nicely in a functional way too.
@@ -150,7 +150,7 @@ And you want to create an `std::map<std::uint64_t, std::string>` containing stri
 
 int main()
 {
-    typedef std::list<uint64_t> Ints;
+    typedef std::list<int> Ints;
 
     // [1, 2, 3 ... 29]
     auto numbers = fplus::generate_range<Ints>(1, 30);
