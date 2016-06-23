@@ -163,6 +163,22 @@ TEST(search_test, find_first_instance_of_token)
     EXPECT_THAT(result, Eq(fplus::just<size_t>(4)));
 }
 
+TEST(search_test, find_first_instance_of_token_at_end)
+{
+    const std::string token = "haha";
+    const std::string input = "oh, haha";
+    auto result = fplus::find_first_instance_of_token(token, input);
+    EXPECT_THAT(result, Eq(fplus::just<size_t>(4)));
+}
+
+TEST(search_test, find_first_instance_of_token_nothing)
+{
+    const std::string token = "hihi";
+    const std::string input = "oh, haha";
+    auto result = fplus::find_first_instance_of_token(token, input);
+    EXPECT_THAT(result, Eq(fplus::nothing<size_t>()));
+}
+
 TEST(search_test, find_first_instance_of_token_oversized_token)
 {
     const std::string token = "hahahahaha";
