@@ -28,6 +28,9 @@ the standard library.
 // source: https://github.com/kennytm/utils
 namespace utils {
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
+
 /**
 .. macro:: DECLARE_HAS_TYPE_MEMBER(member_name)
 
@@ -72,9 +75,7 @@ namespace utils {
 template <typename T>
 struct function_traits
     : public function_traits<decltype(&T::operator())>
-{
-    virtual ~function_traits() {}
-};
+{};
 
 namespace xx_impl
 {
@@ -100,7 +101,6 @@ namespace xx_impl
 template <typename ReturnType, typename... Args>
 struct function_traits<ReturnType(Args...)>
 {
-    virtual ~function_traits() {}
     /**
     .. type:: type result_type
 
@@ -127,7 +127,7 @@ struct function_traits<ReturnType(Args...)>
     >::type;
 
     /**
-    .. data:: static const std::size_t arity
+    .. data:: static const size_t arity
 
         Number of arguments the function object will take.
     */
@@ -138,7 +138,7 @@ struct function_traits<ReturnType(Args...)>
 
         The type of the *n*-th argument.
     */
-    template <std::size_t i>
+    template <size_t i>
     struct arg
     {
         typedef typename std::tuple_element<i, std::tuple<Args...>>::type type;
@@ -148,15 +148,12 @@ struct function_traits<ReturnType(Args...)>
 template <typename ReturnType, typename... Args>
 struct function_traits<ReturnType(*)(Args...)>
     : public function_traits<ReturnType(Args...)>
-{
-    virtual ~function_traits() {}
-};
+{};
 
 template <typename ClassType, typename ReturnType, typename... Args>
 struct function_traits<ReturnType(ClassType::*)(Args...)>
     : public function_traits<ReturnType(Args...)>
 {
-    virtual ~function_traits() {}
     typedef ClassType& owner_type;
 };
 
@@ -164,7 +161,6 @@ template <typename ClassType, typename ReturnType, typename... Args>
 struct function_traits<ReturnType(ClassType::*)(Args...) const>
     : public function_traits<ReturnType(Args...)>
 {
-    virtual ~function_traits() {}
     typedef const ClassType& owner_type;
 };
 
@@ -172,7 +168,6 @@ template <typename ClassType, typename ReturnType, typename... Args>
 struct function_traits<ReturnType(ClassType::*)(Args...) volatile>
     : public function_traits<ReturnType(Args...)>
 {
-    virtual ~function_traits() {}
     typedef volatile ClassType& owner_type;
 };
 
@@ -180,16 +175,13 @@ template <typename ClassType, typename ReturnType, typename... Args>
 struct function_traits<ReturnType(ClassType::*)(Args...) const volatile>
     : public function_traits<ReturnType(Args...)>
 {
-    virtual ~function_traits() {}
     typedef const volatile ClassType& owner_type;
 };
 
 template <typename FunctionType>
 struct function_traits<std::function<FunctionType>>
     : public function_traits<FunctionType>
-{
-    virtual ~function_traits() {}
-};
+{};
 
 #if defined(_GLIBCXX_FUNCTIONAL)
 #define MEM_FN_SYMBOL_XX0SL7G4Z0J std::_Mem_fn
@@ -202,53 +194,43 @@ struct function_traits<std::function<FunctionType>>
 template <typename R, typename C>
 struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R C::*>>
     : public function_traits<R(C*)>
-{
-    virtual ~function_traits() {}
-};
+{};
 template <typename R, typename C, typename... A>
 struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R(C::*)(A...)>>
     : public function_traits<R(C*, A...)>
-{
-    virtual ~function_traits() {}
-};
+{};
 template <typename R, typename C, typename... A>
 struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R(C::*)(A...) const>>
     : public function_traits<R(const C*, A...)>
-{
-    virtual ~function_traits() {}
-};
+{};
 template <typename R, typename C, typename... A>
 struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R(C::*)(A...) volatile>>
     : public function_traits<R(volatile C*, A...)>
-{
-    virtual ~function_traits() {}
-};
+{};
 template <typename R, typename C, typename... A>
 struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R(C::*)(A...) const volatile>>
     : public function_traits<R(const volatile C*, A...)>
-{
-    virtual ~function_traits() {}
-};
+{};
 
 #undef MEM_FN_SYMBOL_XX0SL7G4Z0J
 #endif
 
 template <typename T>
-struct function_traits<T&> : public function_traits<T> {virtual ~function_traits() {}};
+struct function_traits<T&> : public function_traits<T> {};
 template <typename T>
-struct function_traits<const T&> : public function_traits<T> {virtual ~function_traits() {}};
+struct function_traits<const T&> : public function_traits<T> {};
 template <typename T>
-struct function_traits<volatile T&> : public function_traits<T> {virtual ~function_traits() {}};
+struct function_traits<volatile T&> : public function_traits<T> {};
 template <typename T>
-struct function_traits<const volatile T&> : public function_traits<T> {virtual ~function_traits() {}};
+struct function_traits<const volatile T&> : public function_traits<T> {};
 template <typename T>
-struct function_traits<T&&> : public function_traits<T> {virtual ~function_traits() {}};
+struct function_traits<T&&> : public function_traits<T> {};
 template <typename T>
-struct function_traits<const T&&> : public function_traits<T> {virtual ~function_traits() {}};
+struct function_traits<const T&&> : public function_traits<T> {};
 template <typename T>
-struct function_traits<volatile T&&> : public function_traits<T> {virtual ~function_traits() {}};
+struct function_traits<volatile T&&> : public function_traits<T> {};
 template <typename T>
-struct function_traits<const volatile T&&> : public function_traits<T> {virtual ~function_traits() {}};
+struct function_traits<const volatile T&&> : public function_traits<T> {};
 
 
 #define FORWARD_RES_8QR485JMSBT \
@@ -329,6 +311,8 @@ typename std::add_rvalue_reference<T>::type rt_val() noexcept
 {
     return std::move(*static_cast<T*>(nullptr));
 }
+
+#pragma GCC diagnostic pop
 
 }
 

@@ -11,6 +11,9 @@
 namespace fplus
 {
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
+
 // Checks if a type has a non-template call operator.
 // source: http://stackoverflow.com/a/8907461/1866775
 template <typename F, typename... Args>
@@ -39,9 +42,10 @@ class check_callable{
     template <typename G, typename... Brgs>
     static no test(...);
 public:
-    virtual ~check_callable() {}
     static bool const value = sizeof(test<F, Args...>(tester)) == sizeof(yes);
 };
+
+#pragma GCC diagnostic pop
 
 template<class R, class... Args>
 struct check_callable_helper{ R operator()(Args...); };
