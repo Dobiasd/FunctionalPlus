@@ -19,7 +19,7 @@ namespace fplus
 // Checks if a type has a non-template call operator.
 // source: http://stackoverflow.com/a/8907461/1866775
 template <typename F, typename... Args>
-class check_callable{
+struct check_callable{
     static int tester[1];
     typedef char yes;
     typedef yes (&no)[2];
@@ -51,7 +51,7 @@ template<class R, class... Args>
 struct check_callable_helper{ R operator()(Args...); };
 
 template<typename R, typename... FArgs, typename... Args>
-class check_callable<R(*)(FArgs...), Args...>
+struct check_callable<R(*)(FArgs...), Args...>
   : public check_callable<check_callable_helper<R, FArgs...>, Args...>
 {};
 
