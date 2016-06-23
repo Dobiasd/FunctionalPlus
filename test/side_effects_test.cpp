@@ -1,0 +1,72 @@
+// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
+// https://github.com/Dobiasd/FunctionalPlus
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include "fplus/fplus.h"
+#include <vector>
+
+using namespace testing;
+
+TEST(side_effects_test, execute_serially)
+{
+    using namespace fplus;
+    std::vector<int> buffer;
+    auto push_one_return_true = [&]() -> bool { buffer.push_back(1); return true; };
+    auto push_3_ones = execute_serially(replicate(3, push_one_return_true))();
+    EXPECT_THAT(buffer, ElementsAre(1,1,1));
+}
+
+TEST(side_effects_test, execute_parallelly)
+{
+    using namespace fplus;
+    auto return_one = [&](){ return 1; };
+    EXPECT_THAT(execute_parallelly(replicate(4, return_one))(), ElementsAre(1,1,1,1));
+    //execute_fire_and_forget([](){std::cout << "Fired and forgotten." << std::endl;})();
+}
+
+TEST(side_effects_test, execute_max_n_times_until_success)
+{
+    using namespace fplus;
+    std::vector<int> buffer;
+    auto push_one_return_false = [&]() -> bool { buffer.push_back(1); return false; };
+    execute_max_n_times_until_success(5, push_one_return_false)();
+    execute_max_n_times_until_success(3, push_one_return_false, 1)();
+    EXPECT_THAT(buffer, ElementsAre(1,1,1,1,1,1,1,1));
+}
+
+TEST(side_effects_test, execute_serially_until_success)
+{
+    using namespace fplus;
+    std::vector<int> buffer;
+    auto push_one_return_true = [&]() -> bool { buffer.push_back(1); return true; };
+    auto push_one_return_false = [&]() -> bool { buffer.push_back(1); return false; };
+    typedef std::function<bool()> BoolReturningFunction;
+    typedef std::vector<BoolReturningFunction> BoolReturningFunctions;
+    execute_serially_until_success(BoolReturningFunctions({push_one_return_false, push_one_return_false, push_one_return_true, push_one_return_true}))();
+    EXPECT_THAT(buffer, ElementsAre(1,1,1));
+}
+
+TEST(side_effects_test, execute_serially_until_failure)
+{
+    using namespace fplus;
+    std::vector<int> buffer;
+    auto push_one_return_true = [&]() -> bool { buffer.push_back(1); return true; };
+    auto push_one_return_false = [&]() -> bool { buffer.push_back(1); return false; };
+    typedef std::function<bool()> BoolReturningFunction;
+    typedef std::vector<BoolReturningFunction> BoolReturningFunctions;
+    execute_serially_until_failure(BoolReturningFunctions({push_one_return_true, push_one_return_false, push_one_return_false}))();
+    EXPECT_THAT(buffer, ElementsAre(1,1));
+}
+
+TEST(side_effects_test, execute_parallelly_atomic)
+{
+    using namespace fplus;
+    std::atomic<int> atomic_int(0);
+    auto inc_atomic_int_return_true = [&]() -> bool { ++atomic_int; return true;};
+    execute_parallelly(replicate(4, inc_atomic_int_return_true))();
+    EXPECT_THAT(atomic_int.load(), 4);
+}

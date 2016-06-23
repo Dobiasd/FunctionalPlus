@@ -580,66 +580,6 @@ void Test_ContainerTools()
     assert(iterate(times_two, 5, 3) == IntVector({3,6,12,24,48}));
 }
 
-void Test_Read()
-{
-    using namespace fplus;
-
-    assert(read_value<std::size_t>("42") == just<std::size_t>(42));
-    assert(read_value<unsigned long>("42") == just<unsigned long>(42));
-    assert(read_value<unsigned long long>("42") == just<unsigned long long>(42));
-    assert(read_value<int>("42") == just<int>(42));
-    assert(read_value<long>("42") == just<long>(42));
-    assert(read_value<long long>("42") == just<long long>(42));
-    assert(read_value<int>("-3") == just<int>(-3));
-    assert(read_value<int>("twenty") == nothing<int>());
-    assert(read_value<int>("3 thousand") == nothing<int>());
-
-    assert(read_value_result<int>("42") == (ok<int, std::string>(42)));
-    assert(read_value_result<int>("-3") == (ok<int, std::string>(-3)));
-    assert(is_error(read_value_result<int>("twenty")));
-    assert(is_error(read_value_result<int>("3 thousand")));
-
-    assert(is_in_range(-42.4f, -42.2f)(unsafe_get_just(read_value<float>("-42.3"))));
-    assert(is_in_range(-42.4 , -42.2 )(unsafe_get_just(read_value<double>("-42.3"))));
-    assert(is_in_range(-42.4L, -42.2L )(unsafe_get_just(read_value<long double>("-42.3"))));
-}
-
-void Test_SideEffects()
-{
-    using namespace fplus;
-    typedef std::vector<int> Ints;
-    Ints buffer;
-    //auto push_one = [&](){ buffer.push_back(1); };
-    auto push_one_return_true = [&]() -> bool { buffer.push_back(1); return true; };
-    auto push_one_return_false = [&]() -> bool { buffer.push_back(1); return false; };
-    auto push_3_ones = execute_serially(replicate(3, push_one_return_true))();
-    assert(buffer == Ints({1,1,1}));
-
-    auto return_one = [&](){ return 1; };
-    assert(execute_parallelly(replicate(4, return_one))() == Ints({1,1,1,1}));
-    //execute_fire_and_forget([](){std::cout << "Fired and forgotten." << std::endl;})();
-
-    buffer.clear();
-    execute_max_n_times_until_success(5, push_one_return_false)();
-    execute_max_n_times_until_success(3, push_one_return_false, 1)();
-    assert(buffer == Ints({1,1,1,1,1,1,1,1}));
-
-    buffer.clear();
-    typedef std::function<bool()> BoolReturningFunction;
-    typedef std::vector<BoolReturningFunction> BoolReturningFunctions;
-    execute_serially_until_success(BoolReturningFunctions({push_one_return_false, push_one_return_false, push_one_return_true, push_one_return_true}))();
-    assert(buffer == Ints({1,1,1}));
-
-    buffer.clear();
-    execute_serially_until_failure(BoolReturningFunctions({push_one_return_true, push_one_return_false, push_one_return_false}))();
-    assert(buffer == Ints({1,1}));
-
-    std::atomic<int> atomic_int(0);
-    auto inc_atomic_int_return_true = [&]() -> bool { ++atomic_int; return true;};
-    execute_parallelly(replicate(4, inc_atomic_int_return_true))();
-    assert(atomic_int.load() == 4);
-}
-
 bool is_odd(int x) { return x % 2 == 1; }
 void Test_example_KeepIf()
 {
@@ -821,14 +761,6 @@ int main()
     std::cout << "Testing ContainerTools." << std::endl;
     Test_ContainerTools();
     std::cout << "ContainerTools OK." << std::endl;
-
-    std::cout << "Testing Read." << std::endl;
-    Test_Read();
-    std::cout << "Read OK." << std::endl;
-
-    std::cout << "Testing Side Effects." << std::endl;
-    Test_SideEffects();
-    std::cout << "Side Effects OK." << std::endl;
 
     std::cout << "Testing Applications." << std::endl;
     Test_example_KeepIf();
