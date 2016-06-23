@@ -11,8 +11,10 @@
 namespace fplus
 {
 
+#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Weffc++"
+#endif
 
 // Checks if a type has a non-template call operator.
 // source: http://stackoverflow.com/a/8907461/1866775
@@ -53,7 +55,9 @@ class check_callable<R(*)(FArgs...), Args...>
   : public check_callable<check_callable_helper<R, FArgs...>, Args...>
 {};
 
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
+#endif
 
 template<int TargetArity, typename F>
 void check_arity_helper(std::true_type)

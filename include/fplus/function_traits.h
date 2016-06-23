@@ -28,8 +28,10 @@ the standard library.
 // source: https://github.com/kennytm/utils
 namespace utils {
 
+#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Weffc++"
+#endif
 
 /**
 .. macro:: DECLARE_HAS_TYPE_MEMBER(member_name)
@@ -312,7 +314,9 @@ typename std::add_rvalue_reference<T>::type rt_val() noexcept
     return std::move(*static_cast<T*>(nullptr));
 }
 
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
+#endif
 
 }
 
