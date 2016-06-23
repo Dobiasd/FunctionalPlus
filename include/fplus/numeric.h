@@ -137,6 +137,8 @@ X int_power(X base, X exp)
 
 namespace internal
 {
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Weffc++"
     template <typename... Conds>
     struct and_ : std::true_type
     {
@@ -149,6 +151,7 @@ namespace internal
 
     template <typename... T>
     using are_all_pod = and_<std::is_pod<T>...>;
+    #pragma GCC diagnostic pop
 }
 
 namespace internal
