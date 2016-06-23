@@ -2,7 +2,7 @@
     "version": "1.0.0",
     "summary": "Search the FunctionalPlus C++ library.",
     "repository": "https://github.com/dobiasd/functionalplus.git",
-    "license": "MIT",
+    "license": "Boost 1.0",
     "source-directories": [
         "src"
     ],

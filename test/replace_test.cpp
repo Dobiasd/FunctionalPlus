@@ -1,3 +1,8 @@
+// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
+// https://github.com/Dobiasd/FunctionalPlus
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -30,4 +35,3 @@ TEST(replace_test, replace_tokens)
     auto result = fplus::replace_tokens(source, dest, input);
     EXPECT_THAT(result, Eq("oh, hihiha!"));
 }
-
