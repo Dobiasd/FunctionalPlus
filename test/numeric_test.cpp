@@ -27,6 +27,8 @@ namespace {
     {
         return s.size();
     }
+
+    typedef std::vector<int> Ints;
 }
 
 TEST(numeric_test, is_in_range)
@@ -216,4 +218,40 @@ TEST(numeric_test, max_on)
     EXPECT_THAT(fplus::max_on(mod7)(1, 2), Eq(2));
     EXPECT_THAT(fplus::max_on(mod7)(1, 2, 3, 7), Eq(3));
     EXPECT_THAT(fplus::max_on(mod7)(1, 2, 3, 6, 77), Eq(6));
+}
+
+TEST(numeric_test, mean)
+{
+    using namespace fplus;
+    Ints xs = {1,4,4};
+    EXPECT_THAT(mean<int>(xs), Eq(3));
+}
+
+TEST(numeric_test, mean_obj)
+{
+    using namespace fplus;
+    struct vec_2d
+    {
+        double x;
+        double y;
+        vec_2d operator + (const vec_2d& rhs) const
+        {
+            return {x + rhs.x, y + rhs.y};
+        };
+        vec_2d operator / (std::size_t scalar) const
+        {
+            double scalar_d = static_cast<double>(scalar);
+            return {x / scalar_d, y / scalar_d};
+        };
+    };
+
+    auto vec_2d_length_squared = [](const vec_2d& v) -> double
+    {
+        return v.x * v.x + v.y * v.y;
+    };
+    std::vector<vec_2d> vecs = {{1,1}, {3,3}};
+    auto mean_vec = mean_obj(vecs);
+    double mean_vec_length_squared_dest = 2*2 + 2*2;
+    EXPECT_THAT(vec_2d_length_squared(mean_vec),
+        DoubleEq(mean_vec_length_squared_dest));
 }

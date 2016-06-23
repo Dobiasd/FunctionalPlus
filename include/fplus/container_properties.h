@@ -194,6 +194,18 @@ Result mean(const Container& xs)
     return static_cast<Result>(sum(xs) / static_cast<T>(size_of_cont(xs)));
 }
 
+// API search type: mean_obj : [a] -> a
+// mean_obj([B 1, B 4, B 4]) == B 3
+// The provided objects must support division by a std::size_t.
+// unsafe! Make sure sum(xs) does not overflow.
+template <typename Container,
+    typename T = typename Container::value_type>
+T mean_obj(const Container& xs)
+{
+    assert(size_of_cont(xs) != 0);
+    return sum(xs) / size_of_cont(xs);
+}
+
 // API search type: mean_using_doubles : [a] -> a
 // mean_using_doubles([1, 4, 4]) == 3
 // Converts elements to double before calculating the sum to prevent overflows.
