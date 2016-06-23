@@ -39,6 +39,7 @@ class check_callable{
     template <typename G, typename... Brgs>
     static no test(...);
 public:
+    virtual ~check_callable() {}
     static bool const value = sizeof(test<F, Args...>(tester)) == sizeof(yes);
 };
 
