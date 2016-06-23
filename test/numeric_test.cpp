@@ -255,3 +255,36 @@ TEST(numeric_test, mean_obj)
     EXPECT_THAT(vec_2d_length_squared(mean_vec),
         DoubleEq(mean_vec_length_squared_dest));
 }
+
+TEST(numeric_test, variadic)
+{
+    using namespace fplus;
+    EXPECT_THAT(min(1,2,3,4,5), Eq(1));
+    EXPECT_THAT(min(1.01,1.02,1.03,1.04,1.05), Eq(1.01));
+    EXPECT_THAT(min(-54,2,3,54,5), Eq(-54));
+    EXPECT_THAT(min(-54.2,2.7,3,54,5), Eq(-54.2));
+    EXPECT_THAT(min(123,123,123,124), Eq(123));
+    EXPECT_THAT(min(123), Eq(123));
+    EXPECT_THAT(min(123,123), Eq(123));
+    EXPECT_THAT(min(123,123,123), Eq(123));
+    EXPECT_THAT(min(-1), Eq(-1));
+    EXPECT_THAT(min(-1,-2), Eq(-2));
+    EXPECT_THAT(min(-1,-2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), Eq(-2));
+    EXPECT_THAT(min('a','b','c'), Eq('a'));
+
+    EXPECT_THAT(max(1,2,3,4,5), Eq(5));
+    EXPECT_THAT(max(1.01,1.02,1.03,1.04,1.05), Eq(1.05));
+    EXPECT_THAT(max(-54,2,3,54,5), Eq(54));
+    EXPECT_THAT(max(-54.2,2.7,3,54.85,5), Eq(54.85));
+    EXPECT_THAT(max(123,123,123,124), Eq(124));
+    EXPECT_THAT(max(123), Eq(123));
+    EXPECT_THAT(max(123,123), Eq(123));
+    EXPECT_THAT(max(123,123,123), Eq(123));
+    EXPECT_THAT(max(123,123,123,123), Eq(123));
+    EXPECT_THAT(max(123,123,123,123,123), Eq(123));
+    EXPECT_THAT(max(123,123,123,123,123,123), Eq(123));
+    EXPECT_THAT(max(-1), Eq(-1));
+    EXPECT_THAT(max(-1,-2), Eq(-1));
+    EXPECT_THAT(max(-1,-2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), Eq(0));
+    EXPECT_THAT(max('a','b','c'), Eq('c'));
+}

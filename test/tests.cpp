@@ -874,40 +874,6 @@ void Test_example_CollatzSequence()
     std::cout << collatz_dict[17] << std::endl;
 }
 
-void Test_VariadicNumericTools()
-{
-    using namespace fplus;
-
-    assert(min(1,2,3,4,5) == 1);
-    assert(min(1.01,1.02,1.03,1.04,1.05) == 1.01);
-    assert(min(-54,2,3,54,5) == -54);
-    assert(min(-54.2,2.7,3,54,5) == -54.2);
-    assert(min(123,123,123,124) == 123);
-    assert(min(123) == 123);
-    assert(min(123,123) == 123);
-    assert(min(123,123,123) == 123);
-    assert(min(-1) == -1);
-    assert(min(-1,-2) == -2);
-    assert(min(-1,-2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0) == -2);
-    assert(min('a','b','c') == 'a');
-
-    assert(max(1,2,3,4,5) == 5);
-    assert(max(1.01,1.02,1.03,1.04,1.05) == 1.05);
-    assert(max(-54,2,3,54,5) == 54);
-    assert(max(-54.2,2.7,3,54.85,5) == 54.85);
-    assert(max(123,123,123,124) == 124);
-    assert(max(123) == 123);
-    assert(max(123,123) == 123);
-    assert(max(123,123,123) == 123);
-    assert(max(123,123,123,123) == 123);
-    assert(max(123,123,123,123,123) == 123);
-    assert(max(123,123,123,123,123,123) == 123);
-    assert(max(-1) == -1);
-    assert(max(-1,-2) == -1);
-    assert(max(-1,-2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0) == 0);
-    assert(max('a','b','c') == 'c');
-}
-
 int main()
 {
     std::cout << "Running all tests." << std::endl;
@@ -927,10 +893,6 @@ int main()
     std::cout << "Testing Side Effects." << std::endl;
     Test_SideEffects();
     std::cout << "Side Effects OK." << std::endl;
-
-    std::cout << "Testing Variadic Numeric Tools." << std::endl;
-    Test_VariadicNumericTools();
-    std::cout << "Variadic Numeric Tools OK." << std::endl;
 
     std::cout << "Testing Applications." << std::endl;
     Test_example_KeepIf();
