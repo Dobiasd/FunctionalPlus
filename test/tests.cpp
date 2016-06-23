@@ -580,56 +580,6 @@ void Test_ContainerTools()
     assert(iterate(times_two, 5, 3) == IntVector({3,6,12,24,48}));
 }
 
-void Test_StringTools()
-{
-    using namespace fplus;
-    std::string untrimmed = "  \n \t   foo  ";
-    assert(trim_whitespace_left(untrimmed) == "foo  ");
-    assert(trim_whitespace_right(untrimmed) == "  \n \t   foo");
-    assert(trim_whitespace(untrimmed) == "foo");
-    std::string text = "Hi,\nI am a\r\n***strange***\n\rstring.";
-    std::vector<std::string> textAsLinesWithEmty = {
-        std::string("Hi,"),
-        std::string("I am a"),
-        std::string("***strange***"),
-        std::string(""),
-        std::string("string.") };
-    std::vector<std::string> textAsLinesWithoutEmpty = {
-        std::string("Hi,"),
-        std::string("I am a"),
-        std::string("***strange***"),
-        std::string("string.") };
-    std::vector<std::string> textAsWords = {
-        std::string("Hi"),
-        std::string("I"),
-        std::string("am"),
-        std::string("a"),
-        std::string("strange"),
-        std::string("string") };
-    std::vector<std::string> textSplitBySpaceOnly = {
-        std::string("Hi,\nI"),
-        std::string("am"),
-        std::string("a\r\n***strange***\n\rstring.") };
-    std::vector<std::string> textSplitBySpaceAndCommaAndLine = {
-        std::string("Hi"),
-        std::string("I"),
-        std::string("am"),
-        std::string("a"),
-        std::string("***strange***"),
-        std::string("string.") };
-
-    assert(split_lines(text, true)
-            == textAsLinesWithEmty);
-    assert(split_lines(text, false)
-            == textAsLinesWithoutEmpty);
-    assert(split_words(text, false) == textAsWords);
-    assert(split_words_by(text, ' ', false) == textSplitBySpaceOnly);
-    assert(split_words_by_many(text, std::string{ " ,\r\n" }, false) == textSplitBySpaceAndCommaAndLine);
-
-    assert(to_string_fill_left('0', 5, 42) == std::string("00042") );
-    assert(to_string_fill_right(' ', 5, 42) == std::string("42   ") );
-}
-
 void Test_Read()
 {
     using namespace fplus;
@@ -871,10 +821,6 @@ int main()
     std::cout << "Testing ContainerTools." << std::endl;
     Test_ContainerTools();
     std::cout << "ContainerTools OK." << std::endl;
-
-    std::cout << "Testing StringTools." << std::endl;
-    Test_StringTools();
-    std::cout << "StringTools OK." << std::endl;
 
     std::cout << "Testing Read." << std::endl;
     Test_Read();

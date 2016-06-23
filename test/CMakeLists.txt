@@ -29,6 +29,7 @@ _add_test(numeric_test)
 _add_test(result_test)
 _add_test(replace_test)
 _add_test(search_test)
+_add_test(stringtools_test)
 
 
 add_custom_target(unittest compare_test
@@ -41,6 +42,7 @@ add_custom_target(unittest compare_test
                         COMMAND result_test
                         COMMAND replace_test
                         COMMAND search_test
+                        COMMAND stringtools_test
                         COMMENT "Running unittests\n\n"
                         VERBATIM
                         )
