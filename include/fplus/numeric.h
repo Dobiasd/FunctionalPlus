@@ -90,11 +90,11 @@ int sign_with_zero(X x)
 template <typename Out, typename X>
 Out round(X x)
 {
-    if (x < std::numeric_limits<Out>::lowest())
-        return std::numeric_limits<Out>::lowest();
-    if (x > std::numeric_limits<Out>::max())
-        return std::numeric_limits<Out>::max();
     static_assert(std::is_integral<Out>::value, "type must be integral");
+    if (static_cast<double>(x) < static_cast<double>(std::numeric_limits<Out>::lowest()))
+        return std::numeric_limits<Out>::lowest();
+    if (static_cast<double>(x) > static_cast<double>(std::numeric_limits<Out>::max()))
+        return std::numeric_limits<Out>::max();
     if (is_negative(x))
         x -= 1;
     return static_cast<Out>(x + 0.5);
