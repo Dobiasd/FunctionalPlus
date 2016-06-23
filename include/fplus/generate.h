@@ -52,7 +52,7 @@ ContainerOut generate_by_idx(F f, std::size_t amount)
 // API search type: repeat : (Int, [a]) -> [a]
 // repeat(3, [1, 2]) == [1, 2, 1, 2, 1, 2]
 template <typename Container>
-Container repeat(size_t n, const Container& xs)
+Container repeat(std::size_t n, const Container& xs)
 {
     std::vector<Container> xss(n, xs);
     return concat(xss);
@@ -62,7 +62,7 @@ Container repeat(size_t n, const Container& xs)
 // replicate(3, 1) == [1, 1, 1]
 template <typename T,
         typename ContainerOut = std::vector<T>>
-ContainerOut replicate(size_t n, const T& x)
+ContainerOut replicate(std::size_t n, const T& x)
 {
     return ContainerOut(n, x);
 }

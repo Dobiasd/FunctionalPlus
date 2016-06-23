@@ -42,6 +42,7 @@ void Test_ContainerTools()
     auto squareLambda = [](int x) { return x*x; };
 
     auto is_even = [](int x){ return x % 2 == 0; };
+    auto is_even_size_t = [](std::size_t x){ return x % 2 == 0; };
     auto is_odd = [](int x){ return x % 2 == 1; };
     typedef std::pair<int, int> IntPair;
     typedef std::vector<int> IntVector;
@@ -351,17 +352,17 @@ void Test_ContainerTools()
 
     assert(find_first_by(is3, xs) == just(3));
     assert(find_first_by(is4, xs) == nothing<int>());
-    assert(find_first_idx_by(is2, xs) == just<size_t>(1));
-    assert(find_first_idx_by(is4, xs) == nothing<size_t>());
-    assert(find_first_idx(2, xs) == just<size_t>(1));
-    assert(find_first_idx(4, xs) == nothing<size_t>());
+    assert(find_first_idx_by(is2, xs) == just<std::size_t>(1));
+    assert(find_first_idx_by(is4, xs) == nothing<std::size_t>());
+    assert(find_first_idx(2, xs) == just<std::size_t>(1));
+    assert(find_first_idx(4, xs) == nothing<std::size_t>());
 
     assert(find_last_by(is3, xs) == just(3));
     assert(find_last_by(is4, xs) == nothing<int>());
-    assert(find_last_idx_by(is2, xs) == just<size_t>(4));
-    assert(find_last_idx_by(is4, xs) == nothing<size_t>());
-    assert(find_last_idx(2, xs) == just<size_t>(4));
-    assert(find_last_idx(4, xs) == nothing<size_t>());
+    assert(find_last_idx_by(is2, xs) == just<std::size_t>(4));
+    assert(find_last_idx_by(is4, xs) == nothing<std::size_t>());
+    assert(find_last_idx(2, xs) == just<std::size_t>(4));
+    assert(find_last_idx(4, xs) == nothing<std::size_t>());
 
     assert(nth_element<IntVector>(2)(xs) == 2);
     assert(nth_element_flipped(xs)(2) == 2);
@@ -459,15 +460,26 @@ void Test_ContainerTools()
 
     assert(convert_elems<ExplicitFromIntStruct>(xs) == explicitFromIntStructs);
 
-    assert(transform_with_idx(std::plus<int>(), xs) == IntVector({1+0,2+1,2+2,3+3,2+4}));
+    auto add_size_t_and_int = [](std::size_t a, int b) -> int
+    {
+        return static_cast<int>(a) + b;
+    };
+    assert(transform_with_idx(add_size_t_and_int, xs) == IntVector({1+0,2+1,2+2,3+3,2+4}));
 
     int countUpCounter = 0;
     auto countUp = [countUpCounter]() mutable { return countUpCounter++; };
     assert(generate<IntVector>(countUp, 3) == IntVector({ 0,1,2 }));
-    assert(generate_by_idx<IntVector>(squareLambda, 3) == IntVector({ 0,1,4 }));
+    auto square_size_t_return_int = [squareLambda](std::size_t x) -> int
+    {
+        return squareLambda(static_cast<int>(x));
+    };
+    assert(generate_by_idx<IntVector>(square_size_t_return_int, 3) == IntVector({ 0,1,4 }));
 
-    auto sumis_even = [&](std::size_t x, int y) { return is_even(x + y); };
-    assert(keep_by_idx(is_even, xs) == IntVector({ 1,2,2 }));
+    auto sumis_even = [&](std::size_t x, int y)
+    {
+        return is_even(static_cast<int>(x) + y);
+    };
+    assert(keep_by_idx(is_even_size_t, xs) == IntVector({ 1,2,2 }));
     assert(keep_if_with_idx(sumis_even, xs) == IntVector({ 2,3,2 }));
     assert(drop_if_with_idx(sumis_even, xs) == IntVector({ 1,2 }));
 
@@ -717,8 +729,8 @@ void run_n_times(std::function<std::vector<int>(std::vector<int>)> f,
 {
     typedef std::chrono::time_point<std::chrono::system_clock> Time;
     Time startTime = std::chrono::system_clock::now();
-    size_t lengthSum = 0;
-    for (size_t i = 0; i < n; ++i)
+    std::size_t lengthSum = 0;
+    for (std::size_t i = 0; i < n; ++i)
     {
         lengthSum += f(inList).size();
     }
@@ -823,9 +835,9 @@ void Test_example_TheCutestCat()
         " is happy and sleepy. *purr* *purr* *purr*" << std::endl;
 }
 
-std::list<std::uint64_t> collatz_seq(std::uint64_t x)
+std::list<int> collatz_seq(int x)
 {
-    std::list<std::uint64_t> result;
+    std::list<int> result;
     while (x > 1)
     {
         result.push_back(x);
@@ -840,7 +852,7 @@ std::list<std::uint64_t> collatz_seq(std::uint64_t x)
 
 void Test_example_CollatzSequence()
 {
-    typedef std::list<uint64_t> Ints;
+    typedef std::list<int> Ints;
 
     // [1, 2, 3 ... 29]
     auto numbers = fplus::generate_range<Ints>(1, 30);

@@ -46,7 +46,7 @@ TEST(search_test, find_first_idx_by)
 {
     std::vector<int> v = { 1, 3, 4, 6, 9 };
     auto result = fplus::find_first_idx_by(is_even, v);
-    EXPECT_THAT(result, Eq(fplus::just<size_t>(2)));
+    EXPECT_THAT(result, Eq(fplus::just<std::size_t>(2)));
 }
 
 TEST(search_test, find_first_idx_by_nothing_found)
@@ -119,19 +119,19 @@ TEST(search_test, find_all_idxs_of)
     EXPECT_THAT(result, ElementsAre(2, 3));
 }
 
-TEST(search_test, find_last_idxs_of_nothing_found)
-{
-    std::vector<int> v = { 1, 3, 5, 7, 9 };
-    auto result = fplus::find_all_idxs_of(4, v);
-    EXPECT_THAT(result, IsEmpty());
-}
-
 TEST(search_test, find_all_instances_of_token)
 {
     const std::string token = "haha";
     const std::string input = "oh, hahaha!";
     auto result = fplus::find_all_instances_of_token(token, input);
     EXPECT_THAT(result, ElementsAre(4, 6));
+}
+
+TEST(search_test, find_last_idxs_of_nothing_found)
+{
+    std::vector<int> v = { 1, 3, 5, 7, 9 };
+    auto result = fplus::find_all_idxs_of(4, v);
+    EXPECT_THAT(result, IsEmpty());
 }
 
 TEST(search_test, find_all_instances_of_token_oversized_token)
@@ -165,4 +165,3 @@ TEST(search_test, find_first_instance_of_token_oversized_token)
     auto result = fplus::find_first_instance_of_token(token, input);
     EXPECT_THAT(result, Eq(fplus::nothing<size_t>()));
 }
-

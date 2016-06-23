@@ -13,7 +13,12 @@ namespace {
         return ( value % 2 == 0 );
     }
 
-    bool accept_with_index(size_t index, int value)
+    bool is_even_size_t(std::size_t value)
+    {
+        return ( value % 2 == 0 );
+    }
+
+    bool accept_with_index(std::size_t index, int value)
     {
         return ( index % 2 == 0 ) && ( value >= 10 );
     }
@@ -57,21 +62,21 @@ TEST(filter_test, drop_if_with_idx)
 TEST(filter_test, keep_by_idx)
 {
     const std::vector<int> v = { 11, 17, 3, 8, 49, 6 };
-    auto result = fplus::keep_by_idx(is_even, v);
+    auto result = fplus::keep_by_idx(is_even_size_t, v);
     EXPECT_THAT(result, ElementsAre(11, 3, 49));
 }
 
 TEST(filter_test, drop_by_idx)
 {
     const std::vector<int> v = { 11, 17, 3, 8, 49, 6 };
-    auto result = fplus::drop_by_idx(is_even, v);
+    auto result = fplus::drop_by_idx(is_even_size_t, v);
     EXPECT_THAT(result, ElementsAre(17, 8, 6));
 }
 
 TEST(filter_test, keep_idxs)
 {
     const std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7 };
-    const std::vector<size_t> indices = { 2, 5 };
+    const std::vector<std::size_t> indices = { 2, 5 };
     auto result = fplus::keep_idxs(indices, v);
     EXPECT_THAT(result, ElementsAre(3, 6));
 }
@@ -79,7 +84,7 @@ TEST(filter_test, keep_idxs)
 TEST(filter_test, drop_idxs)
 {
     const std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7 };
-    const std::vector<size_t> indices = { 2, 5 };
+    const std::vector<std::size_t> indices = { 2, 5 };
     auto result = fplus::drop_idxs(indices, v);
     EXPECT_THAT(result, ElementsAre(1, 2, 4, 5, 7));
 }
@@ -196,4 +201,3 @@ TEST(filter_test, trim_token)
     auto result = fplus::trim_token(token, v);
     EXPECT_THAT(result, ElementsAre(7, 8, 9));
 }
-

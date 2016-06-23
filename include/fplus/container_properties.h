@@ -66,8 +66,8 @@ typename std::size_t minimum_idx_by(Compare comp,
 {
     check_compare_for_container<Compare, Container>();
     assert(is_not_empty(xs));
-    return std::distance(std::begin(xs),
-        std::min_element(std::begin(xs), std::end(xs), comp));
+    return static_cast<std::size_t>(std::distance(std::begin(xs),
+        std::min_element(std::begin(xs), std::end(xs), comp)));
 }
 
 // API search type: maximum_idx_by : [a] -> Int
@@ -79,8 +79,8 @@ typename std::size_t maximum_idx_by(Compare comp,
 {
     check_compare_for_container<Compare, Container>();
     assert(is_not_empty(xs));
-    return std::distance(std::begin(xs),
-        std::max_element(std::begin(xs), std::end(xs), comp));
+    return static_cast<std::size_t>(std::distance(std::begin(xs),
+        std::max_element(std::begin(xs), std::end(xs), comp)));
 }
 
 
@@ -190,7 +190,8 @@ template <typename Result, typename Container>
 Result mean(const Container& xs)
 {
     assert(size_of_cont(xs) != 0);
-    return static_cast<Result>(sum(xs) / size_of_cont(xs));
+    typedef typename Container::value_type T;
+    return static_cast<Result>(sum(xs) / static_cast<T>(size_of_cont(xs)));
 }
 
 // API search type: mean_using_doubles : [a] -> a
@@ -233,7 +234,7 @@ Result median(const Container& xs)
         std::advance(it1, size_of_cont(xsSorted) / 2 - 1);
         auto it2 = it1;
         ++it2;
-        return (*it1 + *it2) / static_cast<Result>(2);
+        return static_cast<Result>(*it1 + *it2) / static_cast<Result>(2);
     }
 }
 

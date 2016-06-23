@@ -52,7 +52,7 @@ maybe<std::size_t> find_first_idx_by
     auto it = std::find_if(std::begin(xs), std::end(xs), pred);
     if (it == std::end(xs))
         return nothing<std::size_t>();
-    return just<std::size_t>(std::distance(std::begin(xs), it));
+    return static_cast<std::size_t>(std::distance(std::begin(xs), it));
 }
 
 // API search type: find_last_idx_by : ((a -> Bool), [a]) -> Maybe Int

@@ -58,7 +58,7 @@ private:
     {
         assert(is_ok() != is_error());
     }
-    result() {}
+    result() : ptr_ok_(ptr_ok()), ptr_error_(ptr_error()) {}
     typedef std::unique_ptr<Ok> ptr_ok;
     typedef std::unique_ptr<Error> ptr_error;
     friend result<Ok, Error> ok<Ok, Error>(const Ok& ok);

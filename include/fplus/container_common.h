@@ -937,7 +937,7 @@ ContainerOut generate_range_step
 
 // API search type: generate_range : (a, a) -> [a]
 // generate_range(2, 9) == [2, 3, 4, 5, 6, 7, 8]
-template <typename ContainerOut, typename T>
+template <typename ContainerOut, typename T = typename ContainerOut::value_type>
 ContainerOut generate_range(const T start, const T end)
 {
     return generate_range_step<ContainerOut, T>(start, end, 1);

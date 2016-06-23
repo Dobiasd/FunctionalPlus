@@ -163,7 +163,7 @@ show_float(std::size_t min_left_chars, std::size_t right_char_count,
             -> std::string
     {
         std::stringstream stream;
-        stream << std::fixed << std::setprecision(right_char_count) << x;
+        stream << std::fixed << std::setprecision(static_cast<int>(right_char_count)) << x;
         std::string s = stream.str();
         std::size_t min_dest_length = min_left_chars + 1 + right_char_count;
         return fill_left(fillChar, min_dest_length, s);

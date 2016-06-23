@@ -59,4 +59,3 @@ endfunction(add_test_executable)
 
 add_test_executable(tests tests.cpp)
 target_link_libraries(tests ${CMAKE_THREAD_LIBS_INIT})
-

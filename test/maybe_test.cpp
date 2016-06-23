@@ -104,7 +104,8 @@ TEST(maybe_test, transform_and_keep_justs)
     Ints wholeNumbers = { -3, 4, 16, -1 };
     EXPECT_THAT(transform_and_keep_justs(sqrtToMaybeInt, wholeNumbers)
            , Eq(Ints({2,4})));
-    EXPECT_THAT(transform_and_concat(bind_1st_of_2(replicate<int>, 3), Ints{ 1,2 })
+    EXPECT_THAT(transform_and_concat(
+            bind_1st_of_2(replicate<int>, std::size_t(3)), Ints{ 1,2 })
            , Eq(Ints({ 1,1,1,2,2,2 })));
 }
 

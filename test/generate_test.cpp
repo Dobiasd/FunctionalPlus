@@ -31,8 +31,8 @@ TEST(generate_test, generate)
 
 TEST(generate_test, generate_by_idx)
 {
-    auto f = [](size_t value) { return value + 10; };
-    auto result = fplus::generate_by_idx<std::vector<int>>(f, 6);
+    auto f = [](std::size_t value) { return value + 10; };
+    auto result = fplus::generate_by_idx<std::vector<std::size_t>>(f, 6);
     EXPECT_THAT(result, ElementsAre(10, 11, 12, 13, 14 ,15));
 }
 
@@ -320,4 +320,3 @@ TEST(generate_test, tails)
     EXPECT_THAT(result[3], ElementsAre(3));
     EXPECT_THAT(result[4], IsEmpty());
 }
-

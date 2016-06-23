@@ -124,7 +124,7 @@ struct function_traits<ReturnType(Args...)>
     >::type;
 
     /**
-    .. data:: static const size_t arity
+    .. data:: static const std::size_t arity
 
         Number of arguments the function object will take.
     */
@@ -135,7 +135,7 @@ struct function_traits<ReturnType(Args...)>
 
         The type of the *n*-th argument.
     */
-    template <size_t i>
+    template <std::size_t i>
     struct arg
     {
         typedef typename std::tuple_element<i, std::tuple<Args...>>::type type;

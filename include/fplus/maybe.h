@@ -26,7 +26,7 @@ public:
     const T& unsafe_get_just() const { assert(is_just()); return *ptr_; }
     typedef T type;
 
-    maybe() {};
+    maybe() : ptr_(ptr_t()) {};
     maybe(const T& val_just) :
         ptr_(new T(val_just))
     {}
