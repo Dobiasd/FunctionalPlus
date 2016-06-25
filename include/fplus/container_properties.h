@@ -322,4 +322,15 @@ std::size_t count
     return size_of_cont(find_all_idxs_of(x, xs));
 }
 
+// API search type: is_permutation_of : ([a], [a]) -> Bool
+// Checks if one container is a permuation of the other one.
+// is_permutation_of([2,3,1], [1,2,3]) == true
+// O(log(n))
+template <typename Container>
+bool is_permutation_of(const Container& xs, const Container& ys)
+{
+    return size_of_cont(xs) == size_of_cont(ys) &&
+        sort(xs) == sort(ys);
+}
+
 } // namespace fplus

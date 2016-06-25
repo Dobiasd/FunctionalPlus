@@ -831,3 +831,12 @@ TEST(container_common_test, iterate)
     EXPECT_EQ(iterate(times_two, 2, 3), IntVector({3,6}));
     EXPECT_EQ(iterate(times_two, 5, 3), IntVector({3,6,12,24,48}));
 }
+
+TEST(container_common_test, is_permutation_of)
+{
+    using namespace fplus;
+    EXPECT_TRUE(is_permutation_of(IntVector({2,3,1}), IntVector({1,2,3})));
+    EXPECT_FALSE(is_permutation_of(IntVector({2,3,2}), IntVector({1,2,3})));
+    EXPECT_FALSE(is_permutation_of(IntVector({2,3}), IntVector({1,2,3})));
+    EXPECT_FALSE(is_permutation_of(IntVector({2,3,1}), IntVector({1,23})));
+}
