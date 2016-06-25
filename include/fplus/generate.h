@@ -305,6 +305,7 @@ ContainerOut combinations_with_replacement(std::size_t power,
 
 // API search type: power_set : [a] -> [[a]]
 // power_set("xyz") == ["", "x", "y", "z", "xy", "xz", "yz", "xyz"]
+// Also known as subsequences.
 template <typename ContainerIn,
     typename T = typename ContainerIn::value_type,
     typename ContainerOut = std::vector<ContainerIn>>
