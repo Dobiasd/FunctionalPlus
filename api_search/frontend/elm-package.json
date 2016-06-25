@@ -10,6 +10,7 @@
     "dependencies": {
         "elm-lang/core": "4.0.0 <= v < 5.0.0",
         "elm-lang/html": "1.0.0 <= v < 2.0.0",
+        "elm-community/list-extra": "2.0.1 <= v < 3.0.0",
         "evancz/elm-markdown": "3.0.0 <= v < 4.0.0",
         "Bogdanp/elm-combine": "2.2.1 <= v < 3.0.0"
     },

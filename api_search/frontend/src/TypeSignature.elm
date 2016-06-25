@@ -10,6 +10,7 @@ import Combine.Num as CN
 import Char
 import Dict
 import List exposing ((::))
+import List.Extra exposing (permutations)
 import Maybe
 import Result
 import String
@@ -370,15 +371,10 @@ equalityToFloat x y =
         0
 
 
-sortSignatures : List Signature -> List Signature
-sortSignatures =
-    List.sortBy (showSignature True)
-
-
 functionCompatibility : Signature -> Signature -> Float
 functionCompatibility db query =
     case ( db, query ) of
-        ( VariableType _, ListType (TypeConstructor "Char")) ->
+        ( VariableType _, ListType (TypeConstructor "Char") ) ->
             0.9
 
         ( VariableType _, TypeConstructor _ ) ->
@@ -412,12 +408,14 @@ functionCompatibility db query =
             if List.length xs /= List.length ys then
                 0
             else
-                Basics.max (List.map2 functionCompatibility xs ys |> List.product)
-                    (List.map2 functionCompatibility
-                        (sortSignatures xs)
-                        (sortSignatures ys)
-                        |> List.product
+                List.map
+                    (\ys' ->
+                        List.map2 functionCompatibility xs ys'
+                            |> List.product
                     )
+                    (permutations ys)
+                    |> List.maximum
+                    |> Maybe.withDefault 0
 
         _ ->
-            0.0
+            0
