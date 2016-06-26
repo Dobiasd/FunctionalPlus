@@ -445,10 +445,13 @@ functionRating queryOrig querySig querySigLower function =
                                 allRatings =
                                     List.map (typeRating factor sig)
                                         function.subSignatures
+                                name_shortness_factor =
+                                    120 / (120 + stringLengthFloat function.name)
                             in
                                 allRatings
                                     |> List.maximum
                                     |> Maybe.withDefault 0
+                                    |> \x -> x * name_shortness_factor
 
                         _ ->
                             0
