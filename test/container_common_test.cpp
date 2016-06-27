@@ -246,7 +246,6 @@ TEST(container_common_test, combination)
 {
     using namespace fplus;
     typedef std::vector<std::list<int>> intListVec;
-    std::string ABCD("ABCD");
     EXPECT_EQ(combinations(2, ABCD), string_vec({"AB", "AC", "AD", "BC", "BD", "CD"}));
     EXPECT_EQ(combinations(1, ABCD), string_vec({"A", "B", "C", "D"}));
     EXPECT_EQ(combinations(3, ABCD), string_vec({"ABC", "ABD", "ACD", "BCD"}));
