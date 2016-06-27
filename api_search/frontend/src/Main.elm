@@ -220,7 +220,7 @@ view model =
             [ div [ class "githublink" ]
                 [ let
                     url =
-                        "https://github.com/dobiasd/"
+                        "https://github.com/Dobiasd/FunctionalPlus/"
                   in
                     a [ href url ]
                         [ div [ class "logo" ]
