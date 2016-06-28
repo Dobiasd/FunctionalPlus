@@ -450,6 +450,7 @@ TEST(container_common_test, mean)
     std::vector<unsigned char> uchars = {200, 202};
     typedef std::vector<double> DoubleVector;
     EXPECT_EQ(sum(xs), 10);
+    EXPECT_EQ(product(xs), 24);
     EXPECT_EQ(mean<int>(xs), 2);
     EXPECT_EQ(mean_using_doubles<unsigned char>(uchars), 201);
     EXPECT_EQ(median(IntVector({ 3 })), 3);

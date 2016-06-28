@@ -488,15 +488,33 @@ ContainerOut scan_right_1(F f, const ContainerIn& xs)
 }
 
 // API search type: sum : [a] -> a
-// sum([1, 2, 3]) == 7
-template <typename Container>
-typename Container::value_type sum(const Container& xs)
+// sum([0,3,1]) == 4
+// sum([]) == 0
+template <typename Container,
+    typename T = typename Container::value_type>
+T sum(const Container& xs)
 {
-    typedef typename Container::value_type X;
-    return fold_left([](const X& acc, const X& x) -> X
-        {
-            return acc+x;
-        }, X(), xs);
+    T result = T();
+    for (const auto& x : xs)
+    {
+        result = result + x;
+    }
+    return result;
+}
+
+// API search type: product : [a] -> a
+// sum([3,1,2]) == 6
+// sum([]) == 1
+template <typename Container,
+    typename T = typename Container::value_type>
+T product(const Container& xs)
+{
+    T result{1};
+    for (const auto& x : xs)
+    {
+        result = result * x;
+    }
+    return result;
 }
 
 // API search type: append : ([a], [a]) -> [a]
