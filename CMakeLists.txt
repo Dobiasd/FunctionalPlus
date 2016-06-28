@@ -9,7 +9,6 @@ option(UNITTEST "Build unit tests" OFF)
 
 
 install(DIRECTORY include/fplus DESTINATION include)
-install(FILES include/fplus.h DESTINATION include)
 
 add_definitions(-Wall
                 -Wextra
