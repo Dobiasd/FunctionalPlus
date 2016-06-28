@@ -5,18 +5,26 @@ set(PROJECT_VERSION 0.1)
 
 message(STATUS "===( ${PROJECT_NAME} ${PROJECT_VERSION} )===")
 
-
 option(UNITTEST "Build unit tests" OFF)
 
 
-install (DIRECTORY include/fplus DESTINATION include)
-install (FILES include/fplus.h DESTINATION include)
+install(DIRECTORY include/fplus DESTINATION include)
+install(FILES include/fplus.h DESTINATION include)
 
-add_definitions(-Wall -Wextra -pedantic -Wshadow -Werror -Weffc++ -Wconversion -Wsign-conversion -Wctor-dtor-privacy -Wreorder -Wold-style-cast)
+add_definitions(-Wall
+                -Wextra
+                -pedantic
+                -Wshadow
+                -Werror
+                -Weffc++
+                -Wconversion
+                -Wsign-conversion
+                -Wctor-dtor-privacy
+                -Wreorder
+                -Wold-style-cast
+                )
 
-include(CTest)
-
-add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} -VV -C ${CMAKE_CFG_INTDIR})
+find_package(Threads REQUIRED)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(Cpp11)
@@ -27,3 +35,7 @@ if( UNITTEST )
     enable_testing()
     subdirs(test)
 endif()
+
+
+add_executable(examples EXCLUDE_FROM_ALL examples.cpp)
+target_link_libraries(examples ${CMAKE_THREAD_LIBS_INIT})
