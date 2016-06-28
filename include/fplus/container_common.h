@@ -503,8 +503,8 @@ T sum(const Container& xs)
 }
 
 // API search type: product : [a] -> a
-// sum([3,1,2]) == 6
-// sum([]) == 1
+// product([3,1,2]) == 6
+// product([]) == 1
 template <typename Container,
     typename T = typename Container::value_type>
 T product(const Container& xs)
