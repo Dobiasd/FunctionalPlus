@@ -2,8 +2,10 @@
 
 
 [![(Travis image broken)](https://travis-ci.org/Dobiasd/FunctionalPlus.png?branch=master)][travis]
+[![(License Boost 1.0)](https://img.shields.io/badge/license-boost%201.0-blue.svg)][license]
 
 [travis]: https://travis-ci.org/Dobiasd/FunctionalPlus
+[license]: http://www.boost.org/LICENSE_1_0.txt
 
 FunctionalPlus
 ==============
@@ -16,8 +18,10 @@ Great code should mostly be self-documenting, but while using C++ in reality you
 **FunctionalPlus is a small header-only library** supporting you in reducing code noise and in dealing with only one single level of abstraction at a time. By increasing brevity and maintainability of your code it can improve productivity (and fun!) in the long run. It pursues these goals by providing pure and easy-to-use functions that free you from implementing commonly used flows of control over and over again.
 
 Say you have a list of numbers and are interested in the odd ones only.
+
 ```c++
 bool is_odd(int x) { return x % 2 == 1; }
+
 int main()
 {
     typedef vector<int> Ints;
@@ -65,6 +69,7 @@ You can test the content of a container for various properties, e.g.
 ```c++
 #include "fplus/fplus.h"
 #include <iostream>
+
 int main()
 {
     std::list<std::string> things = {"same old", "same old"};
@@ -78,6 +83,7 @@ There also are some convenience functions for retrieving properties of container
 ```c++
 #include "fplus/fplus.h"
 #include <iostream>
+
 int main()
 {
     std::string team = "Our team is great. I love everybody I work with.";
@@ -227,17 +233,22 @@ Just [download](https://github.com/Dobiasd/FunctionalPlus/archive/master.zip) Fu
 
 A **C++11**-compatible compiler is needed. The tests run successfully on GCC 4.8, Clang 3.6 and Visual C++ 2015.
 
-With [cmake](https://cmake.org/) the tests can be run and the library installed following these steps:
+With [cmake](https://cmake.org/) the library is installed following these steps:
 
 ```
 mkdir build
 cd build
 cmake ..
-# Build and run the tests
-make check
-# Install the library
 make install
 ```
+
+Building the tests requires [Google Test (gtest)](https://github.com/google/googletest). Unit Tests are disabled by default – they are enabled and executed by:
+
+```
+cmake -DUNITTEST=ON ..
+make unittest
+```
+
 
 It can also be installed directly using [cget](https://github.com/pfultz2/cget/):
 
