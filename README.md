@@ -227,17 +227,22 @@ Just [download](https://github.com/Dobiasd/FunctionalPlus/archive/master.zip) Fu
 
 A **C++11**-compatible compiler is needed. The tests run successfully on GCC 4.8, Clang 3.6 and Visual C++ 2015.
 
-With [cmake](https://cmake.org/) the tests can be run and the library installed following these steps:
+With [cmake](https://cmake.org/) the library installed following these steps:
 
 ```
 mkdir build
 cd build
 cmake ..
-# Build and run the tests
-make check
-# Install the library
 make install
 ```
+
+Building the tests requires (Google Test (gtest))[https://github.com/google/googletest]. Unit Tests are disabled by default – they are enabled by and executed by:
+
+```
+cmake -DUNITTEST=ON ..
+make unittest
+```
+
 
 It can also be installed directly using [cget](https://github.com/pfultz2/cget/):
 
