@@ -2,8 +2,10 @@
 
 
 [![(Travis image broken)](https://travis-ci.org/Dobiasd/FunctionalPlus.png?branch=master)][travis]
+[![(License Boost 1.0)](https://img.shields.io/badge/license-boost%201.0-blue.svg)][license]
 
 [travis]: https://travis-ci.org/Dobiasd/FunctionalPlus
+[license]: http://www.boost.org/LICENSE_1_0.txt
 
 FunctionalPlus
 ==============
@@ -240,7 +242,7 @@ cmake ..
 make install
 ```
 
-Building the tests requires [Google Test (gtest)](https://github.com/google/googletest). Unit Tests are disabled by default – they are enabled by and executed by:
+Building the tests requires [Google Test (gtest)](https://github.com/google/googletest). Unit Tests are disabled by default – they are enabled and executed by:
 
 ```
 cmake -DUNITTEST=ON ..
