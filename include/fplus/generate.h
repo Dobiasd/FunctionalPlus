@@ -319,7 +319,7 @@ ContainerOut power_set(const ContainerIn& xs_in)
             size_of_cont(xs_in) + 1));
 }
 
-// API search type: iterate : (((a, a) -> a), Int, a) -> [a]
+// API search type: iterate : ((a -> a), Int, a) -> [a]
 // iterate((*2), 5, 3) = [3, 6, 12, 24, 48]
 // = [3, f(3), f(f(3)), f(f(f(3))), f(f(f(f(3))))]
 template <typename F,
