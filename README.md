@@ -1,6 +1,6 @@
 ![logo](logo/fplus.png)
 
-[![Build Status](https://travis-ci.org/Dobiasd/FunctionalPlus.svg?branch=master)](travis)
+[![Build Status](https://travis-ci.org/Dobiasd/FunctionalPlus.svg?branch=master)][travis]
 [![(License Boost 1.0)](https://img.shields.io/badge/license-boost%201.0-blue.svg)][license]
 
 [travis]: https://travis-ci.org/Dobiasd/FunctionalPlus
