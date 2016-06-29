@@ -135,4 +135,24 @@ Container sample(std::size_t n, const Container& xs)
     return get_range(0, n, ys);
 }
 
+// API search type: apply_functions : [(a -> b)] -> a -> [b]
+// Applies a list of functions to a value.
+template <typename FunctionContainer,
+    typename F = typename FunctionContainer::value_type,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+    typename FOut = typename utils::function_traits<F>::result_type,
+    typename ContainerOut = typename same_cont_new_t<FunctionContainer, FOut>::type>
+ContainerOut apply_functions(const FunctionContainer& functions, const FIn& x)
+{
+    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    ContainerOut ys;
+    prepare_container(ys, size_of_cont(functions));
+    auto it = get_back_inserter<ContainerOut>(ys);
+    for (const auto& f : functions)
+    {
+        *it = f(x);
+    }
+    return ys;
+}
+
 } // namespace fplus

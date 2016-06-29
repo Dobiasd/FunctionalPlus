@@ -81,6 +81,14 @@ TEST(container_common_test, transform)
     };
     EXPECT_EQ(transform_with_idx(add_size_t_and_int, xs), IntVector({1+0,2+1,2+2,3+3,2+4}));
 
+    auto intTimes2 = [](int x) -> int { return x*2; };
+    auto intTimes3 = [](int x) -> int { return x*3; };
+    std::vector<std::function<int(int)>> multiplyFunctions = {intTimes2, intTimes3};
+    EXPECT_THAT(apply_functions(multiplyFunctions, 4), ElementsAre(8, 12));
+
+    auto showInt = [](int x) -> std::string { return fplus::show(x); };
+    std::vector<std::function<std::string(int)>> showIntFuncs = {showInt, showInt};
+    EXPECT_THAT(apply_functions(showIntFuncs, 4), ElementsAre("4", "4"));
 }
 
 TEST(container_common_test, filter)
