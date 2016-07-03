@@ -36,5 +36,5 @@ if( UNITTEST )
 endif()
 
 
-add_executable(examples EXCLUDE_FROM_ALL examples.cpp)
-target_link_libraries(examples ${CMAKE_THREAD_LIBS_INIT})
+add_executable(readme_examples EXCLUDE_FROM_ALL examples/readme_examples.cpp)
+target_link_libraries(readme_examples ${CMAKE_THREAD_LIBS_INIT})
