@@ -364,8 +364,7 @@ ContainerOut split_at_idxs(const ContainerIdxs& idxsIn, const ContainerIn& xs)
     ContainerOut result;
     prepare_container(result, size_of_cont(idxsClean) + 1);
     auto itOut = get_back_inserter(result);
-    typedef std::vector<std::pair<std::size_t, std::size_t>> PositionPairs;
-    auto idxPairs = overlapping_pairs<PositionPairs>(idxsClean);
+    auto idxPairs = overlapping_pairs(idxsClean);
     for (const auto& idxPair : idxPairs)
     {
         *itOut = get_range(idxPair.first, idxPair.second, xs);

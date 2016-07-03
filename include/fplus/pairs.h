@@ -163,13 +163,18 @@ std::pair<Y, X> swap_pair_elems(const std::pair<X, Y>& pair)
 
 // API search type: overlapping_pairs : [a] -> [(a, a)]
 // overlapping_pairs([0,1,2,3]) == [(0,1),(1,2),(2,3)]
-template <typename ContainerOut, typename Container,
-    typename T = typename Container::value_type,
-    typename Pair = typename std::pair<T, T>>
+template <typename Container,
+    typename ContainerOut =
+        typename same_cont_new_t<Container,
+            std::pair<
+                typename Container::value_type,
+                    typename Container::value_type>>::type>
 ContainerOut overlapping_pairs(const Container& xs)
 {
-    static_assert(std::is_convertible<Pair,
-        typename ContainerOut::value_type>::value,
+    typedef typename Container::value_type T;
+    static_assert(std::is_convertible<
+            std::pair<T, T>,
+            typename ContainerOut::value_type>::value,
         "ContainerOut can not store pairs of elements from ContainerIn.");
     ContainerOut result;
     if (size_of_cont(xs) < 2)
