@@ -406,7 +406,7 @@ functionCompatibility db query =
                     (subsequences xs)
                     |> List.maximum
                     |> Maybe.withDefault 0
-            else
+            else if List.length xs == List.length ys then
                 List.map
                     (\ys' ->
                         List.map2 functionCompatibility xs ys'
@@ -415,6 +415,8 @@ functionCompatibility db query =
                     (permutations ys)
                     |> List.maximum
                     |> Maybe.withDefault 0
+            else
+                0
 
         ( Tuple xs, y ) ->
             List.map
