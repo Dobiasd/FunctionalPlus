@@ -1,4 +1,4 @@
-module TypeSignature exposing (Signature, parseSignature, showSignature, normalizeSignature, generateSubSignatures, functionCompatibility)
+module TypeSignature exposing (Signature, parseSignature, showSignature, normalizeSignature, functionCompatibility)
 
 {-| This module provides the possibility to parse Haskell and Elm type signatures.
 -}
@@ -10,7 +10,7 @@ import Combine.Num as CN
 import Char
 import Dict
 import List exposing ((::))
-import List.Extra exposing (permutations)
+import List.Extra exposing (permutations, subsequences)
 import Maybe
 import Result
 import String
@@ -353,16 +353,6 @@ parseSignature =
     C.parse signatureParser >> parseResultToMaybeSig
 
 
-generateSubSignatures : Signature -> List Signature
-generateSubSignatures sig =
-    case sig of
-        Arrow a b ->
-            [ sig ] ++ generateSubSignatures a ++ generateSubSignatures b
-
-        x ->
-            [ normalizeSignature x ]
-
-
 equalityToFloat : a -> a -> Float
 equalityToFloat x y =
     if x == y then
@@ -374,14 +364,11 @@ equalityToFloat x y =
 functionCompatibility : Signature -> Signature -> Float
 functionCompatibility db query =
     case ( db, query ) of
-        ( VariableType _, ListType (TypeConstructor "Char") ) ->
-            0.9
-
         ( VariableType _, TypeConstructor _ ) ->
             0.95
 
         ( VariableType _, ListType _ ) ->
-            0.7
+            0.8
 
         ( TypeApplication (TypeConstructor "Maybe") (VariableType x), VariableType y ) ->
             0.8 * equalityToFloat x y
@@ -405,8 +392,20 @@ functionCompatibility db query =
             functionCompatibility a x
 
         ( Tuple xs, Tuple ys ) ->
-            if List.length xs /= List.length ys then
-                0
+            if List.length xs > List.length ys then
+                List.map
+                    (\xs' ->
+                        List.map2 functionCompatibility xs' ys
+                            |> List.product
+                            |> (\x ->
+                                    x
+                                        * toFloat (List.length ys)
+                                        / toFloat (List.length xs)
+                               )
+                    )
+                    (subsequences xs)
+                    |> List.maximum
+                    |> Maybe.withDefault 0
             else
                 List.map
                     (\ys' ->
@@ -416,6 +415,16 @@ functionCompatibility db query =
                     (permutations ys)
                     |> List.maximum
                     |> Maybe.withDefault 0
+
+        ( Tuple xs, y ) ->
+            List.map
+                (\x ->
+                    functionCompatibility x y
+                        / toFloat (List.length xs)
+                )
+                xs
+                |> List.maximum
+                |> Maybe.withDefault 0
 
         _ ->
             0

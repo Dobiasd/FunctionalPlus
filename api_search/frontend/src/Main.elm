@@ -31,24 +31,14 @@ initModelAndCommands =
     ( defaultModel, cmdGetRandomNumbers )
 
 
-generateSubSignatures :
-    Database.Function
-    -> List TypeSignature.Signature
-generateSubSignatures function =
-    function
-        |> parseSignatureCrashOnError
-        |> TypeSignature.generateSubSignatures
-
-
-type alias WithSubSignatures a =
+type alias WithParsedSignature a =
     { a
-        | subSignatures : List TypeSignature.Signature
-        , parsedSignature : TypeSignature.Signature
+        | parsedSignature : TypeSignature.Signature
     }
 
 
 type alias Function =
-    WithSubSignatures Database.Function
+    WithParsedSignature Database.Function
 
 
 parseSignatureCrashOnError :
@@ -71,11 +61,10 @@ parseSignatureCrashOnError function =
                 |> Debug.crash
 
 
-addSubSignaturesToFunction : Database.Function -> Function
-addSubSignaturesToFunction function =
+addParsedSignatureToFunction : Database.Function -> Function
+addParsedSignatureToFunction function =
     { name = function.name
     , signature = function.signature
-    , subSignatures = generateSubSignatures function
     , parsedSignature = parseSignatureCrashOnError function
     , documentation = function.documentation
     , declaration = function.declaration
@@ -84,7 +73,7 @@ addSubSignaturesToFunction function =
 
 functions : List Function
 functions =
-    List.map addSubSignaturesToFunction Database.functions
+    List.map addParsedSignatureToFunction Database.functions
 
 
 functionCnt : Int
@@ -442,16 +431,15 @@ functionRating queryOrig querySig querySigLower function =
                     case maybeSig of
                         Just sig ->
                             let
-                                allRatings =
-                                    List.map (typeRating factor sig)
-                                        function.subSignatures
+                                sigRating =
+                                    typeRating factor
+                                        sig
+                                        function.parsedSignature
+
                                 name_shortness_factor =
                                     120 / (120 + stringLengthFloat function.name)
                             in
-                                allRatings
-                                    |> List.maximum
-                                    |> Maybe.withDefault 0
-                                    |> \x -> x * name_shortness_factor
+                                sigRating * name_shortness_factor
 
                         _ ->
                             0
