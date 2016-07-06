@@ -141,7 +141,7 @@ std::string show_result(const result<Ok, Error>& result)
         return std::string("Ok " + show(unsafe_get_ok(result)));
 }
 
-// API search type: show_float : (Int, Int, Char) -> (Float -> String)
+// API search type: show_float : (Int, Int) -> (Float -> String)
 // Can be used to show floating point values in a specific format
 // (Float to String, Double to String etc.)
 // Examples:
