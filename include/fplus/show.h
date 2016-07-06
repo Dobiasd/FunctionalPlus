@@ -146,27 +146,48 @@ std::string show_result(const result<Ok, Error>& result)
 // (Float to String, Double to String etc.)
 // Examples:
 // const double pi = 3.14159
-// show_float<double>(0, 3, '0')(pi) == "3.142"
-// show_float<double>(1, 3, '0')(pi) == "3.142"
-// show_float<double>(2, 3, '0')(pi) == "03.142"
-// show_float<double>(3, 3, '0')(pi) == "003.142"
-// show_float<double>(3, 3, ' ')(pi) == "  3.142"
-// show_float<double>(1, 2, '0')(pi) == "3.14"
-// show_float<double>(1, 4, '0')(pi) == "3.1416"
-// show_float<double>(1, 7, '0')(pi) == "3.1415900"
+// show_float<double>(0, 3)(pi) == "3.142"
+// show_float<double>(1, 3)(pi) == "3.142"
+// show_float<double>(2, 3)(pi) == "03.142"
+// show_float<double>(3, 3)(pi) == "003.142"
+// show_float<double>(1, 2)(pi) == "3.14"
+// show_float<double>(1, 4)(pi) == "3.1416"
+// show_float<double>(1, 7)(pi) == "3.1415900"
+// show_float<double>(0, 3)(-pi) == "-3.142"
+// show_float<double>(1, 3)(-pi) == "-3.142"
+// show_float<double>(2, 3)(-pi) == "-3.142"
+// show_float<double>(3, 3)(-pi) == "-03.142"
+// show_float<double>(4, 3)(-pi) == "-003.142"
+// show_float<double>(0, 3)(0.142) == "0.142";
+// show_float<double>(1, 3)(0.142) == "0.142";
+// show_float<double>(2, 3)(0.142) == "00.142";
+// fill_left(8, ' ',show_float<double>(0, 3)(-pi)) == "  -3.142"
+
 template <typename T>
 std::function<std::string(const T&)>
-show_float(std::size_t min_left_chars, std::size_t right_char_count,
-        std::string::value_type fillChar)
+show_float(std::size_t min_left_chars, std::size_t right_char_count)
 {
-    return [min_left_chars, right_char_count, fillChar](const T& x)
+    return [min_left_chars, right_char_count](const T& x)
             -> std::string
     {
+        bool is_negative = x < 0;
+        std::size_t min_left_chars_final =
+            is_negative && min_left_chars > 0
+            ? min_left_chars - 1
+            : min_left_chars;
         std::stringstream stream;
-        stream << std::fixed << std::setprecision(static_cast<int>(right_char_count)) << x;
+        stream
+            << std::fixed
+            << std::setprecision(static_cast<int>(right_char_count))
+            << std::abs(x);
         std::string s = stream.str();
-        std::size_t min_dest_length = min_left_chars + 1 + right_char_count;
-        return fill_left(fillChar, min_dest_length, s);
+        std::size_t min_dest_length = min_left_chars_final + 1 + right_char_count;
+        std::string result = fill_left('0', min_dest_length, s);
+        if (is_negative)
+        {
+            result = std::string("-") + result;
+        }
+        return result;
     };
 }
 

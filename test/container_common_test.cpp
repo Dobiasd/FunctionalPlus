@@ -355,14 +355,22 @@ TEST(container_common_test, show_float)
 {
     using namespace fplus;
     const double pi = 3.14159;
-    EXPECT_EQ(show_float<double>(0, 3, '0')(pi), "3.142");
-    EXPECT_EQ(show_float<double>(1, 3, '0')(pi), "3.142");
-    EXPECT_EQ(show_float<double>(2, 3, '0')(pi), "03.142");
-    EXPECT_EQ(show_float<double>(3, 3, '0')(pi), "003.142");
-    EXPECT_EQ(show_float<double>(3, 3, ' ')(pi), "  3.142");
-    EXPECT_EQ(show_float<double>(1, 2, '0')(pi), "3.14");
-    EXPECT_EQ(show_float<double>(1, 4, '0')(pi), "3.1416");
-    EXPECT_EQ(show_float<double>(1, 7, '0')(pi), "3.1415900");
+    EXPECT_EQ(show_float<double>(0, 3)(pi), "3.142");
+    EXPECT_EQ(show_float<double>(1, 3)(pi), "3.142");
+    EXPECT_EQ(show_float<double>(2, 3)(pi), "03.142");
+    EXPECT_EQ(show_float<double>(3, 3)(pi), "003.142");
+    EXPECT_EQ(show_float<double>(1, 2)(pi), "3.14");
+    EXPECT_EQ(show_float<double>(1, 4)(pi), "3.1416");
+    EXPECT_EQ(show_float<double>(1, 7)(pi), "3.1415900");
+    EXPECT_EQ(show_float<double>(0, 3)(-pi), "-3.142");
+    EXPECT_EQ(show_float<double>(1, 3)(-pi), "-3.142");
+    EXPECT_EQ(show_float<double>(2, 3)(-pi), "-3.142");
+    EXPECT_EQ(show_float<double>(3, 3)(-pi), "-03.142");
+    EXPECT_EQ(show_float<double>(4, 3)(-pi), "-003.142");
+    EXPECT_EQ(show_float<double>(0, 3)(0.142), "0.142");
+    EXPECT_EQ(show_float<double>(1, 3)(0.142), "0.142");
+    EXPECT_EQ(show_float<double>(2, 3)(0.142), "00.142");
+    EXPECT_EQ(fill_left(' ', 8, show_float<double>(0, 3)(-pi)), "  -3.142");
 }
 
 TEST(container_common_test, zip)
