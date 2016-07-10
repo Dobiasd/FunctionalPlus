@@ -12,6 +12,7 @@ then
   cp ../../logo/fplus.png ./build/
   cp -r ./src/highlight ./build/
   cp ./src/style.css ./build/style.css
+  cp ./src/favicon.png ./build/favicon.png
   cp ./src/htmlmain.js ./build/js/htmlmain.js
   cp ./src/index.html ./build/index.html
 fi
