@@ -194,16 +194,28 @@ Result mean(const Container& xs)
     return static_cast<Result>(sum(xs) / static_cast<T>(size_of_cont(xs)));
 }
 
-// API search type: mean_obj : [a] -> a
-// mean_obj([B 1, B 4, B 4]) == B 3
+// API search type: mean_obj_div_size_t : [a] -> a
+// mean_obj_div_size_t([B 1, B 4, B 4]) == B 3
 // The provided objects must support division by a std::size_t.
 // unsafe! Make sure sum(xs) does not overflow.
 template <typename Container,
     typename T = typename Container::value_type>
-T mean_obj(const Container& xs)
+T mean_obj_div_size_t(const Container& xs)
 {
     assert(size_of_cont(xs) != 0);
     return sum(xs) / size_of_cont(xs);
+}
+
+// API search type: mean_obj_div_double : [a] -> a
+// mean_obj_div_double([B 1, B 4, B 4]) == B 3
+// The provided objects must support division by a double.
+// unsafe! Make sure sum(xs) does not overflow.
+template <typename Container,
+    typename T = typename Container::value_type>
+T mean_obj_div_double(const Container& xs)
+{
+    assert(size_of_cont(xs) != 0);
+    return sum(xs) / static_cast<double>(size_of_cont(xs));
 }
 
 // API search type: mean_using_doubles : [a] -> a

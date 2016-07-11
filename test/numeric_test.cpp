@@ -238,10 +238,14 @@ TEST(numeric_test, mean_obj)
         {
             return {x + rhs.x, y + rhs.y};
         };
-        vec_2d operator / (std::size_t scalar) const
+        vec_2d operator / (double scalar) const
         {
             double scalar_d = static_cast<double>(scalar);
             return {x / scalar_d, y / scalar_d};
+        };
+        vec_2d operator / (std::size_t scalar) const
+        {
+            return *this / static_cast<double>(scalar);
         };
     };
 
@@ -250,9 +254,12 @@ TEST(numeric_test, mean_obj)
         return v.x * v.x + v.y * v.y;
     };
     std::vector<vec_2d> vecs = {{1,1}, {3,3}};
-    auto mean_vec = mean_obj(vecs);
+    auto mean_vec_div_double = mean_obj_div_double(vecs);
+    auto mean_vec_div_size_t = mean_obj_div_size_t(vecs);
     double mean_vec_length_squared_dest = 2*2 + 2*2;
-    EXPECT_THAT(vec_2d_length_squared(mean_vec),
+    EXPECT_THAT(vec_2d_length_squared(mean_vec_div_double),
+        DoubleEq(mean_vec_length_squared_dest));
+    EXPECT_THAT(vec_2d_length_squared(mean_vec_div_size_t),
         DoubleEq(mean_vec_length_squared_dest));
 }
 
