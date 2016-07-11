@@ -637,6 +637,42 @@ Container sort(const Container& xs)
     return sort_by(std::less<T>(), xs);
 }
 
+// sort stably by given less comparator
+template <typename Compare, typename T>
+std::list<T> stable_sort_by(Compare comp, const std::list<T>& xs)
+{
+    auto result = xs;
+    result.sort(comp); // std::list<T>::sort ist already stable.
+    return result;
+}
+
+// API search type: stable_sort_by : (((a, a) -> Bool), [a]) -> [a]
+// sort stably by given less comparator
+template <typename Compare, typename Container>
+Container stable_sort_by(Compare comp, const Container& xs)
+{
+    auto result = xs;
+    std::stable_sort(std::begin(result), std::end(result), comp);
+    return result;
+}
+
+// API search type: stable_sort_on : ((a -> b), [a]) -> [a]
+// sort stably by given transformer
+template <typename F, typename Container>
+Container stable_sort_on(F f, const Container& xs)
+{
+    return stable_sort_by(is_less_by(f), xs);
+}
+
+// API search type: stable_sort : [a] -> [a]
+// sort stably by std::less
+template <typename Container>
+Container stable_sort(const Container& xs)
+{
+    typedef typename Container::value_type T;
+    return stable_sort_by(std::less<T>(), xs);
+}
+
 // API search type: unique_by : (((a, a) -> Bool), [a]) -> [a]
 // Like unique but with user supplied equality predicate.
 // O(n)
