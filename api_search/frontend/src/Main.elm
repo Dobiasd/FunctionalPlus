@@ -83,7 +83,7 @@ functionCnt =
 
 cmdGetRandomNumbers : Cmd Msg
 cmdGetRandomNumbers =
-    Random.list maxVisibleFunctions (Random.int 0 (functionCnt))
+    Random.list maxVisibleFunctions (Random.int 0 (functionCnt - 1))
         |> Random.generate RandomNumbers
 
 
