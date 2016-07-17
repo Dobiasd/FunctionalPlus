@@ -349,6 +349,7 @@ std::pair<Container, Container> partition
 
 // API search type: split_at_idxs : ([Int], [a]) -> [[a]]
 // split_at_idxs([2,5], [0,1,2,3,4,5,6,7]) == [[0,1],[2,3,4],[5,6,7]]
+// split_at_idxs([2,5,5], [0,1,2,3,4,5,6,7]) == [[0,1],[2,3,4],[],[5,6,7]]
 template <typename ContainerIdxs, typename ContainerIn,
         typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut split_at_idxs(const ContainerIdxs& idxsIn, const ContainerIn& xs)
@@ -360,7 +361,7 @@ ContainerOut split_at_idxs(const ContainerIdxs& idxsIn, const ContainerIn& xs)
     ContainerIdxs idxEndC = {size_of_cont(xs)};
     std::vector<ContainerIdxs> containerIdxss = {idxStartC, idxsIn, idxEndC};
     auto idxs = concat(containerIdxss);
-    auto idxsClean = unique(sort(idxs));
+    auto idxsClean = sort(idxs);
     ContainerOut result;
     prepare_container(result, size_of_cont(idxsClean) + 1);
     auto itOut = get_back_inserter(result);
@@ -381,7 +382,7 @@ ContainerOut split_every(std::size_t n, const ContainerIn& xs)
 {
     return split_at_idxs(
         generate_range_step<std::vector<std::size_t>, std::size_t>(
-            0, size_of_cont(xs), n),
+            n, size_of_cont(xs), n),
         xs);
 }
 

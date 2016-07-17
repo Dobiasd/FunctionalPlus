@@ -634,6 +634,9 @@ TEST(container_common_test, split)
     auto splittedAt1And3 = split_at_idxs(IdxVector({1,3}), xs);
     IntVectors splittedAt1And3Dest = {IntVector({1}), IntVector({2,2}), IntVector({3,2})};
     EXPECT_EQ(splittedAt1And3, splittedAt1And3Dest);
+    auto splittedAt1And3And3 = split_at_idxs(IdxVector({1,3,3}), xs);
+    IntVectors splittedAt1And3And3Dest = {IntVector({1}), IntVector({2,2}), IntVector({}), IntVector({3,2})};
+    EXPECT_EQ(splittedAt1And3And3, splittedAt1And3And3Dest);
     EXPECT_EQ(split(3, true, xs), IntVectors({IntVector({1, 2, 2}), IntVector({2})}));
     EXPECT_EQ(split(1, true, IntVector{0,1,2}), IntVectors({{0},{2}}));
     EXPECT_EQ(split(2, true, IntVector{5,2,0,3}), IntVectors({{5},{0,3}}));
