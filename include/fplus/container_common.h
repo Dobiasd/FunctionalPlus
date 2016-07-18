@@ -981,6 +981,12 @@ ContainerOut generate_range_step
         (const T start, const T end, const T step)
 {
     ContainerOut result;
+    if ((step > 0 && start >= end) ||
+        (step < 0 && start <= end) ||
+        step == 0)
+    {
+        return result;
+    }
     std::size_t size = static_cast<std::size_t>((end - start) / step);
     prepare_container(result, size);
     auto it = get_back_inserter<ContainerOut>(result);
