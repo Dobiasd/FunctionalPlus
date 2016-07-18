@@ -21,6 +21,7 @@ add_definitions(-Wall
                 -Wctor-dtor-privacy
                 -Wreorder
                 -Wold-style-cast
+                -Wparentheses
                 )
 
 find_package(Threads REQUIRED)

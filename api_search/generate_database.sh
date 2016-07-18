@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-clang++ -O3 -std=c++11 -Wall -Wextra -pedantic -Wshadow -Werror -Weffc++ -Wconversion -Wsign-conversion -Wctor-dtor-privacy -Wreorder -Wold-style-cast -pthread -o ./temp_FunctionalPlus_api__clang -I./../include -lboost_filesystem -lboost_system parse_source_files.cpp
+clang++ -O3 -std=c++11 -Wall -Wextra -pedantic -Wshadow -Werror -Weffc++ -Wconversion -Wsign-conversion -Wctor-dtor-privacy -Wreorder -Wold-style-cast -Wparentheses -pthread -o ./temp_FunctionalPlus_api__clang -I./../include -lboost_filesystem -lboost_system parse_source_files.cpp
 
 if [ -f ./temp_FunctionalPlus_api__clang ];
 then
