@@ -182,7 +182,6 @@ typename Container::value_type maximum_on(F f, const Container& xs)
     return elem_at_idx(maximum_idx_on(f, xs), xs);
 }
 
-
 // API search type: mean : [a] -> a
 // mean([1, 4, 4]) == 3
 // unsafe! Make sure sum(xs) does not overflow. see mean_using_doubles
@@ -232,6 +231,31 @@ Result mean_using_doubles(const Container& xs)
         return static_cast<Result>(result_as_double);
     else
         return round<Result>(result_as_double);
+}
+
+// API search type: mean_stddev : [a] -> (a, a)
+// calculates the mean and the population standard deviation
+// mean_stddev([4, 8]) == (6, 2)
+// mean_stddev([1, 3, 7, 4]) == (3.75, 2.5)
+template <typename Result, typename Container>
+std::pair<Result, Result> mean_stddev(const Container& xs)
+{
+    assert(size_of_cont(xs) != 0);
+
+    // http://stackoverflow.com/a/7616783/1866775
+    Result sum = static_cast<Result>(std::accumulate(xs.begin(), xs.end(), 0));
+    Result mean = sum / static_cast<Result>(xs.size());
+
+    std::vector<Result> diff(xs.size());
+    std::transform(xs.begin(), xs.end(), diff.begin(),
+        [mean](Result x)
+        {
+            return x - mean;
+        });
+    Result sq_sum = std::inner_product(
+        diff.begin(), diff.end(), diff.begin(), static_cast<Result>(0));
+    Result stddev = std::sqrt(sq_sum / static_cast<Result>(xs.size()));
+    return std::make_pair(mean, stddev);
 }
 
 // API search type: median : [a] -> a

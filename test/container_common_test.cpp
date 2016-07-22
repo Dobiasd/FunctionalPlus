@@ -481,6 +481,10 @@ TEST(container_common_test, mean)
     EXPECT_EQ(median(IntVector({ 3, 9, 5 })), 5);
     EXPECT_EQ(median(xs), 2);
     EXPECT_EQ(sum(convert_container_and_elems<std::vector<int>>(std::string("hello"))), 532);
+    EXPECT_TRUE(is_in_range(5.99, 6.01)(mean_stddev<double>(DoubleVector({ 4, 8 })).first));
+    EXPECT_TRUE(is_in_range(1.99, 2.01)(mean_stddev<double>(DoubleVector({ 4, 8 })).second));
+    EXPECT_TRUE(is_in_range(3.749f, 3.751f)(mean_stddev<float>(IntVector({ 1, 3, 7, 4 })).first));
+    EXPECT_TRUE(is_in_range(2.16f, 2.17f)(mean_stddev<float>(IntVector({ 1, 3, 7, 4 })).second));
 }
 
 TEST(container_common_test, sort)
