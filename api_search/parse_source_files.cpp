@@ -224,7 +224,7 @@ int main()
         std::cout << out_file << " written." << std::endl;
     }
     else
-        {
+    {
         std::cerr << "Error: Unable to write " << out_file << std::endl;
     }
 }

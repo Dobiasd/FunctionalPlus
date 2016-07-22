@@ -161,8 +161,7 @@ std::string show_result(const result<Ok, Error>& result)
 // show_float<double>(0, 3)(0.142) == "0.142";
 // show_float<double>(1, 3)(0.142) == "0.142";
 // show_float<double>(2, 3)(0.142) == "00.142";
-// fill_left(8, ' ',show_float<double>(0, 3)(-pi)) == "  -3.142"
-
+// fill_left(8, ' ', show_float<double>(0, 3)(-pi)) == "  -3.142"
 template <typename T>
 std::function<std::string(const T&)>
 show_float(std::size_t min_left_chars, std::size_t right_char_count)
@@ -188,6 +187,29 @@ show_float(std::size_t min_left_chars, std::size_t right_char_count)
             result = std::string("-") + result;
         }
         return result;
+    };
+}
+
+// API search type: show_float_fill_left : (Char, Int, Int) -> (Float -> String)
+// Can be used to show floating point values in a specific precision
+// left-padded with some character.
+// (Float to String, Double to String etc.)
+// Examples:
+// const double pi = 3.14159
+// show_float_fill_left<double>(' ', 8, 3)(pi) == "   3.142"
+// show_float_fill_left<double>(' ', 8, 6)(pi) == "3.141590"
+// show_float_fill_left<double>(' ', 8, 3)(-pi) == "  -3.142"
+// show_float_fill_left<double>(' ', 2, 3)(-pi) == "-3.142"
+template <typename T>
+std::function<std::string(const T&)>
+show_float_fill_left(const std::string::value_type& filler,
+        std::size_t min_size, std::size_t right_char_count)
+{
+    return [filler, min_size, right_char_count](const T& x)
+            -> std::string
+    {
+        return fill_left(filler, min_size,
+            show_float<T>(0, right_char_count)(x));
     };
 }
 

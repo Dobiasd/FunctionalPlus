@@ -371,6 +371,11 @@ TEST(container_common_test, show_float)
     EXPECT_EQ(show_float<double>(1, 3)(0.142), "0.142");
     EXPECT_EQ(show_float<double>(2, 3)(0.142), "00.142");
     EXPECT_EQ(fill_left(' ', 8, show_float<double>(0, 3)(-pi)), "  -3.142");
+
+    EXPECT_EQ(show_float_fill_left<double>(' ', 8, 3)(pi), "   3.142");
+    EXPECT_EQ(show_float_fill_left<double>(' ', 8, 6)(pi), "3.141590");
+    EXPECT_EQ(show_float_fill_left<double>(' ', 8, 3)(-pi), "  -3.142");
+    EXPECT_EQ(show_float_fill_left<double>(' ', 2, 3)(-pi), "-3.142");
 }
 
 TEST(container_common_test, zip)

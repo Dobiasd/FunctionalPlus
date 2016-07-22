@@ -127,6 +127,7 @@ String trim_whitespace(const String& str)
 
 // API search type: to_string_fill_left : (Char, Int, a) -> String
 // to_string_fill_left('0', 5, 42) == "00042"
+// to_string_fill_left(' ', 5, 42) == "   42"
 template <typename T>
 std::string to_string_fill_left(const std::string::value_type& filler,
         std::size_t min_size, const T& x)
