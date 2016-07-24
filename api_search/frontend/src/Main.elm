@@ -205,46 +205,44 @@ getRandomSearchResult chosenIdxs =
 view : Model -> Html Msg
 view model =
     div [ class "mainwrapper" ]
-        [ div [ class "main" ]
-            [ div [ class "githublink" ]
-                [ let
-                    url =
-                        "https://github.com/Dobiasd/FunctionalPlus/"
-                  in
-                    a [ href url ]
-                        [ div [ class "logo" ]
-                            [ img [ class "logo", src "fplus.png" ] []
-                            ]
-                        , text url
+        [ let
+            url =
+                "https://github.com/Dobiasd/FunctionalPlus/"
+          in
+            div [ class "main" ]
+                [ div [ class "githublink" ]
+                    [ a [ href url ]
+                        [ img [ class "logo", src "fplus.png" ] []
                         ]
-                ]
-            , hr [] []
-            , input
-                [ placeholder "search query"
-                , autofocus True
-                , autocomplete True
-                , style [ ( "width", "500px" ) ]
-                , onInput UpdateQuery
-                ]
-                []
-            , if String.isEmpty model.querySigStr then
-                div [ class "queryhelper" ]
-                    [ text
-                        ("search by function name, docs or type signature,"
-                            ++ " e.g. (vector<string>, string) -> string"
-                        )
+                    , p [] [ a [ href url ] [ text url ] ]
                     ]
-              else
-                div [ class "parsedsignature" ]
-                    [ "as parsed type: "
-                        ++ model.querySigStr
-                        |> stringToCode "Haskell"
+                , hr [] []
+                , input
+                    [ placeholder "search query"
+                    , autofocus True
+                    , autocomplete True
+                    , style [ ( "width", "500px" ) ]
+                    , onInput UpdateQuery
                     ]
-            , hr [] []
-            , model.searchResult |> showFunctions
-            , hr [] []
-            , showFooter
-            ]
+                    []
+                , if String.isEmpty model.querySigStr then
+                    div [ class "queryhelper" ]
+                        [ text
+                            ("search by function name, docs or type signature,"
+                                ++ " e.g. (vector<string>, string) -> string"
+                            )
+                        ]
+                  else
+                    div [ class "parsedsignature" ]
+                        [ "as parsed type: "
+                            ++ model.querySigStr
+                            |> stringToCode "Haskell"
+                        ]
+                , hr [] []
+                , model.searchResult |> showFunctions
+                , hr [] []
+                , showFooter
+                ]
         ]
 
 
