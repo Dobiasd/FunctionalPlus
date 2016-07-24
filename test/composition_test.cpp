@@ -36,9 +36,7 @@ private:
 TEST(composition_test, forward_apply)
 {
     using namespace fplus;
-    auto square = [](int x){ return x*x; };
-
-    EXPECT_THAT(forward_apply(3, square), Eq(9));
+    EXPECT_THAT(forward_apply(3, square<int>), Eq(9));
 }
 
 TEST(composition_test, parameter_binding)

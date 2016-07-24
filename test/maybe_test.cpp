@@ -13,10 +13,6 @@ using namespace testing;
 
 namespace {
 
-    int square(int x){
-        return x*x;
-    }
-
     fplus::maybe<float> sqrtToMaybe(float x)
     {
         return x < 0.0f ? fplus::nothing<float>() :
@@ -68,10 +64,10 @@ TEST(maybe_test, lift)
     using namespace fplus;
     auto x = just<int>(2);
     maybe<int> y = nothing<int>();
-    auto squareMaybe = lift_maybe(square);
+    auto squareMaybe = lift_maybe(square<int>);
     EXPECT_THAT(squareMaybe(x), Eq(just(4)));
     EXPECT_THAT(squareMaybe(y), Eq(nothing<int>()));
-    auto SquareAndSquare = compose(square, square);
+    auto SquareAndSquare = compose(square<int>, square<int>);
     EXPECT_THAT((lift_maybe(SquareAndSquare))(x), Eq(just(16)));
 }
 

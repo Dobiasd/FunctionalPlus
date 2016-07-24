@@ -13,11 +13,6 @@ using namespace testing;
 
 namespace {
 
-    int square(int x)
-    {
-        return x*x;
-    }
-
     fplus::result<float, std::string> sqrtToResult(float x)
     {
         return x < 0.0f ? fplus::error<float>(std::string("no sqrt of negative numbers")) :
@@ -55,7 +50,7 @@ TEST(result_test, ok_with_default)
     auto x = ok<int, std::string>(2);
     auto y = error<int, std::string>("an error");
     auto Or42 = bind_1st_of_2(ok_with_default<int, std::string>, 42);
-    auto SquareAndSquare = compose(square, square);
+    auto SquareAndSquare = compose(square<int>, square<int>);
     EXPECT_THAT(Or42(x), Eq(2));
     EXPECT_THAT(Or42(y), Eq(42));
 }
@@ -65,7 +60,7 @@ TEST(result_test, and_then_result)
     using namespace fplus;
     auto x = ok<int, std::string>(2);
     auto y = error<int, std::string>("an error");
-    auto squareResult = lift_result<std::string>(square);
+    auto squareResult = lift_result<std::string>(square<int>);
     auto sqrtAndSqrt = and_then_result(sqrtToResult, sqrtToResult);
     EXPECT_THAT(squareResult(x), Eq((ok<int, std::string>(4))));
     EXPECT_THAT(squareResult(y), Eq((error<int>(std::string("an error")))));
@@ -88,7 +83,7 @@ TEST(result_test, lift)
     using namespace fplus;
     auto x = ok<int, std::string>(2);
     auto y = error<int, std::string>("an error");
-    auto SquareAndSquare = compose(square, square);
+    auto SquareAndSquare = compose(square<int>, square<int>);
     EXPECT_THAT((lift_result<std::string>(SquareAndSquare))(x), Eq((ok<int, std::string>(16))));
 }
 
