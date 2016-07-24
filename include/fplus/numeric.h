@@ -63,6 +63,14 @@ X abs(X x)
     return is_negative(x) ? -x : x;
 }
 
+// API search type: abs : (a, a) -> a
+// Returns the absolute difference of two values.
+template <typename X>
+X abs_diff(X a, X b)
+{
+    return abs(b - a);
+}
+
 // API search type: sign : a -> Int
 // Returns -1 for negative values, 1 otherwise.
 // sign(-3) == -1
