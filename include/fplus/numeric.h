@@ -71,6 +71,14 @@ X abs_diff(X a, X b)
     return abs(b - a);
 }
 
+// API search type: square : a -> a
+// Returns the square (x*x) of a value x.
+template <typename X>
+X square(X x)
+{
+    return x * x;
+}
+
 // API search type: sign : a -> Int
 // Returns -1 for negative values, 1 otherwise.
 // sign(-3) == -1
