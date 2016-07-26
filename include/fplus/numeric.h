@@ -27,11 +27,23 @@ std::function<bool(const T&)>
     };
 }
 
-// API search type: is_in_range_right_closed : (a, a) -> (a -> Bool)
+// API search type: is_in_open_range : (a, a) -> (a -> Bool)
+// Checks if x is in (low, high), i.e. left-open and right-open.
+template <typename T>
+std::function<bool(const T&)>
+        is_in_open_range(const T& low, const T& high)
+{
+    return [low, high](const T& x)
+    {
+        return (low < x) && (x < high);
+    };
+}
+
+// API search type: is_in_closed_range : (a, a) -> (a -> Bool)
 // Checks if x is in [low, high], i.e. left-closed and right-closed.
 template <typename T>
 std::function<bool(const T&)>
-        is_in_range_right_closed(const T& low, const T& high)
+        is_in_closed_range(const T& low, const T& high)
 {
     return [low, high](const T& x)
     {
