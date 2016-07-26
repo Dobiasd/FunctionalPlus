@@ -60,7 +60,7 @@ template<
     typename ContIn,
     typename F,
     typename T = typename ContIn::value_type,
-    typename ContOut = typename same_cont_new_t<ContIn, typename std::result_of<F&(T)>::type>::type>
+    typename ContOut = typename same_cont_new_t<ContIn, typename std::result_of<F(T)>::type>::type>
 struct same_cont_new_t_from_unary_f
 {
     typedef ContOut type;
@@ -71,7 +71,7 @@ template<
     typename F,
     typename T1,
     typename T2,
-    typename ContOut = typename same_cont_new_t<ContIn, typename std::result_of<F&(T1, T2)>::type>::type>
+    typename ContOut = typename same_cont_new_t<ContIn, typename std::result_of<F(T1, T2)>::type>::type>
 struct same_cont_new_t_from_binary_f
 {
     typedef ContOut type;
