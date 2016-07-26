@@ -37,6 +37,7 @@ TEST(numeric_test, is_in_range)
     EXPECT_TRUE(fplus::is_in_range(1, 3)(2));
     EXPECT_FALSE(fplus::is_in_range(1, 3)(0));
     EXPECT_FALSE(fplus::is_in_range(1, 3)(3));
+    EXPECT_TRUE(fplus::is_in_range_right_closed(1, 3)(3));
     EXPECT_TRUE(fplus::is_in_range(0.09, 0.11)(fplus::abs(-0.1)));
     EXPECT_TRUE(fplus::is_in_range(0.09, 0.11)(fplus::abs( 0.1)));
 }
