@@ -210,6 +210,13 @@ TEST(generate_test, iterate_with_size_0)
     EXPECT_THAT(result, IsEmpty());
 }
 
+TEST(generate_test, adjecent_difference)
+{
+    const std::vector<int> v = { 0, 4, 1, 2, 5 };
+    auto result = fplus::adjacent_difference(v);
+    EXPECT_THAT(result, ElementsAre(0, 4, -3, 1, 3));
+}
+
 TEST(generate_test, rotate_left)
 {
     const std::vector<char> v = { 'x', 'y', 'z' };

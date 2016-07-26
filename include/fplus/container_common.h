@@ -673,6 +673,39 @@ Container stable_sort(const Container& xs)
     return stable_sort_by(std::less<T>(), xs);
 }
 
+// API search type: partial_sort_by : (((a, a) -> Bool), Int, [a]) -> [a]
+// partially sort by given less comparator
+template <typename Compare, typename Container>
+Container partial_sort_by(Compare comp, std::size_t count, const Container& xs)
+{
+    auto result = xs;
+    if (count > xs.size())
+    {
+        count = xs.size();
+    }
+    auto middle = std::begin(result);
+    std::advance(middle, count);
+    std::partial_sort(std::begin(result), middle, std::end(result), comp);
+    return get_range(0, count, result);
+}
+
+// API search type: partial_sort_on : ((a -> b), Int, [a]) -> [a]
+// partially sort by given transformer
+template <typename F, typename Container>
+Container partial_sort_on(F f, std::size_t count, const Container& xs)
+{
+    return partial_sort_by(is_less_by(f), count, xs);
+}
+
+// API search type: partial_sort : (Int, [a]) -> [a]
+// partially sort by std::less
+template <typename Container>
+Container partial_sort(std::size_t count, const Container& xs)
+{
+    typedef typename Container::value_type T;
+    return partial_sort_by(std::less<T>(), count, xs);
+}
+
 // API search type: unique_by : (((a, a) -> Bool), [a]) -> [a]
 // Like unique but with user supplied equality predicate.
 // O(n)

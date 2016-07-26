@@ -495,6 +495,8 @@ TEST(container_common_test, sort)
     EXPECT_EQ(sort_by(std::greater<int>(), xs), reverse(xsSorted));
 
     EXPECT_EQ(sort_on(int_mod_10, IntVector({26,3,14})), IntVector({3,14,26}));
+
+    EXPECT_EQ(partial_sort(2, reverse(xs)), IntVector({1,2}));
 }
 
 TEST(container_common_test, unique)

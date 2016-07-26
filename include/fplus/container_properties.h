@@ -15,6 +15,7 @@
 #include "fplus/composition.h"
 
 #include <algorithm>
+#include <numeric>
 #include <type_traits>
 
 namespace fplus
@@ -243,7 +244,9 @@ std::pair<Result, Result> mean_stddev(const Container& xs)
     assert(size_of_cont(xs) != 0);
 
     // http://stackoverflow.com/a/7616783/1866775
-    Result sum = static_cast<Result>(std::accumulate(xs.begin(), xs.end(), 0));
+    Result sum = static_cast<Result>(
+        std::accumulate(xs.begin(), xs.end(),
+            static_cast<typename Container::value_type>(0)));
     Result mean = sum / static_cast<Result>(xs.size());
 
     std::vector<Result> diff(xs.size());

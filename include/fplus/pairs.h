@@ -37,7 +37,7 @@ template <typename ContainerIn1, typename ContainerIn2, typename F,
     typename Y = typename ContainerIn2::value_type,
     typename TOut = typename utils::function_traits<F>::result_type,
     typename ContainerOut = typename std::vector<TOut>>
-ContainerOut zip_with(const F& f,
+ContainerOut zip_with(F f,
         const ContainerIn1& xs, const ContainerIn2& ys)
 {
     static_assert(utils::function_traits<F>::arity == 2,

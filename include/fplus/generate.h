@@ -342,6 +342,30 @@ ContainerOut iterate(F f, std::size_t size, const T& x)
     return result;
 }
 
+// API search type: adjacent_difference_by : [a] -> [a]
+// adjacent_difference_by([0,4,1,2,5]) == [0,4,-3,1,3]
+template <typename ContainerIn, typename F,
+    typename X = typename ContainerIn::value_type,
+    typename TOut = typename utils::function_traits<F>::result_type,
+    typename ContainerOut = typename std::vector<TOut>>
+ContainerOut adjacent_difference_by(F f, const ContainerIn& xs)
+{
+    ContainerOut result;
+    prepare_container(result, size_of_cont(xs));
+    std::adjacent_difference(std::begin(xs), std::end(xs),
+        back_inserter(result), f);
+    return result;
+}
+
+// API search type: adjacent_difference : [a] -> [a]
+// adjacent_difference([0,4,1,2,5]) == [0,4,-3,1,3]
+template <typename Container>
+Container adjacent_difference(const Container& xs)
+{
+    return adjacent_difference_by(
+        std::minus<typename Container::value_type>(), xs);
+}
+
 // API search type: rotate_left : [a] -> [a]
 // rotate_left("xyz") == "yzx"
 template <typename Container>
