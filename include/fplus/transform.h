@@ -14,10 +14,42 @@
 #include "fplus/function_traits.h"
 
 #include <algorithm>
+#include <future>
 #include <random>
 
 namespace fplus
 {
+
+// API search type: transform_parallelly : ((a -> b), [a]) -> [b]
+// transform_parallelly((*2), [1, 3, 4]) == [2, 6, 8]
+// Same as transform, but can utilize multiple CPUs by using std::async.
+// Only makes sense if one run of the provided function
+// takes enough time to justify the synchronization overhead.
+// Can be used for applying MapReduce pattern.
+template <typename F, typename ContainerIn,
+    typename ContainerOut = typename same_cont_new_t_from_unary_f<
+        ContainerIn, F>::type,
+    typename X = typename ContainerIn::value_type,
+    typename Y = typename utils::function_traits<F>::result_type>
+ContainerOut transform_parallelly(F f, const ContainerIn& xs)
+{
+    check_arity<1, F>();
+    auto handles = transform([&f](const X& x) -> std::future<Y>
+    {
+        return std::async(std::launch::async, [&x, &f]()
+            {
+                return f(x);
+            });
+    }, xs);
+
+    ContainerOut ys;
+    prepare_container(ys, size_of_cont(xs));
+    for (std::future<Y>& handle : handles)
+    {
+        ys.push_back(handle.get());
+    }
+    return ys;
+}
 
 // API search type: transform_convert : ((a -> b), [a]) -> [b]
 // transform_convert((*2), [1, 3, 4]) == [2, 6, 8]

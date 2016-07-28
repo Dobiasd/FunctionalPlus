@@ -177,7 +177,6 @@ std::function<bool()> execute_serially_until_failure(const Container& effs)
 // API search type: execute_parallelly : [Io a] -> Io [a]
 // Returns a function that executes the given side effects in parallel
 // and returns the collected results.
-// Can be used for something like MapReduce.
 template <typename Container,
         typename Effect = typename Container::value_type,
         typename Result = typename utils::function_traits<
