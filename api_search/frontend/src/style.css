@@ -39,15 +39,15 @@ code {
     margin: 4px;
 }
 
-.githublinks
+.githublink
 {
     text-align: center;
 }
 
-.githublinks a:link    { color: #f8f8f2 }
-.githublinks a:visited { color: #f8f8f2 }
-.githublinks a:hover   { color: #f8f8f2 }
-.githublinks a:active  { color: #f8f8f2 }
+.githublink a:link    { color: #f8f8f2 }
+.githublink a:visited { color: #f8f8f2 }
+.githublink a:hover   { color: #f8f8f2 }
+.githublink a:active  { color: #f8f8f2 }
 
 .functionnameandsig
 {
