@@ -277,8 +277,6 @@ std::function<bool()> write_text_file(const std::string& filename,
     return [filename, content]() -> bool
     {
         std::ofstream output(filename);
-        if (output.good())
-            return false;
         output << content;
         return output.good();
     };
@@ -294,11 +292,9 @@ std::function<bool()> write_binary_file(const std::string& filename,
     return [filename, content]() -> bool
     {
         std::ofstream file(filename, std::ios::binary);
-        if (file.good())
-            return false;
         file.write(reinterpret_cast<const char*>(&content[0]),
             static_cast<std::streamsize>(content.size()));
-        return true;
+        return file.good();
     };
 }
 
