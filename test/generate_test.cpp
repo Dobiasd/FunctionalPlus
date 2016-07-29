@@ -332,3 +332,13 @@ TEST(generate_test, tails)
     EXPECT_THAT(result[3], ElementsAre(3));
     EXPECT_THAT(result[4], IsEmpty());
 }
+
+TEST(generate_test, inner_product)
+{
+    const std::vector<int> xs = { 1, 2, 3 };
+    const std::vector<int> ys = { 4, 5, 6 };
+    const auto plus = [](int x, int y) { return x + y; };
+    const auto mult = [](int x, int y) { return x * y; };
+    EXPECT_EQ(fplus::inner_product(0, xs, ys), 32);
+    EXPECT_EQ(fplus::inner_product_with(plus, mult, 0, xs, ys), 32);
+}

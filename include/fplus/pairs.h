@@ -200,4 +200,31 @@ std::vector<std::pair<std::size_t, T>> enumerate(const Container& xs)
     return zip(all_idxs(xs), xs);
 }
 
+// API search type: inner_product_with : (((a, a) -> b), ((b, b) -> b), b, [a], [a]) -> b
+// inner_product_with((+), (*), [1, 2, 3], [4, 5, 6]) == [32]
+template <typename ContainerIn1, typename ContainerIn2,
+    typename OP1, typename OP2,
+    typename Z,
+    typename TOut = typename utils::function_traits<OP2>::result_type>
+TOut inner_product_with(OP1 op1, OP2 op2, const Z& value,
+        const ContainerIn1& xs, const ContainerIn2& ys)
+{
+    assert(size_of_cont(xs) == size_of_cont(ys));
+    return std::inner_product(
+        std::begin(xs), std::end(xs), std::begin(ys), value, op1, op2);
+}
+
+// API search type: inner_product : (a, [a], [a]) -> a
+// inner_product([1, 2, 3], [4, 5, 6]) == [32]
+template <typename ContainerIn1, typename ContainerIn2,
+    typename Z>
+Z inner_product(const Z& value,
+        const ContainerIn1& xs, const ContainerIn2& ys)
+{
+    assert(size_of_cont(xs) == size_of_cont(ys));
+
+    return std::inner_product(
+        std::begin(xs), std::end(xs), std::begin(ys), value);
+}
+
 } // namespace fplus
