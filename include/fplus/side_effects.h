@@ -219,12 +219,38 @@ std::function<void()> execute_fire_and_forget(Effect eff)
 inline
 std::function<std::string()> read_text_file(const std::string& filename)
 {
-    return [filename]()
+    return [filename]() -> std::string
     {
         std::ifstream input(filename);
+        if (!input.good())
+            return {};
         return std::string(
                 std::istreambuf_iterator<std::string::value_type>(input),
                 std::istreambuf_iterator<std::string::value_type>());
+    };
+}
+
+// API search type: read_binary_file : String -> Io [Int]
+// Returns a function that reads the content of a binary file.
+inline
+std::function<std::vector<std::uint8_t>()> read_binary_file(
+    const std::string& filename)
+{
+    return [filename]() -> std::vector<std::uint8_t>
+    {
+        std::ifstream file(filename, std::ios::binary);
+        if (!file.good())
+            return {};
+        file.unsetf(std::ios::skipws);
+        std::streampos fileSize;
+        file.seekg(0, std::ios::end);
+        fileSize = file.tellg();
+        if (fileSize == static_cast<std::streamsize>(0))
+            return {};
+        file.seekg(0, std::ios::beg);
+        std::vector<std::uint8_t> vec(static_cast<std::size_t>(fileSize), 0);
+        file.read(reinterpret_cast<char*>(&vec[0]), fileSize);
+        return vec;
     };
 }
 
@@ -251,8 +277,28 @@ std::function<bool()> write_text_file(const std::string& filename,
     return [filename, content]() -> bool
     {
         std::ofstream output(filename);
+        if (output.good())
+            return false;
         output << content;
         return output.good();
+    };
+}
+
+// API search type: write_binary_file : (String, [Int]) -> Io Bool
+// Returns a function that writes content into a binary file,
+// replacing it if it already exists.
+inline
+std::function<bool()> write_binary_file(const std::string& filename,
+        const std::vector<uint8_t>& content)
+{
+    return [filename, content]() -> bool
+    {
+        std::ofstream file(filename, std::ios::binary);
+        if (file.good())
+            return false;
+        file.write(reinterpret_cast<const char*>(&content[0]),
+            static_cast<std::streamsize>(content.size()));
+        return true;
     };
 }
 
