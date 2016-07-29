@@ -181,6 +181,7 @@ ContainerOut convert_container_and_elems(const ContainerIn& xs)
 
 // API search type: get_range : (Int, Int, [a]) -> [a]
 // get_range(2, 5, [0,1,2,3,4,5,6,7,8]) == [2,3,4]
+// crashes on invalid indices
 template <typename Container>
 Container get_range
         (std::size_t idxBegin, std::size_t idxEnd, const Container& xs)
@@ -198,6 +199,7 @@ Container get_range
 
 // API search type: set_range : (Int, [a], [a]) -> [a]
 // set_range(2, [9,9,9], [0,1,2,3,4,5,6,7,8]) == [0,1,9,9,9,5,6,7,8]
+// crashes on invalid indices
 template <typename Container>
 Container set_range
         (std::size_t idxBegin, const Container& token, const Container& xs)
@@ -212,6 +214,7 @@ Container set_range
 
 // API search type: remove_range : (Int, Int, [a]) -> [a]
 // remove_range(2, 5, [0,1,2,3,4,5,6,7]) == [0,1,5,6,7]
+// crashes on invalid indices
 template <typename Container>
 Container remove_range
         (std::size_t idxBegin, std::size_t idxEnd, const Container& xs)
@@ -236,6 +239,7 @@ Container remove_range
 
 // API search type: insert_at : (Int, [a], [a]) -> [a]
 // insert_at(2, [8,9], [0,1,2,3,4]) == [0,1,8,9,2,3,4]
+// crashes on invalid index
 template <typename Container>
 Container insert_at(std::size_t idxBegin,
         const Container& token, const Container& xs)
@@ -256,6 +260,7 @@ Container insert_at(std::size_t idxBegin,
 
 // API search type: replace_range : (Int, [a], [a]) -> [a]
 // replace_range(2, [8,9], [0,1,2,3,4]) == [0,1,8,9,4]
+// crashes on invalid index
 template <typename Container>
 Container replace_range(std::size_t idxBegin,
         const Container& token, const Container& xs)
