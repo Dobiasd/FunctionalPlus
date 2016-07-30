@@ -22,9 +22,13 @@ const auto is_comment = fplus::bind_1st_of_2(
 std::vector<std::string> list_files(const std::string& dir_path)
 {
     using namespace boost::filesystem;
-    return fplus::transform([](const directory_entry& entry)
+    return fplus::transform_and_keep_justs([](const directory_entry& entry) -> fplus::maybe<std::string>
     {
-        return entry.path().filename().string();
+        if (boost::filesystem::is_regular_file(entry))
+        {
+            return entry.path().filename().string();
+        }
+        return {};
     }, std::vector<directory_entry>(directory_iterator(path(dir_path)), {}));
 }
 
