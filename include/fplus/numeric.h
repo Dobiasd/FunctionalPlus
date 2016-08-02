@@ -382,7 +382,7 @@ std::function<X(X, X)> cyclic_distance(X circumfence)
 
 // API search type: pi : () -> Float
 // Pi.
-inline double pi()
+constexpr inline double pi()
 {
     return 3.14159265358979323846;
 }
