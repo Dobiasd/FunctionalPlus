@@ -15,7 +15,7 @@
 namespace fplus
 {
 
-// API search type: includes : (Set a, Set a) -> Bool
+// API search type: set_includes : (Set a, Set a) -> Bool
 // Checks if every element of the second set is also present in the first set.
 template <typename SetType>
 bool set_includes(const SetType& set1, const SetType& set2)
@@ -24,7 +24,7 @@ bool set_includes(const SetType& set1, const SetType& set2)
         std::begin(set2), std::end(set2));
 }
 
-// API search type: merge : (Set a, Set a) -> Set a
+// API search type: set_merge : (Set a, Set a) -> Set a
 // Returns the union of two given sets.
 template <typename SetType>
 SetType set_merge(const SetType& set1, const SetType& set2)
