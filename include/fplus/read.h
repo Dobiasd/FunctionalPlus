@@ -149,4 +149,35 @@ maybe<T> read_value(const std::string& str)
     return to_maybe(read_value_result<T>(str));
 }
 
+// API search type: read_value_with_default : (a, String) -> a
+// Try to deserialize a value, return given default on failure, e.g.:
+// String to Int
+// String to Float
+// String to Double
+// read_value_with_default<unsigned int>(3, "42") == 42
+// read_value_with_default<unsigned int>(3, "") == 3
+// read_value_with_default<unsigned int>(3, "foo") == 3
+// etc.
+template <typename T>
+T read_value_with_default(const T& def, const std::string& str)
+{
+    return just_with_default(def, to_maybe(read_value_result<T>(str)));
+}
+
+// API search type: read_value_unsafe : String -> a
+// Try to deserialize a value, crash on failure, e.g.:
+// String to Int
+// String to Float
+// String to Double
+// read_value_with_default<unsigned int>(3, "42") == 42
+// read_value_with_default<unsigned int>(3, "") == crash
+// read_value_with_default<unsigned int>(3, "foo") == crash
+// See read_value and read_value_with_default for safe versions.
+// etc.
+template <typename T>
+T read_value_unsafe(const std::string& str)
+{
+    return unsafe_get_just(to_maybe(read_value_result<T>(str)));
+}
+
 } // namespace fplus

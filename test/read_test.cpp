@@ -23,6 +23,10 @@ TEST(read_test, read_value)
     EXPECT_EQ(read_value<int>("-3"), just<int>(-3));
     EXPECT_EQ(read_value<int>("twenty"), nothing<int>());
     EXPECT_EQ(read_value<int>("3 thousand"), nothing<int>());
+    EXPECT_EQ(read_value_with_default<int>(3, "42"), 42);
+    EXPECT_EQ(read_value_with_default<int>(3, "foo"), 3);
+    EXPECT_EQ(read_value_with_default<int>(3, ""), 3);
+    EXPECT_EQ(read_value_unsafe<int>("42"), 42);
 
     EXPECT_TRUE(is_in_range(-42.4f, -42.2f)(unsafe_get_just(read_value<float>("-42.3"))));
     EXPECT_TRUE(is_in_range(-42.4 , -42.2 )(unsafe_get_just(read_value<double>("-42.3"))));
