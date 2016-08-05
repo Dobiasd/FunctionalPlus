@@ -12,7 +12,7 @@
 using namespace testing;
 
 namespace {
-    auto squareLambda = [](int x) { return x*x; };
+    auto squareLambda = [](int x) -> int { return x*x; };
     auto is_even = [](int x){ return x % 2 == 0; };
     auto is_even_size_t = [](std::size_t x){ return x % 2 == 0; };
     auto is_odd = [](int x){ return x % 2 == 1; };
@@ -75,6 +75,8 @@ TEST(container_common_test, transform)
     EXPECT_EQ(transform(squareLambda, intList), IntList({ 1,4,4,9,4 }));
     EXPECT_EQ(transform_parallelly(squareLambda, intList), IntList({ 1,4,4,9,4 }));
     EXPECT_EQ(transform_convert<IntList>(squareLambda, xs), IntList({ 1,4,4,9,4 }));
+
+    EXPECT_EQ(transform(squareLambda, std::set<int>({1,2,3,-3})), std::set<int>({1,4,9}));
 
     auto add_size_t_and_int = [](std::size_t a, int b) -> int
     {

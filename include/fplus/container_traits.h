@@ -31,6 +31,7 @@ template<class T, class Alloc> struct has_order<std::vector<T, Alloc>> : public 
 template<class T, class Alloc> struct has_order<std::deque<T, Alloc>> : public std::true_type {};
 template<class T, class Alloc> struct has_order<std::forward_list<T, Alloc>> : public std::true_type {};
 template<class T, class Alloc> struct has_order<std::list<T, Alloc>> : public std::true_type {};
+template<class T, class Alloc> struct has_order<std::set<T, Alloc>> : public std::true_type {};
 template<class T, class Container> struct has_order<std::stack<T, Container>> : public std::true_type {};
 template<class T, class Container> struct has_order<std::queue<T, Container>> : public std::true_type {};
 template<class T, class Container, class Compare> struct has_order<std::priority_queue<T, Container, Compare>> : public std::false_type {};
@@ -43,6 +44,7 @@ template<class T, class Alloc, class NewT> struct same_cont_new_t<std::vector<T,
 template<class T, class Alloc, class NewT> struct same_cont_new_t<std::deque<T, Alloc>, NewT> { typedef typename std::deque<NewT> type; };
 template<class T, class Alloc, class NewT> struct same_cont_new_t<std::forward_list<T, Alloc>, NewT> { typedef typename std::forward_list<NewT> type; };
 template<class T, class Alloc, class NewT> struct same_cont_new_t<std::list<T, Alloc>, NewT> { typedef typename std::list<NewT> type; };
+template<class T, class Alloc, class NewT> struct same_cont_new_t<std::set<T, Alloc>, NewT> { typedef typename std::set<NewT> type; };
 template<class T, class Container, class NewT> struct same_cont_new_t<std::stack<T, Container>, NewT> { typedef typename std::stack<NewT, Container> type; };
 template<class T, class Container, class NewT> struct same_cont_new_t<std::queue<T, Container>, NewT> { typedef typename std::queue<NewT, Container> type; };
 template<class T, class Container, class Compare, class NewT> struct same_cont_new_t<std::priority_queue<T, Container, Compare>, NewT> { typedef typename std::priority_queue<NewT, Container, Compare> type; };
