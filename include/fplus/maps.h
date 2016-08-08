@@ -182,6 +182,22 @@ maybe<Val> get_from_map(const MapType& map, const Key& key)
     return just(it->second);
 }
 
+// API search type: get_from_map_unsafe : (Map key val, key) -> val
+// Returns the value of a key if key is present.
+// Crashes otherwise.
+template <typename MapType,
+    typename Key = typename MapType::key_type,
+    typename Val = typename MapType::mapped_type>
+Val get_from_map_unsafe(const MapType& map, const Key& key)
+{
+    auto it = map.find(key);
+    if (it == std::end(map))
+    {
+        assert(false); // Key not present in map.
+    }
+    return it->second;
+}
+
 // API search type: get_from_map_with_def : (Map key val, val, key) -> val
 // Returns the value of a key if key is present.
 // Otherwise returns the provided default.
