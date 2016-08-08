@@ -36,7 +36,7 @@ ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
     *get_back_inserter(result) = InnerContainerOut(1, xs.front());
     for (auto it = ++std::begin(xs); it != std::end(xs); ++it)
     {
-        if (p(*it, result.back().back()))
+        if (p(result.back().back(), *it))
             *get_back_inserter(result.back()) = *it;
         else
             *get_back_inserter(result) = InnerContainerOut(1, *it);
