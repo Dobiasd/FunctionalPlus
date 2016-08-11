@@ -17,75 +17,78 @@
 namespace fplus
 {
 
-template <typename UnaryPredicate, typename Container>
-void check_unary_predicate_for_container()
+namespace internal
 {
-    check_unary_predicate_for_type<UnaryPredicate,
-        typename Container::value_type>();
-}
+    template <typename UnaryPredicate, typename Container>
+    void check_unary_predicate_for_container()
+    {
+        check_unary_predicate_for_type<UnaryPredicate,
+            typename Container::value_type>();
+    }
 
-template <typename UnaryPredicate, typename Container>
-void check_index_with_type_predicate_for_container()
-{
-    check_index_with_type_predicate_for_type<UnaryPredicate,
-        typename Container::value_type>();
-}
+    template <typename UnaryPredicate, typename Container>
+    void check_index_with_type_predicate_for_container()
+    {
+        check_index_with_type_predicate_for_type<UnaryPredicate,
+            typename Container::value_type>();
+    }
 
-template <typename Compare, typename Container>
-void check_compare_for_container()
-{
-    check_compare_for_type<Compare, typename Container::value_type>();
-}
+    template <typename Compare, typename Container>
+    void check_compare_for_container()
+    {
+        check_compare_for_type<Compare, typename Container::value_type>();
+    }
 
-template <typename BinaryPredicate, typename Container>
-void check_binary_predicate_for_container()
-{
-    check_binary_predicate_for_type<BinaryPredicate,
-        typename Container::value_type>();
-}
+    template <typename BinaryPredicate, typename Container>
+    void check_binary_predicate_for_container()
+    {
+        check_binary_predicate_for_type<BinaryPredicate,
+            typename Container::value_type>();
+    }
 
-// PrepareContainer and BackInserter are overloaded
-// to increase performance on std::vector and std::string
-// by using std::vector<T>::reserve
-// and std::back_inserter instead of std::back_inserter.
-// In VC2015, release mode, Celsius W520 Xeon
-// this leads to an increase in performance of about a factor of 3
-// for Transform.
-template <typename C>
-void prepare_container(const std::basic_string<C, std::char_traits<C>,
-    std::allocator<C>>& ys, std::size_t size)
-{
-    ys.reserve(size);
-}
+    // PrepareContainer and BackInserter are overloaded
+    // to increase performance on std::vector and std::string
+    // by using std::vector<T>::reserve
+    // and std::back_inserter instead of std::back_inserter.
+    // In VC2015, release mode, Celsius W520 Xeon
+    // this leads to an increase in performance of about a factor of 3
+    // for Transform.
+    template <typename C>
+    void prepare_container(const std::basic_string<C, std::char_traits<C>,
+        std::allocator<C>>& ys, std::size_t size)
+    {
+        ys.reserve(size);
+    }
 
-template <typename Y>
-void prepare_container(std::vector<Y>& ys, std::size_t size)
-{
-    ys.reserve(size);
-}
+    template <typename Y>
+    void prepare_container(std::vector<Y>& ys, std::size_t size)
+    {
+        ys.reserve(size);
+    }
 
-template <typename Container>
-void prepare_container(Container&, std::size_t)
-{
-}
+    template <typename Container>
+    void prepare_container(Container&, std::size_t)
+    {
+    }
 
-template <typename Container, typename Y>
-std::back_insert_iterator<Container> get_back_inserter(std::string& ys)
-{
-    return std::back_inserter(ys);
-}
+    template <typename Container, typename Y>
+    std::back_insert_iterator<Container> get_back_inserter(std::string& ys)
+    {
+        return std::back_inserter(ys);
+    }
 
-template <typename Container, typename Y>
-std::back_insert_iterator<Container> get_back_inserter(std::vector<Y>& ys)
-{
-    return std::back_inserter(ys);
-}
+    template <typename Container, typename Y>
+    std::back_insert_iterator<Container> get_back_inserter(std::vector<Y>& ys)
+    {
+        return std::back_inserter(ys);
+    }
 
-template <typename Container>
-std::insert_iterator<Container> get_back_inserter(Container& ys)
-{
-    return std::inserter(ys, std::end(ys));
-}
+    template <typename Container>
+    std::insert_iterator<Container> get_back_inserter(Container& ys)
+    {
+        return std::inserter(ys, std::end(ys));
+    }
+} // namespace internal
 
 // API search type: is_empty : [a] -> Bool
 // is_empty([1, 2]) == false
@@ -129,8 +132,8 @@ ContainerOut convert_elems(const ContainerIn& xs)
         typename ContainerIn::value_type>::value,
         "Elements not convertible.");
     ContainerOut ys;
-    prepare_container(ys, size_of_cont(xs));
-    auto it = get_back_inserter<ContainerOut>(ys);
+    internal::prepare_container(ys, size_of_cont(xs));
+    auto it = internal::get_back_inserter<ContainerOut>(ys);
     // using 'for (const auto& x ...)' is even for ints as fast as
     // using 'for (int x ...)' (GCC, O3), so there is no need to
     // check if the type is fundamental and then dispatch accordingly.
@@ -152,8 +155,8 @@ ContainerOut convert_container(const ContainerIn& xs)
     static_assert(std::is_same<DestElem, SourceElem>::value,
         "Source and dest container must have the same value_type");
     ContainerOut ys;
-    prepare_container(ys, size_of_cont(xs));
-    auto itOut = get_back_inserter<ContainerOut>(ys);
+    internal::prepare_container(ys, size_of_cont(xs));
+    auto itOut = internal::get_back_inserter<ContainerOut>(ys);
     std::copy(std::begin(xs), std::end(xs), itOut);
     return ys;
 }
@@ -170,8 +173,8 @@ ContainerOut convert_container_and_elems(const ContainerIn& xs)
         "Elements not convertible.");
     typedef typename ContainerOut::value_type DestElem;
     ContainerOut ys;
-    prepare_container(ys, size_of_cont(xs));
-    auto it = get_back_inserter<ContainerOut>(ys);
+    internal::prepare_container(ys, size_of_cont(xs));
+    auto it = internal::get_back_inserter<ContainerOut>(ys);
     for (const auto& x : xs)
     {
         *it = convert<DestElem>(x);
@@ -193,7 +196,7 @@ Container get_range
     std::advance(itBegin, idxBegin);
     auto itEnd = itBegin;
     std::advance(itEnd, idxEnd - idxBegin);
-    std::copy(itBegin, itEnd, get_back_inserter(result));
+    std::copy(itBegin, itEnd, internal::get_back_inserter(result));
     return result;
 }
 
@@ -224,15 +227,15 @@ Container remove_range
 
     Container result;
     std::size_t length = idxEnd - idxBegin;
-    prepare_container(result, size_of_cont(xs) - length);
+    internal::prepare_container(result, size_of_cont(xs) - length);
 
     auto firstBreakIt = std::begin(xs);
     std::advance(firstBreakIt, idxBegin);
-    std::copy(std::begin(xs), firstBreakIt, get_back_inserter(result));
+    std::copy(std::begin(xs), firstBreakIt, internal::get_back_inserter(result));
 
     auto secondBreakIt = firstBreakIt;
     std::advance(secondBreakIt, length);
-    std::copy(secondBreakIt, std::end(xs), get_back_inserter(result));
+    std::copy(secondBreakIt, std::end(xs), internal::get_back_inserter(result));
 
     return result;
 }
@@ -247,13 +250,13 @@ Container insert_at(std::size_t idxBegin,
     assert(idxBegin <= size_of_cont(xs));
 
     Container result;
-    prepare_container(result, size_of_cont(xs) + size_of_cont(token));
+    internal::prepare_container(result, size_of_cont(xs) + size_of_cont(token));
 
     auto breakIt = std::begin(xs);
     std::advance(breakIt, idxBegin);
-    std::copy(std::begin(xs), breakIt, get_back_inserter(result));
-    std::copy(std::begin(token), std::end(token), get_back_inserter(result));
-    std::copy(breakIt, std::end(xs), get_back_inserter(result));
+    std::copy(std::begin(xs), breakIt, internal::get_back_inserter(result));
+    std::copy(std::begin(token), std::end(token), internal::get_back_inserter(result));
+    std::copy(breakIt, std::end(xs), internal::get_back_inserter(result));
 
     return result;
 }
@@ -292,7 +295,7 @@ std::vector<T> elems_at_idxs(const ContainerIdxs& idxs, const Container& xs)
     static_assert(std::is_same<typename ContainerIdxs::value_type, std::size_t>::value,
         "Indices must be std::size_t");
     ContainerOut result;
-    prepare_container(result, size_of_cont(idxs));
+    internal::prepare_container(result, size_of_cont(idxs));
     auto itOut = back_inserter(result);
     for (std::size_t idx : idxs)
     {
@@ -336,8 +339,8 @@ ContainerOut transform(F f, const ContainerIn& xs)
 {
     check_arity<1, F>();
     ContainerOut ys;
-    prepare_container(ys, size_of_cont(xs));
-    auto it = get_back_inserter<ContainerOut>(ys);
+    internal::prepare_container(ys, size_of_cont(xs));
+    auto it = internal::get_back_inserter<ContainerOut>(ys);
     std::transform(std::begin(xs), std::end(xs), it, f);
     return ys;
 }
@@ -439,8 +442,8 @@ template <typename F, typename ContainerIn,
 ContainerOut scan_left(F f, const Acc& init, const ContainerIn& xs)
 {
     ContainerOut result;
-    prepare_container(result, size_of_cont(xs));
-    auto itOut = get_back_inserter(result);
+    internal::prepare_container(result, size_of_cont(xs));
+    auto itOut = internal::get_back_inserter(result);
     Acc acc = init;
     *itOut = acc;
     for (const auto& x : xs)
@@ -528,11 +531,11 @@ template <typename Container>
 Container append(const Container& xs, const Container& ys)
 {
     Container result;
-    prepare_container(result, size_of_cont(xs) + size_of_cont(ys));
+    internal::prepare_container(result, size_of_cont(xs) + size_of_cont(ys));
     std::copy(std::begin(xs), std::end(xs),
-        get_back_inserter(result));
+        internal::get_back_inserter(result));
     std::copy(std::begin(ys), std::end(ys),
-        get_back_inserter(result));
+        internal::get_back_inserter(result));
     return result;
 }
 
@@ -546,7 +549,7 @@ ContainerOut concat(const ContainerIn& xss)
     std::size_t length = sum(
         transform(size_of_cont<typename ContainerIn::value_type>, xss));
     ContainerOut result;
-    prepare_container(result, length);
+    internal::prepare_container(result, length);
     for(const auto& xs : xss)
     {
         result.insert(end(result), begin(xs), end(xs));
@@ -564,8 +567,8 @@ template <typename Container>
 Container interweave(const Container& xs, const Container& ys)
 {
     Container result;
-    prepare_container(result, size_of_cont(xs) + size_of_cont(ys));
-    auto it = get_back_inserter<Container>(result);
+    internal::prepare_container(result, size_of_cont(xs) + size_of_cont(ys));
+    auto it = internal::get_back_inserter<Container>(result);
     auto it_xs = std::begin(xs);
     auto it_ys = std::begin(ys);
     while (it_xs != std::end(xs) || it_ys != std::end(ys))
@@ -589,12 +592,12 @@ std::pair<Container, Container> unweave(const Container& xs)
 {
     std::pair<Container, Container> result;
     if (size_of_cont(xs) % 2 == 0)
-        prepare_container(result.first, size_of_cont(xs) / 2);
+        internal::prepare_container(result.first, size_of_cont(xs) / 2);
     else
-        prepare_container(result.first, size_of_cont(xs) / 2 + 1);
-    prepare_container(result.second, size_of_cont(xs) / 2);
-    auto it_even = get_back_inserter<Container>(result.first);
-    auto it_odd = get_back_inserter<Container>(result.second);
+        internal::prepare_container(result.first, size_of_cont(xs) / 2 + 1);
+    internal::prepare_container(result.second, size_of_cont(xs) / 2);
+    auto it_even = internal::get_back_inserter<Container>(result.first);
+    auto it_odd = internal::get_back_inserter<Container>(result.second);
     std::size_t counter = 0;
     for (const auto& x : xs)
     {
@@ -717,7 +720,7 @@ Container partial_sort(std::size_t count, const Container& xs)
 template <typename Container, typename BinaryPredicate>
 Container unique_by(BinaryPredicate p, const Container& xs)
 {
-    check_binary_predicate_for_container<BinaryPredicate, Container>();
+    internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
     auto result = xs;
     auto last = std::unique(std::begin(result), std::end(result), p);
     result.erase(last, std::end(result));
@@ -756,8 +759,8 @@ Container intersperse(const X& value, const Container& xs)
     if (size_of_cont(xs) == 1)
         return xs;
     Container result;
-    prepare_container(result, std::max<std::size_t>(0, size_of_cont(xs)*2-1));
-    auto it = get_back_inserter(result);
+    internal::prepare_container(result, std::max<std::size_t>(0, size_of_cont(xs)*2-1));
+    auto it = internal::get_back_inserter(result);
     for_each(std::begin(xs), --std::end(xs), [&value, &it](const X& x)
     {
         *it = x;
@@ -804,7 +807,7 @@ template <typename Container, typename BinaryPredicate>
 Container nub_by(BinaryPredicate p, const Container& xs)
 {
     Container result;
-    auto itOut = get_back_inserter(result);
+    auto itOut = internal::get_back_inserter(result);
     for (const auto &x : xs)
     {
         auto eqToX = bind_1st_of_2(p, x);
@@ -844,7 +847,7 @@ Container nub(const Container& xs)
 template <typename Container, typename BinaryPredicate>
 bool all_unique_by_eq(BinaryPredicate p, const Container& xs)
 {
-    check_binary_predicate_for_container<BinaryPredicate, Container>();
+    internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
     return size_of_cont(nub_by(p, xs)) == size_of_cont(xs);
 }
 
@@ -876,7 +879,7 @@ bool all_unique(const Container& xs)
 template <typename Container, typename Compare>
 bool is_strictly_sorted_by(Compare comp, const Container& xs)
 {
-    check_compare_for_container<Compare, Container>();
+    internal::check_compare_for_container<Compare, Container>();
     if (size_of_cont(xs) < 2)
         return true;
     auto it1 = std::begin(xs);
@@ -910,7 +913,7 @@ bool is_strictly_sorted(const Container& xs)
 template <typename Container, typename Compare>
 bool is_sorted_by(Compare comp, const Container& xs)
 {
-    check_compare_for_container<Compare, Container>();
+    internal::check_compare_for_container<Compare, Container>();
     if (size_of_cont(xs) < 2)
         return true;
     auto it1 = std::begin(xs);
@@ -965,7 +968,7 @@ bool is_suffix_of(const Container& token, const Container& xs)
 template <typename UnaryPredicate, typename Container>
 bool all_by(UnaryPredicate p, const Container& xs)
 {
-    check_unary_predicate_for_container<UnaryPredicate, Container>();
+    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
     return std::all_of(std::begin(xs), std::end(xs), p);
 }
 
@@ -984,7 +987,7 @@ bool all(const Container& xs)
 template <typename Container, typename BinaryPredicate>
 bool all_the_same_by(BinaryPredicate p, const Container& xs)
 {
-    check_binary_predicate_for_container<BinaryPredicate, Container>();
+    internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
     if (size_of_cont(xs) < 2)
         return true;
     auto unaryPredicate = bind_1st_of_2(p, xs.front());
@@ -1026,8 +1029,8 @@ ContainerOut generate_range_step
         return result;
     }
     std::size_t size = static_cast<std::size_t>((end - start) / step);
-    prepare_container(result, size);
-    auto it = get_back_inserter<ContainerOut>(result);
+    internal::prepare_container(result, size);
+    auto it = internal::get_back_inserter<ContainerOut>(result);
     for (T x = start; x < end; x+=step)
         *it = x;
     return result;

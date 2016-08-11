@@ -19,10 +19,10 @@ template <typename UnaryPredicate, typename Container>
 Container replace_if(UnaryPredicate p,
         const typename Container::value_type& dest, const Container& xs)
 {
-    check_unary_predicate_for_container<UnaryPredicate, Container>();
+    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
     Container result;
-    prepare_container(result, size_of_cont(xs));
-    auto itOut = get_back_inserter(result);
+    internal::prepare_container(result, size_of_cont(xs));
+    auto itOut = internal::get_back_inserter(result);
     for (const auto& x : xs)
     {
         *itOut = p(x) ? dest : x;

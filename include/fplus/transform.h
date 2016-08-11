@@ -43,7 +43,7 @@ ContainerOut transform_parallelly(F f, const ContainerIn& xs)
     }, xs);
 
     ContainerOut ys;
-    prepare_container(ys, size_of_cont(xs));
+    internal::prepare_container(ys, size_of_cont(xs));
     for (std::future<Y>& handle : handles)
     {
         ys.push_back(handle.get());
@@ -60,8 +60,8 @@ ContainerOut transform_convert(F f, const ContainerIn& xs)
 {
     check_arity<1, F>();
     ContainerOut ys;
-    prepare_container(ys, size_of_cont(xs));
-    auto it = get_back_inserter<ContainerOut>(ys);
+    internal::prepare_container(ys, size_of_cont(xs));
+    auto it = internal::get_back_inserter<ContainerOut>(ys);
     std::transform(std::begin(xs), std::end(xs), it, f);
     return ys;
 }
@@ -75,8 +75,8 @@ ContainerOut transform_with_idx(F f, const ContainerIn& xs)
 {
     check_arity<2, F>();
     ContainerOut ys;
-    prepare_container(ys, size_of_cont(xs));
-    auto it = get_back_inserter<ContainerOut>(ys);
+    internal::prepare_container(ys, size_of_cont(xs));
+    auto it = internal::get_back_inserter<ContainerOut>(ys);
     std::size_t idx = 0;
     for (const auto& x : xs)
     {
@@ -139,12 +139,12 @@ Container transpose(const Container& grid2d)
     std::size_t width = rowLenghts.front();
 
     Container result;
-    prepare_container(result, width);
+    internal::prepare_container(result, width);
 
     for (std::size_t x = 0; x < width; ++x)
     {
-        *get_back_inserter(result) = Row();
-        auto itOutRow = get_back_inserter(result.back());
+        *internal::get_back_inserter(result) = Row();
+        auto itOutRow = internal::get_back_inserter(result.back());
         for (std::size_t y = 0; y < height; ++y)
         {
             *itOutRow = grid2d[y][x];
@@ -178,8 +178,8 @@ ContainerOut apply_functions(const FunctionContainer& functions, const FIn& x)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     ContainerOut ys;
-    prepare_container(ys, size_of_cont(functions));
-    auto it = get_back_inserter<ContainerOut>(ys);
+    internal::prepare_container(ys, size_of_cont(functions));
+    auto it = internal::get_back_inserter<ContainerOut>(ys);
     for (const auto& f : functions)
     {
         *it = f(x);

@@ -22,9 +22,9 @@ namespace fplus
 template <typename Pred, typename Container>
 Container keep_if(Pred pred, const Container& xs)
 {
-    check_unary_predicate_for_container<Pred, Container>();
+    internal::check_unary_predicate_for_container<Pred, Container>();
     Container result;
-    auto it = get_back_inserter<Container>(result);
+    auto it = internal::get_back_inserter<Container>(result);
     std::copy_if(std::begin(xs), std::end(xs), it, pred);
     return result;
 }
@@ -35,7 +35,7 @@ Container keep_if(Pred pred, const Container& xs)
 template <typename Pred, typename Container>
 Container drop_if(Pred pred, const Container& xs)
 {
-    check_unary_predicate_for_container<Pred, Container>();
+    internal::check_unary_predicate_for_container<Pred, Container>();
     return keep_if(logical_not(pred), xs);
 }
 
@@ -54,9 +54,9 @@ Container without(T elem, const Container& xs)
 template <typename Pred, typename Container>
 Container keep_if_with_idx(Pred pred, const Container& xs)
 {
-    check_index_with_type_predicate_for_container<Pred, Container>();
+    internal::check_index_with_type_predicate_for_container<Pred, Container>();
     Container ys;
-    auto it = get_back_inserter<Container>(ys);
+    auto it = internal::get_back_inserter<Container>(ys);
     std::size_t idx = 0;
     for (const auto& x : xs)
     {
@@ -72,7 +72,7 @@ Container keep_if_with_idx(Pred pred, const Container& xs)
 template <typename Pred, typename Container>
 Container drop_if_with_idx(Pred pred, const Container& xs)
 {
-    check_index_with_type_predicate_for_container<Pred, Container>();
+    internal::check_index_with_type_predicate_for_container<Pred, Container>();
     typedef typename utils::function_traits<Pred>::template arg<0>::type Idx;
     typedef typename utils::function_traits<Pred>::template arg<1>::type T;
     const auto inverse_pred = [pred](Idx idx, const T& x)
@@ -89,7 +89,7 @@ Container keep_by_idx(UnaryPredicate pred, const Container& xs)
 {
     check_unary_predicate_for_type<UnaryPredicate, std::size_t>();
     Container ys;
-    auto it = get_back_inserter<Container>(ys);
+    auto it = internal::get_back_inserter<Container>(ys);
     std::size_t idx = 0;
     for (const auto& x : xs)
     {
@@ -116,7 +116,7 @@ Container keep_idxs(const ContainerIdxs& idxs_to_keep, const Container& xs)
     auto idxs_left = convert_container<std::list<std::size_t>>(
         unique(sort(idxs_to_keep)));
     Container ys;
-    auto it = get_back_inserter<Container>(ys);
+    auto it = internal::get_back_inserter<Container>(ys);
     std::size_t idx = 0;
     for (const auto& x : xs)
     {
@@ -138,7 +138,7 @@ Container drop_idxs(const ContainerIdxs& idxs_to_drop, const Container& xs)
     auto idxs_left = convert_container<std::list<std::size_t>>(
         unique(sort(idxs_to_drop)));
     Container ys;
-    auto it = get_back_inserter<Container>(ys);
+    auto it = internal::get_back_inserter<Container>(ys);
     std::size_t idx = 0;
     for (const auto& x : xs)
     {
@@ -168,8 +168,8 @@ ContainerOut justs(const ContainerIn& xs)
     typedef typename ContainerIn::value_type::type T;
     auto justsInMaybes = keep_if(is_just<T>, xs);
     ContainerOut ys;
-    prepare_container(ys, fplus::size_of_cont(justsInMaybes));
-    auto itOut = get_back_inserter<ContainerOut>(ys);
+    internal::prepare_container(ys, fplus::size_of_cont(justsInMaybes));
+    auto itOut = internal::get_back_inserter<ContainerOut>(ys);
     std::transform(std::begin(justsInMaybes), std::end(justsInMaybes),
         itOut, unsafe_get_just<T>);
     return ys;
@@ -188,8 +188,8 @@ ContainerOut oks(const ContainerIn& xs)
     typedef typename ContainerIn::value_type::error_t Error;
     auto oksInResults = keep_if(is_ok<Ok, Error>, xs);
     ContainerOut ys;
-    prepare_container(ys, fplus::size_of_cont(oksInResults));
-    auto itOut = get_back_inserter<ContainerOut>(ys);
+    internal::prepare_container(ys, fplus::size_of_cont(oksInResults));
+    auto itOut = internal::get_back_inserter<ContainerOut>(ys);
     std::transform(std::begin(oksInResults), std::end(oksInResults),
         itOut, unsafe_get_ok<Ok, Error>);
     return ys;
@@ -208,8 +208,8 @@ ContainerOut errors(const ContainerIn& xs)
     typedef typename ContainerIn::value_type::error_t Error;
     auto errorsInResults = keep_if(is_error<Ok, Error>, xs);
     ContainerOut ys;
-    prepare_container(ys, fplus::size_of_cont(errorsInResults));
-    auto itOut = get_back_inserter<ContainerOut>(ys);
+    internal::prepare_container(ys, fplus::size_of_cont(errorsInResults));
+    auto itOut = internal::get_back_inserter<ContainerOut>(ys);
     std::transform(std::begin(errorsInResults), std::end(errorsInResults),
         itOut, unsafe_get_error<Ok, Error>);
     return ys;
@@ -220,7 +220,7 @@ ContainerOut errors(const ContainerIn& xs)
 template <typename Container, typename UnaryPredicate>
 Container trim_left_by(UnaryPredicate p, const Container& xs)
 {
-    check_unary_predicate_for_container<UnaryPredicate, Container>();
+    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
     auto itFirstNot = std::find_if_not(std::begin(xs), std::end(xs), p);
     if (itFirstNot == std::end(xs))
         return Container();
@@ -255,7 +255,7 @@ Container trim_token_left(const Container& token, const Container& xs)
 template <typename Container, typename UnaryPredicate>
 Container trim_right_by(UnaryPredicate p, const Container& xs)
 {
-    check_unary_predicate_for_container<UnaryPredicate, Container>();
+    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
     return reverse(trim_left_by(p, reverse(xs)));
 }
 
@@ -282,7 +282,7 @@ Container trim_token_right(const Container& token, const Container& xs)
 template <typename Container, typename UnaryPredicate>
 Container trim_by(UnaryPredicate p, const Container& xs)
 {
-    check_unary_predicate_for_container<UnaryPredicate, Container>();
+    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
     return trim_right_by(p, trim_left_by(p, xs));
 }
 

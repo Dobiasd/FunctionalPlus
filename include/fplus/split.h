@@ -25,7 +25,7 @@ template <typename BinaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
 {
-    check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
+    internal::check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
     static_assert(std::is_same<ContainerIn,
         typename ContainerOut::value_type>::value,
         "Containers do not match.");
@@ -33,13 +33,13 @@ ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
     if (is_empty(xs))
         return result;
     typedef typename ContainerOut::value_type InnerContainerOut;
-    *get_back_inserter(result) = InnerContainerOut(1, xs.front());
+    *internal::get_back_inserter(result) = InnerContainerOut(1, xs.front());
     for (auto it = ++std::begin(xs); it != std::end(xs); ++it)
     {
         if (p(result.back().back(), *it))
-            *get_back_inserter(result.back()) = *it;
+            *internal::get_back_inserter(result.back()) = *it;
         else
-            *get_back_inserter(result) = InnerContainerOut(1, *it);
+            *internal::get_back_inserter(result) = InnerContainerOut(1, *it);
     }
     return result;
 }
@@ -78,7 +78,7 @@ template <typename BinaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group_globally_by(BinaryPredicate p, const ContainerIn& xs)
 {
-    check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
+    internal::check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
     static_assert(std::is_same<ContainerIn,
         typename ContainerOut::value_type>::value,
         "Containers do not match.");
@@ -91,14 +91,14 @@ ContainerOut group_globally_by(BinaryPredicate p, const ContainerIn& xs)
         {
             if (p(x, ys.back()))
             {
-                *get_back_inserter(ys) = x;
+                *internal::get_back_inserter(ys) = x;
                 found = true;
                 break;
             }
         }
         if (!found)
         {
-            *get_back_inserter(result) = InnerContainerOut(1, x);
+            *internal::get_back_inserter(result) = InnerContainerOut(1, x);
         }
     }
     return result;
@@ -142,7 +142,7 @@ template <typename BinaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
 {
-    check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
+    internal::check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
     static_assert(std::is_same<ContainerIn,
         typename ContainerOut::value_type>::value,
         "Containers do not match.");
@@ -215,8 +215,8 @@ ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
         {
             continue;
         }
-        *get_back_inserter(idx_clusters) = idxs();
-        *get_back_inserter(idx_clusters.back()) = idx;
+        *internal::get_back_inserter(idx_clusters) = idxs();
+        *internal::get_back_inserter(idx_clusters.back()) = idx;
         already_used[idx] = 1;
         process_idx(idx);
     }
@@ -245,13 +245,13 @@ template <typename UnaryPredicate, typename ContainerIn,
 ContainerOut split_by
         (UnaryPredicate pred, bool allowEmpty, const ContainerIn& xs)
 {
-    check_unary_predicate_for_container<UnaryPredicate, ContainerIn>();
+    internal::check_unary_predicate_for_container<UnaryPredicate, ContainerIn>();
     static_assert(std::is_same<ContainerIn,
         typename ContainerOut::value_type>::value,
         "Containers do not match.");
 
     ContainerOut result;
-    auto itOut = get_back_inserter(result);
+    auto itOut = internal::get_back_inserter(result);
     auto start = std::begin(xs);
     while (start != std::end(xs))
     {
@@ -282,14 +282,14 @@ template <typename UnaryPredicate, typename ContainerIn,
 ContainerOut split_by_keep_separators
         (UnaryPredicate pred, const ContainerIn& xs)
 {
-    check_unary_predicate_for_container<UnaryPredicate, ContainerIn>();
+    internal::check_unary_predicate_for_container<UnaryPredicate, ContainerIn>();
     static_assert(std::is_same<ContainerIn,
         typename ContainerOut::value_type>::value,
         "Containers do not match.");
     ContainerOut result;
     if (is_empty(xs))
         return result;
-    auto itOut = get_back_inserter(result);
+    auto itOut = internal::get_back_inserter(result);
     auto start = std::begin(xs);
     while (start != std::end(xs))
     {
@@ -332,11 +332,11 @@ template <typename UnaryPredicate, typename Container>
 std::pair<Container, Container> partition
         (UnaryPredicate pred, const Container& xs)
 {
-    check_unary_predicate_for_container<UnaryPredicate, Container>();
+    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
     Container matching;
     Container notMatching;
-    auto itOutMatching = get_back_inserter(matching);
-    auto itOutNotMatching = get_back_inserter(notMatching);
+    auto itOutMatching = internal::get_back_inserter(matching);
+    auto itOutNotMatching = internal::get_back_inserter(notMatching);
     for (const auto& x : xs)
     {
         if (pred(x))
@@ -363,8 +363,8 @@ ContainerOut split_at_idxs(const ContainerIdxs& idxsIn, const ContainerIn& xs)
     auto idxs = concat(containerIdxss);
     auto idxsClean = sort(idxs);
     ContainerOut result;
-    prepare_container(result, size_of_cont(idxsClean) + 1);
-    auto itOut = get_back_inserter(result);
+    internal::prepare_container(result, size_of_cont(idxsClean) + 1);
+    auto itOut = internal::get_back_inserter(result);
     auto idxPairs = overlapping_pairs(idxsClean);
     for (const auto& idxPair : idxPairs)
     {
@@ -397,9 +397,9 @@ ContainerOut split_by_token(const ContainerIn& token,
         typename ContainerOut::value_type>::value,
         "Containers do not match.");
     auto instances = find_all_instances_of_token_non_overlapping(token, xs);
-    *get_back_inserter(instances) = size_of_cont(xs);
+    *internal::get_back_inserter(instances) = size_of_cont(xs);
     ContainerOut result;
-    auto itOut = get_back_inserter(result);
+    auto itOut = internal::get_back_inserter(result);
     std::size_t lastEnd = 0;
     for (std::size_t idx : instances)
     {
@@ -437,7 +437,7 @@ template <typename BinaryPredicate,
             typename std::vector<std::pair<std::size_t, T>>>
 ContainerOut run_length_encode_by(BinaryPredicate pred, const ContainerIn& xs)
 {
-    check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
+    internal::check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
     ContainerOut result;
     auto groups = group_by(pred, xs);
     auto group_to_pair = [](const ContainerIn& group )

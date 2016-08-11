@@ -26,7 +26,7 @@ namespace fplus
 template <typename UnaryPredicate, typename Container>
 bool any_by(UnaryPredicate p, const Container& xs)
 {
-    check_unary_predicate_for_container<UnaryPredicate, Container>();
+    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
     return std::any_of(std::begin(xs), std::end(xs), p);
 }
 
@@ -44,7 +44,7 @@ bool any(const Container& xs)
 template <typename UnaryPredicate, typename Container>
 bool none_by(UnaryPredicate p, const Container& xs)
 {
-    check_unary_predicate_for_container<UnaryPredicate, Container>();
+    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
     return std::none_of(std::begin(xs), std::end(xs), p);
 }
 
@@ -65,7 +65,7 @@ template <typename Compare, typename Container>
 typename std::size_t minimum_idx_by(Compare comp,
         const Container& xs)
 {
-    check_compare_for_container<Compare, Container>();
+    internal::check_compare_for_container<Compare, Container>();
     assert(is_not_empty(xs));
     return static_cast<std::size_t>(std::distance(std::begin(xs),
         std::min_element(std::begin(xs), std::end(xs), comp)));
@@ -78,7 +78,7 @@ template <typename Compare, typename Container>
 typename std::size_t maximum_idx_by(Compare comp,
         const Container& xs)
 {
-    check_compare_for_container<Compare, Container>();
+    internal::check_compare_for_container<Compare, Container>();
     assert(is_not_empty(xs));
     return static_cast<std::size_t>(std::distance(std::begin(xs),
         std::max_element(std::begin(xs), std::end(xs), comp)));
@@ -133,7 +133,7 @@ template <typename Compare, typename Container>
 typename Container::value_type minimum_by(Compare comp,
         const Container& xs)
 {
-    check_compare_for_container<Compare, Container>();
+    internal::check_compare_for_container<Compare, Container>();
     assert(is_not_empty(xs));
     return *std::min_element(std::begin(xs), std::end(xs), comp);
 }
@@ -144,7 +144,7 @@ template <typename Compare, typename Container>
 typename Container::value_type maximum_by(Compare comp,
         const Container& xs)
 {
-    check_compare_for_container<Compare, Container>();
+    internal::check_compare_for_container<Compare, Container>();
     assert(is_not_empty(xs));
     return *std::max_element(std::begin(xs), std::end(xs), comp);
 }
@@ -295,7 +295,7 @@ Result median(const Container& xs)
 template <typename Container, typename Compare>
 bool all_unique_by_less(Compare comp, const Container& xs)
 {
-    check_compare_for_container<Compare, Container>();
+    internal::check_compare_for_container<Compare, Container>();
     if (size_of_cont(xs) < 2)
         return true;
     return size_of_cont(unique(sort_by(comp, xs))) == size_of_cont(xs);
@@ -348,7 +348,7 @@ bool is_subsequence_of(const Container& seq, const Container& xs)
 template <typename UnaryPredicate, typename Container>
 std::size_t count_if(UnaryPredicate p, const Container& xs)
 {
-    check_unary_predicate_for_container<UnaryPredicate, Container>();
+    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
     return size_of_cont(find_all_idxs_by(p, xs));
 }
 

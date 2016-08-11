@@ -21,8 +21,8 @@ ContainerOut generate(F f, std::size_t amount)
 {
     check_arity<0, F>();
     ContainerOut ys;
-    prepare_container(ys, amount);
-    auto it = get_back_inserter<ContainerOut>(ys);
+    internal::prepare_container(ys, amount);
+    auto it = internal::get_back_inserter<ContainerOut>(ys);
     for (std::size_t i = 0; i < amount; ++i)
     {
         *it = f();
@@ -40,8 +40,8 @@ ContainerOut generate_by_idx(F f, std::size_t amount)
     static_assert(std::is_convertible<std::size_t, FIn>::value,
         "Function does not take std::size_t or compatible type.");
     ContainerOut ys;
-    prepare_container(ys, amount);
-    auto it = get_back_inserter<ContainerOut>(ys);
+    internal::prepare_container(ys, amount);
+    auto it = internal::get_back_inserter<ContainerOut>(ys);
     for (std::size_t i = 0; i < amount; ++i)
     {
         *it = f(i);
@@ -80,8 +80,8 @@ ContainerOut infixes(std::size_t length, const ContainerIn& xs)
     ContainerOut result;
     if (size_of_cont(xs) < length)
         return result;
-    prepare_container(result, size_of_cont(xs) - length);
-    auto itOut = get_back_inserter(result);
+    internal::prepare_container(result, size_of_cont(xs) - length);
+    auto itOut = internal::get_back_inserter(result);
     for (std::size_t idx = 0; idx <= size_of_cont(xs) - length; ++idx)
     {
         *itOut = get_range(idx, idx + length, xs);
@@ -110,7 +110,7 @@ ContainerOut carthesian_product_with_where(F f, Pred pred,
     const Container1& xs, const Container2& ys)
 {
     ContainerOut result;
-    auto itOut = get_back_inserter(result);
+    auto itOut = internal::get_back_inserter(result);
     for (const auto& x : xs)
     {
         for (const auto& y : ys)
@@ -330,8 +330,8 @@ ContainerOut iterate(F f, std::size_t size, const T& x)
     ContainerOut result;
     if (size == 0)
         return result;
-    prepare_container(result, size + 1);
-    auto it_out = get_back_inserter(result);
+    internal::prepare_container(result, size + 1);
+    auto it_out = internal::get_back_inserter(result);
     T current = x;
     *it_out = current;
     for (std::size_t i = 1; i < size; ++i)
@@ -351,7 +351,7 @@ template <typename ContainerIn, typename F,
 ContainerOut adjacent_difference_by(F f, const ContainerIn& xs)
 {
     ContainerOut result;
-    prepare_container(result, size_of_cont(xs));
+    internal::prepare_container(result, size_of_cont(xs));
     std::adjacent_difference(std::begin(xs), std::end(xs),
         back_inserter(result), f);
     return result;
@@ -375,9 +375,9 @@ Container rotate_left(const Container& xs)
         return xs;
     Container ys;
     auto size = size_of_cont(xs);
-    prepare_container(ys, size);
+    internal::prepare_container(ys, size);
     auto it = std::begin(xs);
-    auto it_out = get_back_inserter(ys);
+    auto it_out = internal::get_back_inserter(ys);
     ++it;
     while (it != std::end(xs))
     {
@@ -447,8 +447,8 @@ ContainerOut inits(const ContainerIn& xs)
 {
     ContainerOut result;
     std::size_t xs_size = size_of_cont(xs);
-    prepare_container(result, xs_size + 1);
-    auto it_out = get_back_inserter(result);
+    internal::prepare_container(result, xs_size + 1);
+    auto it_out = internal::get_back_inserter(result);
     for (std::size_t i = 0; i <= xs_size; ++i)
         *it_out = get_range(0, i, xs);
     return result;
@@ -463,8 +463,8 @@ ContainerOut tails(const ContainerIn& xs)
 {
     ContainerOut result;
     std::size_t xs_size = size_of_cont(xs);
-    prepare_container(result, xs_size + 1);
-    auto it_out = get_back_inserter(result);
+    internal::prepare_container(result, xs_size + 1);
+    auto it_out = internal::get_back_inserter(result);
     for (std::size_t i = 0; i <= xs_size; ++i)
         *it_out = get_range(i, xs_size, xs);
     return result;

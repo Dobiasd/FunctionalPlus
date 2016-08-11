@@ -23,7 +23,7 @@ template <typename Container, typename UnaryPredicate,
     typename T = typename Container::value_type>
 maybe<T> find_first_by(UnaryPredicate pred, const Container& xs)
 {
-    check_unary_predicate_for_container<UnaryPredicate, Container>();
+    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
     auto it = std::find_if(std::begin(xs), std::end(xs), pred);
     if (it == std::end(xs))
         return nothing<T>();
@@ -37,7 +37,7 @@ template <typename Container, typename UnaryPredicate,
     typename T = typename Container::value_type>
 maybe<T> find_last_by(UnaryPredicate pred, const Container& xs)
 {
-    check_unary_predicate_for_container<UnaryPredicate, Container>();
+    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
     return find_first_by(pred, reverse(xs));
 }
 
@@ -48,7 +48,7 @@ template <typename Container, typename UnaryPredicate>
 maybe<std::size_t> find_first_idx_by
         (UnaryPredicate pred, const Container& xs)
 {
-    check_unary_predicate_for_container<UnaryPredicate, Container>();
+    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
     auto it = std::find_if(std::begin(xs), std::end(xs), pred);
     if (it == std::end(xs))
         return nothing<std::size_t>();
@@ -62,7 +62,7 @@ template <typename Container, typename UnaryPredicate>
 maybe<std::size_t> find_last_idx_by
         (UnaryPredicate pred, const Container& xs)
 {
-    check_unary_predicate_for_container<UnaryPredicate, Container>();
+    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
     auto calcRevIdx = [&](std::size_t idx)
     {
         return size_of_cont(xs) - (idx + 1);
@@ -97,10 +97,10 @@ template <typename ContainerOut = std::vector<std::size_t>,
         typename UnaryPredicate, typename Container>
 ContainerOut find_all_idxs_by(UnaryPredicate p, const Container& xs)
 {
-    check_unary_predicate_for_container<UnaryPredicate, Container>();
+    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
     std::size_t idx = 0;
     ContainerOut result;
-    auto itOut = get_back_inserter(result);
+    auto itOut = internal::get_back_inserter(result);
     for (const auto& x : xs)
     {
         if (p(x))
@@ -136,7 +136,7 @@ ContainerOut find_all_instances_of_token(const Container& token,
     std::advance(itInEnd, size_of_cont(token));
     std::size_t idx = 0;
     ContainerOut result;
-    auto outIt = get_back_inserter(result);
+    auto outIt = internal::get_back_inserter(result);
     std::size_t last_possible_idx = size_of_cont(xs) - size_of_cont(token);
     auto check_and_push = [&]()
     {
@@ -166,7 +166,7 @@ ContainerOut find_all_instances_of_token_non_overlapping
     auto overlapping_instances = find_all_instances_of_token<ContainerOut>(
             token, xs);
     ContainerOut result;
-    auto outIt = get_back_inserter(result);
+    auto outIt = internal::get_back_inserter(result);
     std::size_t token_size = size_of_cont(token);
     for (const auto idx : overlapping_instances)
     {

@@ -59,8 +59,8 @@ ContainerOut zip_with(F f,
         "Both Containers must be of same outer type.");
     ContainerOut result;
     std::size_t resultSize = std::min(size_of_cont(xs), size_of_cont(ys));
-    prepare_container(result, resultSize);
-    auto itResult = get_back_inserter(result);
+    internal::prepare_container(result, resultSize);
+    auto itResult = internal::get_back_inserter(result);
     auto itXs = std::begin(xs);
     auto itYs = std::begin(ys);
     for (std::size_t i = 0; i < resultSize; ++i)
@@ -96,10 +96,10 @@ std::pair<ContainerOutX, ContainerOutY> unzip(const ContainerIn& pairs)
 {
     ContainerOutX firsts;
     ContainerOutY seconds;
-    prepare_container(firsts, size_of_cont(pairs));
-    prepare_container(seconds, size_of_cont(pairs));
-    auto itFirsts = get_back_inserter(firsts);
-    auto itSeconds = get_back_inserter(seconds);
+    internal::prepare_container(firsts, size_of_cont(pairs));
+    internal::prepare_container(seconds, size_of_cont(pairs));
+    auto itFirsts = internal::get_back_inserter(firsts);
+    auto itSeconds = internal::get_back_inserter(seconds);
     for (const auto& pair : pairs)
     {
         *itFirsts = pair.first;
@@ -179,8 +179,8 @@ ContainerOut overlapping_pairs(const Container& xs)
     ContainerOut result;
     if (size_of_cont(xs) < 2)
         return result;
-    prepare_container(result, size_of_cont(xs) - 1);
-    auto itOut = get_back_inserter(result);
+    internal::prepare_container(result, size_of_cont(xs) - 1);
+    auto itOut = internal::get_back_inserter(result);
     auto it1 = std::begin(xs);
     auto it2 = it1;
     std::advance(it2, 1);

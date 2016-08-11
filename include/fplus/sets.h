@@ -30,7 +30,7 @@ template <typename SetType>
 SetType set_merge(const SetType& set1, const SetType& set2)
 {
     SetType result;
-    auto itOut = get_back_inserter(result);
+    auto itOut = internal::get_back_inserter(result);
     std::merge(std::begin(set1), std::end(set1),
         std::begin(set2), std::end(set2),
         itOut);
@@ -43,7 +43,7 @@ template <typename SetType>
 SetType set_intersection(const SetType& set1, const SetType& set2)
 {
     SetType result;
-    auto itOut = get_back_inserter(result);
+    auto itOut = internal::get_back_inserter(result);
     std::set_intersection(std::begin(set1), std::end(set1),
         std::begin(set2), std::end(set2),
         itOut);
@@ -56,7 +56,7 @@ template <typename SetType>
 SetType set_difference(const SetType& set1, const SetType& set2)
 {
     SetType result;
-    auto itOut = get_back_inserter(result);
+    auto itOut = internal::get_back_inserter(result);
     std::set_difference(std::begin(set1), std::end(set1),
         std::begin(set2), std::end(set2),
         itOut);
@@ -69,7 +69,7 @@ template <typename SetType>
 SetType set_symmetric_difference(const SetType& set1, const SetType& set2)
 {
     SetType result;
-    auto itOut = get_back_inserter(result);
+    auto itOut = internal::get_back_inserter(result);
     std::set_symmetric_difference(std::begin(set1), std::end(set1),
         std::begin(set2), std::end(set2),
         itOut);
