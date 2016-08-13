@@ -161,6 +161,18 @@ std::pair<Y, X> swap_pair_elems(const std::pair<X, Y>& pair)
     return std::make_pair(pair.second, pair.first);
 }
 
+// API search type: swap_pairs_elems : [(a, b)] -> [(b, a)]
+// swap_pairs_elems([(1,2), (3,4)]) == [(2,1), (4,3)]
+template <typename ContainerIn,
+    typename X = typename ContainerIn::value_type::first_type,
+    typename Y = typename ContainerIn::value_type::second_type,
+    typename ContainerOut =
+        typename same_cont_new_t<ContainerIn, std::pair<Y, X>>::type>
+ContainerOut swap_pairs_elems(const ContainerIn& xs)
+{
+    return fplus::transform(swap_pair_elems<X, Y>, xs);
+}
+
 // API search type: overlapping_pairs : [a] -> [(a, a)]
 // overlapping_pairs([0,1,2,3]) == [(0,1),(1,2),(2,3)]
 template <typename Container,

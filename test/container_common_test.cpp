@@ -17,6 +17,7 @@ namespace {
     auto is_even_size_t = [](std::size_t x){ return x % 2 == 0; };
     auto is_odd = [](int x){ return x % 2 == 1; };
     typedef std::pair<int, int> IntPair;
+    typedef std::vector<IntPair> IntPairs;
     typedef std::vector<int> IntVector;
     typedef std::vector<IntVector> IntVectors;
     typedef std::vector<bool> BoolVector;
@@ -590,9 +591,12 @@ TEST(container_common_test, pairs)
 {
     using namespace fplus;
     IntPair intPair = std::make_pair(2, 3);
+    IntPairs intPairs = {{1,2}, {3,4}};
+    IntPairs intPairsSwapped = {{2,1}, {4,3}};
     EXPECT_EQ(fst(intPair), 2);
     EXPECT_EQ(snd(intPair), 3);
     EXPECT_EQ(swap_pair_elems(intPair), std::make_pair(3, 2));
+    EXPECT_EQ(swap_pairs_elems(intPairs), intPairsSwapped);
     EXPECT_EQ(transform_fst(squareLambda, intPair), std::make_pair(4, 3));
     EXPECT_EQ(transform_snd(squareLambda, intPair), std::make_pair(2, 9));
 
