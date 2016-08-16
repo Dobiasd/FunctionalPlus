@@ -66,6 +66,10 @@ TEST(container_common_test, group)
 TEST(container_common_test, transform)
 {
     using namespace fplus;
+
+    auto intTimes2 = [](int x) -> int { return x*2; };
+    auto intTimes3 = [](int x) -> int { return x*3; };
+
     // The following works with C++14.
     // EXPECT_EQ(transform([](auto x) { return x*x; }, xs), IntVector({1,4,4,9,4}));
     std::initializer_list<int> initListInts = { 1,2,2,3,2 };
@@ -78,6 +82,7 @@ TEST(container_common_test, transform)
     EXPECT_EQ(transform_convert<IntList>(squareLambda, xs), IntList({ 1,4,4,9,4 }));
 
     EXPECT_EQ(transform(squareLambda, std::set<int>({1,2,3,-3})), std::set<int>({1,4,9}));
+    EXPECT_EQ(transform_inner(intTimes2, IntVectors({{1,3,4},{1,2}})), IntVectors({{2,6,8},{2,4}}));
 
     auto add_size_t_and_int = [](std::size_t a, int b) -> int
     {
@@ -85,8 +90,6 @@ TEST(container_common_test, transform)
     };
     EXPECT_EQ(transform_with_idx(add_size_t_and_int, xs), IntVector({1+0,2+1,2+2,3+3,2+4}));
 
-    auto intTimes2 = [](int x) -> int { return x*2; };
-    auto intTimes3 = [](int x) -> int { return x*3; };
     std::vector<std::function<int(int)>> multiplyFunctions = {intTimes2, intTimes3};
     EXPECT_THAT(apply_functions(multiplyFunctions, 4), ElementsAre(8, 12));
 

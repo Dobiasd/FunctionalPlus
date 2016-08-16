@@ -345,6 +345,26 @@ ContainerOut transform(F f, const ContainerIn& xs)
     return ys;
 }
 
+// API search type: transform_inner : ((a -> b), [a]) -> [b]
+// transform_inner((*2), [[1, 3, 4], [1, 2]]) == [[2, 6, 8], [2, 4]]
+// Also known as transform_nested, map_nested or map_inner.
+template <typename F, typename ContainerIn,
+    typename ContainerOut =
+        typename same_cont_new_t<
+            ContainerIn,
+            typename same_cont_new_t_from_unary_f<
+                typename ContainerIn::value_type, F
+            >::type
+        >::type>
+ContainerOut transform_inner(F f, const ContainerIn& xs)
+{
+    check_arity<1, F>();
+    return fplus::transform(
+        fplus::bind_1st_of_2(
+            fplus::transform<F, typename ContainerIn::value_type>, f),
+        xs);
+}
+
 // API search type: reverse : [a] -> [a]
 // reverse([0,4,2,6]) == [6,2,4,0]
 template <typename Container>
