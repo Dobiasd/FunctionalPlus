@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <numeric>
 #include <iterator>
 
 namespace fplus
