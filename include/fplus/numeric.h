@@ -7,7 +7,9 @@
 #pragma once
 
 #include "fplus/function_traits.h"
+#include "fplus/container_common.h"
 
+#include <algorithm>
 #include <functional>
 #include <limits>
 #include <cmath>
@@ -402,6 +404,58 @@ template <typename T>
 T rad_to_deg(T x)
 {
     return static_cast<T>(x * 180.0 / pi());
+}
+
+// API search type: normalize_min_max : (a, a, [a]) -> [a]
+// Linearly scales the values into the given interval.
+// normalize_min_max(0, 10, [1, 3, 6]) == [0, 4, 10]
+// It is recommended to convert integers to double beforehand.
+template <typename Container>
+Container normalize_min_max(
+    const typename Container::value_type& lower,
+    const typename Container::value_type& upper, const Container& xs)
+{
+    assert(size_of_cont(xs) != 0);
+    assert(lower <= upper);
+    typedef typename Container::value_type T;
+    const auto minmax_it_p = std::minmax_element(std::begin(xs), std::end(xs));
+    const T x_min = *minmax_it_p.first;
+    const T x_max = *minmax_it_p.second;
+    const auto f = [&](const T& x) -> T
+    {
+        return lower + (upper - lower) * (x - x_min) / (x_max - x_min);
+    };
+    return fplus::transform(f, xs);
+}
+
+// API search type: normalize_mean_stddev : (a, a, [a]) -> [a]
+// Linearly scales the values
+// to match the given mean and population standard deviation.
+// normalize_mean_stddev(3, 2, [7, 8]) == [1, 5]
+template <typename Container>
+Container normalize_mean_stddev(
+    const typename Container::value_type& mean,
+    const typename Container::value_type& stddev,
+    const Container& xs)
+{
+    assert(size_of_cont(xs) != 0);
+    typedef typename Container::value_type T;
+    const auto mean_and_stddev = fplus::mean_stddev<T>(xs);
+    const auto f = [&](const T& x) -> T
+    {
+        return mean +
+            stddev * (x - mean_and_stddev.first) / mean_and_stddev.second;
+    };
+    return fplus::transform(f, xs);
+}
+
+// API search type: standardize : [a] -> [a]
+// Linearly scales the values to zero mean and population standard deviation 1.
+// standardize([7, 8]) == [-1, 1]
+template <typename Container>
+Container standardize(const Container& xs)
+{
+    return normalize_mean_stddev(0, 1, xs);
 }
 
 } // namespace fplus

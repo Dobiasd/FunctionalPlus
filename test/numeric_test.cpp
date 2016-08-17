@@ -29,6 +29,8 @@ namespace {
     }
 
     typedef std::vector<int> Ints;
+    typedef std::vector<double> Floats;
+    typedef std::vector<double> Doubles;
 }
 
 TEST(numeric_test, is_in_range)
@@ -300,4 +302,17 @@ TEST(numeric_test, variadic)
     EXPECT_THAT(max(-1,-2), Eq(-1));
     EXPECT_THAT(max(-1,-2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), Eq(0));
     EXPECT_THAT(max('a','b','c'), Eq('c'));
+}
+
+TEST(numeric_test, normalize)
+{
+    using namespace fplus;
+
+    EXPECT_EQ(normalize_min_max(0, 10, Doubles({1, 3, 6})), Doubles({0, 4, 10}));
+    EXPECT_EQ(normalize_mean_stddev(3, 2, Doubles({7, 8})), Doubles({1, 5}));
+    EXPECT_EQ(standardize(Doubles({2.0, 6.0})), Doubles({-1, 1}));
+
+    EXPECT_EQ(normalize_min_max(0, 10, Floats({1, 3, 6})), Floats({0, 4, 10}));
+    EXPECT_EQ(normalize_mean_stddev(3, 2, Floats({7, 8})), Floats({1, 5}));
+    EXPECT_EQ(standardize(Floats({2.0, 6.0})), Floats({-1, 1}));
 }
