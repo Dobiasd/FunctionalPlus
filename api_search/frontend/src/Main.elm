@@ -336,7 +336,7 @@ cleanFunctionSignature =
             >> replaceInString "result" "Result"
             >> replaceInString "map" "Map"
             >> replaceInString "dict" "Map"
-            >> replaceInString "set" "Int"
+            >> replaceInString "set" "Set"
             >> replaceInString "string" "String"
             >> replaceInString "String" "[Char]"
 
