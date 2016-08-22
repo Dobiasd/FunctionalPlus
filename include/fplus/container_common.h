@@ -1084,6 +1084,7 @@ Container init(const Container& xs)
 }
 
 // API search type: tail : [a] -> [a]
+// Drops the first element of a container, keeps the rest.
 // tail([0,1,2,3]) == [1,2,3]
 template <typename Container>
 Container tail(const Container& xs)
