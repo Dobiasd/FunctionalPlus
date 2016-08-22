@@ -14,6 +14,8 @@
 #include <chrono>
 #include <fstream>
 #include <future>
+#include <iostream>
+#include <iterator>
 #include <streambuf>
 #include <string>
 #include <vector>
@@ -311,6 +313,23 @@ std::function<bool()> write_text_file_lines(const std::string& filename,
         content += "\n";
     }
     return write_text_file(filename, content);
+}
+
+// API search type: interact : (String -> String) -> Io ()
+// Takes a function F of type (String -> String)
+// and returns a function that
+// reads the entire input from standard input,
+// passes it through the given function,
+// and its the output to standard output.
+template <typename F>
+std::function<void()> interact(F f)
+{
+    return [f]() -> void
+    {
+        std::cout << f(std::string(
+            std::istreambuf_iterator<char>(std::cin.rdbuf()),
+            std::istreambuf_iterator<char>()));
+    };
 }
 
 } // namespace fplus
