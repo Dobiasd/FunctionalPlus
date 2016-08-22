@@ -75,4 +75,14 @@ SetType set_symmetric_difference(const SetType& set1, const SetType& set2)
         itOut);
     return result;
 }
+
+// API search type: sets_intersection : [Set a] -> Set a
+// Returns the intersection of the given sets.
+template <typename ContainerIn,
+    typename SetType = typename ContainerIn::value_type>
+SetType sets_intersection(const ContainerIn& sets)
+{
+    return fold_left_1(set_intersection<SetType>, sets);
+}
+
 } // namespace fplus

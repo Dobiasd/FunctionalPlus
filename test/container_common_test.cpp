@@ -821,6 +821,7 @@ TEST(container_common_test, set)
 {
     using namespace fplus;
     typedef std::set<int> IntSet;
+    typedef std::vector<IntSet> IntSets;
     IntSet intSet1 = {0,1,2,3};
     IntSet intSet2 = {2,3,4,5};
     IntSet intSet3 = {0,2};
@@ -828,6 +829,7 @@ TEST(container_common_test, set)
     IntSet intSet5 = {0,1};
     IntSet intSet6 = {0,1,2,3,4,5};
     IntSet intSet7 = {0,1,4,5};
+    IntSet intSet8 = {2};
     EXPECT_EQ(set_includes(intSet1, intSet3), true);
     EXPECT_EQ(set_includes(intSet3, intSet1), false);
     EXPECT_EQ(set_includes(intSet1, intSet2), false);
@@ -836,6 +838,8 @@ TEST(container_common_test, set)
     EXPECT_EQ(set_intersection(intSet1, intSet2), intSet4);
     EXPECT_EQ(set_difference(intSet1, intSet2), intSet5);
     EXPECT_EQ(set_symmetric_difference(intSet1, intSet2), intSet7);
+    EXPECT_EQ(set_intersection(intSet1, intSet2), intSet4);
+    EXPECT_EQ(sets_intersection(IntSets({intSet1, intSet2, intSet3})), intSet8);
 }
 
 TEST(container_common_test, count_occurrences)
