@@ -259,11 +259,11 @@ std::function<std::vector<std::uint8_t>()> read_binary_file(
 // and returns it line by line.
 inline
 std::function<std::vector<std::string>()> read_text_file_lines(
-        const std::string& filename)
+        const std::string& filename, bool allow_empty)
 {
-    return [filename]() -> std::vector<std::string>
+    return [filename, allow_empty]() -> std::vector<std::string>
     {
-        return split_lines(read_text_file(filename)(), true);
+        return split_lines(read_text_file(filename)(), allow_empty);
     };
 }
 
