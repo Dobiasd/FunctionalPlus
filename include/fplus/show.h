@@ -232,4 +232,22 @@ show_fill_left(const std::string::value_type& filler, std::size_t min_size)
     };
 }
 
+// API search type: show_fill_right : (Char, Int) -> (a -> String)
+// Convert some value to a string with left-padded with some character.
+// (Int to String etc.)
+// Examples:
+// show_fill_right<int>(' ', 4)(3) == "3   "
+// show_fill_right<int>(' ', 4)(12345) == "12345"
+template <typename T>
+std::function<std::string(const T&)>
+show_fill_right(const std::string::value_type& filler, std::size_t min_size)
+{
+    return [filler, min_size](const T& x)
+            -> std::string
+    {
+        return fill_right(filler, min_size,
+            show<T>(x));
+    };
+}
+
 } // namespace fplus

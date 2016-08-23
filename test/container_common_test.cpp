@@ -387,6 +387,9 @@ TEST(container_common_test, show_float)
     EXPECT_EQ(show_fill_left<int>(' ', 4)(3), "   3");
     EXPECT_EQ(show_fill_left<int>('0', 4)(3), "0003");
     EXPECT_EQ(show_fill_left<int>(' ', 4)(12345), "12345");
+
+    EXPECT_EQ(show_fill_right<int>(' ', 4)(3), "3   ");
+    EXPECT_EQ(show_fill_right<int>(' ', 4)(12345), "12345");
 }
 
 TEST(container_common_test, zip)
