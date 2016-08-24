@@ -8,7 +8,6 @@
 
 #include "fplus/composition.h"
 #include "fplus/container_common.h"
-#include "fplus/transform.h"
 #include "fplus/pairs.h"
 
 #include <map>
@@ -109,7 +108,8 @@ ContainerOut get_map_keys(const MapType& dict)
     auto pairs = map_to_pairs(dict);
     typedef typename decltype(pairs)::value_type::first_type FirstType;
     typedef typename decltype(pairs)::value_type::second_type SecondType;
-    return transform(fst<FirstType, SecondType>, map_to_pairs(dict));
+    return transform_convert<ContainerOut>(
+        fst<FirstType, SecondType>, map_to_pairs(dict));
 }
 
 // API search type: get_map_values : Map key val -> [val]
@@ -122,7 +122,8 @@ ContainerOut get_map_values(const MapType& dict)
     auto pairs = map_to_pairs(dict);
     typedef typename decltype(pairs)::value_type::first_type FirstType;
     typedef typename decltype(pairs)::value_type::second_type SecondType;
-    return transform(snd<FirstType, SecondType>, map_to_pairs(dict));
+    return transform_convert<ContainerOut>(
+        snd<FirstType, SecondType>, map_to_pairs(dict));
 }
 
 // API search type: swap_keys_and_values : Map a b -> Map b a

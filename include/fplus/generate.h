@@ -8,7 +8,6 @@
 
 #include "fplus/filter.h"
 #include "fplus/numeric.h"
-#include "fplus/transform.h"
 #include "fplus/composition.h"
 
 namespace fplus

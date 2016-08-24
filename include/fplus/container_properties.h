@@ -12,6 +12,7 @@
 #include "fplus/maybe.h"
 #include "fplus/numeric.h"
 #include "fplus/search.h"
+#include "fplus/transform.h"
 #include "fplus/composition.h"
 
 #include <algorithm>

@@ -79,6 +79,7 @@ TEST(container_common_test, transform)
     EXPECT_EQ(transform(squareLambda, xs), IntVector({1,4,4,9,4}));
     EXPECT_EQ(transform(squareLambda, intList), IntList({ 1,4,4,9,4 }));
     EXPECT_EQ(transform_parallelly(squareLambda, intList), IntList({ 1,4,4,9,4 }));
+    EXPECT_EQ(transform_parallelly_n_threads(3, squareLambda, intList), IntList({ 1,4,4,9,4 }));
     EXPECT_EQ(transform_convert<IntList>(squareLambda, xs), IntList({ 1,4,4,9,4 }));
 
     EXPECT_EQ(transform(squareLambda, std::set<int>({1,2,3,-3})), std::set<int>({1,4,9}));

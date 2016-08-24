@@ -346,6 +346,21 @@ ContainerOut transform(F f, const ContainerIn& xs)
     return ys;
 }
 
+// API search type: transform_convert : ((a -> b), [a]) -> [b]
+// transform_convert((*2), [1, 3, 4]) == [2, 6, 8]
+// Same as transform, but makes it easy to
+// use an output container type different from the input container type.
+template <typename ContainerOut, typename F, typename ContainerIn>
+ContainerOut transform_convert(F f, const ContainerIn& xs)
+{
+    check_arity<1, F>();
+    ContainerOut ys;
+    internal::prepare_container(ys, size_of_cont(xs));
+    auto it = internal::get_back_inserter<ContainerOut>(ys);
+    std::transform(std::begin(xs), std::end(xs), it, f);
+    return ys;
+}
+
 // API search type: transform_inner : ((a -> b), [a]) -> [b]
 // transform_inner((*2), [[1, 3, 4], [1, 2]]) == [[2, 6, 8], [2, 4]]
 // Also known as transform_nested, map_nested or map_inner.

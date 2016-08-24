@@ -9,62 +9,18 @@
 #include "fplus/container_common.h"
 #include "fplus/filter.h"
 #include "fplus/maybe.h"
+#include "fplus/maps.h"
 #include "fplus/result.h"
 #include "fplus/composition.h"
 #include "fplus/function_traits.h"
 
 #include <algorithm>
 #include <future>
+#include <mutex>
 #include <random>
 
 namespace fplus
 {
-
-// API search type: transform_parallelly : ((a -> b), [a]) -> [b]
-// transform_parallelly((*2), [1, 3, 4]) == [2, 6, 8]
-// Same as transform, but can utilize multiple CPUs by using std::async.
-// Only makes sense if one run of the provided function
-// takes enough time to justify the synchronization overhead.
-// Can be used for applying MapReduce pattern.
-template <typename F, typename ContainerIn,
-    typename ContainerOut = typename same_cont_new_t_from_unary_f<
-        ContainerIn, F>::type,
-    typename X = typename ContainerIn::value_type,
-    typename Y = typename utils::function_traits<F>::result_type>
-ContainerOut transform_parallelly(F f, const ContainerIn& xs)
-{
-    check_arity<1, F>();
-    auto handles = transform([&f](const X& x) -> std::future<Y>
-    {
-        return std::async(std::launch::async, [&x, &f]()
-            {
-                return f(x);
-            });
-    }, xs);
-
-    ContainerOut ys;
-    internal::prepare_container(ys, size_of_cont(xs));
-    for (std::future<Y>& handle : handles)
-    {
-        ys.push_back(handle.get());
-    }
-    return ys;
-}
-
-// API search type: transform_convert : ((a -> b), [a]) -> [b]
-// transform_convert((*2), [1, 3, 4]) == [2, 6, 8]
-// Same as transform, but makes it easy to
-// use an output container type different from the input container type.
-template <typename ContainerOut, typename F, typename ContainerIn>
-ContainerOut transform_convert(F f, const ContainerIn& xs)
-{
-    check_arity<1, F>();
-    ContainerOut ys;
-    internal::prepare_container(ys, size_of_cont(xs));
-    auto it = internal::get_back_inserter<ContainerOut>(ys);
-    std::transform(std::begin(xs), std::end(xs), it, f);
-    return ys;
-}
 
 // API search type: transform_with_idx : (((Int, a) -> b), [a]) -> [b]
 // transform_with_idx(f, [6, 4, 7]) == [f(0, 6), f(1, 4), f(2, 7)]
@@ -185,6 +141,105 @@ ContainerOut apply_functions(const FunctionContainer& functions, const FIn& x)
         *it = f(x);
     }
     return ys;
+}
+
+// API search type: transform_parallelly : ((a -> b), [a]) -> [b]
+// transform_parallelly((*2), [1, 3, 4]) == [2, 6, 8]
+// Same as transform, but can utilize multiple CPUs by using std::async.
+// Only makes sense if one run of the provided function
+// takes enough time to justify the synchronization overhead.
+// Can be used for applying the MapReduce pattern.
+template <typename F, typename ContainerIn,
+    typename ContainerOut = typename same_cont_new_t_from_unary_f<
+        ContainerIn, F>::type,
+    typename X = typename ContainerIn::value_type,
+    typename Y = typename utils::function_traits<F>::result_type>
+ContainerOut transform_parallelly(F f, const ContainerIn& xs)
+{
+    check_arity<1, F>();
+    auto handles = transform([&f](const X& x) -> std::future<Y>
+    {
+        return std::async(std::launch::async, [&x, &f]()
+            {
+                return f(x);
+            });
+    }, xs);
+
+    ContainerOut ys;
+    internal::prepare_container(ys, size_of_cont(xs));
+    for (std::future<Y>& handle : handles)
+    {
+        ys.push_back(handle.get());
+    }
+    return ys;
+}
+
+// API search type: transform_parallelly_n_threads : (Int, (a -> b), [a]) -> [b]
+// transform_parallelly_n_threads(4, (*2), [1, 3, 4]) == [2, 6, 8]
+// Same as transform, but uses n threads in parallel.
+// Only makes sense if one run of the provided function
+// takes enough time to justify the synchronization overhead.
+// Can be used for applying the MapReduce pattern.
+template <typename F, typename ContainerIn,
+    typename ContainerOut = typename same_cont_new_t_from_unary_f<
+        ContainerIn, F>::type,
+    typename X = typename ContainerIn::value_type,
+    typename Y = typename utils::function_traits<F>::result_type>
+ContainerOut transform_parallelly_n_threads(
+    std::size_t n, F f, const ContainerIn& xs)
+{
+    typedef const X * x_ptr_t;
+    auto queue = transform_convert<std::vector<x_ptr_t>>(
+        [](const X& x) -> x_ptr_t
+        {
+            return &x;
+        }, xs);
+
+    std::mutex queue_mutex;
+    std::mutex thread_results_mutex;
+    std::map<std::size_t, Y> thread_results;
+    std::size_t queue_idx = 0;
+
+    const auto worker_func = [&]()
+    {
+        for (;;)
+        {
+            std::size_t idx = std::numeric_limits<std::size_t>::max();
+            x_ptr_t x_ptr = nullptr;
+            {
+                std::lock_guard<std::mutex> queue_lock(queue_mutex);
+                if (queue_idx == queue.size())
+                {
+                    return;
+                }
+                idx = queue_idx;
+                x_ptr = queue[idx];
+                ++queue_idx;
+            }
+
+            const auto y = f(*x_ptr);
+
+            {
+                std::lock_guard<std::mutex> thread_results_lock(
+                    thread_results_mutex);
+                thread_results.insert(std::make_pair(idx, y));
+            }
+        }
+    };
+
+    const auto create_thread = [&]() -> std::thread
+    {
+        return std::thread(worker_func);
+    };
+    auto threads = generate<std::vector<std::thread>>(create_thread, n);
+
+    for (auto& thread : threads)
+    {
+        thread.join();
+    }
+
+    return get_map_values<decltype(thread_results), ContainerOut>(
+        thread_results);
 }
 
 } // namespace fplus
