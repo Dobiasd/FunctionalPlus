@@ -231,11 +231,13 @@ Installation/Requirements
 
 A **C++11**-compatible compiler is needed. The tests run successfully on GCC 4.8, Clang 3.6 and Visual C++ 2015.
 
-### Windows
+You can install FunctionalPlus in one of the following ways:
 
-Just [download](https://github.com/Dobiasd/FunctionalPlus/archive/master.zip) FunctionalPlus and tell your compiler to use the `include` directory.
+### download manually
 
-### Linux + [cmake](https://cmake.org/)
+Just [download](https://github.com/Dobiasd/FunctionalPlus/archive/master.zip)/extract FunctionalPlus and tell your compiler to use the `include` directory.
+
+### using [cmake](https://cmake.org/)
 
 ```
 git clone https://github.com/Dobiasd/FunctionalPlus
@@ -253,7 +255,7 @@ cmake -DUNITTEST=ON ..
 make unittest
 ```
 
-### Linux + [cget](https://github.com/pfultz2/cget/)
+### using [cget](https://github.com/pfultz2/cget/)
 
 ```
 # Setup up toolchain to use c++11
