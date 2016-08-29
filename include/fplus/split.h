@@ -244,7 +244,7 @@ ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
 template <typename UnaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut split_by
-        (UnaryPredicate pred, bool allowEmpty, const ContainerIn& xs)
+        (UnaryPredicate pred, bool allow_empty, const ContainerIn& xs)
 {
     internal::check_unary_predicate_for_container<UnaryPredicate, ContainerIn>();
     static_assert(std::is_same<ContainerIn,
@@ -257,7 +257,7 @@ ContainerOut split_by
     while (start != std::end(xs))
     {
         const auto stop = std::find_if(start, std::end(xs), pred);
-        if (start != stop || allowEmpty)
+        if (start != stop || allow_empty)
         {
             *itOut = { start, stop };
         }
@@ -266,7 +266,7 @@ ContainerOut split_by
             break;
         }
         start = std::next(stop);
-        if (allowEmpty && start == std::end(xs))
+        if (allow_empty && start == std::end(xs))
         {
             *itOut = {};
         }
@@ -311,9 +311,9 @@ template <typename ContainerIn,
         typename T = typename ContainerIn::value_type,
         typename ContainerOut = typename std::vector<ContainerIn>>
 // O(n)
-ContainerOut split(const T& x, bool allowEmpty, const ContainerIn& xs)
+ContainerOut split(const T& x, bool allow_empty, const ContainerIn& xs)
 {
-    return split_by(is_equal_to(x), allowEmpty, xs);
+    return split_by(is_equal_to(x), allow_empty, xs);
 }
 
 // API search type: split_at_idx : (Int, [a]) -> ([a], [a])
@@ -392,7 +392,7 @@ ContainerOut split_every(std::size_t n, const ContainerIn& xs)
 template <typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut split_by_token(const ContainerIn& token,
-        bool allowEmpty, const ContainerIn& xs)
+        bool allow_empty, const ContainerIn& xs)
 {
     static_assert(std::is_same<ContainerIn,
         typename ContainerOut::value_type>::value,
@@ -404,7 +404,7 @@ ContainerOut split_by_token(const ContainerIn& token,
     std::size_t lastEnd = 0;
     for (std::size_t idx : instances)
     {
-        if (idx != lastEnd || allowEmpty)
+        if (idx != lastEnd || allow_empty)
         {
             *itOut = get_range(lastEnd, idx, xs);
             lastEnd = idx + size_of_cont(token);
