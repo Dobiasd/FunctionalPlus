@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "fplus/container_common.h"
-#include "fplus/function_traits.h"
+#include "fplus/container_common.hpp"
+#include "fplus/function_traits.hpp"
 
 #include <utility>
 

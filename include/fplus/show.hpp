@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include "fplus/container_common.h"
-#include "fplus/generate.h"
-#include "fplus/maybe.h"
-#include "fplus/transform.h"
+#include "fplus/container_common.hpp"
+#include "fplus/generate.hpp"
+#include "fplus/maybe.hpp"
+#include "fplus/transform.hpp"
 
 #include <iomanip>
 #include <ios>

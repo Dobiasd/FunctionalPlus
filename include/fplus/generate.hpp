@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "fplus/filter.h"
-#include "fplus/numeric.h"
-#include "fplus/composition.h"
+#include "fplus/filter.hpp"
+#include "fplus/numeric.hpp"
+#include "fplus/composition.hpp"
 
 namespace fplus
 {

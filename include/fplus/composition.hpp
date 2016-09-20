@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "fplus/function_traits.h"
+#include "fplus/function_traits.hpp"
 
 #include <functional>
 #include <type_traits>

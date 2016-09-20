@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "fplus/function_traits.h"
+#include "fplus/function_traits.hpp"
 
 namespace fplus
 {
