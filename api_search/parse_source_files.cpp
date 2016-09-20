@@ -4,7 +4,7 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include "fplus/fplus.h"
+#include "fplus/fplus.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/range/iterator_range.hpp>
 #include <fstream>

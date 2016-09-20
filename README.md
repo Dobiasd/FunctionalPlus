@@ -66,7 +66,7 @@ Below you find some short examples showing nice things you can do with functions
 ### The same old song
 You can test the content of a container for various properties, e.g.
 ```c++
-#include "fplus/fplus.h"
+#include "fplus/fplus.hpp"
 #include <iostream>
 
 int main()
@@ -80,7 +80,7 @@ int main()
 ### The I in our `team`
 There also are some convenience functions for retrieving properties of containers. For example you can count the occurrences of a character in a string.
 ```c++
-#include "fplus/fplus.h"
+#include "fplus/fplus.hpp"
 #include <iostream>
 
 int main()
@@ -100,7 +100,7 @@ There actually are this many 'I's in team: 2
 ### The cutest kitty
 Finding the highest rated element in a container is very simple compared to [a hand-written version](https://gist.github.com/Dobiasd/a4e7aa9c25a3dd4c0522d75a71e2a867#file-cuteness-cpp-L28-L38).
 ```c++
-#include "fplus/fplus.h"
+#include "fplus/fplus.hpp"
 #include <iostream>
 
 struct cat
@@ -148,7 +148,7 @@ std::list<int> collatz_seq(int x);
 And you want to create an `std::map<std::uint64_t, std::string>` containing string representations of the [Collatz sequences](https://en.wikipedia.org/wiki/Collatz_conjecture) for all numbers below 30. You can implement this nicely in a functional way too.
 
 ```c++
-#include "fplus/fplus.h"
+#include "fplus/fplus.hpp"
 #include <iostream>
 
 // std::list<std::uint64_t> collatz_seq(std::uint64_t x) { ... }
