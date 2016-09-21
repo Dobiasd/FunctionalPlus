@@ -14,6 +14,7 @@
 #include <cassert>
 #include <numeric>
 #include <iterator>
+#include <cmath>
 
 namespace fplus
 {
