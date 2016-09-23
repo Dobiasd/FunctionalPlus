@@ -29,7 +29,7 @@ int main()
 }
 ```
 
-There are different possibilities to obtain your goal. Some of them are:
+There are different possibilities to attain your goal. Some of them are:
 
 1. write a (range based) for loop
  ```c++
@@ -187,9 +187,13 @@ Output:
 
 The functions shown not only work with default STL containers like `std::vector`, `std::list`, `std::deque`, `std::string` etc., but also with custom containers providing a similar interface.
 
+Tutorial
+--------
+
+The article "[Functional programming in C++ with the FunctionalPlus library; today: HackerRank challange Gemstones](https://github.com/Dobiasd/articles/blob/master/functional_programming_in_cpp_with_the_functionalplus_library_today_hackerrank_challange_gemstones.md)" provides a smooth introduction into the library by showing how one could develop an elegant solution to a problem using the FunctionalPlus approach.
 
 Type deduction and useful error messages
------------------------------------------
+----------------------------------------
 FunctionalPlus deduces types for you where possible. Let's take one line of code from the Collatz example:
 ```c++
     auto show_collats_seq = fplus::compose(collatz_seq, show_ints);
