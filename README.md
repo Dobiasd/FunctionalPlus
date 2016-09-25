@@ -225,7 +225,7 @@ The basic functions are fast, thanks to C++'s concept of abstraction without ove
 
 So the compiler seems to do a very good job in optimizing and inlining everything to basically equal machine code performance-wise.
 
-The more complex functions though sometimes can be written in a more optimized way. If you use FunctionalPlus in a performance-critical scenario and profiling shows you need a faster version of a function [please let me know](https://github.com/Dobiasd/FunctionalPlus/issues) or [even help improving FunctionalPlus](https://github.com/Dobiasd/FunctionalPlus/pulls).
+The more complex functions though sometimes could be written in a more optimized way. If you use FunctionalPlus in a performance-critical scenario and profiling shows you need a faster version of a function [please let me know](https://github.com/Dobiasd/FunctionalPlus/issues) or [even help improving FunctionalPlus](https://github.com/Dobiasd/FunctionalPlus/pulls).
 
 Additionally keep in mind that FunctionalPlus always produces copies and never operates in place. So it is biased towards developer productivity and readability of code and not towards using as little memory as possible.
 
