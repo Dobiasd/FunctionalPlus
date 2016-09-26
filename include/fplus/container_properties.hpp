@@ -346,4 +346,92 @@ bool is_permutation_of(const Container& xs, const Container& ys)
         sort(xs) == sort(ys);
 }
 
+// API search type: fill_pigeonholes_to : (Int, [Int]) -> [Int]
+// Returns a list containing the count for every element in xs
+// with the value corresponding to the index in the result list.
+// fill_pigeonholes_to(5, [0,1,3,1]) == [1,2,0,1,0]
+// fill_pigeonholes_to(3, [0,1,3,1]) == [1,2,0]
+template <typename ContainerIn,
+    typename ContainerOut = std::vector<std::size_t>,
+    typename T = typename ContainerIn::value_type>
+ContainerOut fill_pigeonholes_to(std::size_t idx_end, const ContainerIn& xs)
+{
+    static_assert(std::is_integral<T>::value,
+        "Type must be integral.");
+
+    ContainerOut result(idx_end, 0);
+    for (const auto& x : xs)
+    {
+        if (x >= 0)
+        {
+            const auto idx = static_cast<std::size_t>(x);
+            if (idx < result.size())
+            {
+                ++result[idx];
+            }
+        }
+    }
+    return result;
+}
+
+// API search type: fill_pigeonholes : [Int] -> [Int]
+// Returns a list containing the count for every element in xs
+// with the value corresponding to the index in the result list.
+// fill_pigeonholes([0,1,3,1]) == [1,2,0,1]
+template <typename ContainerIn,
+    typename ContainerOut = std::vector<std::size_t>,
+    typename T = typename ContainerIn::value_type>
+ContainerOut fill_pigeonholes(const ContainerIn& xs)
+{
+    static_assert(std::is_integral<T>::value,
+        "Type must be integral.");
+
+    return(fill_pigeonholes_to<ContainerIn, ContainerOut>(
+        maximum(xs) + 1, xs));
+}
+
+// API search type: fill_pigeonholes_bool_to : (Int, [Int]) -> [Int]
+// Returns a list telling if the element corresponding to the index
+// is present in xs.
+// fill_pigeonholes_bool_to(5, [0,1,3,1]) == [1,1,0,1,0]
+// fill_pigeonholes_bool_to(3, [0,1,3,1]) == [1,1,0]
+template <typename ContainerIn,
+    typename ContainerOut = std::vector<std::uint8_t>,
+    typename T = typename ContainerIn::value_type>
+ContainerOut fill_pigeonholes_bool_to(std::size_t idx_end, const ContainerIn& xs)
+{
+    static_assert(std::is_integral<T>::value,
+        "Type must be integral.");
+
+    ContainerOut result(idx_end, 0);
+    for (const auto& x : xs)
+    {
+        if (x >= 0)
+        {
+            const auto idx = static_cast<std::size_t>(x);
+            if (idx < result.size())
+            {
+                result[idx] = 1;
+            }
+        }
+    }
+    return result;
+}
+
+// API search type: fill_pigeonholes_bool : [Int] -> [Int]
+// Returns a list telling if the element corresponding to the index
+// is present in xs.
+// fill_pigeonholes_bool([0,1,3,1]) == [1,2,0,1]
+template <typename ContainerIn,
+    typename ContainerOut = std::vector<std::uint8_t>,
+    typename T = typename ContainerIn::value_type>
+ContainerOut fill_pigeonholes_bool(const ContainerIn& xs)
+{
+    static_assert(std::is_integral<T>::value,
+        "Type must be integral.");
+
+    return(fill_pigeonholes_bool_to<ContainerIn, ContainerOut>(
+        maximum(xs) + 1, xs));
+}
+
 } // namespace fplus

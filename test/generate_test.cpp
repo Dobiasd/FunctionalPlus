@@ -342,3 +342,15 @@ TEST(generate_test, inner_product)
     EXPECT_EQ(fplus::inner_product(0, xs, ys), 32);
     EXPECT_EQ(fplus::inner_product_with(plus, mult, 0, xs, ys), 32);
 }
+
+TEST(generate_test, fill_pigeonholes)
+{
+    const std::vector<unsigned int> xs = { 0, 1, 3, 1 };
+    EXPECT_THAT(fplus::fill_pigeonholes_to(5, xs), ElementsAre(1,2,0,1,0));
+    EXPECT_THAT(fplus::fill_pigeonholes_to(3, xs), ElementsAre(1,2,0));
+    EXPECT_THAT(fplus::fill_pigeonholes(xs), ElementsAre(1,2,0,1));
+
+    EXPECT_THAT(fplus::fill_pigeonholes_bool_to(5, xs), ElementsAre(1,1,0,1,0));
+    EXPECT_THAT(fplus::fill_pigeonholes_bool_to(3, xs), ElementsAre(1,1,0));
+    EXPECT_THAT(fplus::fill_pigeonholes_bool(xs), ElementsAre(1,1,0,1));
+}
