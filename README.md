@@ -227,7 +227,7 @@ So the compiler seems to do a very good job in optimizing and inlining everythin
 
 The more complex functions though sometimes could be written in a more optimized way. If you use FunctionalPlus in a performance-critical scenario and profiling shows you need a faster version of a function [please let me know](https://github.com/Dobiasd/FunctionalPlus/issues) or [even help improving FunctionalPlus](https://github.com/Dobiasd/FunctionalPlus/pulls).
 
-Additionally keep in mind that FunctionalPlus always produces copies and never operates in place. So it is biased towards developer productivity and readability of code and not towards using as little memory as possible.
+Additionally keep in mind that FunctionalPlus always produces copies and never operates in place. [Even modern compilers often can not optimize these allocations away in chained calls.](http://stackoverflow.com/questions/39658768/loop-fusion-in-c-how-to-help-the-compiler). Thanks to working with a multi-paradigm language one easily can combine manually optimized imperative code with `fplus` functions. Luckily experience (aka. profiling) shows that in most cases the vast majority of code in an application is not relevant for overall performance and memory consumption. So initially focusing on developer productivity and readability of code is a good idea.
 
 
 Installation/Requirements
