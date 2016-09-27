@@ -892,3 +892,10 @@ TEST(container_common_test, is_permutation_of)
     EXPECT_FALSE(is_permutation_of(IntVector({2,3}), IntVector({1,2,3})));
     EXPECT_FALSE(is_permutation_of(IntVector({2,3,1}), IntVector({1,23})));
 }
+
+TEST(container_common_test, present_in_all)
+{
+    using namespace fplus;
+    const std::vector<std::vector<int>> xss = { {4,1,2}, {5,2,1}, {2,4,1} };
+    EXPECT_THAT(present_in_all(xss), ElementsAre(1,2));
+}

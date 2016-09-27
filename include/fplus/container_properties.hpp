@@ -14,6 +14,7 @@
 #include "fplus/search.hpp"
 #include "fplus/transform.hpp"
 #include "fplus/composition.hpp"
+#include "fplus/sets.hpp"
 
 #include <algorithm>
 #include <numeric>
@@ -432,6 +433,23 @@ ContainerOut fill_pigeonholes_bool(const ContainerIn& xs)
 
     return(fill_pigeonholes_bool_to<ContainerIn, ContainerOut>(
         maximum(xs) + 1, xs));
+}
+
+// API search type: present_in_all : [[a]] -> [a]
+// Returns a list containing only the elements present in all sublists of xs.
+// Also known as gemstones.
+// present_in_all([[4,1,2], [5,2,1], [2,4,1]]) == [1,2]
+template <typename ContainerIn,
+    typename SubContainerIn = typename ContainerIn::value_type,
+    typename T = typename SubContainerIn::value_type,
+    typename ContainerOut = std::vector<T>>
+ContainerOut present_in_all(const ContainerIn& xs)
+{
+    return convert_container<ContainerOut>(
+        fplus::sets_intersection(
+            transform(
+                convert_container<std::set<T>, SubContainerIn>,
+                xs)));
 }
 
 } // namespace fplus
