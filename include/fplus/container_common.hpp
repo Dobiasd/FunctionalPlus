@@ -520,7 +520,7 @@ ContainerOut scan_right(F f, const Acc& init, const ContainerIn& xs)
 }
 
 // API search type: scan_right_1 : (((a, a) -> a), [a]) -> [a]
-// scan_right_1((+), [1, 2, 3]) == [1, 3, 6]
+// scan_right_1((+), [1, 2, 3]) == [6, 5, 3]
 // Takes the last two items of the list and applies the function,
 // then it takes the third item from the end and the result, and so on.
 // It returns the list of inntermediate and final results.
