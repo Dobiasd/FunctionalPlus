@@ -256,7 +256,7 @@ std::function<std::vector<std::uint8_t>()> read_binary_file(
     };
 }
 
-// API search type: read_text_file_lines : String -> Io [String]
+// API search type: read_text_file_lines : (String, Bool) -> Io [String]
 // Returns a function that reads the content of a text file
 // and returns it line by line.
 inline
