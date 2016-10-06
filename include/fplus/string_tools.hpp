@@ -10,6 +10,7 @@
 #include "fplus/split.hpp"
 #include "fplus/transform.hpp"
 
+#include <cctype>
 #include <string>
 
 namespace fplus
@@ -126,43 +127,27 @@ String trim_whitespace(const String& str)
 }
 
 // API search type: to_lower_case : String -> String
-// Only works on lower ASCII character set.
 // to_lower_case("ChaRacTer&WorDs23") == "character&words23"
 template <typename String>
 String to_lower_case(const String& str)
 {
     typedef typename String::value_type Char;
     return transform([](Char c) -> Char
-    {
-        if (c >= 'A' && c <= 'Z')
         {
-            return static_cast<Char>(c - 'A' + 'a');
-        }
-        else
-        {
-            return c;
-        }
-    }, str);
+            return static_cast<Char>(std::tolower(c));
+        }, str);
 }
 
 // API search type: to_upper_case : String -> String
-// Only works on lower ASCII character set.
 // to_upper_case("ChaRacTer&WorDs34") == "CHARACTER&WORDS34"
 template <typename String>
 String to_upper_case(const String& str)
 {
     typedef typename String::value_type Char;
     return transform([](Char c) -> Char
-    {
-        if (c >= 'a' && c <= 'z')
         {
-            return static_cast<Char>(c - 'a' + 'A');
-        }
-        else
-        {
-            return c;
-        }
-    }, str);
+            return static_cast<Char>(std::toupper(c));
+        }, str);
 }
 
 // API search type: to_string_fill_left : (Char, Int, a) -> String
