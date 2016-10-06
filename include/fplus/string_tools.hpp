@@ -21,8 +21,8 @@ template <typename String>
 bool is_letter_or_digit(const typename String::value_type& c)
 {
     auto IsDigit = is_in_range(48, 58);
-    auto IsLowerLetter = is_in_range(65, 91);
-    auto IsUpperLetter = is_in_range(97, 123);
+    auto IsUpperLetter = is_in_range(65, 91);
+    auto IsLowerLetter = is_in_range(97, 123);
     auto IsLetter = logical_or(IsLowerLetter, IsUpperLetter);
     return IsDigit(c) || IsLetter(c);
 }
@@ -126,25 +126,43 @@ String trim_whitespace(const String& str)
 }
 
 // API search type: to_lower_case : String -> String
+// Only works on lower ASCII character set.
 // to_lower_case("ChaRacTer&WorDs23") == "character&words23"
 template <typename String>
-std::string to_lower_case( const std::string& str ) {
-    return fplus::transform( [](char c) -> char{
-        if ( c >= 'A' && c <= 'Z' ) {
-            return c -'A' + 'a';
+String to_lower_case(const String& str)
+{
+    typedef typename String::value_type Char;
+    return transform([](Char c) -> Char
+    {
+        if (c >= 'A' && c <= 'Z')
+        {
+            return static_cast<Char>(c - 'A' + 'a');
         }
-    }, str );
+        else
+        {
+            return c;
+        }
+    }, str);
 }
 
 // API search type: to_upper_case : String -> String
+// Only works on lower ASCII character set.
 // to_upper_case("ChaRacTer&WorDs34") == "CHARACTER&WORDS34"
 template <typename String>
-std::string to_upper_case( const std::string& str ) {
-    return fplus::transform( [](char c) -> char{
-        if ( c >= 'a' && c <= 'z' ) {
-            return c -'a' + 'A';
+String to_upper_case(const String& str)
+{
+    typedef typename String::value_type Char;
+    return transform([](Char c) -> Char
+    {
+        if (c >= 'a' && c <= 'z')
+        {
+            return static_cast<Char>(c - 'a' + 'A');
         }
-    }, str );
+        else
+        {
+            return c;
+        }
+    }, str);
 }
 
 // API search type: to_string_fill_left : (Char, Int, a) -> String

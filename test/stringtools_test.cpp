@@ -67,3 +67,15 @@ TEST(stringtools_test, to_string_filled)
     EXPECT_EQ(to_string_fill_left('0', 5, 42), std::string("00042") );
     EXPECT_EQ(to_string_fill_right(' ', 5, 42), std::string("42   ") );
 }
+
+TEST(stringtools_test, to_lower_case)
+{
+    using namespace fplus;
+    EXPECT_EQ(to_lower_case(std::string("ChaRacTer&WorDs23")), std::string("character&words23"));
+}
+
+TEST(stringtools_test, to_upper_case)
+{
+    using namespace fplus;
+    EXPECT_EQ(to_upper_case(std::string("ChaRacTer&WorDs34")), std::string("CHARACTER&WORDS34"));
+}
