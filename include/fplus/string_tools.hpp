@@ -22,10 +22,7 @@ template <typename String>
 bool is_letter_or_digit(const typename String::value_type& c)
 {
     auto IsDigit = is_in_range(48, 58);
-    auto IsUpperLetter = is_in_range(65, 91);
-    auto IsLowerLetter = is_in_range(97, 123);
-    auto IsLetter = logical_or(IsLowerLetter, IsUpperLetter);
-    return IsDigit(c) || IsLetter(c);
+    return IsDigit(c) || std::isalpha(c);
 }
 
 // API search type: is_whitespace : Char -> Bool
