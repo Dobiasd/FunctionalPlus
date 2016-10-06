@@ -133,7 +133,7 @@ std::string to_lower_case( const std::string& str ) {
         if ( c >= 'A' && c <= 'Z' ) {
             return c -'A' + 'a';
         }
-    }, s );
+    }, str );
 }
 
 // API search type: to_upper_case : String -> String
@@ -144,7 +144,7 @@ std::string to_upper_case( const std::string& str ) {
         if ( c >= 'a' && c <= 'z' ) {
             return c -'a' + 'A';
         }
-    }, s );
+    }, str );
 }
 
 // API search type: to_string_fill_left : (Char, Int, a) -> String
