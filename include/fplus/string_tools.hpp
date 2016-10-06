@@ -125,6 +125,28 @@ String trim_whitespace(const String& str)
     return trim_by(is_whitespace<String>, str);
 }
 
+// API search type: to_lower_case : String -> String
+// to_lower_case("ChaRacTer&WorDs23") == "character&words23"
+template <typename String>
+std::string to_lower_case( const std::string& str ) {
+    return fplus::transform( [](char c) -> char{
+        if ( c >= 'A' && c <= 'Z' ) {
+            return c -'A' + 'a';
+        }
+    }, s );
+}
+
+// API search type: to_upper_case : String -> String
+// to_upper_case("ChaRacTer&WorDs34") == "CHARACTER&WORDS34"
+template <typename String>
+std::string to_upper_case( const std::string& str ) {
+    return fplus::transform( [](char c) -> char{
+        if ( c >= 'a' && c <= 'z' ) {
+            return c -'a' + 'A';
+        }
+    }, s );
+}
+
 // API search type: to_string_fill_left : (Char, Int, a) -> String
 // to_string_fill_left('0', 5, 42) == "00042"
 // to_string_fill_left(' ', 5, 42) == "   42"
