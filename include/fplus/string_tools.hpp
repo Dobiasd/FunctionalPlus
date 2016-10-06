@@ -21,8 +21,7 @@ namespace fplus
 template <typename String>
 bool is_letter_or_digit(const typename String::value_type& c)
 {
-    auto IsDigit = is_in_range(48, 58);
-    return IsDigit(c) || std::isalpha(c);
+    return std::isdigit(c) || std::isalpha(c);
 }
 
 // API search type: is_whitespace : Char -> Bool
