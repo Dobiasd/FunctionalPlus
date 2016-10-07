@@ -336,6 +336,38 @@ std::size_t count
     return size_of_cont(find_all_idxs_of(x, xs));
 }
 
+// API search type: is_unique_in_by : ((a -> bool), [a]) -> Int
+// is_unique_in_by((==2), [1, 2, 3, 5, 7, 2, 2]) == false
+// is_unique_in_by((==5), [1, 2, 3, 5, 7, 2, 2]) == true
+template <typename UnaryPredicate, typename Container>
+bool is_unique_in_by
+        (UnaryPredicate pred, const Container& xs)
+{
+    std::size_t count = 0;
+    for (const auto& x : xs)
+    {
+        if (pred(x))
+        {
+            ++count;
+            if (count > 1)
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+// API search type: is_unique_in : (a, [a]) -> Int
+// is_unique_in(2, [1, 2, 3, 5, 7, 2, 2]) == false
+// is_unique_in(5, [1, 2, 3, 5, 7, 2, 2]) == true
+template <typename Container>
+bool is_unique_in
+        (const typename Container::value_type& x, const Container& xs)
+{
+    return is_unique_in_by(is_equal_to(x), xs);
+}
+
 // API search type: is_permutation_of : ([a], [a]) -> Bool
 // Checks if one container is a permuation of the other one.
 // is_permutation_of([2,3,1], [1,2,3]) == true

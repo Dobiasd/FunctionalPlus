@@ -899,3 +899,10 @@ TEST(container_common_test, present_in_all)
     const std::vector<std::vector<int>> xss = { {4,1,2}, {5,2,1}, {2,4,1} };
     EXPECT_THAT(present_in_all(xss), ElementsAre(1,2));
 }
+
+TEST(container_common_test, is_unique_in)
+{
+    using namespace fplus;
+    EXPECT_FALSE(is_unique_in(2, xs));
+    EXPECT_TRUE(is_unique_in(3, xs));
+}
