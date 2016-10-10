@@ -21,7 +21,9 @@ namespace fplus
 template <typename String>
 bool is_letter_or_digit(const typename String::value_type& c)
 {
-    return std::isdigit(c) || std::isalpha(c);
+    return
+        std::isdigit(static_cast<unsigned char>(c)) ||
+        std::isalpha(static_cast<unsigned char>(c));
 }
 
 // API search type: is_whitespace : Char -> Bool
@@ -130,7 +132,8 @@ String to_lower_case(const String& str)
     typedef typename String::value_type Char;
     return transform([](Char c) -> Char
         {
-            return static_cast<Char>(std::tolower(c));
+            return static_cast<Char>(
+                std::tolower(static_cast<unsigned char>(c)));
         }, str);
 }
 
@@ -142,7 +145,8 @@ String to_upper_case(const String& str)
     typedef typename String::value_type Char;
     return transform([](Char c) -> Char
         {
-            return static_cast<Char>(std::toupper(c));
+            return static_cast<Char>(
+                std::toupper(static_cast<unsigned char>(c)));
         }, str);
 }
 
