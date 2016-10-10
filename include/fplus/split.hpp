@@ -251,9 +251,15 @@ ContainerOut split_by
         typename ContainerOut::value_type>::value,
         "Containers do not match.");
 
+    if (allow_empty && is_empty(xs))
+    {
+        return {{}};
+    }
+
     ContainerOut result;
     auto itOut = internal::get_back_inserter(result);
     auto start = std::begin(xs);
+
     while (start != std::end(xs))
     {
         const auto stop = std::find_if(start, std::end(xs), pred);
