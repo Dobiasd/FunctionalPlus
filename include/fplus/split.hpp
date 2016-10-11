@@ -11,6 +11,7 @@
 #include "fplus/search.hpp"
 #include "fplus/transform.hpp"
 #include "fplus/pairs.hpp"
+#include "fplus/numeric.hpp"
 
 namespace fplus
 {
@@ -313,13 +314,25 @@ ContainerOut split_by_keep_separators
 
 // API search type: split : (a, [a]) -> [[a]]
 // split(0, [1,3,2,0,0,6,0,7,5]) == [[1,3,2],[],[6],[7,5]]
+// O(n)
 template <typename ContainerIn,
         typename T = typename ContainerIn::value_type,
         typename ContainerOut = typename std::vector<ContainerIn>>
-// O(n)
 ContainerOut split(const T& x, bool allow_empty, const ContainerIn& xs)
 {
     return split_by(is_equal_to(x), allow_empty, xs);
+}
+
+// API search type: split_keep_separators : ((a -> Bool), [a]) -> [[a]]
+// split_keep_separators(2, true, [1,3,2,2,5,5,3,2,7,9])
+// == [[1,3],[2],[2,5,5,3],[6,7,9]]
+// O(n)
+template <typename ContainerIn,
+        typename T = typename ContainerIn::value_type,
+        typename ContainerOut = typename std::vector<ContainerIn>>
+ContainerOut split_keep_separators(const T& x, const ContainerIn& xs)
+{
+    return split_by_keep_separators(is_equal_to(x), xs);
 }
 
 // API search type: split_at_idx : (Int, [a]) -> ([a], [a])
@@ -403,18 +416,23 @@ ContainerOut split_by_token(const ContainerIn& token,
     static_assert(std::is_same<ContainerIn,
         typename ContainerOut::value_type>::value,
         "Containers do not match.");
-    auto instances = find_all_instances_of_token_non_overlapping(token, xs);
-    *internal::get_back_inserter(instances) = size_of_cont(xs);
+    const auto token_begins =
+        find_all_instances_of_token_non_overlapping(token, xs);
+    const auto token_ends =
+        transform(add_to<std::size_t>(size_of_cont(token)), token_begins);
+    assert(is_sorted(interweave(token_begins, token_ends)));
+
+    typedef std::vector<std::size_t> idx_vec;
+    const auto ranges = zip(
+        fplus::append(idx_vec(1, 0), token_ends),
+        fplus::append(token_begins, idx_vec(1, size_of_cont(xs))));
+
     ContainerOut result;
     auto itOut = internal::get_back_inserter(result);
-    std::size_t lastEnd = 0;
-    for (std::size_t idx : instances)
+    for (const auto& range : ranges)
     {
-        if (idx != lastEnd || allow_empty)
-        {
-            *itOut = get_range(lastEnd, idx, xs);
-            lastEnd = idx + size_of_cont(token);
-        }
+        if (range.first != range.second || allow_empty)
+        *itOut = get_range(range.first, range.second, xs);
     }
     return result;
 }
