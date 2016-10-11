@@ -458,4 +458,48 @@ Container standardize(const Container& xs)
     return normalize_mean_stddev(0, 1, xs);
 }
 
+// API search type: add_to : a -> (a -> a)
+// add_to(3)(2) == 5
+template <typename X>
+std::function<X(X)> add_to(const X& x)
+{
+    return [x](X y) -> X
+    {
+        return x + y;
+    };
+}
+
+// API search type: subtract_from : a -> (a -> a)
+// add_to(3)(2) == 1
+template <typename X>
+std::function<X(X)> subtract_from(const X& x)
+{
+    return [x](X y) -> X
+    {
+        return x - y;
+    };
+}
+
+// API search type: multiply_with : a -> (a -> a)
+// multiply_with(3)(2) == 6
+template <typename X>
+std::function<X(X)> multiply_with(const X& x)
+{
+    return [x](X y) -> X
+    {
+        return y * x;
+    };
+}
+
+// API search type: divide_by : a -> (a -> a)
+// divide_by(2)(6) == 3
+template <typename X>
+std::function<X(X)> divide_by(const X& x)
+{
+    return [x](X y) -> X
+    {
+        return y / x;
+    };
+}
+
 } // namespace fplus
