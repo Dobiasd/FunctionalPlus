@@ -22,6 +22,7 @@ add_definitions(-Wall
                 -Wreorder
                 -Wold-style-cast
                 -Wparentheses
+                -Wl,--no-as-needed
                 )
 
 find_package(Threads REQUIRED)
