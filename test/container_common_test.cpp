@@ -76,17 +76,7 @@ TEST_CASE("container_common_test, transform")
     REQUIRE_EQ(transform_convert<std::vector<int>>(squareLambda, xs_array), IntVector({1,4,4,9,4}));
     REQUIRE_EQ(transform(squareLambda, xs), IntVector({1,4,4,9,4}));
     REQUIRE_EQ(transform(squareLambda, intList), IntList({ 1,4,4,9,4 }));
-    try
-    {
-        const auto intList_parallelly_squared =
-        transform_parallelly(squareLambda, intList);
-        REQUIRE_EQ(intList_parallelly_squared, IntList({ 1,4,4,9,4 }));
-    }
-    catch (const std::exception& e)
-    {
-        std::cout << "Exception: " << e.what() << std::endl;
-    }
-
+    REQUIRE_EQ(transform_parallelly(squareLambda, intList), IntList({ 1,4,4,9,4 }));
     REQUIRE_EQ(transform_parallelly_n_threads(3, squareLambda, intList), IntList({ 1,4,4,9,4 }));
     REQUIRE_EQ(transform_convert<IntList>(squareLambda, xs), IntList({ 1,4,4,9,4 }));
 
