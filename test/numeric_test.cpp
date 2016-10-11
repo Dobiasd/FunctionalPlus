@@ -53,6 +53,31 @@ TEST_CASE("numeric_test, is_in_range_around")
     REQUIRE(fplus::is_in_range_around(0.1, 2.0)(1.95));
     REQUIRE(fplus::is_in_range_around(0.1, 2.0)(2.05));
     REQUIRE_FALSE(fplus::is_in_range_around(0.1, 2.0)(2.15));
+
+    REQUIRE(fplus::is_in_range_around(1, 2)(1));
+    REQUIRE_FALSE(fplus::is_in_range_around(1, 2)(3));
+}
+
+TEST_CASE("numeric_test, is_in_open_range_around")
+{
+    REQUIRE_FALSE(fplus::is_in_open_range_around(0.1, 2.0)(1.85));
+    REQUIRE(fplus::is_in_open_range_around(0.1, 2.0)(1.95));
+    REQUIRE(fplus::is_in_open_range_around(0.1, 2.0)(2.05));
+    REQUIRE_FALSE(fplus::is_in_open_range_around(0.1, 2.0)(2.15));
+
+    REQUIRE_FALSE(fplus::is_in_open_range_around(1, 2)(1));
+    REQUIRE_FALSE(fplus::is_in_open_range_around(1, 2)(3));
+}
+
+TEST_CASE("numeric_test, is_in_closed_range_around")
+{
+    REQUIRE_FALSE(fplus::is_in_closed_range_around(0.1, 2.0)(1.85));
+    REQUIRE(fplus::is_in_closed_range_around(0.1, 2.0)(1.95));
+    REQUIRE(fplus::is_in_closed_range_around(0.1, 2.0)(2.05));
+    REQUIRE_FALSE(fplus::is_in_closed_range_around(0.1, 2.0)(2.15));
+
+    REQUIRE(fplus::is_in_closed_range_around(1, 2)(1));
+    REQUIRE(fplus::is_in_closed_range_around(1, 2)(3));
 }
 
 TEST_CASE("numeric_test, is_negative")

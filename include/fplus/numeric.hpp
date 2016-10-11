@@ -51,6 +51,16 @@ std::function<bool(const T&)>
     };
 }
 
+// API search type: is_in_open_range_around : (a, a) -> (a -> Bool)
+// Checks if x is in (center - radius, center + radius),
+// i.e. left-open and right-open.
+template <typename T>
+std::function<bool(const T&)>
+        is_in_open_range_around(const T& radius, const T& center)
+{
+    return is_in_open_range(center - radius, center + radius);
+}
+
 // API search type: is_in_closed_range : (a, a) -> (a -> Bool)
 // Checks if x is in [low, high], i.e. left-closed and right-closed.
 template <typename T>
@@ -61,6 +71,16 @@ std::function<bool(const T&)>
     {
         return (low <= x) && (x <= high);
     };
+}
+
+// API search type: is_in_closed_range_around : (a, a) -> (a -> Bool)
+// Checks if x is in [center - radius, center + radius],
+// i.e. left-open and right-open.
+template <typename T>
+std::function<bool(const T&)>
+        is_in_closed_range_around(const T& radius, const T& center)
+{
+    return is_in_closed_range(center - radius, center + radius);
 }
 
 // API search type: clamp : (a, a) -> (a -> a)
