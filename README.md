@@ -252,7 +252,7 @@ cmake ..
 sudo make install
 ```
 
-Building the tests (optional) requires [Google Test (gtest)](https://github.com/google/googletest). Unit Tests are disabled by default – they are enabled and executed by:
+Building the tests (optional) requires [doctest](https://github.com/onqtam/doctest). Unit Tests are disabled by default – they are enabled and executed by:
 
 ```
 cmake -DUNITTEST=ON ..

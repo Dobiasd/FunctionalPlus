@@ -4,12 +4,10 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest.h"
 #include "fplus/fplus.hpp"
 #include <vector>
-
-using namespace testing;
 
 namespace {
 
@@ -33,209 +31,217 @@ namespace {
     typedef std::vector<double> Doubles;
 }
 
-TEST(numeric_test, is_in_range)
+TEST_CASE("numeric_test, is_in_range")
 {
-    EXPECT_TRUE(fplus::is_in_range(1, 3)(1));
-    EXPECT_TRUE(fplus::is_in_range(1, 3)(2));
-    EXPECT_FALSE(fplus::is_in_range(1, 3)(0));
-    EXPECT_FALSE(fplus::is_in_range(1, 3)(3));
-    EXPECT_TRUE(fplus::is_in_closed_range(1, 3)(1));
-    EXPECT_TRUE(fplus::is_in_closed_range(1, 3)(2));
-    EXPECT_TRUE(fplus::is_in_closed_range(1, 3)(3));
-    EXPECT_FALSE(fplus::is_in_open_range(1, 3)(1));
-    EXPECT_TRUE(fplus::is_in_open_range(1, 3)(2));
-    EXPECT_FALSE(fplus::is_in_open_range(1, 3)(3));
-    EXPECT_TRUE(fplus::is_in_range(0.09, 0.11)(fplus::abs(-0.1)));
-    EXPECT_TRUE(fplus::is_in_range(0.09, 0.11)(fplus::abs( 0.1)));
+    REQUIRE(fplus::is_in_range(1, 3)(1));
+    REQUIRE(fplus::is_in_range(1, 3)(2));
+    REQUIRE_FALSE(fplus::is_in_range(1, 3)(0));
+    REQUIRE_FALSE(fplus::is_in_range(1, 3)(3));
+    REQUIRE(fplus::is_in_closed_range(1, 3)(1));
+    REQUIRE(fplus::is_in_closed_range(1, 3)(2));
+    REQUIRE(fplus::is_in_closed_range(1, 3)(3));
+    REQUIRE_FALSE(fplus::is_in_open_range(1, 3)(1));
+    REQUIRE(fplus::is_in_open_range(1, 3)(2));
+    REQUIRE_FALSE(fplus::is_in_open_range(1, 3)(3));
+    REQUIRE(fplus::is_in_range(0.09, 0.11)(fplus::abs(-0.1)));
+    REQUIRE(fplus::is_in_range(0.09, 0.11)(fplus::abs( 0.1)));
 }
 
-TEST(numeric_test, is_negative)
+TEST_CASE("numeric_test, is_in_range_around")
 {
-    EXPECT_TRUE(fplus::is_negative(-0.1));
-    EXPECT_FALSE(fplus::is_negative(0.1));
+    REQUIRE_FALSE(fplus::is_in_range_around(0.1, 2.0)(1.85));
+    REQUIRE(fplus::is_in_range_around(0.1, 2.0)(1.95));
+    REQUIRE(fplus::is_in_range_around(0.1, 2.0)(2.05));
+    REQUIRE_FALSE(fplus::is_in_range_around(0.1, 2.0)(2.15));
 }
 
-TEST(numeric_test, is_positive)
+TEST_CASE("numeric_test, is_negative")
 {
-    EXPECT_TRUE(fplus::is_positive(0.1));
-    EXPECT_FALSE(fplus::is_positive(-0.1));
+    REQUIRE(fplus::is_negative(-0.1));
+    REQUIRE_FALSE(fplus::is_negative(0.1));
 }
 
-TEST(numeric_test, sign)
+TEST_CASE("numeric_test, is_positive")
 {
-    EXPECT_THAT(fplus::sign(0.1), Eq(1));
-    EXPECT_THAT(fplus::sign(-0.1), Eq(-1));
+    REQUIRE(fplus::is_positive(0.1));
+    REQUIRE_FALSE(fplus::is_positive(-0.1));
 }
 
-TEST(numeric_test, cyclic_value)
+TEST_CASE("numeric_test, sign")
+{
+    REQUIRE_EQ(fplus::sign(0.1), 1);
+    REQUIRE_EQ(fplus::sign(-0.1), -1);
+}
+
+TEST_CASE("numeric_test, cyclic_value")
 {
     using namespace fplus;
-    EXPECT_THAT(cyclic_value(8)(3), Eq(3));
-    EXPECT_THAT(cyclic_value(8)(11), Eq(3));
-    EXPECT_THAT(cyclic_value(8)(19), Eq(3));
-    EXPECT_THAT(cyclic_value(8)(-2), Eq(6));
-    EXPECT_THAT(cyclic_value(8)(-5), Eq(3));
-    EXPECT_THAT(cyclic_value(8)(-13), Eq(3));
-    EXPECT_TRUE(is_in_range(3.19, 3.21)(cyclic_value(8.1)(3.2)));
+    REQUIRE_EQ(cyclic_value(8)(3), 3);
+    REQUIRE_EQ(cyclic_value(8)(11), 3);
+    REQUIRE_EQ(cyclic_value(8)(19), 3);
+    REQUIRE_EQ(cyclic_value(8)(-2), 6);
+    REQUIRE_EQ(cyclic_value(8)(-5), 3);
+    REQUIRE_EQ(cyclic_value(8)(-13), 3);
+    REQUIRE(is_in_range(3.19, 3.21)(cyclic_value(8.1)(3.2)));
 }
 
-TEST(numeric_test, cyclic_difference)
+TEST_CASE("numeric_test, cyclic_difference")
 {
     using namespace fplus;
-    EXPECT_THAT(cyclic_difference(100)(5, 2), Eq(3));
-    EXPECT_THAT(cyclic_difference(100)(2, 5), Eq(97));
-    EXPECT_THAT(cyclic_difference(100)(3, -2), Eq(5));
-    EXPECT_THAT(cyclic_difference(100)(-2, 3), Eq(95));
-    EXPECT_THAT(cyclic_difference(100)(90, 10), Eq(80));
-    EXPECT_THAT(cyclic_difference(100)(10, 90), Eq(20));
+    REQUIRE_EQ(cyclic_difference(100)(5, 2), 3);
+    REQUIRE_EQ(cyclic_difference(100)(2, 5), 97);
+    REQUIRE_EQ(cyclic_difference(100)(3, -2), 5);
+    REQUIRE_EQ(cyclic_difference(100)(-2, 3), 95);
+    REQUIRE_EQ(cyclic_difference(100)(90, 10), 80);
+    REQUIRE_EQ(cyclic_difference(100)(10, 90), 20);
 }
 
-TEST(numeric_test, cyclic_shortest_difference)
+TEST_CASE("numeric_test, cyclic_shortest_difference")
 {
     using namespace fplus;
-    EXPECT_THAT(cyclic_shortest_difference(100)(5, 2), Eq(3));
-    EXPECT_THAT(cyclic_shortest_difference(100)(2, 5), Eq(-3));
-    EXPECT_THAT(cyclic_shortest_difference(100)(3, -2), Eq(5));
-    EXPECT_THAT(cyclic_shortest_difference(100)(-2, 3), Eq(-5));
-    EXPECT_THAT(cyclic_shortest_difference(100)(90, 10), Eq(-20));
-    EXPECT_THAT(cyclic_shortest_difference(100)(10, 90), Eq(20));
+    REQUIRE_EQ(cyclic_shortest_difference(100)(5, 2), 3);
+    REQUIRE_EQ(cyclic_shortest_difference(100)(2, 5), -3);
+    REQUIRE_EQ(cyclic_shortest_difference(100)(3, -2), 5);
+    REQUIRE_EQ(cyclic_shortest_difference(100)(-2, 3), -5);
+    REQUIRE_EQ(cyclic_shortest_difference(100)(90, 10), -20);
+    REQUIRE_EQ(cyclic_shortest_difference(100)(10, 90), 20);
 }
 
-TEST(numeric_test, cyclic_distance)
+TEST_CASE("numeric_test, cyclic_distance")
 {
     using namespace fplus;
-    EXPECT_THAT(cyclic_distance(100)(2, 5), Eq(3));
-    EXPECT_THAT(cyclic_distance(100)(5, 2), Eq(3));
-    EXPECT_THAT(cyclic_distance(100)(-2, 3), Eq(5));
-    EXPECT_THAT(cyclic_distance(100)(3, -2), Eq(5));
-    EXPECT_THAT(cyclic_distance(100)(10, 90), Eq(20));
-    EXPECT_THAT(cyclic_distance(100)(90, 10), Eq(20));
+    REQUIRE_EQ(cyclic_distance(100)(2, 5), 3);
+    REQUIRE_EQ(cyclic_distance(100)(5, 2), 3);
+    REQUIRE_EQ(cyclic_distance(100)(-2, 3), 5);
+    REQUIRE_EQ(cyclic_distance(100)(3, -2), 5);
+    REQUIRE_EQ(cyclic_distance(100)(10, 90), 20);
+    REQUIRE_EQ(cyclic_distance(100)(90, 10), 20);
 }
 
-TEST(numeric_test, round)
+TEST_CASE("numeric_test, round")
 {
     using namespace fplus;
-    EXPECT_THAT(round<int>(1.4), Eq(1));
-    EXPECT_THAT(round<int>(1.5), Eq(2));
-    EXPECT_THAT(round<int>(1.6), Eq(2));
+    REQUIRE_EQ(round<int>(1.4), 1);
+    REQUIRE_EQ(round<int>(1.5), 2);
+    REQUIRE_EQ(round<int>(1.6), 2);
 
-    EXPECT_THAT(round<unsigned char>(300.0), Eq(255));
-    EXPECT_THAT(round<unsigned char>(-5.0), Eq(0));
+    REQUIRE_EQ(round<unsigned char>(300.0), 255);
+    REQUIRE_EQ(round<unsigned char>(-5.0), 0);
 
-    EXPECT_THAT(round<int>(-1.4), Eq(-1));
-    EXPECT_THAT(round<int>(-1.6), Eq(-2));
+    REQUIRE_EQ(round<int>(-1.4), -1);
+    REQUIRE_EQ(round<int>(-1.6), -2);
 }
 
-TEST(numeric_test, ceil)
+TEST_CASE("numeric_test, ceil")
 {
     using namespace fplus;
-    EXPECT_THAT(ceil<int>(1.4), Eq(2));
-    EXPECT_THAT(ceil<int>(-1.4), Eq(-1));
+    REQUIRE_EQ(ceil<int>(1.4), 2);
+    REQUIRE_EQ(ceil<int>(-1.4), -1);
 }
 
-TEST(numeric_test, floor)
+TEST_CASE("numeric_test, floor")
 {
     using namespace fplus;
-    EXPECT_THAT(floor<int>(1.4), Eq(1));
-    EXPECT_THAT(floor<int>(-1.4), Eq(-2));
+    REQUIRE_EQ(floor<int>(1.4), 1);
+    REQUIRE_EQ(floor<int>(-1.4), -2);
 }
 
-TEST(numeric_test, clamp)
+TEST_CASE("numeric_test, clamp")
 {
     using namespace fplus;
-    EXPECT_THAT(clamp(2, 6)(5), Eq(5));
-    EXPECT_THAT(clamp(2, 6)(1), Eq(2));
-    EXPECT_THAT(clamp(2, 6)(8), Eq(6));
+    REQUIRE_EQ(clamp(2, 6)(5), 5);
+    REQUIRE_EQ(clamp(2, 6)(1), 2);
+    REQUIRE_EQ(clamp(2, 6)(8), 6);
 }
 
-TEST(numeric_test, int_power)
+TEST_CASE("numeric_test, int_power")
 {
     using namespace fplus;
-    EXPECT_THAT(int_power(3, 0), Eq(1));
-    EXPECT_THAT(int_power(3, 1), Eq(3));
-    EXPECT_THAT(int_power(3, 2), Eq(9));
-    EXPECT_THAT(int_power(3, 3), Eq(27));
-    EXPECT_THAT(int_power(3, 4), Eq(81));
+    REQUIRE_EQ(int_power(3, 0), 1);
+    REQUIRE_EQ(int_power(3, 1), 3);
+    REQUIRE_EQ(int_power(3, 2), 9);
+    REQUIRE_EQ(int_power(3, 3), 27);
+    REQUIRE_EQ(int_power(3, 4), 81);
 }
 
-TEST(numeric_test, min_on)
+TEST_CASE("numeric_test, min_on")
 {
-    EXPECT_THAT(fplus::min_on(mod2)(4, 4), Eq(4));
-    EXPECT_THAT(fplus::min_on(mod2)(4, 3), Eq(4));
-    EXPECT_THAT(fplus::min_on(mod2)(4, 3, 7), Eq(4));
-    EXPECT_THAT(fplus::min_on(mod2)(5, 3, 7), Eq(5));
-    EXPECT_THAT(fplus::min_on(mod2)(5, 3, 7, 9, 2), Eq(2));
-    EXPECT_THAT(fplus::min_on(mod2)(5, 3, 7, 13, 19, 4), Eq(4));
+    REQUIRE_EQ(fplus::min_on(mod2)(4, 4), 4);
+    REQUIRE_EQ(fplus::min_on(mod2)(4, 3), 4);
+    REQUIRE_EQ(fplus::min_on(mod2)(4, 3, 7), 4);
+    REQUIRE_EQ(fplus::min_on(mod2)(5, 3, 7), 5);
+    REQUIRE_EQ(fplus::min_on(mod2)(5, 3, 7, 9, 2), 2);
+    REQUIRE_EQ(fplus::min_on(mod2)(5, 3, 7, 13, 19, 4), 4);
 
-    EXPECT_THAT(fplus::min_on(mod7)(4, 4), Eq(4));
-    EXPECT_THAT(fplus::min_on(mod7)(4, 3), Eq(3));
-    EXPECT_THAT(fplus::min_on(mod7)(4, 3, 7), Eq(7));
-    EXPECT_THAT(fplus::min_on(mod7)(5, 3, 7, 9, 9), Eq(7));
-    EXPECT_THAT(fplus::min_on(mod7)(5, 3, 7, 9, 9, 6, 6, 6, 6, 6, 6), Eq(7));
-    EXPECT_THAT(fplus::min_on(mod7)(70, 3, 7, 9, 9, 6, 6, 6, 6, 6, 6), Eq(70));
+    REQUIRE_EQ(fplus::min_on(mod7)(4, 4), 4);
+    REQUIRE_EQ(fplus::min_on(mod7)(4, 3), 3);
+    REQUIRE_EQ(fplus::min_on(mod7)(4, 3, 7), 7);
+    REQUIRE_EQ(fplus::min_on(mod7)(5, 3, 7, 9, 9), 7);
+    REQUIRE_EQ(fplus::min_on(mod7)(5, 3, 7, 9, 9, 6, 6, 6, 6, 6, 6), 7);
+    REQUIRE_EQ(fplus::min_on(mod7)(70, 3, 7, 9, 9, 6, 6, 6, 6, 6, 6), 70);
 
     const std::string s1("AAA");
     const std::string s2("AAABB");
     const std::string s3("AAABBCCC");
-    EXPECT_THAT(fplus::min_on(string_length)(s1, s2), Eq(s1));
-    EXPECT_THAT(fplus::min_on(string_length)(s2, s3), Eq(s2));
-    EXPECT_THAT(fplus::min_on(string_length)(s1, s2, s3), Eq(s1));
-    EXPECT_THAT(fplus::min_on(string_length)(s1, s3), Eq(s1));
+    REQUIRE_EQ(fplus::min_on(string_length)(s1, s2), s1);
+    REQUIRE_EQ(fplus::min_on(string_length)(s2, s3), s2);
+    REQUIRE_EQ(fplus::min_on(string_length)(s1, s2, s3), s1);
+    REQUIRE_EQ(fplus::min_on(string_length)(s1, s3), s1);
 
     auto l1_min_on = fplus::min_on(mod7);
-    EXPECT_THAT(l1_min_on(1), Eq(1));
-    EXPECT_THAT(l1_min_on(1, 2), Eq(1));
-    EXPECT_THAT(l1_min_on(1, 2, 3, 7), Eq(7));
-    EXPECT_THAT(l1_min_on(1, 2, 3, 6, 77), Eq(77));
-    EXPECT_THAT(fplus::min_on(mod7)(1), Eq(1));
-    EXPECT_THAT(fplus::min_on(mod7)(1, 2), Eq(1));
-    EXPECT_THAT(fplus::min_on(mod7)(1, 2, 3, 7), Eq(7));
-    EXPECT_THAT(fplus::min_on(mod7)(1, 2, 3, 6, 77), Eq(77));
+    REQUIRE_EQ(l1_min_on(1), 1);
+    REQUIRE_EQ(l1_min_on(1, 2), 1);
+    REQUIRE_EQ(l1_min_on(1, 2, 3, 7), 7);
+    REQUIRE_EQ(l1_min_on(1, 2, 3, 6, 77), 77);
+    REQUIRE_EQ(fplus::min_on(mod7)(1), 1);
+    REQUIRE_EQ(fplus::min_on(mod7)(1, 2), 1);
+    REQUIRE_EQ(fplus::min_on(mod7)(1, 2, 3, 7), 7);
+    REQUIRE_EQ(fplus::min_on(mod7)(1, 2, 3, 6, 77), 77);
 }
 
-TEST(numeric_test, max_on)
+TEST_CASE("numeric_test, max_on")
 {
-    EXPECT_THAT(fplus::max_on(mod2)(4, 4), Eq(4));
-    EXPECT_THAT(fplus::max_on(mod2)(4, 3), Eq(3));
-    EXPECT_THAT(fplus::max_on(mod2)(4, 3, 7), Eq(3));
-    EXPECT_THAT(fplus::max_on(mod2)(5, 3, 7), Eq(5));
-    EXPECT_THAT(fplus::max_on(mod2)(5, 3, 7, 9, 2), Eq(5));
-    EXPECT_THAT(fplus::max_on(mod2)(5, 3, 7, 13, 19, 4), Eq(5));
+    REQUIRE_EQ(fplus::max_on(mod2)(4, 4), 4);
+    REQUIRE_EQ(fplus::max_on(mod2)(4, 3), 3);
+    REQUIRE_EQ(fplus::max_on(mod2)(4, 3, 7), 3);
+    REQUIRE_EQ(fplus::max_on(mod2)(5, 3, 7), 5);
+    REQUIRE_EQ(fplus::max_on(mod2)(5, 3, 7, 9, 2), 5);
+    REQUIRE_EQ(fplus::max_on(mod2)(5, 3, 7, 13, 19, 4), 5);
 
-    EXPECT_THAT(fplus::max_on(mod7)(4, 4), Eq(4));
-    EXPECT_THAT(fplus::max_on(mod7)(4, 3), Eq(4));
-    EXPECT_THAT(fplus::max_on(mod7)(4, 3, 7), Eq(4));
-    EXPECT_THAT(fplus::max_on(mod7)(5, 3, 7, 9, 9), Eq(5));
-    EXPECT_THAT(fplus::max_on(mod7)(5, 3, 7, 9, 9, 6, 6, 6, 6, 6, 6), Eq(6));
-    EXPECT_THAT(fplus::max_on(mod7)(70, 3, 7, 9, 9, 6, 6, 6, 6, 6, 6), Eq(6));
+    REQUIRE_EQ(fplus::max_on(mod7)(4, 4), 4);
+    REQUIRE_EQ(fplus::max_on(mod7)(4, 3), 4);
+    REQUIRE_EQ(fplus::max_on(mod7)(4, 3, 7), 4);
+    REQUIRE_EQ(fplus::max_on(mod7)(5, 3, 7, 9, 9), 5);
+    REQUIRE_EQ(fplus::max_on(mod7)(5, 3, 7, 9, 9, 6, 6, 6, 6, 6, 6), 6);
+    REQUIRE_EQ(fplus::max_on(mod7)(70, 3, 7, 9, 9, 6, 6, 6, 6, 6, 6), 6);
 
     const std::string s1("AAA");
     const std::string s2("AAABB");
     const std::string s3("AAABBCCC");
-    EXPECT_THAT(fplus::max_on(string_length)(s1, s2), Eq(s2));
-    EXPECT_THAT(fplus::max_on(string_length)(s2, s3), Eq(s3));
-    EXPECT_THAT(fplus::max_on(string_length)(s1, s2, s3), Eq(s3));
-    EXPECT_THAT(fplus::max_on(string_length)(s1, s3), Eq(s3));
+    REQUIRE_EQ(fplus::max_on(string_length)(s1, s2), s2);
+    REQUIRE_EQ(fplus::max_on(string_length)(s2, s3), s3);
+    REQUIRE_EQ(fplus::max_on(string_length)(s1, s2, s3), s3);
+    REQUIRE_EQ(fplus::max_on(string_length)(s1, s3), s3);
 
     auto l1_max_on = fplus::max_on(mod7);
-    EXPECT_THAT(l1_max_on(1), Eq(1));
-    EXPECT_THAT(l1_max_on(1, 2), Eq(2));
-    EXPECT_THAT(l1_max_on(1, 2, 3, 7), Eq(3));
-    EXPECT_THAT(l1_max_on(1, 2, 3, 6, 77), Eq(6));
-    EXPECT_THAT(fplus::max_on(mod7)(1), Eq(1));
-    EXPECT_THAT(fplus::max_on(mod7)(1, 2), Eq(2));
-    EXPECT_THAT(fplus::max_on(mod7)(1, 2, 3, 7), Eq(3));
-    EXPECT_THAT(fplus::max_on(mod7)(1, 2, 3, 6, 77), Eq(6));
+    REQUIRE_EQ(l1_max_on(1), 1);
+    REQUIRE_EQ(l1_max_on(1, 2), 2);
+    REQUIRE_EQ(l1_max_on(1, 2, 3, 7), 3);
+    REQUIRE_EQ(l1_max_on(1, 2, 3, 6, 77), 6);
+    REQUIRE_EQ(fplus::max_on(mod7)(1), 1);
+    REQUIRE_EQ(fplus::max_on(mod7)(1, 2), 2);
+    REQUIRE_EQ(fplus::max_on(mod7)(1, 2, 3, 7), 3);
+    REQUIRE_EQ(fplus::max_on(mod7)(1, 2, 3, 6, 77), 6);
 }
 
-TEST(numeric_test, mean)
+TEST_CASE("numeric_test, mean")
 {
     using namespace fplus;
     Ints xs = {1,4,4};
-    EXPECT_THAT(mean<int>(xs), Eq(3));
+    REQUIRE_EQ(mean<int>(xs), 3);
 }
 
-TEST(numeric_test, mean_obj)
+TEST_CASE("numeric_test, mean_obj")
 {
     using namespace fplus;
     struct vec_2d
@@ -265,54 +271,54 @@ TEST(numeric_test, mean_obj)
     auto mean_vec_div_double = mean_obj_div_double(vecs);
     auto mean_vec_div_size_t = mean_obj_div_size_t(vecs);
     double mean_vec_length_squared_dest = 2*2 + 2*2;
-    EXPECT_THAT(vec_2d_length_squared(mean_vec_div_double),
-        DoubleEq(mean_vec_length_squared_dest));
-    EXPECT_THAT(vec_2d_length_squared(mean_vec_div_size_t),
-        DoubleEq(mean_vec_length_squared_dest));
+    REQUIRE(is_in_range_around(0.001, mean_vec_length_squared_dest)(
+        vec_2d_length_squared(mean_vec_div_double)));
+    REQUIRE(is_in_range_around(0.001, mean_vec_length_squared_dest)(
+        vec_2d_length_squared(mean_vec_div_size_t)));
 }
 
-TEST(numeric_test, variadic)
+TEST_CASE("numeric_test, variadic")
 {
     using namespace fplus;
-    EXPECT_THAT(min(1,2,3,4,5), Eq(1));
-    EXPECT_THAT(min(1.01,1.02,1.03,1.04,1.05), Eq(1.01));
-    EXPECT_THAT(min(-54,2,3,54,5), Eq(-54));
-    EXPECT_THAT(min(-54.2,2.7,3,54,5), Eq(-54.2));
-    EXPECT_THAT(min(123,123,123,124), Eq(123));
-    EXPECT_THAT(min(123), Eq(123));
-    EXPECT_THAT(min(123,123), Eq(123));
-    EXPECT_THAT(min(123,123,123), Eq(123));
-    EXPECT_THAT(min(-1), Eq(-1));
-    EXPECT_THAT(min(-1,-2), Eq(-2));
-    EXPECT_THAT(min(-1,-2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), Eq(-2));
-    EXPECT_THAT(min('a','b','c'), Eq('a'));
+    REQUIRE_EQ(min(1,2,3,4,5), 1);
+    REQUIRE_EQ(min(1.01,1.02,1.03,1.04,1.05), 1.01);
+    REQUIRE_EQ(min(-54,2,3,54,5), -54);
+    REQUIRE_EQ(min(-54.2,2.7,3,54,5), -54.2);
+    REQUIRE_EQ(min(123,123,123,124), 123);
+    REQUIRE_EQ(min(123), 123);
+    REQUIRE_EQ(min(123,123), 123);
+    REQUIRE_EQ(min(123,123,123), 123);
+    REQUIRE_EQ(min(-1), -1);
+    REQUIRE_EQ(min(-1,-2), -2);
+    REQUIRE_EQ(min(-1,-2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), -2);
+    REQUIRE_EQ(min('a','b','c'), 'a');
 
-    EXPECT_THAT(max(1,2,3,4,5), Eq(5));
-    EXPECT_THAT(max(1.01,1.02,1.03,1.04,1.05), Eq(1.05));
-    EXPECT_THAT(max(-54,2,3,54,5), Eq(54));
-    EXPECT_THAT(max(-54.2,2.7,3,54.85,5), Eq(54.85));
-    EXPECT_THAT(max(123,123,123,124), Eq(124));
-    EXPECT_THAT(max(123), Eq(123));
-    EXPECT_THAT(max(123,123), Eq(123));
-    EXPECT_THAT(max(123,123,123), Eq(123));
-    EXPECT_THAT(max(123,123,123,123), Eq(123));
-    EXPECT_THAT(max(123,123,123,123,123), Eq(123));
-    EXPECT_THAT(max(123,123,123,123,123,123), Eq(123));
-    EXPECT_THAT(max(-1), Eq(-1));
-    EXPECT_THAT(max(-1,-2), Eq(-1));
-    EXPECT_THAT(max(-1,-2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), Eq(0));
-    EXPECT_THAT(max('a','b','c'), Eq('c'));
+    REQUIRE_EQ(max(1,2,3,4,5), 5);
+    REQUIRE_EQ(max(1.01,1.02,1.03,1.04,1.05), 1.05);
+    REQUIRE_EQ(max(-54,2,3,54,5), 54);
+    REQUIRE_EQ(max(-54.2,2.7,3,54.85,5), 54.85);
+    REQUIRE_EQ(max(123,123,123,124), 124);
+    REQUIRE_EQ(max(123), 123);
+    REQUIRE_EQ(max(123,123), 123);
+    REQUIRE_EQ(max(123,123,123), 123);
+    REQUIRE_EQ(max(123,123,123,123), 123);
+    REQUIRE_EQ(max(123,123,123,123,123), 123);
+    REQUIRE_EQ(max(123,123,123,123,123,123), 123);
+    REQUIRE_EQ(max(-1), -1);
+    REQUIRE_EQ(max(-1,-2), -1);
+    REQUIRE_EQ(max(-1,-2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 0);
+    REQUIRE_EQ(max('a','b','c'), 'c');
 }
 
-TEST(numeric_test, normalize)
+TEST_CASE("numeric_test, normalize")
 {
     using namespace fplus;
 
-    EXPECT_EQ(normalize_min_max(0, 10, Doubles({1, 3, 6})), Doubles({0, 4, 10}));
-    EXPECT_EQ(normalize_mean_stddev(3, 2, Doubles({7, 8})), Doubles({1, 5}));
-    EXPECT_EQ(standardize(Doubles({2.0, 6.0})), Doubles({-1, 1}));
+    REQUIRE_EQ(normalize_min_max(0, 10, Doubles({1, 3, 6})), Doubles({0, 4, 10}));
+    REQUIRE_EQ(normalize_mean_stddev(3, 2, Doubles({7, 8})), Doubles({1, 5}));
+    REQUIRE_EQ(standardize(Doubles({2.0, 6.0})), Doubles({-1, 1}));
 
-    EXPECT_EQ(normalize_min_max(0, 10, Floats({1, 3, 6})), Floats({0, 4, 10}));
-    EXPECT_EQ(normalize_mean_stddev(3, 2, Floats({7, 8})), Floats({1, 5}));
-    EXPECT_EQ(standardize(Floats({2.0, 6.0})), Floats({-1, 1}));
+    REQUIRE_EQ(normalize_min_max(0, 10, Floats({1, 3, 6})), Floats({0, 4, 10}));
+    REQUIRE_EQ(normalize_mean_stddev(3, 2, Floats({7, 8})), Floats({1, 5}));
+    REQUIRE_EQ(standardize(Floats({2.0, 6.0})), Floats({-1, 1}));
 }

@@ -4,23 +4,21 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest.h"
 #include "fplus/fplus.hpp"
 #include <vector>
 
-using namespace testing;
-
-TEST(stringtools_test, trim)
+TEST_CASE("stringtools_test, trim")
 {
     using namespace fplus;
     std::string untrimmed = "  \n \t   foo  ";
-    EXPECT_EQ(trim_whitespace_left(untrimmed), "foo  ");
-    EXPECT_EQ(trim_whitespace_right(untrimmed), "  \n \t   foo");
-    EXPECT_EQ(trim_whitespace(untrimmed), "foo");
+    REQUIRE_EQ(trim_whitespace_left(untrimmed), "foo  ");
+    REQUIRE_EQ(trim_whitespace_right(untrimmed), "  \n \t   foo");
+    REQUIRE_EQ(trim_whitespace(untrimmed), "foo");
 }
 
-TEST(stringtools_test, split)
+TEST_CASE("stringtools_test, split")
 {
     using namespace fplus;
     std::string text = "Hi,\nI am a\r\n***strange***\n\rstring.";
@@ -54,28 +52,28 @@ TEST(stringtools_test, split)
         std::string("***strange***"),
         std::string("string.") };
 
-    EXPECT_EQ(split_lines(text, true), textAsLinesWithEmty);
-    EXPECT_EQ(split_lines(text, false), textAsLinesWithoutEmpty);
-    EXPECT_EQ(split_words(text, false), textAsWords);
-    EXPECT_EQ(split_words_by(text, ' ', false), textSplitBySpaceOnly);
-    EXPECT_EQ(split_words_by_many(text, std::string{ " ,\r\n" }, false), textSplitBySpaceAndCommaAndLine);
+    REQUIRE_EQ(split_lines(text, true), textAsLinesWithEmty);
+    REQUIRE_EQ(split_lines(text, false), textAsLinesWithoutEmpty);
+    REQUIRE_EQ(split_words(text, false), textAsWords);
+    REQUIRE_EQ(split_words_by(text, ' ', false), textSplitBySpaceOnly);
+    REQUIRE_EQ(split_words_by_many(text, std::string{ " ,\r\n" }, false), textSplitBySpaceAndCommaAndLine);
 }
 
-TEST(stringtools_test, to_string_filled)
+TEST_CASE("stringtools_test, to_string_filled")
 {
     using namespace fplus;
-    EXPECT_EQ(to_string_fill_left('0', 5, 42), std::string("00042") );
-    EXPECT_EQ(to_string_fill_right(' ', 5, 42), std::string("42   ") );
+    REQUIRE_EQ(to_string_fill_left('0', 5, 42), std::string("00042") );
+    REQUIRE_EQ(to_string_fill_right(' ', 5, 42), std::string("42   ") );
 }
 
-TEST(stringtools_test, to_lower_case)
+TEST_CASE("stringtools_test, to_lower_case")
 {
     using namespace fplus;
-    EXPECT_EQ(to_lower_case(std::string("ChaRacTer&WorDs23")), std::string("character&words23"));
+    REQUIRE_EQ(to_lower_case(std::string("ChaRacTer&WorDs23")), std::string("character&words23"));
 }
 
-TEST(stringtools_test, to_upper_case)
+TEST_CASE("stringtools_test, to_upper_case")
 {
     using namespace fplus;
-    EXPECT_EQ(to_upper_case(std::string("ChaRacTer&WorDs34")), std::string("CHARACTER&WORDS34"));
+    REQUIRE_EQ(to_upper_case(std::string("ChaRacTer&WorDs34")), std::string("CHARACTER&WORDS34"));
 }

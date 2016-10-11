@@ -4,13 +4,11 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest.h"
 #include "fplus/fplus.hpp"
 #include <vector>
 #include <utility>
-
-using namespace testing;
 
 namespace {
 
@@ -26,331 +24,339 @@ namespace {
 
 }
 
-TEST(generate_test, generate)
+TEST_CASE("generate_test, generate")
 {
     int value = 0;
     auto f = [&] { return value++; };
     auto result = fplus::generate<std::vector<int>>(f, 6);
-    EXPECT_THAT(result, ElementsAre(0, 1, 2, 3, 4 ,5));
+    REQUIRE_EQ(result, std::vector<int>({0, 1, 2, 3, 4 ,5}));
 }
 
-TEST(generate_test, generate_by_idx)
+TEST_CASE("generate_test, generate_by_idx")
 {
     auto f = [](std::size_t value) { return value + 10; };
     auto result = fplus::generate_by_idx<std::vector<std::size_t>>(f, 6);
-    EXPECT_THAT(result, ElementsAre(10, 11, 12, 13, 14 ,15));
+    REQUIRE_EQ(result, std::vector<std::size_t>({10, 11, 12, 13, 14 ,15}));
 }
 
-TEST(generate_test, repeat)
+TEST_CASE("generate_test, repeat")
 {
     const std::vector<int> v = { 1, 2 };
     auto result = fplus::repeat(3, v);
-    EXPECT_THAT(result, ElementsAre(1, 2, 1, 2, 1, 2));
+    REQUIRE_EQ(result, std::vector<int>({1, 2, 1, 2, 1, 2}));
 }
 
-TEST(generate_test, replicate)
+TEST_CASE("generate_test, replicate")
 {
     auto result = fplus::replicate(3, 1);
-    EXPECT_THAT(result, ElementsAre(1, 1, 1));
+    REQUIRE_EQ(result, std::vector<int>({1, 1, 1}));
 }
 
-TEST(generate_test, infixes)
+TEST_CASE("generate_test, infixes")
 {
     const std::vector<int> v = { 1, 2, 3, 4, 5, 6 };
     auto result = fplus::infixes(3, v);
-    EXPECT_EQ(4u, result.size());
-    EXPECT_THAT(result[0], ElementsAre(1, 2, 3));
-    EXPECT_THAT(result[1], ElementsAre(2, 3, 4));
-    EXPECT_THAT(result[2], ElementsAre(3, 4, 5));
-    EXPECT_THAT(result[3], ElementsAre(4, 5, 6));
+    REQUIRE_EQ(4u, result.size());
+    REQUIRE_EQ(result[0], std::vector<int>({1, 2, 3}));
+    REQUIRE_EQ(result[1], std::vector<int>({2, 3, 4}));
+    REQUIRE_EQ(result[2], std::vector<int>({3, 4, 5}));
+    REQUIRE_EQ(result[3], std::vector<int>({4, 5, 6}));
 }
 
-TEST(generate_test, infixes_with_size_less_than_length)
+TEST_CASE("generate_test, infixes_with_size_less_than_length")
 {
     const std::vector<int> v = { 1, 2 };
     auto result = fplus::infixes(3, v);
-    EXPECT_THAT(result, IsEmpty());
+    REQUIRE(result.empty());
 }
 
-TEST(generate_test, carthesian_product_with_where)
+TEST_CASE("generate_test, carthesian_product_with_where")
 {
     const std::vector<char> v1 = { 'A', 'B', 'C' };
     const std::vector<char> v2 = { 'X', 'Y' };
     auto result = fplus::carthesian_product_with_where(as_pair, compare_not_eq, v1, v2);
-    EXPECT_THAT(result, ElementsAre(Pair('A', 'X'), Pair('A', 'Y'),
-                                    Pair('B', 'X'), Pair('B', 'Y'),
-                                    Pair('C', 'X'), Pair('C', 'Y')));
+    std::vector<std::pair<char, char>> expected = {
+        {'A', 'X'}, {'A', 'Y'},
+        {'B', 'X'}, {'B', 'Y'},
+        {'C', 'X'}, {'C', 'Y'}};
+    REQUIRE_EQ(result, expected);
 }
 
-TEST(generate_test, carthesian_product_with)
+TEST_CASE("generate_test, carthesian_product_with")
 {
     const std::vector<char> v1 = { 'A', 'B', 'C' };
     const std::vector<char> v2 = { 'X', 'Y' };
     auto result = fplus::carthesian_product_with(as_pair, v1, v2);
-    EXPECT_THAT(result, ElementsAre(Pair('A', 'X'), Pair('A', 'Y'),
-                                    Pair('B', 'X'), Pair('B', 'Y'),
-                                    Pair('C', 'X'), Pair('C', 'Y')));
+    std::vector<std::pair<char, char>> expected = {
+        {'A', 'X'}, {'A', 'Y'},
+        {'B', 'X'}, {'B', 'Y'},
+        {'C', 'X'}, {'C', 'Y'}};
+    REQUIRE_EQ(result, expected);
 }
 
-TEST(generate_test, carthesian_product_where)
+TEST_CASE("generate_test, carthesian_product_where")
 {
     const std::vector<char> v1 = { 'A', 'B', 'C' };
     const std::vector<char> v2 = { 'X', 'Y' };
     auto result = fplus::carthesian_product_where(compare_not_eq, v1, v2);
-    EXPECT_THAT(result, ElementsAre(Pair('A', 'X'), Pair('A', 'Y'),
-                                    Pair('B', 'X'), Pair('B', 'Y'),
-                                    Pair('C', 'X'), Pair('C', 'Y')));
+    std::vector<std::pair<char, char>> expected = {
+        {'A', 'X'}, {'A', 'Y'},
+        {'B', 'X'}, {'B', 'Y'},
+        {'C', 'X'}, {'C', 'Y'}};
+    REQUIRE_EQ(result, expected);
 }
 
-TEST(generate_test, carthesian_product)
+TEST_CASE("generate_test, carthesian_product")
 {
     const std::vector<char> v1 = { 'A', 'B', 'C' };
     const std::vector<char> v2 = { 'X', 'Y' };
     auto result = fplus::carthesian_product(v1, v2);
-    EXPECT_THAT(result, ElementsAre(Pair('A', 'X'), Pair('A', 'Y'),
-                                    Pair('B', 'X'), Pair('B', 'Y'),
-                                    Pair('C', 'X'), Pair('C', 'Y')));
+    std::vector<std::pair<char, char>> expected = {
+        {'A', 'X'}, {'A', 'Y'},
+        {'B', 'X'}, {'B', 'Y'},
+        {'C', 'X'}, {'C', 'Y'}};
+    REQUIRE_EQ(result, expected);
 }
 
-TEST(generate_test, carthesian_product_n)
+TEST_CASE("generate_test, carthesian_product_n")
 {
     const std::vector<char> v = { 'A', 'B' };
     auto result = fplus::carthesian_product_n(2, v);
-    EXPECT_EQ(4u, result.size());
-    EXPECT_THAT(result[0], ElementsAre('A', 'A'));
-    EXPECT_THAT(result[1], ElementsAre('A', 'B'));
-    EXPECT_THAT(result[2], ElementsAre('B', 'A'));
-    EXPECT_THAT(result[3], ElementsAre('B', 'B'));
+    REQUIRE_EQ(4u, result.size());
+    REQUIRE_EQ(result[0], std::vector<char>({'A', 'A'}));
+    REQUIRE_EQ(result[1], std::vector<char>({'A', 'B'}));
+    REQUIRE_EQ(result[2], std::vector<char>({'B', 'A'}));
+    REQUIRE_EQ(result[3], std::vector<char>({'B', 'B'}));
 }
 
-TEST(generate_test, carthesian_product_n_with_power_0)
+TEST_CASE("generate_test, carthesian_product_n_with_power_0")
 {
     const std::vector<char> v = { 'A', 'B' };
     auto result = fplus::carthesian_product_n(0, v);
-    EXPECT_EQ(1u, result.size());
-    EXPECT_THAT(result[0], IsEmpty());
+    REQUIRE_EQ(1u, result.size());
+    REQUIRE(result[0].empty());
 }
 
-TEST(generate_test, permutations)
+TEST_CASE("generate_test, permutations")
 {
     const std::vector<char> v = { 'A', 'B' };
     auto result = fplus::permutations(2, v);
-    EXPECT_EQ(2u, result.size());
-    EXPECT_THAT(result[0], ElementsAre('A', 'B'));
-    EXPECT_THAT(result[1], ElementsAre('B', 'A'));
+    REQUIRE_EQ(2u, result.size());
+    REQUIRE_EQ(result[0], std::vector<char>({'A', 'B'}));
+    REQUIRE_EQ(result[1], std::vector<char>({'B', 'A'}));
 }
 
-TEST(generate_test, permutations_with_power_0)
+TEST_CASE("generate_test, permutations_with_power_0")
 {
     const std::vector<char> v = { 'A', 'B' };
     auto result = fplus::permutations(0, v);
-    EXPECT_EQ(1u, result.size());
-    EXPECT_THAT(result[0], IsEmpty());
+    REQUIRE_EQ(1u, result.size());
+    REQUIRE(result[0].empty());
 }
 
-TEST(generate_test, combinations)
+TEST_CASE("generate_test, combinations")
 {
     const std::vector<char> v = { 'A', 'B', 'C' };
     auto result = fplus::combinations(2, v);
-    EXPECT_EQ(3u, result.size());
-    EXPECT_THAT(result[0], ElementsAre('A', 'B'));
-    EXPECT_THAT(result[1], ElementsAre('A', 'C'));
-    EXPECT_THAT(result[2], ElementsAre('B', 'C'));
+    REQUIRE_EQ(3u, result.size());
+    REQUIRE_EQ(result[0], std::vector<char>({'A', 'B'}));
+    REQUIRE_EQ(result[1], std::vector<char>({'A', 'C'}));
+    REQUIRE_EQ(result[2], std::vector<char>({'B', 'C'}));
 }
 
-TEST(generate_test, combinations_with_power_0)
+TEST_CASE("generate_test, combinations_with_power_0")
 {
     const std::vector<char> v = { 'A', 'B' };
     auto result = fplus::combinations(0, v);
-    EXPECT_EQ(1u, result.size());
-    EXPECT_THAT(result[0], IsEmpty());
+    REQUIRE_EQ(1u, result.size());
+    REQUIRE(result[0].empty());
 }
 
-TEST(generate_test, combinations_with_replacement)
+TEST_CASE("generate_test, combinations_with_replacement")
 {
     const std::vector<char> v = { 'A', 'B' };
     auto result = fplus::combinations_with_replacement(2, v);
-    EXPECT_EQ(3u, result.size());
-    EXPECT_THAT(result[0], ElementsAre('A', 'A'));
-    EXPECT_THAT(result[1], ElementsAre('A', 'B'));
-    EXPECT_THAT(result[2], ElementsAre('B', 'B'));
+    REQUIRE_EQ(3u, result.size());
+    REQUIRE_EQ(result[0], std::vector<char>({'A', 'A'}));
+    REQUIRE_EQ(result[1], std::vector<char>({'A', 'B'}));
+    REQUIRE_EQ(result[2], std::vector<char>({'B', 'B'}));
 }
 
-TEST(generate_test, combinations_with_replacement_with_power_0)
+TEST_CASE("generate_test, combinations_with_replacement_with_power_0")
 {
     const std::vector<char> v = { 'A', 'B' };
     auto result = fplus::combinations_with_replacement(0, v);
-    EXPECT_EQ(1u, result.size());
-    EXPECT_THAT(result[0], IsEmpty());
+    REQUIRE_EQ(1u, result.size());
+    REQUIRE(result[0].empty());
 }
 
-TEST(generate_test, power_set)
+TEST_CASE("generate_test, power_set")
 {
     const std::vector<char> v = { 'x', 'y' };
     auto result = fplus::power_set(v);
-    EXPECT_EQ(4u, result.size());
-    EXPECT_THAT(result[0], IsEmpty());
-    EXPECT_THAT(result[1], ElementsAre('x'));
-    EXPECT_THAT(result[2], ElementsAre('y'));
-    EXPECT_THAT(result[3], ElementsAre('x', 'y'));
+    REQUIRE_EQ(4u, result.size());
+    REQUIRE(result[0].empty());
+    REQUIRE_EQ(result[1], std::vector<char>({'x'}));
+    REQUIRE_EQ(result[2], std::vector<char>({'y'}));
+    REQUIRE_EQ(result[3], std::vector<char>({'x', 'y'}));
 }
 
-TEST(generate_test, iterate)
+TEST_CASE("generate_test, iterate")
 {
     auto f = [](int value) { return value * 2; };
     auto result = fplus::iterate(f, 5, 3);
-    EXPECT_EQ(5u, result.size());
-    EXPECT_THAT(result, ElementsAre(3, 6, 12, 24, 48));
+    REQUIRE_EQ(5u, result.size());
+    REQUIRE_EQ(result, std::vector<int>({3, 6, 12, 24, 48}));
 }
 
-TEST(generate_test, iterate_with_size_0)
+TEST_CASE("generate_test, iterate_with_size_0")
 {
     auto f = [](int value) { return value * 2; };
     auto result = fplus::iterate(f, 0, 3);
-    EXPECT_THAT(result, IsEmpty());
+    REQUIRE(result.empty());
 }
 
-TEST(generate_test, adjecent_difference)
+TEST_CASE("generate_test, adjecent_difference")
 {
     const std::vector<int> v = { 0, 4, 1, 2, 5 };
     auto result = fplus::adjacent_difference(v);
-    EXPECT_THAT(result, ElementsAre(0, 4, -3, 1, 3));
+    REQUIRE_EQ(result, std::vector<int>({0, 4, -3, 1, 3}));
 }
 
-TEST(generate_test, rotate_left)
+TEST_CASE("generate_test, rotate_left")
 {
     const std::vector<char> v = { 'x', 'y', 'z' };
     auto result = fplus::rotate_left(v);
-    EXPECT_THAT(result, ElementsAre('y', 'z', 'x'));
+    REQUIRE_EQ(result, std::vector<char>({'y', 'z', 'x'}));
 }
 
-TEST(generate_test, rotate_left_with_empty)
+TEST_CASE("generate_test, rotate_left_with_empty")
 {
     const std::vector<char> v = { };
     auto result = fplus::rotate_left(v);
-    EXPECT_THAT(result, IsEmpty());
+    REQUIRE(result.empty());
 }
 
-TEST(generate_test, rotate_right)
+TEST_CASE("generate_test, rotate_right")
 {
     const std::vector<char> v = { 'x', 'y', 'z' };
     auto result = fplus::rotate_right(v);
-    EXPECT_THAT(result, ElementsAre('z', 'x', 'y'));
+    REQUIRE_EQ(result, std::vector<char>({'z', 'x', 'y'}));
 }
 
-TEST(generate_test, rotate_right_with_empty)
+TEST_CASE("generate_test, rotate_right_with_empty")
 {
     const std::vector<char> v = { };
     auto result = fplus::rotate_right(v);
-    EXPECT_THAT(result, IsEmpty());
+    REQUIRE(result.empty());
 }
 
-TEST(generate_test, rotations_left)
+TEST_CASE("generate_test, rotations_left")
 {
     const std::vector<char> v = { 'a', 'b', 'c', 'd' };
     auto result = fplus::rotations_left(v);
-    EXPECT_EQ(4u, result.size());
-    EXPECT_THAT(result[0], ElementsAre('a', 'b', 'c', 'd'));
-    EXPECT_THAT(result[1], ElementsAre('b', 'c', 'd', 'a'));
-    EXPECT_THAT(result[2], ElementsAre('c', 'd', 'a', 'b'));
-    EXPECT_THAT(result[3], ElementsAre('d', 'a', 'b', 'c'));
+    REQUIRE_EQ(4u, result.size());
+    REQUIRE_EQ(result[0], std::vector<char>({'a', 'b', 'c', 'd'}));
+    REQUIRE_EQ(result[1], std::vector<char>({'b', 'c', 'd', 'a'}));
+    REQUIRE_EQ(result[2], std::vector<char>({'c', 'd', 'a', 'b'}));
+    REQUIRE_EQ(result[3], std::vector<char>({'d', 'a', 'b', 'c'}));
 }
 
-TEST(generate_test, rotations_left_with_empty)
+TEST_CASE("generate_test, rotations_left_with_empty")
 {
     const std::vector<char> v = { };
     auto result = fplus::rotations_left(v);
-    EXPECT_THAT(result, IsEmpty());
+    REQUIRE(result.empty());
 }
 
-TEST(generate_test, rotations_right)
+TEST_CASE("generate_test, rotations_right")
 {
     const std::vector<char> v = { 'a', 'b', 'c', 'd' };
     auto result = fplus::rotations_right(v);
-    EXPECT_EQ(4u, result.size());
-    EXPECT_THAT(result[0], ElementsAre('a', 'b', 'c', 'd'));
-    EXPECT_THAT(result[1], ElementsAre('d', 'a', 'b', 'c'));
-    EXPECT_THAT(result[2], ElementsAre('c', 'd', 'a', 'b'));
-    EXPECT_THAT(result[3], ElementsAre('b', 'c', 'd', 'a'));
+    REQUIRE_EQ(4u, result.size());
+    REQUIRE_EQ(result[0], std::vector<char>({'a', 'b', 'c', 'd'}));
+    REQUIRE_EQ(result[1], std::vector<char>({'d', 'a', 'b', 'c'}));
+    REQUIRE_EQ(result[2], std::vector<char>({'c', 'd', 'a', 'b'}));
+    REQUIRE_EQ(result[3], std::vector<char>({'b', 'c', 'd', 'a'}));
 }
 
-TEST(generate_test, rotations_right_with_empty)
+TEST_CASE("generate_test, rotations_right_with_empty")
 {
     const std::vector<char> v = { };
     auto result = fplus::rotations_right(v);
-    EXPECT_THAT(result, IsEmpty());
+    REQUIRE(result.empty());
 }
 
-TEST(generate_test, fill_left)
+TEST_CASE("generate_test, fill_left")
 {
     const std::vector<int> v = { 1, 2, 3, 4 };
     auto result = fplus::fill_left(0, 6, v);
-    EXPECT_THAT(result, ElementsAre(0, 0, 1, 2, 3, 4));
+    REQUIRE_EQ(result, std::vector<int>({0, 0, 1, 2, 3, 4}));
 }
 
-TEST(generate_test, fill_left_with_min_size)
+TEST_CASE("generate_test, fill_left_with_min_size")
 {
     const std::vector<int> v = { 1, 2, 3, 4 };
     auto result = fplus::fill_left(0, 4, v);
-    EXPECT_THAT(result, ElementsAre(1, 2, 3, 4));
+    REQUIRE_EQ(result, std::vector<int>({1, 2, 3, 4}));
 }
 
-TEST(generate_test, fill_right)
+TEST_CASE("generate_test, fill_right")
 {
     const std::vector<int> v = { 1, 2, 3, 4 };
     auto result = fplus::fill_right(0, 6, v);
-    EXPECT_THAT(result, ElementsAre(1, 2, 3, 4, 0, 0));
+    REQUIRE_EQ(result, std::vector<int>({1, 2, 3, 4, 0, 0}));
 }
 
-TEST(generate_test, fill_right_with_min_size)
+TEST_CASE("generate_test, fill_right_with_min_size")
 {
     const std::vector<int> v = { 1, 2, 3, 4 };
     auto result = fplus::fill_right(0, 4, v);
-    EXPECT_THAT(result, ElementsAre(1, 2, 3, 4));
+    REQUIRE_EQ(result, std::vector<int>({1, 2, 3, 4}));
 }
 
-TEST(generate_test, inits)
+TEST_CASE("generate_test, inits")
 {
     const std::vector<int> v = { 0, 1, 2, 3 };
     auto result = fplus::inits(v);
-    EXPECT_EQ(5u, result.size());
-    EXPECT_THAT(result[0], IsEmpty());
-    EXPECT_THAT(result[1], ElementsAre(0));
-    EXPECT_THAT(result[2], ElementsAre(0, 1));
-    EXPECT_THAT(result[3], ElementsAre(0, 1, 2));
-    EXPECT_THAT(result[4], ElementsAre(0, 1, 2, 3));
+    REQUIRE_EQ(5u, result.size());
+    REQUIRE_EQ(result[0], std::vector<int>());
+    REQUIRE_EQ(result[1], std::vector<int>({0}));
+    REQUIRE_EQ(result[2], std::vector<int>({0, 1}));
+    REQUIRE_EQ(result[3], std::vector<int>({0, 1, 2}));
+    REQUIRE_EQ(result[4], std::vector<int>({0, 1, 2, 3}));
 }
 
-TEST(generate_test, tails)
+TEST_CASE("generate_test, tails")
 {
     const std::vector<int> v = { 0, 1, 2, 3 };
     auto result = fplus::tails(v);
-    EXPECT_EQ(5u, result.size());
-    EXPECT_THAT(result[0], ElementsAre(0, 1, 2, 3));
-    EXPECT_THAT(result[1], ElementsAre(1, 2, 3));
-    EXPECT_THAT(result[2], ElementsAre(2, 3));
-    EXPECT_THAT(result[3], ElementsAre(3));
-    EXPECT_THAT(result[4], IsEmpty());
+    REQUIRE_EQ(5u, result.size());
+    REQUIRE_EQ(result[0], std::vector<int>({0, 1, 2, 3}));
+    REQUIRE_EQ(result[1], std::vector<int>({1, 2, 3}));
+    REQUIRE_EQ(result[2], std::vector<int>({2, 3}));
+    REQUIRE_EQ(result[3], std::vector<int>({3}));
+    REQUIRE(result[4].empty());
 }
 
-TEST(generate_test, inner_product)
+TEST_CASE("generate_test, inner_product")
 {
     const std::vector<int> xs = { 1, 2, 3 };
     const std::vector<int> ys = { 4, 5, 6 };
     const auto plus = [](int x, int y) { return x + y; };
     const auto mult = [](int x, int y) { return x * y; };
-    EXPECT_EQ(fplus::inner_product(0, xs, ys), 32);
-    EXPECT_EQ(fplus::inner_product_with(plus, mult, 0, xs, ys), 32);
+    REQUIRE_EQ(fplus::inner_product(0, xs, ys), 32);
+    REQUIRE_EQ(fplus::inner_product_with(plus, mult, 0, xs, ys), 32);
 }
 
-TEST(generate_test, fill_pigeonholes)
+TEST_CASE("generate_test, fill_pigeonholes")
 {
     const std::vector<unsigned int> xs = { 0, 1, 3, 1 };
-    EXPECT_THAT(fplus::fill_pigeonholes_to(5, xs), ElementsAre(1,2,0,1,0));
-    EXPECT_THAT(fplus::fill_pigeonholes_to(3, xs), ElementsAre(1,2,0));
-    EXPECT_THAT(fplus::fill_pigeonholes(xs), ElementsAre(1,2,0,1));
+    REQUIRE_EQ(fplus::fill_pigeonholes_to(5, xs), std::vector<std::size_t>({1,2,0,1,0}));
+    REQUIRE_EQ(fplus::fill_pigeonholes_to(3, xs), std::vector<std::size_t>({1,2,0}));
+    REQUIRE_EQ(fplus::fill_pigeonholes(xs), std::vector<std::size_t>({1,2,0,1}));
 
-    EXPECT_THAT(fplus::fill_pigeonholes_bool_to(5, xs), ElementsAre(1,1,0,1,0));
-    EXPECT_THAT(fplus::fill_pigeonholes_bool_to(3, xs), ElementsAre(1,1,0));
-    EXPECT_THAT(fplus::fill_pigeonholes_bool(xs), ElementsAre(1,1,0,1));
+    REQUIRE_EQ(fplus::fill_pigeonholes_bool_to(3, xs), std::vector<unsigned char>({1,1,0}));
+    REQUIRE_EQ(fplus::fill_pigeonholes_bool_to(5, xs), std::vector<unsigned char>({1,1,0,1,0}));
+    REQUIRE_EQ(fplus::fill_pigeonholes_bool(xs), std::vector<unsigned char>({1,1,0,1}));
 }

@@ -4,12 +4,10 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest.h"
 #include "fplus/fplus.hpp"
 #include <vector>
-
-using namespace testing;
 
 namespace {
 
@@ -44,7 +42,7 @@ struct CcI2SStrct {
     { return CcI2SFree(str, x); }
 };
 
-TEST(function_traits_test, static_asserts)
+TEST_CASE("function_traits_test, static_asserts")
 {
     using namespace fplus;
     static_assert(std::is_same<

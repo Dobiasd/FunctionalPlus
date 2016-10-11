@@ -4,12 +4,10 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest.h"
 #include "fplus/fplus.hpp"
 #include <vector>
-
-using namespace testing;
 
 namespace {
 
@@ -44,88 +42,88 @@ private:
     int x_;
 };
 
-TEST(result_test, ok_with_default)
+TEST_CASE("result_test, ok_with_default")
 {
     using namespace fplus;
     auto x = ok<int, std::string>(2);
     auto y = error<int, std::string>("an error");
     auto Or42 = bind_1st_of_2(ok_with_default<int, std::string>, 42);
     auto SquareAndSquare = compose(square<int>, square<int>);
-    EXPECT_THAT(Or42(x), Eq(2));
-    EXPECT_THAT(Or42(y), Eq(42));
+    REQUIRE_EQ(Or42(x), 2);
+    REQUIRE_EQ(Or42(y), 42);
 }
 
-TEST(result_test, and_then_result)
+TEST_CASE("result_test, and_then_result")
 {
     using namespace fplus;
     auto x = ok<int, std::string>(2);
     auto y = error<int, std::string>("an error");
     auto squareResult = lift_result<std::string>(square<int>);
     auto sqrtAndSqrt = and_then_result(sqrtToResult, sqrtToResult);
-    EXPECT_THAT(squareResult(x), Eq((ok<int, std::string>(4))));
-    EXPECT_THAT(squareResult(y), Eq((error<int>(std::string("an error")))));
+    REQUIRE_EQ(squareResult(x), (ok<int, std::string>(4)));
+    REQUIRE_EQ(squareResult(y), (error<int>(std::string("an error"))));
 
     auto sqrtIntAndSqrtIntAndSqrtInt = and_then_result(sqrtToResultInt, sqrtToResultInt, sqrtToResultInt);
-    EXPECT_THAT(sqrtIntAndSqrtIntAndSqrtInt(256), Eq((ok<int, std::string>(2))));
+    REQUIRE_EQ(sqrtIntAndSqrtIntAndSqrtInt(256), (ok<int, std::string>(2)));
     auto sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt = and_then_result(sqrtToResultInt, sqrtToResultInt, sqrtToResultInt, sqrtToResultInt);
-    EXPECT_THAT(sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt(65536), Eq((ok<int, std::string>(2))));
+    REQUIRE_EQ(sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt(65536), (ok<int, std::string>(2)));
 
     auto LiftedIntToFloat = lift_result<std::string>(IntToFloat);
     auto OkInt = ok<int, std::string>;
     auto IntToResultFloat = compose(OkInt, LiftedIntToFloat);
     auto IntToFloatAndSqrtAndSqrt = and_then_result(IntToResultFloat, sqrtAndSqrt);
-    EXPECT_TRUE(is_in_range(1.41f, 1.42f)(unsafe_get_ok<float>
+    REQUIRE(is_in_range(1.41f, 1.42f)(unsafe_get_ok<float>
             (IntToFloatAndSqrtAndSqrt(4))));
 }
 
-TEST(result_test, lift)
+TEST_CASE("result_test, lift")
 {
     using namespace fplus;
     auto x = ok<int, std::string>(2);
     auto y = error<int, std::string>("an error");
     auto SquareAndSquare = compose(square<int>, square<int>);
-    EXPECT_THAT((lift_result<std::string>(SquareAndSquare))(x), Eq((ok<int, std::string>(16))));
+    REQUIRE_EQ((lift_result<std::string>(SquareAndSquare))(x), (ok<int, std::string>(16)));
 }
 
-TEST(result_test, equality)
+TEST_CASE("result_test, equality")
 {
     using namespace fplus;
     IntResults results = {ok<int, std::string>(1), error<int>(std::string("no sqrt of negative numbers")), ok<int, std::string>(2)};
 
-    EXPECT_TRUE(oks(results) == Ints({ 1,2 }));
-    EXPECT_TRUE(errors(results) == Strings({std::string("no sqrt of negative numbers")}));
+    REQUIRE(oks(results) == Ints({ 1,2 }));
+    REQUIRE(errors(results) == Strings({std::string("no sqrt of negative numbers")}));
 
-    EXPECT_TRUE((ok<int, std::string>(1)) == (ok<int, std::string>(1)));
-    EXPECT_TRUE((ok<int, std::string>(1)) != (ok<int, std::string>(2)));
-    EXPECT_TRUE((ok<int, std::string>(1)) != (error<int, std::string>(std::string("fail"))));
-    EXPECT_TRUE(error<int>(std::string("fail")) == (error<int>(std::string("fail"))));
-    EXPECT_TRUE(error<int>(std::string("fail 1")) != (error<int>(std::string("fail 2"))));
+    REQUIRE((ok<int, std::string>(1)) == (ok<int, std::string>(1)));
+    REQUIRE((ok<int, std::string>(1)) != (ok<int, std::string>(2)));
+    REQUIRE((ok<int, std::string>(1)) != (error<int, std::string>(std::string("fail"))));
+    REQUIRE(error<int>(std::string("fail")) == (error<int>(std::string("fail"))));
+    REQUIRE(error<int>(std::string("fail 1")) != (error<int>(std::string("fail 2"))));
 
 }
 
-TEST(result_test, transform_and_keep_oks)
+TEST_CASE("result_test, transform_and_keep_oks")
 {
     using namespace fplus;
     Ints wholeNumbers = { -3, 4, 16, -1 };
-    EXPECT_THAT(transform_and_keep_oks(sqrtToResultInt, wholeNumbers)
-           , Eq(Ints({2,4})));
+    REQUIRE_EQ(transform_and_keep_oks(sqrtToResultInt, wholeNumbers)
+           , Ints({2,4}));
 
-    EXPECT_THAT(transform_and_concat(
+    REQUIRE_EQ(transform_and_concat(
             bind_1st_of_2(replicate<int>, std::size_t(3)), Ints{ 1,2 })
-           , Eq(Ints({ 1,1,1,2,2,2 })));
+           , Ints({ 1,1,1,2,2,2 }));
 }
 
-TEST(result_test, show_result)
+TEST_CASE("result_test, show_result")
 {
     using namespace fplus;
-    EXPECT_THAT(show_result(ok<int, std::string>(42)), Eq(std::string("Ok 42")));
-    EXPECT_THAT(show_result(error<int, std::string>("fail")), Eq(std::string("Error fail")));
+    REQUIRE_EQ(show_result(ok<int, std::string>(42)), std::string("Ok 42"));
+    REQUIRE_EQ(show_result(error<int, std::string>("fail")), std::string("Error fail"));
     auto x = ok<int, std::string>(2);
-    EXPECT_THAT((to_maybe<int, std::string>(x)), Eq(just(2)));
-    EXPECT_THAT((from_maybe<int, std::string>(just(2), std::string("no error"))), Eq(x));
+    REQUIRE_EQ((to_maybe<int, std::string>(x)), just(2));
+    REQUIRE_EQ((from_maybe<int, std::string>(just(2), std::string("no error"))), x);
 }
 
-TEST(result_test, exceptions)
+TEST_CASE("result_test, exceptions")
 {
     using namespace fplus;
     std::string thrown_str;
@@ -137,7 +135,7 @@ TEST(result_test, exceptions)
     {
         thrown_str = e.what();
     }
-    EXPECT_THAT(thrown_str, Eq("exception string"));
+    REQUIRE_EQ(thrown_str, std::string("exception string"));
     thrown_str.clear();
 
     try
@@ -148,22 +146,22 @@ TEST(result_test, exceptions)
     {
         thrown_str = e.what();
     }
-    EXPECT_THAT(thrown_str, Eq("failed"));
+    REQUIRE_EQ(thrown_str, std::string("failed"));
     thrown_str.clear();
 }
 
-TEST(result_test, copy)
+TEST_CASE("result_test, copy")
 {
     using namespace fplus;
     result<int, std::string> result_4 = ok<int, std::string>(4);
     result<int, std::string> result_4_copy(result_4);
     result<int, std::string> result_4_copy_2 = error<int, std::string>("dummy");
     result_4_copy_2 = result_4_copy;
-    EXPECT_THAT(result_4_copy_2, Eq((ok<int, std::string>(4))));
+    REQUIRE_EQ(result_4_copy_2, (ok<int, std::string>(4)));
 
     result<int, std::string> result_int_string_error = error<int, std::string>("error");
     result<int, std::string> result_int_string_error_copy(result_int_string_error);
     result<int, std::string> result_int_string_error_copy_2 = ok<int, std::string>(9999);
     result_int_string_error_copy_2 = result_int_string_error_copy;
-    EXPECT_THAT(result_int_string_error_copy_2, Eq((error<int, std::string>("error"))));
+    REQUIRE_EQ(result_int_string_error_copy_2, (error<int, std::string>("error")));
 }

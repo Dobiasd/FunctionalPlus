@@ -4,12 +4,10 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest.h"
 #include "fplus/fplus.hpp"
 #include <vector>
-
-using namespace testing;
 
 namespace {
 
@@ -29,72 +27,72 @@ namespace {
     }
 }
 
-TEST(filter_test, keep_if)
+TEST_CASE("filter_test, keep_if")
 {
     const std::vector<int> v = { 1, 2, 3, 2, 4, 5 };
     auto result = fplus::keep_if(is_even, v);
-    EXPECT_THAT(result, ElementsAre(2, 2, 4));
+    REQUIRE_EQ(result, std::vector<int>({2, 2, 4}));
 }
 
-TEST(filter_test, drop_if)
+TEST_CASE("filter_test, drop_if")
 {
     const std::vector<int> v = { 1, 2, 3, 2, 4, 5 };
     auto result = fplus::drop_if(is_even, v);
-    EXPECT_THAT(result, ElementsAre(1, 3, 5));
+    REQUIRE_EQ(result, std::vector<int>({1, 3, 5}));
 }
 
-TEST(filter_test, without)
+TEST_CASE("filter_test, without")
 {
     const std::vector<int> v = { 1, 0, 0, 5, 3, 0, 1 };
     auto result = fplus::drop_if(is_even, v);
-    EXPECT_THAT(result, ElementsAre(1, 5, 3, 1));
+    REQUIRE_EQ(result, std::vector<int>({1, 5, 3, 1}));
 }
 
-TEST(filter_test, keep_if_with_idx)
+TEST_CASE("filter_test, keep_if_with_idx")
 {
     const std::vector<int> v = { 1, 20, 30, 4, 50, 60, 7 };
     auto result = fplus::keep_if_with_idx(accept_with_index, v);
-    EXPECT_THAT(result, ElementsAre(30, 50));
+    REQUIRE_EQ(result, std::vector<int>({30, 50}));
 }
 
-TEST(filter_test, drop_if_with_idx)
+TEST_CASE("filter_test, drop_if_with_idx")
 {
     const std::vector<int> v = { 1, 20, 30, 4, 50, 60, 7 };
     auto result = fplus::drop_if_with_idx(accept_with_index, v);
-    EXPECT_THAT(result, ElementsAre(1, 20, 4, 60, 7));
+    REQUIRE_EQ(result, std::vector<int>({1, 20, 4, 60, 7}));
 }
 
-TEST(filter_test, keep_by_idx)
+TEST_CASE("filter_test, keep_by_idx")
 {
     const std::vector<int> v = { 11, 17, 3, 8, 49, 6 };
     auto result = fplus::keep_by_idx(is_even_size_t, v);
-    EXPECT_THAT(result, ElementsAre(11, 3, 49));
+    REQUIRE_EQ(result, std::vector<int>({11, 3, 49}));
 }
 
-TEST(filter_test, drop_by_idx)
+TEST_CASE("filter_test, drop_by_idx")
 {
     const std::vector<int> v = { 11, 17, 3, 8, 49, 6 };
     auto result = fplus::drop_by_idx(is_even_size_t, v);
-    EXPECT_THAT(result, ElementsAre(17, 8, 6));
+    REQUIRE_EQ(result, std::vector<int>({17, 8, 6}));
 }
 
-TEST(filter_test, keep_idxs)
+TEST_CASE("filter_test, keep_idxs")
 {
     const std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7 };
     const std::vector<std::size_t> indices = { 2, 5 };
     auto result = fplus::keep_idxs(indices, v);
-    EXPECT_THAT(result, ElementsAre(3, 6));
+    REQUIRE_EQ(result, std::vector<int>({3, 6}));
 }
 
-TEST(filter_test, drop_idxs)
+TEST_CASE("filter_test, drop_idxs")
 {
     const std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7 };
     const std::vector<std::size_t> indices = { 2, 5 };
     auto result = fplus::drop_idxs(indices, v);
-    EXPECT_THAT(result, ElementsAre(1, 2, 4, 5, 7));
+    REQUIRE_EQ(result, std::vector<int>({1, 2, 4, 5, 7}));
 }
 
-TEST(filter_test, justs)
+TEST_CASE("filter_test, justs")
 {
     using fplus::maybe;
     using fplus::just;
@@ -102,10 +100,10 @@ TEST(filter_test, justs)
 
     const std::vector<maybe<int>> v = { just(1), nothing<int>(), just(2) };
     auto result = fplus::justs(v);
-    EXPECT_THAT(result, ElementsAre(1, 2));
+    REQUIRE_EQ(result, std::vector<int>({1, 2}));
 }
 
-TEST(filter_test, oks)
+TEST_CASE("filter_test, oks")
 {
     using fplus::ok;
     using fplus::error;
@@ -113,10 +111,10 @@ TEST(filter_test, oks)
                                                             error<int>(std::string("abc")),
                                                             ok<int, std::string>(2) };
     auto result = fplus::oks(v);
-    EXPECT_THAT(result, ElementsAre(1, 2));
+    REQUIRE_EQ(result, std::vector<int>({1, 2}));
 }
 
-TEST(filter_test, errors)
+TEST_CASE("filter_test, errors")
 {
     using fplus::ok;
     using fplus::error;
@@ -124,85 +122,85 @@ TEST(filter_test, errors)
                                                             error<int>(std::string("abc")),
                                                             ok<int, std::string>(2) };
     auto result = fplus::errors(v);
-    EXPECT_THAT(result, ElementsAre("abc"));
+    REQUIRE_EQ(result, std::vector<std::string>({"abc"}));
 }
 
-TEST(filter_test, trim_left_by)
+TEST_CASE("filter_test, trim_left_by")
 {
     const std::vector<int> v = { 0, 2, 4, 5, 6, 7, 8, 6, 4 };
     auto result = fplus::trim_left_by(is_even, v);
-    EXPECT_THAT(result, ElementsAre(5, 6, 7, 8, 6, 4));
+    REQUIRE_EQ(result, std::vector<int>({5, 6, 7, 8, 6, 4}));
 }
 
-TEST(filter_test, trim_left_by_trims_all)
+TEST_CASE("filter_test, trim_left_by_trims_all")
 {
     const std::vector<int> v = { 4, 8 };
     auto result = fplus::trim_left_by(is_even, v);
-    EXPECT_THAT(result, IsEmpty());
+    REQUIRE(result.empty());
 }
 
-TEST(filter_test, trim_left)
+TEST_CASE("filter_test, trim_left")
 {
     const std::vector<int> v = { 0, 0, 0, 5, 6, 7, 8, 6, 4 };
     auto result = fplus::trim_left(0, v);
-    EXPECT_THAT(result, ElementsAre(5, 6, 7, 8, 6, 4));
+    REQUIRE_EQ(result, std::vector<int>({5, 6, 7, 8, 6, 4}));
 }
 
-TEST(filter_test, trim_token_left)
+TEST_CASE("filter_test, trim_token_left")
 {
     const std::vector<int> v = { 0, 1, 2, 0, 1, 2, 7, 5, 9 };
     const std::vector<int> token = { 0, 1, 2 };
     auto result = fplus::trim_token_left(token, v);
-    EXPECT_THAT(result, ElementsAre(7, 5, 9));
+    REQUIRE_EQ(result, std::vector<int>({7, 5, 9}));
 }
 
-TEST(filter_test, trim_right_by)
+TEST_CASE("filter_test, trim_right_by")
 {
     const std::vector<int> v = { 0, 2, 4, 5, 6, 7, 8, 6, 4 };
     auto result = fplus::trim_right_by(is_even, v);
-    EXPECT_THAT(result, ElementsAre(0, 2, 4, 5, 6, 7));
+    REQUIRE_EQ(result, std::vector<int>({0, 2, 4, 5, 6, 7}));
 }
 
-TEST(filter_test, trim_right_by_trims_all)
+TEST_CASE("filter_test, trim_right_by_trims_all")
 {
     const std::vector<int> v = { 4, 8 };
     auto result = fplus::trim_right_by(is_even, v);
-    EXPECT_THAT(result, IsEmpty());
+    REQUIRE(result.empty());
 }
 
-TEST(filter_test, trim_right)
+TEST_CASE("filter_test, trim_right")
 {
     const std::vector<int> v = { 0, 2, 4, 5, 6, 7, 8, 4, 4 };
     auto result = fplus::trim_right(4, v);
-    EXPECT_THAT(result, ElementsAre(0, 2, 4, 5, 6, 7, 8));
+    REQUIRE_EQ(result, std::vector<int>({0, 2, 4, 5, 6, 7, 8}));
 }
 
-TEST(filter_test, trim_token_right)
+TEST_CASE("filter_test, trim_token_right")
 {
     const std::vector<int> v = { 7, 5, 9, 0, 1, 2, 0, 1, 2 };
     const std::vector<int> token = { 0, 1, 2 };
     auto result = fplus::trim_token_right(token, v);
-    EXPECT_THAT(result, ElementsAre(7, 5, 9));
+    REQUIRE_EQ(result, std::vector<int>({7, 5, 9}));
 }
 
-TEST(filter_test, trim_by)
+TEST_CASE("filter_test, trim_by")
 {
     const std::vector<int> v = { 0, 2, 4, 5, 6, 7, 8, 6, 4 };
     auto result = fplus::trim_by(is_even, v);
-    EXPECT_THAT(result, ElementsAre(5, 6, 7));
+    REQUIRE_EQ(result, std::vector<int>({5, 6, 7}));
 }
 
-TEST(filter_test, trim)
+TEST_CASE("filter_test, trim")
 {
     const std::vector<int> v = { 0, 2, 4, 5, 6, 7, 8, 0, 0 };
     auto result = fplus::trim(0, v);
-    EXPECT_THAT(result, ElementsAre(2, 4, 5, 6, 7, 8));
+    REQUIRE_EQ(result, std::vector<int>({2, 4, 5, 6, 7, 8}));
 }
 
-TEST(filter_test, trim_token)
+TEST_CASE("filter_test, trim_token")
 {
     const std::vector<int> v = { 0, 1, 7, 8, 9, 0, 1 };
     const std::vector<int> token = { 0, 1 };
     auto result = fplus::trim_token(token, v);
-    EXPECT_THAT(result, ElementsAre(7, 8, 9));
+    REQUIRE_EQ(result, std::vector<int>({7, 8, 9}));
 }
