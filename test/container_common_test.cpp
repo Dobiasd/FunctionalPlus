@@ -669,9 +669,12 @@ TEST(container_common_test, split)
     EXPECT_EQ(split(3, true, xs), IntVectors({IntVector({1, 2, 2}), IntVector({2})}));
     EXPECT_EQ(split(1, true, IntVector{0,1,2}), IntVectors({{0},{2}}));
     EXPECT_EQ(split(2, true, IntVector{5,2,0,3}), IntVectors({{5},{0,3}}));
-    EXPECT_EQ(split(2, true, IntVector{1,2}), IntVectors({{1},{}}));
-    EXPECT_EQ(split(2, true, IntVector{2}), IntVectors({{},{}}));
-    EXPECT_EQ(split(2, true, IntVector{}), IntVectors({{}}));
+    EXPECT_EQ(split(0, true, IntVector{1,0,1}), IntVectors({{1},{1}}));
+    EXPECT_EQ(split(0, true, IntVector{0,1,0}), IntVectors({{},{1},{}}));
+    EXPECT_EQ(split(0, true, IntVector{0,1}), IntVectors({{},{1}}));
+    EXPECT_EQ(split(0, true, IntVector{1,0}), IntVectors({{1},{}}));
+    EXPECT_EQ(split(0, true, IntVector{0}), IntVectors({{},{}}));
+    EXPECT_EQ(split(0, true, IntVector{}), IntVectors({{}}));
     EXPECT_EQ(split_by(is_even, true, IntList({1,3,2,2,5,5,3,6,7,9})), IntLists({{1,3},{},{5,5,3},{7,9}}));
     EXPECT_EQ(split_by_keep_separators(is_even, IntList({})), IntLists());
     EXPECT_EQ(split_by_keep_separators(is_even, IntList({2})), IntLists({IntList({2})}));
