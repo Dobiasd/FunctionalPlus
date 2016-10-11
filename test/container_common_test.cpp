@@ -659,7 +659,7 @@ TEST(container_common_test, split)
     EXPECT_EQ(split(0, true, IntVector{0,1}), IntVectors({{},{1}}));
     EXPECT_EQ(split(0, true, IntVector{1,0}), IntVectors({{1},{}}));
     EXPECT_EQ(split(0, true, IntVector{0}), IntVectors({{},{}}));
-    EXPECT_EQ(split(0, true, IntVector{}), IntVectors({{}}));
+    EXPECT_EQ(split(0, true, IntVector{}), IntVectors{{}});
 
     EXPECT_EQ(split(0, false, IntVector{1,0,1}), IntVectors({{1},{1}}));
     EXPECT_EQ(split(0, false, IntVector{0,1,0}), IntVectors({{1}}));
@@ -673,7 +673,7 @@ TEST(container_common_test, split)
     EXPECT_EQ(split(0, true, IntVector{0,1}), IntVectors({{},{1}}));
     EXPECT_EQ(split(0, true, IntVector{1,0}), IntVectors({{1},{}}));
     EXPECT_EQ(split(0, true, IntVector{0}), IntVectors({{},{}}));
-    EXPECT_EQ(split(0, true, IntVector{}), IntVectors({{}}));
+    EXPECT_EQ(split(0, true, IntVector{}), IntVectors{{}});
 
     EXPECT_EQ(split(0, false, IntVector{1,0,1}), IntVectors({{1},{1}}));
     EXPECT_EQ(split(0, false, IntVector{0,1,0}), IntVectors({{1}}));
@@ -687,7 +687,7 @@ TEST(container_common_test, split)
     EXPECT_EQ(split_by_token(IntVector({0}), true, IntVector{0,1}), IntVectors({{},{1}}));
     EXPECT_EQ(split_by_token(IntVector({0}), true, IntVector{1,0}), IntVectors({{1},{}}));
     EXPECT_EQ(split_by_token(IntVector({0}), true, IntVector{0}), IntVectors({{},{}}));
-    EXPECT_EQ(split_by_token(IntVector({0}), true, IntVector{}), IntVectors({{}}));
+    EXPECT_EQ(split_by_token(IntVector({0}), true, IntVector{}), IntVectors{{}});
 
     EXPECT_EQ(split_by_token(IntVector({0}), false, IntVector{1,0,1}), IntVectors({{1},{1}}));
     EXPECT_EQ(split_by_token(IntVector({0}), false, IntVector{0,1,0}), IntVectors({{1}}));
@@ -701,7 +701,7 @@ TEST(container_common_test, split)
     EXPECT_EQ(split_by_token(IntVector({0,9}), true, IntVector{0,9,1}), IntVectors({{},{1}}));
     EXPECT_EQ(split_by_token(IntVector({0,9}), true, IntVector{1,0,9}), IntVectors({{1},{}}));
     EXPECT_EQ(split_by_token(IntVector({0,9}), true, IntVector{0,9}), IntVectors({{},{}}));
-    EXPECT_EQ(split_by_token(IntVector({0,9}), true, IntVector{}), IntVectors({{}}));
+    EXPECT_EQ(split_by_token(IntVector({0,9}), true, IntVector{}), IntVectors{{}});
 
     EXPECT_EQ(split_by_token(IntVector({0,9}), false, IntVector{1,0,9,1}), IntVectors({{1},{1}}));
     EXPECT_EQ(split_by_token(IntVector({0,9}), false, IntVector{0,9,1,0,9}), IntVectors({{1}}));
