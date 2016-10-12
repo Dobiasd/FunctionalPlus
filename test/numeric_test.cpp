@@ -347,3 +347,46 @@ TEST_CASE("numeric_test, normalize")
     REQUIRE_EQ(normalize_mean_stddev(3, 2, Floats({7, 8})), Floats({1, 5}));
     REQUIRE_EQ(standardize(Floats({2.0, 6.0})), Floats({-1, 1}));
 }
+
+TEST_CASE("numeric_test, histogram")
+{
+    using namespace fplus;
+
+    typedef std::vector<int> ints;
+    typedef std::pair<int, int> range;
+    typedef std::vector<range> ranges;
+    typedef std::pair<range, std::size_t> bin;
+    typedef std::vector<bin> bins;
+
+    const ints xs = {0,1,4,5,6,7,8,9};
+    const ranges ranges1 = {{0,4}, {4,5}, {6,8}};
+    const bins result1 = {{{0, 4}, 2}, {{4, 5}, 1}, {{6, 8}, 2}};
+
+    REQUIRE_EQ(histogram_using_ranges(ranges1, xs), result1);
+}
+
+TEST_CASE("numeric_test, generate_histogram_ranges")
+{
+    using namespace fplus;
+
+    typedef std::pair<int, int> range;
+    typedef std::vector<range> ranges;
+
+    const ranges result = {{0,2}, {2,4}, {4,6}, {6,8}};
+
+    REQUIRE_EQ(generate_histogram_ranges(0, 2, 4), result);
+}
+
+TEST_CASE("numeric_test, histogram_ranges")
+{
+    using namespace fplus;
+
+    typedef std::vector<int> ints;
+    typedef std::pair<int, std::size_t> bin;
+    typedef std::vector<bin> bins;
+
+    const ints xs = {0,1,4,5,7,8,9};
+    const bins result1 = {{1, 2}, {3, 0}, {5, 2}, {7, 1}};
+
+    REQUIRE_EQ(histogram(1, 2, 4, xs), result1);
+}

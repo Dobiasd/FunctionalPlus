@@ -8,6 +8,7 @@
 
 #include "fplus/function_traits.hpp"
 #include "fplus/container_common.hpp"
+#include "fplus/pairs.hpp"
 
 #include <algorithm>
 #include <functional>
@@ -530,6 +531,91 @@ std::function<X(X)> divide_by(const X& x)
     {
         return y / x;
     };
+}
+
+// API search type: histogram_using_ranges : ([(a, a)], [a]) -> [((a, a), Int)]
+// histogram_using_ranges([(0,4), (4,5), (6,8)], [0,1,4,5,6,7,8,9]) ==
+//     [((0, 4), 2), ((4, 5), 1), ((6, 8), 2)]
+template <typename ContainerIn,
+        typename ContainerRanges,
+        typename ContainerOut =
+            std::vector<
+                std::pair<
+                    typename ContainerRanges::value_type,
+                    std::size_t>>,
+        typename T = typename ContainerIn::value_type>
+ContainerOut histogram_using_ranges(
+        const ContainerRanges& ranges, const ContainerIn& xs)
+{
+    ContainerOut bins;
+    internal::prepare_container(bins, size_of_cont(ranges));
+    auto itOut = internal::get_back_inserter(bins);
+    for (const auto& range : ranges)
+    {
+        *itOut = std::make_pair(range, 0);
+    }
+    for (const auto& x : xs)
+    {
+        for (auto& bin : bins)
+        {
+            if (x >= bin.first.first && x < bin.first.second)
+            {
+                ++bin.second;
+            }
+        }
+    }
+    return bins;
+}
+
+// API search type: generate_histogram_ranges : (a, a, a) -> [(a, a)]
+// generate_histogram_ranges(0, 2, 4) == [(0,2), (2,4), (4,6), (6,8)]
+template <typename T>
+std::vector<std::pair<T, T>> generate_histogram_ranges(
+        const T& first_lower_bound, const T& step, std::size_t count)
+{
+    const auto count_as_T = static_cast<T>(count);
+    return zip(
+        generate_range_step<std::vector<T>>(
+            first_lower_bound,
+            first_lower_bound + count_as_T * step,
+            step),
+        generate_range_step<std::vector<T>>(
+            first_lower_bound + step,
+            first_lower_bound + step + count_as_T * step,
+            step));
+}
+
+// API search type: histogram : (a, a, a, [a]) -> [((a, a), Int)]
+// histogram(1, 2, 4, [0,1,4,5,7,8,9]) == [(1, 2), (3, 0), (5, 2), (7, 1)]
+template <typename ContainerIn,
+        typename ContainerOut =
+            std::vector<
+                std::pair<
+                    typename ContainerIn::value_type,
+                    std::size_t>>,
+        typename T = typename ContainerIn::value_type>
+ContainerOut histogram(
+        const T& first_center, const T& bin_width, std::size_t count,
+        const ContainerIn& xs)
+{
+    const auto range_histogram = histogram_using_ranges(
+        generate_histogram_ranges(
+            first_center - bin_width / 2,
+            bin_width,
+            count),
+        xs);
+
+    assert(size_of_cont(range_histogram) == count);
+
+    ContainerOut histo;
+    internal::prepare_container(histo, count);
+    auto itOut = internal::get_back_inserter(histo);
+    for (const auto& bin : range_histogram)
+    {
+        const auto current_center = (bin.first.first + bin.first.second) / 2;
+        *itOut = std::make_pair(current_center, bin.second);
+    }
+    return histo;
 }
 
 } // namespace fplus

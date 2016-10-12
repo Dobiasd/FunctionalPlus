@@ -1136,4 +1136,20 @@ std::pair<Result, Result> mean_stddev(const Container& xs)
     return std::make_pair(mean, stddev);
 }
 
+// API search type: count_occurrences : [a] -> Map a Int
+// count_occurrences([1,2,2,3,2)) == [(1, 1), (2, 3), (3, 1)]
+// O(n)
+template <typename ContainerIn,
+        typename MapOut = typename std::map<
+            typename ContainerIn::value_type, std::size_t>>
+MapOut count_occurrences(const ContainerIn& xs)
+{
+    MapOut result;
+    for (const auto& x : xs)
+    {
+        ++result[x];
+    }
+    return result;
+}
+
 } // namespace fplus

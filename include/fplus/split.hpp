@@ -437,22 +437,6 @@ ContainerOut split_by_token(const ContainerIn& token,
     return result;
 }
 
-// API search type: count_occurrences : [a] -> Map a Int
-// count_occurrences([1,2,2,3,2)) == [(1, 1), (2, 3), (3, 1)]
-// O(n)
-template <typename ContainerIn,
-        typename MapOut = typename std::map<
-            typename ContainerIn::value_type, std::size_t>>
-MapOut count_occurrences(const ContainerIn& xs)
-{
-    MapOut result;
-    for (const auto& x : xs)
-    {
-        ++result[x];
-    }
-    return result;
-}
-
 // API search type: run_length_encode_by : (((a, a) -> Bool), [a]) -> [(Int, a)]
 // run_length_encode_by((==),[1,2,2,2,2,3,3,2)) == [(1,1),(4,2),(2,3),(1,2)]
 template <typename BinaryPredicate,
