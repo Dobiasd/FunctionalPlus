@@ -365,7 +365,7 @@ TEST_CASE("numeric_test, histogram")
     REQUIRE_EQ(histogram_using_ranges(ranges1, xs), result1);
 }
 
-TEST_CASE("numeric_test, generate_histogram_ranges")
+TEST_CASE("numeric_test, generate_consecutive_ranges")
 {
     using namespace fplus;
 
@@ -374,7 +374,7 @@ TEST_CASE("numeric_test, generate_histogram_ranges")
 
     const ranges result = {{0,2}, {2,4}, {4,6}, {6,8}};
 
-    REQUIRE_EQ(generate_histogram_ranges(0, 2, 4), result);
+    REQUIRE_EQ(generate_consecutive_ranges(0, 2, 4), result);
 }
 
 TEST_CASE("numeric_test, histogram_ranges")
