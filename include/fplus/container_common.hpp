@@ -189,15 +189,15 @@ ContainerOut convert_container_and_elems(const ContainerIn& xs)
 // crashes on invalid indices
 template <typename Container>
 Container get_range
-        (std::size_t idxBegin, std::size_t idxEnd, const Container& xs)
+        (std::size_t idx_begin, std::size_t idx_end, const Container& xs)
 {
-    assert(idxBegin <= idxEnd);
-    assert(idxEnd <= size_of_cont(xs));
+    assert(idx_begin <= idx_end);
+    assert(idx_end <= size_of_cont(xs));
     Container result;
     auto itBegin = std::begin(xs);
-    std::advance(itBegin, idxBegin);
+    std::advance(itBegin, idx_begin);
     auto itEnd = itBegin;
-    std::advance(itEnd, idxEnd - idxBegin);
+    std::advance(itEnd, idx_end - idx_begin);
     std::copy(itBegin, itEnd, internal::get_back_inserter(result));
     return result;
 }
@@ -207,12 +207,12 @@ Container get_range
 // crashes on invalid indices
 template <typename Container>
 Container set_range
-        (std::size_t idxBegin, const Container& token, const Container& xs)
+        (std::size_t idx_begin, const Container& token, const Container& xs)
 {
-    assert(idxBegin + size_of_cont(token) < size_of_cont(xs));
+    assert(idx_begin + size_of_cont(token) < size_of_cont(xs));
     Container result = xs;
     auto itBegin = std::begin(result);
-    std::advance(itBegin, idxBegin);
+    std::advance(itBegin, idx_begin);
     std::copy(std::begin(token), std::end(token), itBegin);
     return result;
 }
@@ -222,17 +222,17 @@ Container set_range
 // crashes on invalid indices
 template <typename Container>
 Container remove_range
-        (std::size_t idxBegin, std::size_t idxEnd, const Container& xs)
+        (std::size_t idx_begin, std::size_t idx_end, const Container& xs)
 {
-    assert(idxBegin <= idxEnd);
-    assert(idxEnd <= size_of_cont(xs));
+    assert(idx_begin <= idx_end);
+    assert(idx_end <= size_of_cont(xs));
 
     Container result;
-    std::size_t length = idxEnd - idxBegin;
+    std::size_t length = idx_end - idx_begin;
     internal::prepare_container(result, size_of_cont(xs) - length);
 
     auto firstBreakIt = std::begin(xs);
-    std::advance(firstBreakIt, idxBegin);
+    std::advance(firstBreakIt, idx_begin);
     std::copy(std::begin(xs), firstBreakIt, internal::get_back_inserter(result));
 
     auto secondBreakIt = firstBreakIt;
@@ -246,16 +246,16 @@ Container remove_range
 // insert_at(2, [8,9], [0,1,2,3,4]) == [0,1,8,9,2,3,4]
 // crashes on invalid index
 template <typename Container>
-Container insert_at(std::size_t idxBegin,
+Container insert_at(std::size_t idx_begin,
         const Container& token, const Container& xs)
 {
-    assert(idxBegin <= size_of_cont(xs));
+    assert(idx_begin <= size_of_cont(xs));
 
     Container result;
     internal::prepare_container(result, size_of_cont(xs) + size_of_cont(token));
 
     auto breakIt = std::begin(xs);
-    std::advance(breakIt, idxBegin);
+    std::advance(breakIt, idx_begin);
     std::copy(std::begin(xs), breakIt, internal::get_back_inserter(result));
     std::copy(std::begin(token), std::end(token), internal::get_back_inserter(result));
     std::copy(breakIt, std::end(xs), internal::get_back_inserter(result));
@@ -267,11 +267,11 @@ Container insert_at(std::size_t idxBegin,
 // replace_range(2, [8,9], [0,1,2,3,4]) == [0,1,8,9,4]
 // crashes on invalid index
 template <typename Container>
-Container replace_range(std::size_t idxBegin,
+Container replace_range(std::size_t idx_begin,
         const Container& token, const Container& xs)
 {
-    std::size_t idxEnd = idxBegin + size_of_cont(token);
-    return insert_at(idxBegin, token, remove_range(idxBegin, idxEnd, xs));
+    std::size_t idx_end = idx_begin + size_of_cont(token);
+    return insert_at(idx_begin, token, remove_range(idx_begin, idx_end, xs));
 }
 
 // API search type: elem_at_idx : (Int, [a]) -> [a]

@@ -769,7 +769,7 @@ TEST_CASE("container_common_test, range")
     REQUIRE_EQ(replace_range(2, IntVector({8,9}), xs), IntVector({1,2,8,9,2}));
 }
 
-TEST_CASE("container_common_test, ")
+TEST_CASE("container_common_test, keep_if")
 {
     using namespace fplus;
     REQUIRE_EQ(keep_if(is2, xs), IntVector({ 2,2,2 }));
@@ -972,4 +972,10 @@ TEST_CASE("container_common_test, is_unique_in")
     using namespace fplus;
     REQUIRE_FALSE(is_unique_in(2, xs));
     REQUIRE(is_unique_in(3, xs));
+}
+
+TEST_CASE("container_common_test, divvy")
+{
+    using namespace fplus;
+    REQUIRE_EQ(divvy(5, 2, IntVector({0,1,2,3,4,5,6,7,8,9})), IntVectors({{0,1,2,3,4},{2,3,4,5,6},{4,5,6,7,8}}));
 }
