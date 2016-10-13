@@ -567,10 +567,10 @@ ContainerOut histogram_using_ranges(
     return bins;
 }
 
-// API search type: generate_histogram_ranges : (a, a, a) -> [(a, a)]
-// generate_histogram_ranges(0, 2, 4) == [(0,2), (2,4), (4,6), (6,8)]
+// API search type: generate_consecutive_ranges : (a, a, a) -> [(a, a)]
+// generate_consecutive_ranges(0, 2, 4) == [(0,2), (2,4), (4,6), (6,8)]
 template <typename T>
-std::vector<std::pair<T, T>> generate_histogram_ranges(
+std::vector<std::pair<T, T>> generate_consecutive_ranges(
         const T& first_lower_bound, const T& step, std::size_t count)
 {
     const auto count_as_T = static_cast<T>(count);
@@ -599,7 +599,7 @@ ContainerOut histogram(
         const ContainerIn& xs)
 {
     const auto range_histogram = histogram_using_ranges(
-        generate_histogram_ranges(
+        generate_consecutive_ranges(
             first_center - bin_width / 2,
             bin_width,
             count),
