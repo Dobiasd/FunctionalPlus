@@ -716,6 +716,9 @@ TEST_CASE("container_common_test, split")
     REQUIRE_EQ(split_by_token(IntVector({}), false, IntVector{1}), IntVectors{{1}});
     REQUIRE_EQ(split_by_token(IntVector({}), false, IntVector{1,2}), IntVectors({{1},{2}}));
 
+    REQUIRE_EQ(split_one_of(IntVector({0,3}), true, IntVector{1,3,2,0,0,6,0,7,5}), IntVectors({{1},{2},{},{6},{7,5}}));
+    REQUIRE_EQ(split_one_of(std::string(" ,.?"), false, std::string("Hi, how are you?")), std::vector<std::string>({"Hi", "how", "are", "you"}));
+
     REQUIRE_EQ(split_at_idx(2, xs), std::make_pair(IntVector({1,2}), IntVector({2,3,2})));
     REQUIRE_EQ(partition(is_even, xs), std::make_pair(IntVector({2,2,2}), IntVector({1,3})));
     REQUIRE_EQ(split_every(2, xs), IntVectors({{1,2}, {2, 3}, {2}}));

@@ -313,7 +313,7 @@ ContainerOut split_by_keep_separators
 }
 
 // API search type: split : (a, [a]) -> [[a]]
-// split(0, [1,3,2,0,0,6,0,7,5]) == [[1,3,2],[],[6],[7,5]]
+// split(0, true, [1,3,2,0,0,6,0,7,5]) == [[1,3,2],[],[6],[7,5]]
 // O(n)
 template <typename ContainerIn,
         typename T = typename ContainerIn::value_type,
@@ -321,6 +321,22 @@ template <typename ContainerIn,
 ContainerOut split(const T& x, bool allow_empty, const ContainerIn& xs)
 {
     return split_by(is_equal_to(x), allow_empty, xs);
+}
+
+// API search type: split_one_of : ([a], [a]) -> [[a]]
+// split_one_of([0,3], true [1,3,2,0,0,6,0,7,5]) == [[1],[2],[],[6],[7,5]]
+// O(n)
+template <typename ContainerIn,
+        typename ContainerDelims,
+        typename ContainerOut = typename std::vector<ContainerIn>>
+ContainerOut split_one_of(
+    const ContainerDelims delimiters, bool allow_empty, const ContainerIn& xs)
+{
+    const auto pred = [&](const typename ContainerIn::value_type& x) -> bool
+    {
+        return is_elem_of(x, delimiters);
+    };
+    return split_by(pred, allow_empty, xs);
 }
 
 // API search type: split_keep_separators : ((a -> Bool), [a]) -> [[a]]
@@ -407,7 +423,7 @@ ContainerOut split_every(std::size_t n, const ContainerIn& xs)
 }
 
 // API search type: split_by_token : ([a], Bool, [a]) -> [[a]]
-// split_by_token(", ", "foo, bar, baz") == ["foo", "bar", "baz"]
+// split_by_token(", ", true, "foo, bar, baz") == ["foo", "bar", "baz"]
 template <typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut split_by_token(const ContainerIn& token,
