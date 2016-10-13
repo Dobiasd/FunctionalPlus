@@ -399,7 +399,7 @@ ContainerOut split_at_idxs(const ContainerIdxs& idxsIn, const ContainerIn& xs)
     auto idxs = concat(containerIdxss);
     auto idxsClean = sort(idxs);
     ContainerOut result;
-    internal::prepare_container(result, size_of_cont(idxsClean) + 1);
+    internal::prepare_container(result, size_of_cont(idxsClean) - 1);
     auto itOut = internal::get_back_inserter(result);
     auto idxPairs = overlapping_pairs(idxsClean);
     for (const auto& idxPair : idxPairs)
