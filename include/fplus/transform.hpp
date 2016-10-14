@@ -109,18 +109,28 @@ Container transpose(const Container& grid2d)
     return result;
 }
 
+// API search type: shuffle : [a] -> [a]
+// Returns a shuffled version of xs.
+// If you want a different seed, use something like
+// std::srand(std::time(nullptr));
+template <typename Container>
+Container shuffle( const Container& xs)
+{
+    Container ys = xs;
+    std::random_shuffle(begin(ys), end(ys));
+    return ys;
+}
+
 // API search type: sample : (Int, [a]) -> [a]
 // Returns n random elements from xs.
 // n has to be smaller than or equal to the number of elements in xs.
+// If you want a different seed, use something like
+// std::srand(std::time(nullptr));
 template <typename Container>
 Container sample(std::size_t n, const Container& xs)
 {
     assert(n <= size_of_cont(xs));
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    Container ys = xs;
-    std::shuffle(begin(ys), end(ys), gen);
-    return get_range(0, n, ys);
+    return get_range(0, n, shuffle(xs));
 }
 
 // API search type: apply_functions : [(a -> b)] -> a -> [b]
