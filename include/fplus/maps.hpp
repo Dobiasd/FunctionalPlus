@@ -144,7 +144,7 @@ MapOut swap_keys_and_values(const MapIn& dict)
 }
 
 // API search type: create_map : ([key], [val]) -> Map key val
-// create_map([1,2,3], ["one", "two"]) == { {1,"one"}, {2,"two"} }
+// create_map([1,2,3], ["one", "two"]) == {(1,"one"), (2,"two")}
 template <typename ContainerIn1, typename ContainerIn2,
     typename Key = typename std::remove_const<typename ContainerIn1::value_type>::type,
     typename Val = typename std::remove_const<typename ContainerIn2::value_type>::type,
@@ -155,8 +155,21 @@ MapOut create_map(const ContainerIn1& keys, const ContainerIn2& values)
     return pairs_to_map<MapOut>(pairs);
 }
 
+// API search type: create_map_with : ((key -> val), [key]) -> Map key val
+// create_map_with(show, [1,2]) == {(1,"1"), (2,"2")}
+template <typename ContainerIn,
+    typename F,
+    typename Key = typename std::remove_const<typename ContainerIn::value_type>::type,
+    typename Val = typename std::remove_reference<typename std::remove_const<
+        typename utils::function_traits<F>::result_type>::type>::type,
+    typename MapOut = std::map<Key, Val>>
+MapOut create_map_with(F f, const ContainerIn& keys)
+{
+    return create_map(keys, transform(f, keys));
+}
+
 // API search type: create_unordered_map : ([key], [val]) -> Map key val
-// create_unordered_map([1,2,3], ["one", "two"]) == { {1,"one"}, {2,"two"} }
+// create_unordered_map([1,2,3], ["one", "two"]) == {(1,"one"), (2,"two")}
 template <typename ContainerIn1, typename ContainerIn2,
     typename Key = typename std::remove_const<typename ContainerIn1::value_type>::type,
     typename Val = typename std::remove_const<typename ContainerIn2::value_type>::type,
@@ -167,6 +180,19 @@ MapOut create_unordered_map(
 {
     auto pairs = zip(keys, values);
     return pairs_to_map<MapOut>(pairs);
+}
+
+// API search type: create_unordered_map_with : ((key -> val), [key]) -> Map key val
+// create_unordered_map_with(show, [1,2]) == {(1,"1"), (2,"2")}
+template <typename ContainerIn,
+    typename F,
+    typename Key = typename std::remove_const<typename ContainerIn::value_type>::type,
+    typename Val = typename std::remove_reference<typename std::remove_const<
+        typename utils::function_traits<F>::result_type>::type>::type,
+    typename MapOut = std::unordered_map<Key, Val>>
+MapOut create_unordered_map_with(F f, const ContainerIn& keys)
+{
+    return create_unordered_map(keys, transform(f, keys));
 }
 
 // API search type: get_from_map : (Map key val, key) -> Maybe val

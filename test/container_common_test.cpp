@@ -877,6 +877,18 @@ TEST_CASE("container_common_test, map")
     REQUIRE_EQ(create_map(mapInts, mapStrings), intStringMap);
     REQUIRE_EQ(create_unordered_map(mapInts, mapStrings), intStringUnorderedMap);
 
+    IntStringMap intsAsStringsMap = {{1, "1"}, {4, "4"}, {7, "7"}};
+    REQUIRE_EQ(create_map_with(show<int>, mapInts), intsAsStringsMap);
+    IntStringUnorderedMap intsAsStringsUnorderedMap = {{1, "1"}, {4, "4"}, {7, "7"}};
+    REQUIRE_EQ(create_unordered_map_with(show<int>, mapInts), intsAsStringsUnorderedMap);
+
+    const auto is_int_string_map_key_even =
+        [&](const IntStringMap::value_type& p) -> bool
+    {
+        return is_even(p.first);
+    };
+    REQUIRE_EQ(keep_if(is_int_string_map_key_even, IntStringMap({{4, "4"}, {7, "7"}})), IntStringMap({{4, "4"}}));
+
     REQUIRE_EQ(get_from_map(intStringMap, 1), just<std::string>("2"));
     REQUIRE_EQ(get_from_map(intStringMap, 9), nothing<std::string>());
     REQUIRE_EQ(get_from_map_with_def(intStringMap, std::string("n/a"), 1), "2");

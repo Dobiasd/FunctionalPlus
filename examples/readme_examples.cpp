@@ -181,11 +181,8 @@ void Test_example_CollatzSequence()
     // A composed function that calculates a Collatz sequence and shows it.
     auto show_collats_seq = fplus::compose(collatz_seq, show_ints);
 
-    // Apply it to all our numbers.
-    auto seq_strs = fplus::transform(show_collats_seq, numbers);
-
-    // Combine the numbers and their sequence representations into a map.
-    auto collatz_dict = fplus::create_map(numbers, seq_strs);
+    // Associate the numbers with the string representation of their sequences.
+    auto collatz_dict = fplus::create_map_with(show_collats_seq, numbers);
 
     // Print some of the sequences.
     std::cout << collatz_dict[13] << std::endl;

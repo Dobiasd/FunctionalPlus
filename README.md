@@ -139,7 +139,7 @@ Output:
 Muffin is happy and sleepy. *purr* *purr* *purr*
 ```
 
-### Transformations, function composition and binding
+### Function composition, binding and map creation
 Let's say you have the following function [given](https://gist.github.com/Dobiasd/17f5eeab2ba0ee6631394f149fc61ce2).
 ```c++
 std::list<int> collatz_seq(int x);
@@ -166,11 +166,8 @@ int main()
     // A composed function that calculates a Collatz sequence and shows it.
     auto show_collats_seq = fplus::compose(collatz_seq, show_ints);
 
-    // Apply it to all our numbers.
-    auto seq_strs = fplus::transform(show_collats_seq, numbers);
-
-    // Combine the numbers and their sequence representations into a map.
-    auto collatz_dict = fplus::create_map(numbers, seq_strs);
+    // Associate the numbers with the string representation of their sequences.
+    auto collatz_dict = fplus::create_map_with(show_collats_seq, numbers);
 
     // Print some of the sequences.
     std::cout << collatz_dict[13] << std::endl;
