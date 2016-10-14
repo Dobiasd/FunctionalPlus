@@ -1152,4 +1152,44 @@ MapOut count_occurrences(const ContainerIn& xs)
     return result;
 }
 
+// API search type: lexicographical_less_by : (((a, a) -> Bool), [a], [a]) -> Bool
+// lexicographical_less_by((<), [0,1,2,2,4,5], [0,1,2,3,4,5]) == true
+// lexicographical_less_by((<), "012245", "012345") == true
+// lexicographical_less_by((<), "01234", "012345") == true
+// lexicographical_less_by((<), "012345", "01234") == false
+// lexicographical_less_by((<), "012345", "012345") == false
+template <typename Container, typename BinaryPredicate>
+bool lexicographical_less_by(BinaryPredicate p,
+        const Container& xs, const Container& ys)
+{
+    internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
+    auto itXs = std::begin(xs);
+    auto itYs = std::begin(ys);
+    while (itXs != std::end(xs) && itYs != std::end(ys))
+    {
+        if (p(*(itXs++), *(itYs)++))
+        {
+            return true;
+        }
+    }
+    if (size_of_cont(xs) < size_of_cont(ys))
+    {
+        return true;
+    }
+    return false;
+}
+
+// API search type: lexicographical_less : ([a], [a]) -> Bool
+// lexicographical_less([0,1,2,2,4,5], [0,1,2,3,4,5]) == true
+// lexicographical_less("012245", "012345") == true
+// lexicographical_less("01234", "012345") == true
+// lexicographical_less("012345", "01234") == false
+// lexicographical_less("012345", "012345") == false
+template <typename Container>
+bool lexicographical_less(const Container& xs, const Container& ys)
+{
+    return lexicographical_less_by(
+        is_less<typename Container::value_type>, xs, ys);
+}
+
 } // namespace fplus

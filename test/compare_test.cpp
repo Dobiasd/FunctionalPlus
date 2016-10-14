@@ -125,3 +125,15 @@ TEST_CASE("compare_test, ord_eq_to_not_eq")
     REQUIRE(ord_eq_to_not_eq(int_less_eq)(2, 2) == false);
     REQUIRE(ord_eq_to_not_eq(int_less_eq)(2, 1) == true);
 }
+
+TEST_CASE("compare_test, lexicographical_less")
+{
+    using namespace fplus;
+    REQUIRE(lexicographical_less(std::vector<int>{0,1,2,2,4,5}, std::vector<int>{0,1,2,3,4,5}));
+    REQUIRE(lexicographical_less(std::vector<int>{}, std::vector<int>{1}));
+    REQUIRE_FALSE(lexicographical_less(std::vector<int>{1}, std::vector<int>{}));
+    REQUIRE(lexicographical_less(std::string("012245"), std::string("012345")));
+    REQUIRE(lexicographical_less(std::string("01234"), std::string("012345")));
+    REQUIRE_FALSE(lexicographical_less(std::string("012345"), std::string("01234")));
+    REQUIRE_FALSE(lexicographical_less(std::string("012345"), std::string("012345")));
+}
