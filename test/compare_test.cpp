@@ -133,7 +133,18 @@ TEST_CASE("compare_test, lexicographical_less")
     REQUIRE(lexicographical_less(std::vector<int>{}, std::vector<int>{1}));
     REQUIRE_FALSE(lexicographical_less(std::vector<int>{1}, std::vector<int>{}));
     REQUIRE(lexicographical_less(std::string("012245"), std::string("012345")));
+    REQUIRE(lexicographical_less(std::string("012245"), std::string("01234")));
     REQUIRE(lexicographical_less(std::string("01234"), std::string("012345")));
+    REQUIRE_FALSE(lexicographical_less(std::string("012345"), std::string("012245")));
+    REQUIRE_FALSE(lexicographical_less(std::string("01234"), std::string("012245")));
     REQUIRE_FALSE(lexicographical_less(std::string("012345"), std::string("01234")));
-    REQUIRE_FALSE(lexicographical_less(std::string("012345"), std::string("012345")));
+}
+
+TEST_CASE("compare_test, lexicographical_sort")
+{
+    using namespace fplus;
+    std::vector<std::string> xs = {"012245", "012345", "01234"};
+    std::vector<std::string> xs_lex_sorted = {"012245", "01234", "012345"};
+    std::cout << show_cont(lexicographical_sort(xs)) << std::endl;
+    REQUIRE_EQ(lexicographical_sort(xs), xs_lex_sorted);
 }

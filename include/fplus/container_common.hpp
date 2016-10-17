@@ -1167,10 +1167,16 @@ bool lexicographical_less_by(BinaryPredicate p,
     auto itYs = std::begin(ys);
     while (itXs != std::end(xs) && itYs != std::end(ys))
     {
-        if (p(*(itXs++), *(itYs)++))
+        if (p(*itXs, *itYs))
         {
             return true;
         }
+        if (p(*itYs, *itXs))
+        {
+            return false;
+        }
+        ++itXs;
+        ++itYs;
     }
     if (size_of_cont(xs) < size_of_cont(ys))
     {
@@ -1190,6 +1196,15 @@ bool lexicographical_less(const Container& xs, const Container& ys)
 {
     return lexicographical_less_by(
         is_less<typename Container::value_type>, xs, ys);
+}
+
+// API search type: lexicographical_sort : [[a]] -> [[a]]
+// sort by lexicographical_less
+template <typename Container>
+Container lexicographical_sort(const Container& xs)
+{
+    typedef typename Container::value_type T;
+    return sort_by(lexicographical_less<T>, xs);
 }
 
 } // namespace fplus
