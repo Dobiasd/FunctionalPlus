@@ -98,6 +98,14 @@ TEST_CASE("numeric_test, sign")
     REQUIRE_EQ(fplus::sign(-0.1), -1);
 }
 
+TEST_CASE("numeric_test, abs_diff")
+{
+    REQUIRE_EQ(fplus::abs_diff<signed int>(3, 5), 2);
+    REQUIRE_EQ(fplus::abs_diff<signed int>(5, 3), 2);
+    REQUIRE_EQ(fplus::abs_diff<unsigned int>(3, 5), 2);
+    REQUIRE_EQ(fplus::abs_diff<unsigned int>(5, 3), 2);
+}
+
 TEST_CASE("numeric_test, cyclic_value")
 {
     using namespace fplus;
