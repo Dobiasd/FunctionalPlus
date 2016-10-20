@@ -125,7 +125,7 @@ X abs(X x)
 template <typename X>
 X abs_diff(X a, X b)
 {
-    return abs(b - a);
+    return a > b ? a - b : b - a;
 }
 
 // API search type: square : a -> a
