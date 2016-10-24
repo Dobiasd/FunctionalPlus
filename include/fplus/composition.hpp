@@ -10,6 +10,7 @@
 
 #include <functional>
 #include <type_traits>
+#include <unordered_map>
 #include <utility>
 
 namespace fplus
@@ -274,6 +275,31 @@ std::function<bool(X)> logical_xor(UnaryPredicateF f, UnaryPredicateG g)
         auto fx = f(x);
         auto gx = g(x);
         return (fx && !gx) || (!fx && gx);
+    };
+}
+
+// API search type: memoize : (a -> b) -> (a -> b)
+// Provides Memoization for a given (referentially transparent) function.
+// Returns a closure mutating an internally held dictionary
+// mapping input values to output values.
+template <typename F,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+    typename FOut = typename utils::function_traits<F>::result_type>
+std::function<FOut(FIn)> memoize(F f)
+{
+    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    std::unordered_map<typename std::decay<FIn>::type, FOut> storage;
+    return [=](const FIn& x) mutable -> FOut
+    {
+        const auto it = storage.find(x);
+        if (it == storage.end())
+        {
+            return storage.insert(std::make_pair(x, f(x))).first->second;
+        }
+        else
+        {
+            return it->second;
+        }
     };
 }
 

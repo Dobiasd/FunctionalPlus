@@ -120,3 +120,13 @@ TEST_CASE("composition_test, state")
     stateAddBoundStl(state, 3);
     REQUIRE_EQ(state.Get(), 6);
 }
+
+TEST_CASE("composition_test, memoize")
+{
+    using namespace fplus;
+    auto f = memoize(square<int>);
+    REQUIRE_EQ(f(2), 4);
+    REQUIRE_EQ(f(2), 4);
+    REQUIRE_EQ(f(3), 9);
+    REQUIRE_EQ(f(3), 9);
+}
