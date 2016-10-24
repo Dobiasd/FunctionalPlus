@@ -249,7 +249,7 @@ bool map_contains(const MapType& map, const Key& key)
 
 // API search type: map_keep_if : (key -> Bool, Map key val) -> Map key val
 // Filters the map by keys.
-// map_keep_if(is_upper_case, {'a': 1, 'b': 2, 'A': 3, 'C': 4}) == {'A': 3, 'C': 4}
+// map_keep_if(is_upper_case, {a: 1, b: 2, A: 3, C: 4}) == {A: 3, C: 4}
 // Also known as pick_by.
 template <typename MapType,
     typename Pred,
@@ -267,10 +267,24 @@ MapType map_keep_if(Pred pred, const MapType& map)
     }
     return result;
 }
+
+// API search type: map_drop_if : (key -> Bool, Map key val) -> Map key val
+// Filters the map by keys.
+// map_drop_if(is_lower_case, {a: 1, b: 2, A: 3, C: 4}) == {A: 3, C: 4}
+// Inverse of map_keep_if.
+template <typename MapType,
+    typename Pred,
+    typename Key = typename MapType::key_type,
+    typename Val = typename MapType::mapped_type>
+MapType map_drop_if(Pred pred, const MapType& map)
+{
+    return map_keep_if(logical_not(pred), map);
+}
+
 // API search type: map_keep : ([key], Map key val) -> Map key val
 // Keeps only the pairs of the map found in the key list.
-// map_keep(['a', 'd'], {a: 1, b: 2, c: 3, d: 4}); //=> {a: 1, d: 4}
-// map_keep(['a', 'e', 'f'], {a: 1, b: 2, c: 3, d: 4}); //=> {a: 1}
+// map_keep([a, d], {a: 1, b: 2, c: 3, d: 4}) == {a: 1, d: 4}
+// map_keep([a, e, f], {a: 1, b: 2, c: 3, d: 4}) == {a: 1}
 // Also known as pick.
 template <typename MapType,
     typename KeyContainer,
@@ -283,6 +297,23 @@ MapType map_keep(const KeyContainer& keys, const MapType& map)
         typename MapType::key_type>::value,
         "Key types do not match.");
     return map_keep_if(bind_1st_of_2(contains<KeyContainer>, keys), map);
+}
+
+// API search type: map_drop : ([key], Map key val) -> Map key val
+// Keeps only the pairs of the map not found in the key list.
+// Inverse of map_keep.
+// map_drop([b, c], {a: 1, b: 2, c: 3, d: 4}); //=> {a: 1, d: 4}
+template <typename MapType,
+    typename KeyContainer,
+    typename Key = typename MapType::key_type,
+    typename Val = typename MapType::mapped_type>
+MapType map_drop(const KeyContainer& keys, const MapType& map)
+{
+    static_assert(std::is_same<
+        typename KeyContainer::value_type,
+        typename MapType::key_type>::value,
+        "Key types do not match.");
+    return map_drop_if(bind_1st_of_2(contains<KeyContainer>, keys), map);
 }
 
 } // namespace fplus

@@ -917,9 +917,15 @@ TEST_CASE("container_common_test, map")
     {
         return std::isupper(c);
     };
+    const auto is_lower = [](std::string::value_type c) -> bool
+    {
+        return std::islower(c);
+    };
     REQUIRE_EQ(map_keep_if(is_upper, charIntMap), CharIntMap({{'A', 3}, {'C', 4}}));
+    REQUIRE_EQ(map_drop_if(is_lower, charIntMap), CharIntMap({{'A', 3}, {'C', 4}}));
     typedef std::vector<std::string::value_type> CharVector;
     REQUIRE_EQ(map_keep(CharVector({'b', 'F'}), charIntMap), CharIntMap({{'b', 2}}));
+    REQUIRE_EQ(map_drop(CharVector({'a', 'A', 'C', 'F'}), charIntMap), CharIntMap({{'b', 2}}));
 }
 
 TEST_CASE("container_common_test, set")
