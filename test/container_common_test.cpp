@@ -105,6 +105,7 @@ TEST_CASE("container_common_test, filter")
     REQUIRE_EQ(keep_if(is_even, intList), IntList({ 2,2,2 }));
     REQUIRE_EQ(drop_if(is_even, intList), IntList({ 1,3 }));
     REQUIRE_EQ(without(2, intList), IntList({ 1,3 }));
+    REQUIRE_EQ(without_any(IntVector({2,3}), intList), IntList({ 1 }));
     auto sumis_even = [&](std::size_t x, int y)
     {
         return is_even(static_cast<int>(x) + y);
@@ -625,6 +626,13 @@ TEST_CASE("container_common_test, is_elem_of")
     using namespace fplus;
     REQUIRE_EQ(is_elem_of(2, xs), true);
     REQUIRE_EQ(is_elem_of(4, xs), false);
+}
+
+TEST_CASE("container_common_test, contains")
+{
+    using namespace fplus;
+    REQUIRE_EQ(contains(xs, 2), true);
+    REQUIRE_EQ(contains(xs, 4), false);
 }
 
 TEST_CASE("container_common_test, find_token")

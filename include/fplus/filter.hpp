@@ -47,6 +47,18 @@ Container without(T elem, const Container& xs)
     return drop_if(is_equal_to(elem), xs);
 }
 
+// API search type: without_any : (a, [a]) -> [a]
+// without([0, 1], [1, 0, 0, 5, 3, 0, 1]) == [5, 3]
+template <typename Container, typename ContainerElems>
+Container without_any(const ContainerElems& elems, const Container& xs)
+{
+    static_assert(std::is_same<
+        typename ContainerElems::value_type,
+        typename Container::value_type>::value,
+        "Container values must be of the same type.");
+    return drop_if(bind_1st_of_2(contains<ContainerElems>, elems), xs);
+}
+
 // API search type: keep_if_with_idx : (((Int, a) -> Bool), [a]) -> [a]
 // Predicate takes index and value.
 // All elements fulfilling the predicate are kept.
