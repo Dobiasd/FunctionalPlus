@@ -910,6 +910,16 @@ TEST_CASE("container_common_test, map")
     IntStringMap union_map_with_res = {{0, "ac"}, {1, "b"}, {2, "d"}};
     REQUIRE_EQ(map_union(union_map_1, union_map_2), union_map_res);
     REQUIRE_EQ(map_union_with(concat<std::vector<std::string>>, union_map_1, union_map_2), union_map_with_res);
+
+    typedef std::map<std::string::value_type, int> CharIntMap;
+    CharIntMap charIntMap = {{'a', 1}, {'b', 2}, {'A', 3}, {'C', 4}};
+    const auto is_upper = [](std::string::value_type c) -> bool
+    {
+        return std::isupper(c);
+    };
+    REQUIRE_EQ(map_keep_if(is_upper, charIntMap), CharIntMap({{'A', 3}, {'C', 4}}));
+    typedef std::vector<std::string::value_type> CharVector;
+    REQUIRE_EQ(map_keep(CharVector({'b', 'F'}), charIntMap), CharIntMap({{'b', 2}}));
 }
 
 TEST_CASE("container_common_test, set")

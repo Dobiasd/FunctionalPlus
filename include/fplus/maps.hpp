@@ -26,7 +26,7 @@ MapOut pairs_to_map(const ContainerIn& pairs)
 
 // API search type: pairs_to_map_grouped : [(key, val)] -> Map key [val]
 // pairs_to_map_grouped([("a", 1), ("a", 2), ("b", 6), ("a", 4)])
-//     -> [("a", [1, 2, 4]), ("b", [6])]
+//     -> {"a": [1, 2, 4], "b": [6]}
 template <typename ContainerIn,
     typename Key = typename ContainerIn::value_type::first_type,
     typename SingleValue = typename ContainerIn::value_type::second_type,
@@ -55,7 +55,7 @@ ContainerOut map_to_pairs(const MapType& dict)
 }
 
 // API search type: transform_map_values : (old_val -> new_val, Map key old_val) -> Map key new_val
-// transform_map_values((*2), {(0, 2), (1, 3)}) == {(0, 4), (1, 6)}
+// transform_map_values((*2), {0: 2, 1: 3}) == {0: 4, 1: 6}
 template <typename F, typename MapIn,
     typename MapInPair = typename MapIn::value_type,
     typename Key = typename std::remove_const<typename MapInPair::first_type>::type,
@@ -72,7 +72,7 @@ MapOut transform_map_values(F f, const MapIn& map)
 }
 
 // API search type: map_union_with : (((val, val) -> val), Map key val, Map key val) -> Map key val
-// map_union_with((++), [(0,a), (1,b)], [(0,c), (2,d)]) == [(0,ac), (1,b), (2,d)]
+// map_union_with((++), {0: a, 1: b}, {0: c, 2: d}) == {0: ac, 1: b, 2: d}
 template <typename F, typename MapIn,
     typename MapInPair = typename MapIn::value_type,
     typename Key = typename std::remove_const<typename MapInPair::first_type>::type,
@@ -87,7 +87,7 @@ MapOut map_union_with(F f, const MapIn& dict1, const MapIn& dict2)
 }
 
 // API search type: map_union : (Map key val, Map key val) -> Map key val
-// map_union([(0,a), (1,b)], [(0,c), (2,d)]) == [(0,a), (1,b), (2,d)]
+// map_union({0: a, 1: b}, {0: c, 2: d}) == {0: a, 1: b, 2: d}
 template <typename MapType,
     typename MapInPair = typename MapType::value_type,
     typename InVal = typename std::remove_const<typename MapInPair::second_type>::type>
@@ -128,7 +128,7 @@ ContainerOut get_map_values(const MapType& dict)
 
 // API search type: swap_keys_and_values : Map a b -> Map b a
 // Swaps keys and Values of a dict:
-// swap_keys_and_values({(1, "a"), (2, "b")}) == {("a", 1), ("b", 2)}
+// swap_keys_and_values({1: "a", 2: "b"}) == {"a": 1, "b": 2}
 template <typename MapIn,
     typename MapInPair = typename MapIn::value_type,
     typename InKey = typename MapInPair::first_type,
@@ -144,7 +144,7 @@ MapOut swap_keys_and_values(const MapIn& dict)
 }
 
 // API search type: create_map : ([key], [val]) -> Map key val
-// create_map([1,2,3], ["one", "two"]) == {(1,"one"), (2,"two")}
+// create_map([1,2,3], ["one", "two"]) == {1: "one", 2: "two"}
 template <typename ContainerIn1, typename ContainerIn2,
     typename Key = typename std::remove_const<typename ContainerIn1::value_type>::type,
     typename Val = typename std::remove_const<typename ContainerIn2::value_type>::type,
@@ -156,7 +156,7 @@ MapOut create_map(const ContainerIn1& keys, const ContainerIn2& values)
 }
 
 // API search type: create_map_with : ((key -> val), [key]) -> Map key val
-// create_map_with(show, [1,2]) == {(1,"1"), (2,"2")}
+// create_map_with(show, [1,2]) == {1: "1", 2: "2"}
 template <typename ContainerIn,
     typename F,
     typename Key = typename std::remove_const<typename ContainerIn::value_type>::type,
@@ -169,7 +169,7 @@ MapOut create_map_with(F f, const ContainerIn& keys)
 }
 
 // API search type: create_unordered_map : ([key], [val]) -> Map key val
-// create_unordered_map([1,2,3], ["one", "two"]) == {(1,"one"), (2,"two")}
+// create_unordered_map([1,2,3], ["one", "two"]) == {1: "one", 2: "two"}
 template <typename ContainerIn1, typename ContainerIn2,
     typename Key = typename std::remove_const<typename ContainerIn1::value_type>::type,
     typename Val = typename std::remove_const<typename ContainerIn2::value_type>::type,
@@ -183,7 +183,7 @@ MapOut create_unordered_map(
 }
 
 // API search type: create_unordered_map_with : ((key -> val), [key]) -> Map key val
-// create_unordered_map_with(show, [1,2]) == {(1,"1"), (2,"2")}
+// create_unordered_map_with(show, [1,2]) == {1: "1", 2: "2"}
 template <typename ContainerIn,
     typename F,
     typename Key = typename std::remove_const<typename ContainerIn::value_type>::type,
@@ -245,6 +245,44 @@ bool map_contains(const MapType& map, const Key& key)
 {
     auto it = map.find(key);
     return it != std::end(map);
+}
+
+// API search type: map_keep_if : (key -> Bool, Map key val) -> Map key val
+// Filters the map by keys.
+// map_keep_if(is_upper_case, {'a': 1, 'b': 2, 'A': 3, 'C': 4}) == {'A': 3, 'C': 4}
+// Also known as pick_by.
+template <typename MapType,
+    typename Pred,
+    typename Key = typename MapType::key_type,
+    typename Val = typename MapType::mapped_type>
+MapType map_keep_if(Pred pred, const MapType& map)
+{
+    MapType result;
+    for (const auto& key_and_value : map)
+    {
+        if (pred(key_and_value.first))
+        {
+            result.insert(key_and_value);
+        }
+    }
+    return result;
+}
+// API search type: map_keep : ([key], Map key val) -> Map key val
+// Keeps only the pairs of the map found in the key list.
+// map_keep(['a', 'd'], {a: 1, b: 2, c: 3, d: 4}); //=> {a: 1, d: 4}
+// map_keep(['a', 'e', 'f'], {a: 1, b: 2, c: 3, d: 4}); //=> {a: 1}
+// Also known as pick.
+template <typename MapType,
+    typename KeyContainer,
+    typename Key = typename MapType::key_type,
+    typename Val = typename MapType::mapped_type>
+MapType map_keep(const KeyContainer& keys, const MapType& map)
+{
+    static_assert(std::is_same<
+        typename KeyContainer::value_type,
+        typename MapType::key_type>::value,
+        "Key types do not match.");
+    return map_keep_if(bind_1st_of_2(contains<KeyContainer>, keys), map);
 }
 
 } // namespace fplus
