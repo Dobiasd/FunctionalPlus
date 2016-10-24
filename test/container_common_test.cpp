@@ -929,6 +929,16 @@ TEST_CASE("container_common_test, set")
     REQUIRE_EQ(sets_intersection(IntSets({intSet1, intSet2, intSet3})), intSet8);
 }
 
+TEST_CASE("container_common_test, count_occurrences_by")
+{
+    using namespace fplus;
+    typedef std::map<int, std::size_t> IntSizeTMap;
+    IntSizeTMap OccurrencesResult = {{1, 1}, {2, 3}, {3, 1}};
+    std::vector<double> xs = {1.1, 2.3, 2.7, 3.6, 2.4};
+    const auto f = floor<int, double>;
+    REQUIRE_EQ(count_occurrences_by(f, xs), OccurrencesResult);
+}
+
 TEST_CASE("container_common_test, count_occurrences")
 {
     using namespace fplus;

@@ -767,6 +767,7 @@ Container unique_by(BinaryPredicate p, const Container& xs)
 // API search type: unique_on : ((a -> b), [a]) -> [a]
 // Like unique but with user supplied transformation (e.g. getter).
 // O(n)
+// Also known as drop_repeats.
 template <typename Container, typename F>
 Container unique_on(F f, const Container& xs)
 {
@@ -830,6 +831,7 @@ bool is_elem_of_by(UnaryPredicate pred, const Container& xs)
 // API search type: is_elem_of : (a, [a]) -> Bool
 // Checks if an element is a member of a container.
 // is_elem_of(2, [1,2,3]) == true
+// Also known as contains.
 template <typename Container>
 bool is_elem_of(const typename Container::value_type& x, const Container& xs)
 {
@@ -1136,20 +1138,32 @@ std::pair<Result, Result> mean_stddev(const Container& xs)
     return std::make_pair(mean, stddev);
 }
 
+// API search type: count_occurrences_by : ((a -> b), [a]) -> Map b Int
+// count_occurrences_by(floor, [1.1, 2.3, 2.7, 3.6, 2.4]) == [(1, 1), (2, 3), (3, 1)]
+// O(n)
+template <typename F, typename ContainerIn,
+        typename MapOut = typename std::map<
+            typename utils::function_traits<F>::result_type, std::size_t>>
+MapOut count_occurrences_by(F f, const ContainerIn& xs)
+{
+    check_arity<1, F>();
+    MapOut result;
+    for (const auto& x : xs)
+    {
+        ++result[f(x)];
+    }
+    return result;
+}
+
 // API search type: count_occurrences : [a] -> Map a Int
-// count_occurrences([1,2,2,3,2)) == [(1, 1), (2, 3), (3, 1)]
+// count_occurrences([1,2,2,3,2]) == [(1, 1), (2, 3), (3, 1)]
 // O(n)
 template <typename ContainerIn,
         typename MapOut = typename std::map<
             typename ContainerIn::value_type, std::size_t>>
 MapOut count_occurrences(const ContainerIn& xs)
 {
-    MapOut result;
-    for (const auto& x : xs)
-    {
-        ++result[x];
-    }
-    return result;
+    return count_occurrences_by(identity<typename ContainerIn::value_type>, xs);
 }
 
 // API search type: lexicographical_less_by : (((a, a) -> Bool), [a], [a]) -> Bool

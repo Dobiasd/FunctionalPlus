@@ -537,6 +537,7 @@ std::pair<Container, Container> span(UnaryPredicate pred, const Container& xs)
 // API search type: divvy : (Int, Int, [a]) -> [[a]]
 // Generates overlapping subsequences.
 // divvy(5, 2, [0,1,2,3,4,5,6,7,8,9]) == [[0,1,2,3,4],[2,3,4,5,6],[4,5,6,7,8]]
+// divvy(n, 1, xs) is also known as aperture.
 template <typename ContainerIn,
         typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut divvy(std::size_t length, std::size_t step, const ContainerIn& xs)
