@@ -228,6 +228,7 @@ Val get_from_map_unsafe(const MapType& map, const Key& key)
 // API search type: get_from_map_with_def : (Map key val, val, key) -> val
 // Returns the value of a key if key is present.
 // Otherwise returns the provided default.
+// Also known as prop_or.
 template <typename MapType,
     typename Key = typename MapType::key_type,
     typename Val = typename MapType::mapped_type>
