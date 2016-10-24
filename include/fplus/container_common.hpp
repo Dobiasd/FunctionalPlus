@@ -831,17 +831,17 @@ bool is_elem_of_by(UnaryPredicate pred, const Container& xs)
 // API search type: is_elem_of : (a, [a]) -> Bool
 // Checks if an element is a member of a container.
 // is_elem_of(2, [1,2,3]) == true
-// Also known as flip contains.
+// Equals flip(contains).
 template <typename Container>
 bool is_elem_of(const typename Container::value_type& x, const Container& xs)
 {
     return is_elem_of_by(is_equal_to(x), xs);
 }
 
-// API search type: contains : (a, [a]) -> Bool
+// API search type: contains : ([a], a) -> Bool
 // Checks if an element is a member of a container.
 // contains([1,2,3], 2) == true
-// Also known as flip is_elem_of.
+// Equals flip(is_elem_of).
 template <typename Container>
 bool contains(const Container& xs, const typename Container::value_type& x)
 {
