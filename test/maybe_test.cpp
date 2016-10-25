@@ -66,7 +66,10 @@ TEST_CASE("maybe_test, lift")
     REQUIRE_EQ(squareMaybe(x), just(4));
     REQUIRE_EQ(squareMaybe(y), nothing<int>());
     auto SquareAndSquare = compose(square<int>, square<int>);
-    REQUIRE_EQ((lift_maybe(SquareAndSquare))(x), just(16));
+    REQUIRE_EQ(lift_maybe(SquareAndSquare)(x), just(16));
+
+    REQUIRE_EQ(lift_maybe_def(3, square<int>)(x), 4);
+    REQUIRE_EQ(lift_maybe_def(3, square<int>)(y), 3);
 }
 
 TEST_CASE("maybe_test, and_then")

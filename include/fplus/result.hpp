@@ -205,7 +205,7 @@ template <typename Error,
 std::function<result<B, Error>(const result<A, Error>&)> lift_result(F f)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return [f](const result<A, Error>& r)
+    return [f](const result<A, Error>& r) -> result<B, Error>
     {
         if (is_ok(r))
             return ok<B, Error>(f(unsafe_get_ok(r)));
@@ -236,7 +236,7 @@ std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g)
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
     static_assert(std::is_convertible<typename FOut::ok_t,GIn>::value,
         "Function parameter types do not match");
-    return [f, g](const FIn& x)
+    return [f, g](const FIn& x) -> result<Ok, Error>
     {
         auto resultB = f(x);
         if (is_ok(resultB))

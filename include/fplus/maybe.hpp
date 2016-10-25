@@ -123,7 +123,7 @@ bool operator != (const maybe<T>& x, const maybe<T>& y)
 // Lifts a function into the maybe functor.
 // A function that for example was able to convert and int into a string,
 // now can convert a Maybe<int> into a Maybe<string>.
-// A nothings stays a nothing, regardless of the conversion.
+// A nothing stays a nothing, regardless of the conversion.
 template <typename F,
     typename A = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<
@@ -133,11 +133,34 @@ template <typename F,
 std::function<maybe<B>(const maybe<A>&)> lift_maybe(F f)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return [f](const maybe<A>& m)
+    return [f](const maybe<A>& m) -> maybe<B>
     {
         if (is_just(m))
             return just<B>(f(unsafe_get_just(m)));
         return nothing<B>();
+    };
+}
+
+// API search type: lift_maybe_def : (b, (a -> b)) -> (Maybe a -> b)
+// lift_maybe_def takes a default value and a function.
+// It returns a function taking a Maybe value.
+// This function returns the default value if the Maybe value is nothing.
+// Otherwise it applies the function to the value inside the Just
+// of the Maybe value and returns the result of this application.
+template <typename F,
+    typename A = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<
+            F>::template arg<0>::type>::type>::type,
+    typename B = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::result_type>::type>::type>
+std::function<B(const maybe<A>&)> lift_maybe_def(const B& def, F f)
+{
+    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    return [f, def](const maybe<A>& m) -> B
+    {
+        if (is_just(m))
+            return f(unsafe_get_just(m));
+        return def;
     };
 }
 
@@ -164,7 +187,7 @@ std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g)
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
     static_assert(std::is_convertible<typename FOut::type,GIn>::value,
         "Function parameter types do not match");
-    return [f, g](const FIn& x)
+    return [f, g](const FIn& x) -> maybe<T>
     {
         auto maybeB = f(x);
         if (is_just(maybeB))
