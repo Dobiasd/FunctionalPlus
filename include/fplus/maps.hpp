@@ -316,4 +316,19 @@ MapType map_drop(const KeyContainer& keys, const MapType& map)
     return map_drop_if(bind_1st_of_2(contains<KeyContainer>, keys), map);
 }
 
+// API search type: map_pluck : (key, [Map key val]) -> [val]
+// Extracts values to a specific key from a list of maps.
+// map_pluck('a', [{a: 1, b: 2}, {a: 3}, {c: 4}]) == [Just 1, Just 3, Nothing]
+template <typename MapContainer,
+    typename ContainerOut =
+        std::vector<maybe<typename MapContainer::value_type::mapped_type>>,
+    typename MapType = typename MapContainer::value_type,
+    typename Key = typename MapType::key_type,
+    typename Val = typename MapType::mapped_type>
+ContainerOut map_pluck(const Key& key, const MapContainer& maps)
+{
+    return transform_convert<ContainerOut>(
+        bind_2nd_of_2(get_from_map<MapType>, key), maps);
+}
+
 } // namespace fplus

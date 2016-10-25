@@ -926,6 +926,12 @@ TEST_CASE("container_common_test, map")
     typedef std::vector<std::string::value_type> CharVector;
     REQUIRE_EQ(map_keep(CharVector({'b', 'F'}), charIntMap), CharIntMap({{'b', 2}}));
     REQUIRE_EQ(map_drop(CharVector({'a', 'A', 'C', 'F'}), charIntMap), CharIntMap({{'b', 2}}));
+
+    typedef std::vector<CharIntMap> CharIntMaps;
+    typedef std::vector<maybe<int>> MaybeInts;
+    REQUIRE_EQ(
+        map_pluck('a', CharIntMaps({{{'a',1}, {'b',2}}, {{'a',3}}, {{'c',4}}})),
+        MaybeInts({1, 3, {}}));
 }
 
 TEST_CASE("container_common_test, set")
