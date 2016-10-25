@@ -562,6 +562,34 @@ T product(const Container& xs)
     return result;
 }
 
+// API search type: append_elem : ([a], a) -> [a]
+// append_elem([1, 2], 3) == [1, 2, 3]
+template <typename Container,
+    typename T = typename Container::value_type>
+Container append_elem(const Container& xs, const T& y)
+{
+    Container result;
+    internal::prepare_container(result, size_of_cont(xs) + 1);
+    std::copy(std::begin(xs), std::end(xs),
+        internal::get_back_inserter(result));
+    *internal::get_back_inserter(result) = y;
+    return result;
+}
+
+// API search type: prepend_elem : ([a], a) -> [a]
+// prepend_elem([2, 3], 1) == [1, 2, 3]
+template <typename Container,
+    typename T = typename Container::value_type>
+Container prepend_elem(const Container& xs, const T& y)
+{
+    Container result;
+    *internal::get_back_inserter(result) = y;
+    internal::prepare_container(result, size_of_cont(xs) + 1);
+    std::copy(std::begin(xs), std::end(xs),
+        internal::get_back_inserter(result));
+    return result;
+}
+
 // API search type: append : ([a], [a]) -> [a]
 // append([1, 2], [3, 4, 5]) == [1, 2, 3, 4, 5]
 template <typename Container>

@@ -196,6 +196,18 @@ TEST_CASE("container_common_test, convert")
     REQUIRE_EQ(convert_elems<ExplicitFromIntStruct>(xs), explicitFromIntStructs);
 }
 
+TEST_CASE("container_common_test, append_elem")
+{
+    using namespace fplus;
+    REQUIRE_EQ(append_elem(IntVector({1,2}), 3), IntVector({1,2,3}));
+}
+
+TEST_CASE("container_common_test, prepend_elem")
+{
+    using namespace fplus;
+    REQUIRE_EQ(prepend_elem(IntVector({2,3}), 1), IntVector({1,2,3}));
+}
+
 TEST_CASE("container_common_test, append")
 {
     using namespace fplus;
