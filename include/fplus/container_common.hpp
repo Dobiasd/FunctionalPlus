@@ -405,6 +405,16 @@ Container take(std::size_t amount, const Container& xs)
     return get_range(0, amount, xs);
 }
 
+// API search type: take_exact : (Int, [a]) -> [a]
+// Unsafe!
+// take_exact(3, [0,1,2,3,4,5,6,7]) == [0,1,2]
+// take_exact(10, [0,1,2]) == crash
+template <typename Container>
+Container take_exact(std::size_t amount, const Container& xs)
+{
+    return get_range(0, amount, xs);
+}
+
 // API search type: drop : (Int, [a]) -> [a]
 // drop(3, [0,1,2,3,4,5,6,7]) == [3,4,5,6,7]
 template <typename Container>
@@ -412,6 +422,16 @@ Container drop(std::size_t amount, const Container& xs)
 {
     if (amount >= size_of_cont(xs))
         return Container();
+    return get_range(amount, size_of_cont(xs), xs);
+}
+
+// API search type: drop_exact : (Int, [a]) -> [a]
+// Unsafe!
+// drop_exact(3, [0,1,2,3,4,5,6,7]) == [3,4,5,6,7]
+// drop_exact(10, [0,1,2,3,4,5,6,7]) == crash
+template <typename Container>
+Container drop_exact(std::size_t amount, const Container& xs)
+{
     return get_range(amount, size_of_cont(xs), xs);
 }
 
