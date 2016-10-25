@@ -995,6 +995,12 @@ TEST_CASE("container_common_test, insert_at")
     REQUIRE_EQ(insert_at(2, IntVector({8,9}), xs), IntVector({1,2,8,9,2,3,2}));
 }
 
+TEST_CASE("container_common_test, head")
+{
+    using namespace fplus;
+    REQUIRE_EQ(head(xs), 1);
+}
+
 TEST_CASE("container_common_test, tail")
 {
     using namespace fplus;

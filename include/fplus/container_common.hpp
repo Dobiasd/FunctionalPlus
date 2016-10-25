@@ -1140,13 +1140,25 @@ Container init(const Container& xs)
 }
 
 // API search type: tail : [a] -> [a]
-// Drops the first element of a container, keeps the rest.
+// Drops the first element of a container, keeps the rest. Unsafe!
 // tail([0,1,2,3]) == [1,2,3]
+// tail([]) == crash
 template <typename Container>
 Container tail(const Container& xs)
 {
     assert(!is_empty(xs));
     return get_range(1, size_of_cont(xs), xs);
+}
+
+// API search type: head : [a] -> a
+// Return the first element of a container. Unsafe!
+// head([0,1,2,3]) == 0
+// head([]) == crash
+template <typename Container>
+typename Container::value_type head(const Container& xs)
+{
+    assert(!is_empty(xs));
+    return xs.front();
 }
 
 // API search type: mean_stddev : [a] -> (a, a)
