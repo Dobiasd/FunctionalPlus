@@ -16,6 +16,7 @@
 #include "fplus/maps.hpp"
 #include "fplus/maybe.hpp"
 #include "fplus/numeric.hpp"
+#include "fplus/optimize.hpp"
 #include "fplus/pairs.hpp"
 #include "fplus/read.hpp"
 #include "fplus/replace.hpp"
