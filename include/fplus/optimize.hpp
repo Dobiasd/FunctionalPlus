@@ -15,9 +15,15 @@
 namespace fplus
 {
 
-// API search type: minimize_downhill : (([Float] -> Float), Float, Float, Float, Float, Int, Float, ([Float], [Float], (Int, [Float], Float) -> IO ())) -> [Float]
-// objective_function nimmt eine position im Raum und berechnet den zugehoerigen wert, der minimiert werden soll.
-// das callback nummt die epochennummer, die aktuelle position und den current step.
+// API search type: minimize_downhill : (([Float] -> Float), Float, Float, [Float], Float, Float, Int, Float, ((Int, Float, [Float]) -> IO ())) -> [Float]
+// Optimizes the initial position to the nearest local minimum
+// in regards to the objective_function
+// using numerical gradient descent based on the epsilon neighborhood.
+// If one iteration results in no further improvement,
+// the step size is reduced by a factor of 0.5.
+// The callback is executed with epoch, step and current position
+// after every iteration.
+// minimize_downhill<1>(\x -> square(x[0] + 2), 0.0001, 0.01, {123})[0] == -2;
 template <std::size_t N, typename F, typename pos_t = std::array<double, N>>
 pos_t minimize_downhill(
         F objective_function,
