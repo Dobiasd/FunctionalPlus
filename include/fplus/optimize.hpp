@@ -45,7 +45,7 @@ pos_t minimize_downhill(
     const auto start_time = std::chrono::high_resolution_clock::now();
     const auto is_done = [&]() -> bool
     {
-        if (max_milliseconds != std::numeric_limits<double>::max())
+        if (max_milliseconds != std::numeric_limits<long int>::max())
         {
             const auto current_time = std::chrono::high_resolution_clock::now();
             const auto elapsed = current_time - start_time;
