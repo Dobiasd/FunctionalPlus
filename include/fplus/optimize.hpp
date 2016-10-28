@@ -33,7 +33,7 @@ pos_t minimize_downhill(
         double sufficing_value = std::numeric_limits<double>::lowest(),
         double min_step = std::numeric_limits<double>::min(),
         std::size_t max_epochs = std::numeric_limits<std::size_t>::max(),
-        long int max_milliseconds = std::numeric_limits<double>::max(),
+        long int max_milliseconds = std::numeric_limits<long int>::max(),
         const std::function<void (std::size_t, double, const pos_t&)>& callback = std::function<void (std::size_t, double, const pos_t&)>())
 {
 
