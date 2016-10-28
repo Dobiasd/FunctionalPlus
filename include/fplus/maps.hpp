@@ -54,7 +54,7 @@ ContainerOut map_to_pairs(const MapType& dict)
     return convert_container_and_elems<ContainerOut>(dict);
 }
 
-// API search type: transform_map_values : (old_val -> new_val, Map key old_val) -> Map key new_val
+// API search type: transform_map_values : ((old_val -> new_val), Map key old_val) -> Map key new_val
 // transform_map_values((*2), {0: 2, 1: 3}) == {0: 4, 1: 6}
 template <typename F, typename MapIn,
     typename MapInPair = typename MapIn::value_type,
@@ -247,7 +247,7 @@ bool map_contains(const MapType& map, const Key& key)
     return it != std::end(map);
 }
 
-// API search type: map_keep_if : (key -> Bool, Map key val) -> Map key val
+// API search type: map_keep_if : ((key -> Bool), Map key val) -> Map key val
 // Filters the map by keys.
 // map_keep_if(is_upper_case, {a: 1, b: 2, A: 3, C: 4}) == {A: 3, C: 4}
 // Also known as pick_by.
@@ -268,7 +268,7 @@ MapType map_keep_if(Pred pred, const MapType& map)
     return result;
 }
 
-// API search type: map_drop_if : (key -> Bool, Map key val) -> Map key val
+// API search type: map_drop_if : ((key -> Bool), Map key val) -> Map key val
 // Filters the map by keys.
 // map_drop_if(is_lower_case, {a: 1, b: 2, A: 3, C: 4}) == {A: 3, C: 4}
 // Inverse of map_keep_if.
