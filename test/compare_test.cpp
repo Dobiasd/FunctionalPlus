@@ -145,6 +145,5 @@ TEST_CASE("compare_test, lexicographical_sort")
     using namespace fplus;
     std::vector<std::string> xs = {"012245", "012345", "01234"};
     std::vector<std::string> xs_lex_sorted = {"012245", "01234", "012345"};
-    std::cout << show_cont(lexicographical_sort(xs)) << std::endl;
     REQUIRE_EQ(lexicographical_sort(xs), xs_lex_sorted);
 }
