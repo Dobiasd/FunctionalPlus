@@ -15,7 +15,7 @@
 namespace fplus
 {
 
-// API search type: minimize_downhill : (([Float] -> Float), Float, Float, [Float], Float, Float, Int, Float, ((Int, Float, [Float]) -> IO ())) -> [Float]
+// API search type: minimize_downhill : (([Float] -> Float), Float, Float, [Float], Float, Float, Int, Int, ((Int, Float, [Float]) -> IO ())) -> [Float]
 // Optimizes the initial position to the nearest local minimum
 // in regards to the objective_function
 // using numerical gradient descent based on the epsilon neighborhood.
@@ -33,7 +33,7 @@ pos_t minimize_downhill(
         double sufficing_value = std::numeric_limits<double>::lowest(),
         double min_step = std::numeric_limits<double>::min(),
         std::size_t max_epochs = std::numeric_limits<std::size_t>::max(),
-        double max_milliseconds = std::numeric_limits<double>::max(),
+        long int max_milliseconds = std::numeric_limits<double>::max(),
         const std::function<void (std::size_t, double, const pos_t&)>& callback = std::function<void (std::size_t, double, const pos_t&)>())
 {
 

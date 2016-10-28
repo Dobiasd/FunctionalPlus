@@ -18,17 +18,17 @@ TEST_CASE("optimize_test, minimize_downhill")
     };
     {
         const auto result = minimize_downhill<1>(
-            objective, 0.0001, 0.01, {123});
+            objective, 0.0001, 0.01, {{123}});
         REQUIRE(is_in_closed_range_around(0.0001, -2.0)(result[0]));
     }
     {
         const auto result = minimize_downhill<1>(
-            objective, 0.0001, 0.01, {-42});
+            objective, 0.0001, 0.01, {{-42}});
         REQUIRE(is_in_closed_range_around(0.0001, -2.0)(result[0]));
     }
     {
         const auto result = minimize_downhill<1>(
-            objective, 0.0001, 0.01, {-2.000001});
+            objective, 0.0001, 0.01, {{-2.000001}});
         REQUIRE(is_in_closed_range_around(0.0001, -2.0)(result[0]));
     }
 }
