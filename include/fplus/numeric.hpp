@@ -136,6 +136,14 @@ X square(X x)
     return x * x;
 }
 
+// API search type: cube : a -> a
+// Returns the cube (x*x*x) of a value x.
+template <typename X>
+X cube(X x)
+{
+    return x * x * x;
+}
+
 // API search type: sign : a -> Int
 // Returns -1 for negative values, 1 otherwise.
 // sign(-3) == -1

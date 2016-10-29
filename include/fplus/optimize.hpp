@@ -23,6 +23,8 @@ namespace fplus
 // the step size is reduced by a factor of 0.5.
 // The callback is executed with epoch, step and current position
 // after every iteration.
+// An initial step size that differs between the dimensions
+// can be emulated by scaling ones objective function accordingly.
 // minimize_downhill<1>(\x -> square(x[0] + 2), 0.0001, 0.01, {123})[0] == -2;
 template <std::size_t N, typename F, typename pos_t = std::array<double, N>>
 pos_t minimize_downhill(
