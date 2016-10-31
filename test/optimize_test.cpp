@@ -41,9 +41,14 @@ TEST_CASE("optimize_test, minimize_downhill")
             abs(1*cube(y-7)) + 7*square(y-4) + 6*y;
     };
     {
-        const auto result = minimize_downhill<2>(
+        const auto result1 = minimize_downhill<2>(
             objective_2d, 0.0001, {{0,0}});
-        REQUIRE(is_in_closed_range_around(0.01, 1.1946)(result[0]));
-        REQUIRE(is_in_closed_range_around(0.01, 4.7025)(result[1]));
+        REQUIRE(is_in_closed_range_around(0.001, 1.1946)(result1[0]));
+        REQUIRE(is_in_closed_range_around(0.001, 4.7025)(result1[1]));
+
+        const auto result2 = minimize_downhill<2>(
+            objective_2d, 0.0001, {{0,0}}, 0.123, 0.234);
+        REQUIRE(is_in_closed_range_around(0.001, 1.1946)(result2[0]));
+        REQUIRE(is_in_closed_range_around(0.001, 4.7025)(result2[1]));
     }
 }
