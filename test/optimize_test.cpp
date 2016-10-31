@@ -18,17 +18,17 @@ TEST_CASE("optimize_test, minimize_downhill")
     };
     {
         const auto result = minimize_downhill<1>(
-            objective, 0.0001, 0.01, {{123}});
+            objective, 0.0001, {{123}});
         REQUIRE(is_in_closed_range_around(0.0001, -2.0)(result[0]));
     }
     {
         const auto result = minimize_downhill<1>(
-            objective, 0.0001, 0.3, {{-42}});
+            objective, 0.0001, {{-42}});
         REQUIRE(is_in_closed_range_around(0.0001, -2.0)(result[0]));
     }
     {
         const auto result = minimize_downhill<1>(
-            objective, 0.0001, 0.01, {{-2.000001}});
+            objective, 0.0001, {{-2.000001}});
         REQUIRE(is_in_closed_range_around(0.0001, -2.0)(result[0]));
     }
 
@@ -42,8 +42,8 @@ TEST_CASE("optimize_test, minimize_downhill")
     };
     {
         const auto result = minimize_downhill<2>(
-            objective_2d, 0.0001, 0.01, {{0,0}});
-        REQUIRE(is_in_closed_range_around(0.001, 1.1946)(result[0]));
-        REQUIRE(is_in_closed_range_around(0.001, 4.7025)(result[1]));
+            objective_2d, 0.0001, {{0,0}});
+        REQUIRE(is_in_closed_range_around(0.01, 1.1946)(result[0]));
+        REQUIRE(is_in_closed_range_around(0.01, 4.7025)(result[1]));
     }
 }
