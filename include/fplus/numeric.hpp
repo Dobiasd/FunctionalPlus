@@ -373,14 +373,11 @@ std::function<X(X)> cyclic_value(X circumfence)
     return [circumfence](X x) -> X
     {
         if (sign(x) < 0)
-            return circumfence -
-                static_cast<X>(
-                    internal::cyclic_value_helper_mod(
-                        abs(x), abs(circumfence)));
+            return circumfence - internal::cyclic_value_helper_mod(
+                abs(x), abs(circumfence));
         else
-            return static_cast<X>(
-                internal::cyclic_value_helper_mod(
-                    abs(x), abs(circumfence)));
+            return internal::cyclic_value_helper_mod(
+                abs(x), abs(circumfence));
     };
 }
 
