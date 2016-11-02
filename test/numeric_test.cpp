@@ -109,12 +109,20 @@ TEST_CASE("numeric_test, abs_diff")
 TEST_CASE("numeric_test, cyclic_value")
 {
     using namespace fplus;
+    REQUIRE_EQ(cyclic_value(8.0)(3), 3);
+    REQUIRE_EQ(cyclic_value(8.0)(11), 3);
+    REQUIRE_EQ(cyclic_value(8.0)(19), 3);
+    REQUIRE_EQ(cyclic_value(8.0)(-2), 6);
+    REQUIRE_EQ(cyclic_value(8.0)(-5), 3);
+    REQUIRE_EQ(cyclic_value(8.0)(-13), 3);
+
     REQUIRE_EQ(cyclic_value(8)(3), 3);
     REQUIRE_EQ(cyclic_value(8)(11), 3);
     REQUIRE_EQ(cyclic_value(8)(19), 3);
     REQUIRE_EQ(cyclic_value(8)(-2), 6);
     REQUIRE_EQ(cyclic_value(8)(-5), 3);
     REQUIRE_EQ(cyclic_value(8)(-13), 3);
+
     REQUIRE(is_in_range(3.19, 3.21)(cyclic_value(8.1)(3.2)));
 }
 

@@ -11,9 +11,10 @@
 #include "fplus/pairs.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <functional>
 #include <limits>
-#include <cmath>
+#include <type_traits>
 
 namespace fplus
 {
@@ -337,6 +338,23 @@ auto max(const U& u, const V&... v) -> typename std::common_type<U, V...>::type
   return result;
 }
 
+namespace internal
+{
+    template <typename X>
+    typename std::enable_if<std::is_floating_point<X>::value, X>::type
+    cyclic_value_helper_mod(X x, X y)
+    {
+        return std::fmod(x, y);
+    }
+
+    template <typename X>
+    typename std::enable_if<std::is_integral<X>::value, X>::type
+    cyclic_value_helper_mod(X x, X y)
+    {
+        return x % y;
+    }
+}
+
 // API search type: cyclic_value : Float -> (Float -> Float)
 // Modulo for floating point values.
 // Only positive denominators allowed;
@@ -356,9 +374,13 @@ std::function<X(X)> cyclic_value(X circumfence)
     {
         if (sign(x) < 0)
             return circumfence -
-                static_cast<X>(std::fmod(abs(x), abs(circumfence)));
+                static_cast<X>(
+                    internal::cyclic_value_helper_mod(
+                        abs(x), abs(circumfence)));
         else
-            return static_cast<X>(std::fmod(abs(x), abs(circumfence)));
+            return static_cast<X>(
+                internal::cyclic_value_helper_mod(
+                    abs(x), abs(circumfence)));
     };
 }
 
