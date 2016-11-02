@@ -118,7 +118,7 @@ bool is_positive(X x)
 template <typename X>
 X abs(X x)
 {
-    return is_negative(x) ? -x : x;
+    return std::abs(x);
 }
 
 // API search type: abs_diff : (a, a) -> a
