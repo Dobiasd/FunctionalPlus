@@ -15,36 +15,38 @@
 namespace fplus
 {
 
-// API search type: minimize_downhill : (([Float] -> Float), Float, [Float], Float, Float, Float, Float, Int, Int, ((Int, Float, [Float], [Float]) -> IO ())) -> [Float]
+// API search type: minimize_downhill : (([Float] -> Float), Float, [Float], Maybe Float, Float, Float, Float, Int, Int, ((Int, Float, [Float], [Float]) -> IO ())) -> [Float]
 // Optimizes the initial position to the nearest local minimum
 // in regards to the objective_function
-// using numerical gradient descent with momentum
-// based on the epsilon neighborhood.
+// using numerical gradient descent based on the epsilon neighborhood.
 // momentum_conservation should be in [0, 1). A low value means much decay.
-// The step factor determines how far in the direction of the gradient each step
-// will advance.
+// If no fixed step size is provided, each step advances by the length
+// of the gradient.
+// In both cases the step is scaled with a step factor, starting at 1.0.
 // If one iteration results in no further improvement,
 // the step factor is reduced by a factor of 0.5.
-// The callback is executed with epoch, step factor, momentum and current position
+// The callback is executed with
+// iteration, step factor, momentum and current position
 // after every iteration.
-// An initial step factor that differs between the dimensions
+// A initial step factor other than 1.0 in all dimensions
 // can be emulated by scaling ones objective function accordingly.
+// Optimization stops if one of the provided criteria is met.
 // minimize_downhill<1>(\x -> square(x[0] + 2), 0.0001, 0.01, {123})[0] == -2;
 template <std::size_t N, typename F, typename pos_t = std::array<double, N>>
 pos_t minimize_downhill(
         F objective_function,
         double epsilon,
         const pos_t& init_pos,
-        double init_step_factor = 1.0,
+        maybe<double> fixed_step_size = nothing<double>(),
         double momentum_conservation = 0.5,
         double sufficing_value = std::numeric_limits<double>::lowest(),
         double min_step_factor = std::numeric_limits<double>::min(),
-        std::size_t max_epochs = std::numeric_limits<std::size_t>::max(),
+        std::size_t max_iterations = std::numeric_limits<std::size_t>::max(),
         long int max_milliseconds = std::numeric_limits<long int>::max(),
         const std::function<void (std::size_t, double, const pos_t&, const pos_t&)>& callback = std::function<void (std::size_t, double, const pos_t&, const pos_t&)>())
 {
-    std::size_t epoch = 0;
-    double step_factor = init_step_factor;
+    std::size_t iteration = 0;
+    double step_factor = 1.0;
     pos_t position = init_pos;
     double value = objective_function(position);
 
@@ -62,7 +64,7 @@ pos_t minimize_downhill(
             }
         }
         return
-            epoch >= max_epochs ||
+            iteration >= max_iterations ||
             step_factor <= min_step_factor ||
             value <= sufficing_value;
     };
@@ -114,6 +116,11 @@ pos_t minimize_downhill(
         return sqrt(acc);
     };
 
+    const auto normalize = [&](const pos_t& p) -> pos_t
+    {
+        return multiply(p, 1.0 / dist_to_origin(p));
+    };
+
     const auto null_vector = []() -> pos_t
     {
         pos_t result;
@@ -129,11 +136,18 @@ pos_t minimize_downhill(
     {
         auto new_momentum = multiply(momentum, momentum_conservation);
         pos_t gradient = calc_gradient(add(position, new_momentum));
+        const auto inverse_gradient = multiply(gradient, -1.0);
+
+        auto new_momentum_add =
+            is_nothing(fixed_step_size) ?
+                inverse_gradient :
+                multiply(
+                    normalize(inverse_gradient),
+                    fixed_step_size.unsafe_get_just());
+
         new_momentum =
             multiply(
-                add(
-                    new_momentum,
-                    multiply(gradient, -1.0)),
+                add(new_momentum, new_momentum_add),
                 step_factor);
         if (dist_to_origin(new_momentum) <= std::numeric_limits<double>::min())
         {
@@ -151,10 +165,10 @@ pos_t minimize_downhill(
             position = new_position;
             momentum = new_momentum;
         }
-        ++epoch;
+        ++iteration;
         if (callback)
         {
-            callback(epoch, step_factor, momentum, position);
+            callback(iteration, step_factor, momentum, position);
         }
     }
     return position;
