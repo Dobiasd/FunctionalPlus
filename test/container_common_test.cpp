@@ -11,9 +11,9 @@
 
 namespace {
     auto squareLambda = [](int x) -> int { return x*x; };
-    auto is_even = [](int x){ return x % 2 == 0; };
+    auto is_even_int = [](int x){ return x % 2 == 0; };
     auto is_even_size_t = [](std::size_t x){ return x % 2 == 0; };
-    auto is_odd = [](int x){ return x % 2 == 1; };
+    auto is_odd_int = [](int x){ return x % 2 == 1; };
     typedef std::pair<int, int> IntPair;
     typedef std::vector<IntPair> IntPairs;
     typedef std::vector<int> IntVector;
@@ -100,15 +100,15 @@ TEST_CASE("container_common_test, transform")
 TEST_CASE("container_common_test, filter")
 {
     using namespace fplus;
-    REQUIRE_EQ(keep_if(is_even, xs), IntVector({2,2,2}));
-    REQUIRE_EQ(drop_if(is_even, xs), IntVector({1,3}));
-    REQUIRE_EQ(keep_if(is_even, intList), IntList({ 2,2,2 }));
-    REQUIRE_EQ(drop_if(is_even, intList), IntList({ 1,3 }));
+    REQUIRE_EQ(keep_if(is_even_size_t, xs), IntVector({2,2,2}));
+    REQUIRE_EQ(drop_if(is_even_size_t, xs), IntVector({1,3}));
+    REQUIRE_EQ(keep_if(is_even_size_t, intList), IntList({ 2,2,2 }));
+    REQUIRE_EQ(drop_if(is_even_size_t, intList), IntList({ 1,3 }));
     REQUIRE_EQ(without(2, intList), IntList({ 1,3 }));
     REQUIRE_EQ(without_any(IntVector({2,3}), intList), IntList({ 1 }));
     auto sumis_even = [&](std::size_t x, int y)
     {
-        return is_even(static_cast<int>(x) + y);
+        return is_even_int(static_cast<int>(x) + y);
     };
     REQUIRE_EQ(keep_by_idx(is_even_size_t, xs), IntVector({ 1,2,2 }));
     REQUIRE_EQ(keep_if_with_idx(sumis_even, xs), IntVector({ 2,3,2 }));
@@ -161,9 +161,9 @@ TEST_CASE("container_common_test, keep_idxs")
 TEST_CASE("container_common_test, is_equal")
 {
     using namespace fplus;
-    REQUIRE_EQ(is_equal_by_and_by(is_even, is_even)(2, 4), true);
-    REQUIRE_EQ(is_equal_by_and_by(is_even, is_even)(1, 2), false);
-    REQUIRE_EQ(is_equal_by_and_by(is_odd, is_even)(1, 2), true);
+    REQUIRE_EQ(is_equal_by_and_by(is_even_int, is_even_int)(2, 4), true);
+    REQUIRE_EQ(is_equal_by_and_by(is_even_int, is_even_int)(1, 2), false);
+    REQUIRE_EQ(is_equal_by_and_by(is_odd_int, is_even_int)(1, 2), true);
     REQUIRE_EQ(is_equal_to(2)(2), true);
     REQUIRE_EQ(is_equal_to(1)(2), false);
 }
@@ -260,7 +260,7 @@ TEST_CASE("container_common_test, carthesian_product")
     auto alwaysTrueCharAndChar = [](std::string::value_type, std::string::value_type) { return true; };
     REQUIRE_EQ(carthesian_product_with(twoCharsToString, ABC, XY), string_vec({"AX", "AY", "BX", "BY", "CX", "CY"}));
     REQUIRE_EQ(carthesian_product_where(alwaysTrueCharAndChar, ABC, XY), char_pair_vec({{'A','X'}, {'A','Y'}, {'B','X'}, {'B','Y'}, {'C','X'}, {'C','Y'}}));
-    auto charAndCharSumIsEven = [&](std::string::value_type x, std::string::value_type y) { return is_even(x + y); };
+    auto charAndCharSumIsEven = [&](std::string::value_type x, std::string::value_type y) { return is_even_int(x + y); };
     REQUIRE_EQ(carthesian_product_with_where(twoCharsToString, charAndCharSumIsEven, ABC, XY), string_vec({"AY", "BX", "CY"}));
     REQUIRE_EQ(carthesian_product_where(charAndCharSumIsEven, ABC, XY), char_pair_vec({{'A','Y'}, {'B','X'}, {'C','Y'}}));
     REQUIRE_EQ(carthesian_product(ABC, XY), char_pair_vec({{'A','X'}, {'A','Y'}, {'B','X'}, {'B','Y'}, {'C','X'}, {'C','Y'}}));
@@ -420,11 +420,11 @@ TEST_CASE("container_common_test, all")
     REQUIRE_EQ(all(BoolVector({true, true})), true);
     REQUIRE_EQ(all(BoolVector({true, false})), false);
 
-    REQUIRE_EQ(all_by(is_even, IntVector()), true);
-    REQUIRE_EQ(all_by(is_even, IntVector({2})), true);
-    REQUIRE_EQ(all_by(is_even, IntVector({1})), false);
-    REQUIRE_EQ(all_by(is_even, IntVector({2, 2})), true);
-    REQUIRE_EQ(all_by(is_even, IntVector({2, 1})), false);
+    REQUIRE_EQ(all_by(is_even_int, IntVector()), true);
+    REQUIRE_EQ(all_by(is_even_int, IntVector({2})), true);
+    REQUIRE_EQ(all_by(is_even_int, IntVector({1})), false);
+    REQUIRE_EQ(all_by(is_even_int, IntVector({2, 2})), true);
+    REQUIRE_EQ(all_by(is_even_int, IntVector({2, 1})), false);
 }
 
 TEST_CASE("container_common_test, any")
@@ -436,11 +436,11 @@ TEST_CASE("container_common_test, any")
     REQUIRE_EQ(any(BoolVector({false, false})), false);
     REQUIRE_EQ(any(BoolVector({true, false})), true);
 
-    REQUIRE_EQ(any_by(is_even, IntVector()), false);
-    REQUIRE_EQ(any_by(is_even, IntVector({2})), true);
-    REQUIRE_EQ(any_by(is_even, IntVector({1})), false);
-    REQUIRE_EQ(any_by(is_even, IntVector({1, 1})), false);
-    REQUIRE_EQ(any_by(is_even, IntVector({2, 1})), true);
+    REQUIRE_EQ(any_by(is_even_int, IntVector()), false);
+    REQUIRE_EQ(any_by(is_even_int, IntVector({2})), true);
+    REQUIRE_EQ(any_by(is_even_int, IntVector({1})), false);
+    REQUIRE_EQ(any_by(is_even_int, IntVector({1, 1})), false);
+    REQUIRE_EQ(any_by(is_even_int, IntVector({2, 1})), true);
 }
 
 TEST_CASE("container_common_test, none")
@@ -452,11 +452,11 @@ TEST_CASE("container_common_test, none")
     REQUIRE_EQ(none(BoolVector({false, false})), true);
     REQUIRE_EQ(none(BoolVector({true, false})), false);
 
-    REQUIRE_EQ(none_by(is_even, IntVector()), true);
-    REQUIRE_EQ(none_by(is_even, IntVector({2})), false);
-    REQUIRE_EQ(none_by(is_even, IntVector({1})), true);
-    REQUIRE_EQ(none_by(is_even, IntVector({1, 1})), true);
-    REQUIRE_EQ(none_by(is_even, IntVector({2, 1})), false);
+    REQUIRE_EQ(none_by(is_even_int, IntVector()), true);
+    REQUIRE_EQ(none_by(is_even_int, IntVector({2})), false);
+    REQUIRE_EQ(none_by(is_even_int, IntVector({1})), true);
+    REQUIRE_EQ(none_by(is_even_int, IntVector({1, 1})), true);
+    REQUIRE_EQ(none_by(is_even_int, IntVector({2, 1})), false);
 }
 
 TEST_CASE("container_common_test, minmax")
@@ -530,7 +530,7 @@ TEST_CASE("container_common_test, unique")
     using namespace fplus;
     REQUIRE_EQ(unique(xs), IntVector({1,2,3,2}));
     auto IsEqualByis_even = [&](int a, int b)
-            { return is_even(a) == is_even(b); };
+            { return is_even_int(a) == is_even_int(b); };
     REQUIRE_EQ(unique_by(IsEqualByis_even, xs), IntVector({1,2,3,2}));
 
     REQUIRE_EQ(unique_on(int_mod_10, IntVector({2,22,3})), IntVector({2, 3}));
@@ -740,7 +740,7 @@ TEST_CASE("container_common_test, split")
     REQUIRE_EQ(split_one_of(std::string(" ,.?"), false, std::string("Hi, how are you?")), std::vector<std::string>({"Hi", "how", "are", "you"}));
 
     REQUIRE_EQ(split_at_idx(2, xs), std::make_pair(IntVector({1,2}), IntVector({2,3,2})));
-    REQUIRE_EQ(partition(is_even, xs), std::make_pair(IntVector({2,2,2}), IntVector({1,3})));
+    REQUIRE_EQ(partition(is_even_int, xs), std::make_pair(IntVector({2,2,2}), IntVector({1,3})));
     REQUIRE_EQ(split_every(2, xs), IntVectors({{1,2}, {2, 3}, {2}}));
     auto splittedAt1And3 = split_at_idxs(IdxVector({1,3}), xs);
     IntVectors splittedAt1And3Dest = {IntVector({1}), IntVector({2,2}), IntVector({3,2})};
@@ -756,12 +756,12 @@ TEST_CASE("container_common_test, split")
     REQUIRE_EQ(split(2, true, IntVector{2}), IntVectors({{},{}}));
     REQUIRE_EQ(split(2, true, IntVector{}), IntVectors{{}});
 
-    REQUIRE_EQ(split_by(is_even, true, IntList({1,3,2,2,5,5,3,6,7,9})), IntLists({{1,3},{},{5,5,3},{7,9}}));
-    REQUIRE_EQ(split_by_keep_separators(is_even, IntList({})), IntLists());
-    REQUIRE_EQ(split_by_keep_separators(is_even, IntList({2})), IntLists({IntList({2})}));
-    REQUIRE_EQ(split_by_keep_separators(is_even, IntList({2,2,3})), IntLists({{2},{2,3}}));
-    REQUIRE_EQ(split_by_keep_separators(is_even, IntList({1,3,2})), IntLists({{1,3},{2}}));
-    REQUIRE_EQ(split_by_keep_separators(is_even, IntList({1,3,2,2,5,5,3,6,7,9})), IntLists({{1,3},{2},{2,5,5,3},{6,7,9}}));
+    REQUIRE_EQ(split_by(is_even_int, true, IntList({1,3,2,2,5,5,3,6,7,9})), IntLists({{1,3},{},{5,5,3},{7,9}}));
+    REQUIRE_EQ(split_by_keep_separators(is_even_int, IntList({})), IntLists());
+    REQUIRE_EQ(split_by_keep_separators(is_even_int, IntList({2})), IntLists({IntList({2})}));
+    REQUIRE_EQ(split_by_keep_separators(is_even_int, IntList({2,2,3})), IntLists({{2},{2,3}}));
+    REQUIRE_EQ(split_by_keep_separators(is_even_int, IntList({1,3,2})), IntLists({{1,3},{2}}));
+    REQUIRE_EQ(split_by_keep_separators(is_even_int, IntList({1,3,2,2,5,5,3,6,7,9})), IntLists({{1,3},{2},{2,5,5,3},{6,7,9}}));
     REQUIRE_EQ(split_keep_separators(2, IntList({1,3,2,2,5,5,3,2,7,9})), IntLists({{1,3},{2},{2,5,5,3},{2,7,9}}));
 }
 
@@ -785,9 +785,9 @@ TEST_CASE("container_common_test, range")
     REQUIRE_EQ(drop_exact(2, xs), IntVector({ 2,3,2 }));
     REQUIRE_EQ(take(999, xs), xs);
     REQUIRE_EQ(drop(999, xs), IntVector());
-    REQUIRE_EQ(take_while(is_odd, xs), IntVector({ 1 }));
-    REQUIRE_EQ(drop_while(is_odd, xs), IntVector({ 2,2,3,2 }));
-    REQUIRE_EQ(span(is_odd, xs), std::make_pair(IntVector({ 1 }), IntVector({ 2,2,3,2 })));
+    REQUIRE_EQ(take_while(is_odd_int, xs), IntVector({ 1 }));
+    REQUIRE_EQ(drop_while(is_odd_int, xs), IntVector({ 2,2,3,2 }));
+    REQUIRE_EQ(span(is_odd_int, xs), std::make_pair(IntVector({ 1 }), IntVector({ 2,2,3,2 })));
     REQUIRE_EQ(replace_range(2, IntVector({8,9}), xs), IntVector({1,2,8,9,2}));
 }
 
@@ -868,7 +868,7 @@ TEST_CASE("container_common_test, nub")
 {
     using namespace fplus;
     REQUIRE_EQ(nub(xs), IntVector({ 1,2,3 }));
-    auto bothEven = is_equal_by(is_even);
+    auto bothEven = is_equal_by(is_even_int);
     REQUIRE_EQ(nub_by(bothEven, xs), IntVector({ 1,2 }));
     REQUIRE_EQ(nub_on(int_mod_10, IntVector({12,32,15})), IntVector({12,15}));
 }
@@ -907,7 +907,7 @@ TEST_CASE("container_common_test, map")
     const auto is_int_string_map_key_even =
         [&](const IntStringMap::value_type& p) -> bool
     {
-        return is_even(p.first);
+        return is_even_int(p.first);
     };
     REQUIRE_EQ(keep_if(is_int_string_map_key_even, IntStringMap({{4, "4"}, {7, "7"}})), IntStringMap({{4, "4"}}));
 
