@@ -124,6 +124,8 @@ Container drop_by_idx(UnaryPredicate pred, const Container& xs)
 template <typename ContainerIdxs, typename Container>
 Container keep_idxs(const ContainerIdxs& idxs_to_keep, const Container& xs)
 {
+    static_assert(std::is_same<typename ContainerIdxs::value_type, std::size_t>::value,
+        "Indices must be std::size_t");
     auto idxs_left = convert_container<std::list<std::size_t>>(
         unique(sort(idxs_to_keep)));
     Container ys;
@@ -146,6 +148,8 @@ Container keep_idxs(const ContainerIdxs& idxs_to_keep, const Container& xs)
 template <typename ContainerIdxs, typename Container>
 Container drop_idxs(const ContainerIdxs& idxs_to_drop, const Container& xs)
 {
+    static_assert(std::is_same<typename ContainerIdxs::value_type, std::size_t>::value,
+        "Indices must be std::size_t");
     auto idxs_left = convert_container<std::list<std::size_t>>(
         unique(sort(idxs_to_drop)));
     Container ys;

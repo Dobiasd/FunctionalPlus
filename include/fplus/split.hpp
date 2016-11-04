@@ -390,6 +390,8 @@ template <typename ContainerIdxs, typename ContainerIn,
         typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut split_at_idxs(const ContainerIdxs& idxsIn, const ContainerIn& xs)
 {
+    static_assert(std::is_same<typename ContainerIdxs::value_type, std::size_t>::value,
+        "Indices must be std::size_t");
     static_assert(std::is_same<ContainerIn,
         typename ContainerOut::value_type>::value,
         "Containers do not match.");
