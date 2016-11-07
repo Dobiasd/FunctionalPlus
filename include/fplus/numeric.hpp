@@ -373,7 +373,7 @@ namespace internal
     }
 }
 
-// API search type: cyclic_value : Float -> (Float -> Float)
+// API search type: cyclic_value : a -> (a -> a)
 // Modulo for floating point values.
 // Only positive denominators allowed;
 // cyclic_value(8)(3) == 3
@@ -399,7 +399,7 @@ std::function<X(X)> cyclic_value(X circumfence)
     };
 }
 
-// API search type: cyclic_difference : Float -> ((Float, Float) -> Float)
+// API search type: cyclic_difference : a -> ((a, a) -> a)
 // circumfence has to be positive.
 // cyclic_difference(100)(5, 2) == 3
 // cyclic_difference(100)(2, 5) == 97
@@ -418,7 +418,7 @@ std::function<X(X, X)> cyclic_difference(X circumfence)
     };
 }
 
-// API search type: cyclic_shortest_difference : Float -> ((Float, Float) -> Float)
+// API search type: cyclic_shortest_difference : a -> ((a, a) -> a)
 // circumfence has to be positive.
 // cyclic_shortest_difference(100)(5, 2) == 3
 // cyclic_shortest_difference(100)(2, 5) == -3
@@ -439,7 +439,7 @@ std::function<X(X, X)> cyclic_shortest_difference(X circumfence)
     };
 }
 
-// API search type: cyclic_distance : Float -> ((Float, Float) -> Float)
+// API search type: cyclic_distance : a -> ((a, a) -> a)
 // circumfence has to be positive.
 // cyclic_distance(100)(2, 5) == 3
 // cyclic_distance(100)(5, 2) == 3
@@ -479,6 +479,7 @@ T deg_to_rad(T x)
 template <typename T>
 T rad_to_deg(T x)
 {
+    static_assert(std::is_floating_point<T>::value, "Please use a floating-point type.");
     return static_cast<T>(x * 180.0 / pi());
 }
 
