@@ -284,11 +284,12 @@ std::function<bool(X)> logical_xor(UnaryPredicateF f, UnaryPredicateG g)
 // mapping input values to output values.
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename utils::function_traits<F>::result_type>
+    typename FOut = typename utils::function_traits<F>::result_type,
+    typename MemoMap = std::unordered_map<typename std::decay<FIn>::type, FOut>>
 std::function<FOut(FIn)> memoize(F f)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    std::unordered_map<typename std::decay<FIn>::type, FOut> storage;
+    MemoMap storage;
     return [=](const FIn& x) mutable -> FOut
     {
         const auto it = storage.find(x);
