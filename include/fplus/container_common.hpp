@@ -417,6 +417,7 @@ Container take_exact(std::size_t amount, const Container& xs)
 
 // API search type: drop : (Int, [a]) -> [a]
 // drop(3, [0,1,2,3,4,5,6,7]) == [3,4,5,6,7]
+// Also known as skip.
 template <typename Container>
 Container drop(std::size_t amount, const Container& xs)
 {
@@ -930,6 +931,7 @@ Container nub_on(F f, const Container& xs)
 // Makes the elements in a container unique
 // nub([1,2,2,3,2]) == [1,2,3]
 // O(n^2)
+// Also known as distinct.
 template <typename Container>
 Container nub(const Container& xs)
 {
