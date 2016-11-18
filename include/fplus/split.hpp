@@ -13,6 +13,8 @@
 #include "fplus/pairs.hpp"
 #include "fplus/numeric.hpp"
 
+#include <iostream> // todo raus
+
 namespace fplus
 {
 
@@ -557,6 +559,44 @@ ContainerOut divvy(std::size_t length, std::size_t step, const ContainerIn& xs)
         *itOut = get_range(start_idx, start_idx + length, xs);
     }
     return result;
+}
+
+// API search type: winsorize : (Float, [Float]) -> [Float]
+// winsorize(0.1, [1,3,4,4,4,4,4,4,6,8]) == [3,3,4,4,4,4,4,4,6,6]
+template <typename Container>
+Container winsorize(double trim_ratio, const Container& xs)
+{
+    if (size_of_cont(xs) < 2)
+    {
+        return xs;
+    }
+    trim_ratio = std::max(trim_ratio, 0.0);
+    const auto xs_sorted = sort(xs);
+    std::size_t amount =
+        floor<std::size_t, double>(
+            trim_ratio * static_cast<double>(size_of_cont(xs)));
+    amount = std::min(size_of_cont(xs) / 2, amount);
+    const auto parts = split_at_idxs(
+        std::vector<std::size_t>({amount, size_of_cont(xs) - amount}),
+        xs);
+    assert(size_of_cont(parts) == 3);
+    typedef typename Container::value_type T;
+    if (is_empty(parts[1]))
+    {
+        std::cout << "asdasd" << std::endl;
+        return Container(size_of_cont(xs), median(xs));
+    }
+    else
+    {
+        const T lower = parts[1].front();
+        const T upper = parts[1].back();
+        const auto result = concat(std::vector<Container>({
+            Container(amount, lower),
+            parts[1],
+            Container(amount, upper)}));
+        assert(size_of_cont(result) == size_of_cont(xs));
+        return result;
+    }
 }
 
 } // namespace fplus

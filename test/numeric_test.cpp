@@ -364,6 +364,25 @@ TEST_CASE("numeric_test, normalize")
     REQUIRE_EQ(standardize(Floats({2.0, 6.0})), Floats({-1, 1}));
 }
 
+TEST_CASE("numeric_test, winsorize")
+{
+    using namespace fplus;
+
+    REQUIRE_EQ(winsorize(0.1, Doubles()), Doubles());
+    REQUIRE_EQ(winsorize(0.1, Doubles({1})), Doubles({1}));
+    REQUIRE_EQ(winsorize(0.4, Doubles({1,2})), Doubles({1,2}));
+    REQUIRE_EQ(winsorize(0.32, Doubles({1,2,3})), Doubles({1,2,3}));
+    REQUIRE_EQ(winsorize(0.34, Doubles({1,2,3})), Doubles({2,2,2}));
+    REQUIRE_EQ(winsorize(0.1, Doubles({1,3,4,4,4,4,4,4,6,8})), Doubles({3,3,4,4,4,4,4,4,6,6}));
+    REQUIRE_EQ(winsorize(-0.1, Doubles({1,3,4,4,4,4,4,4,6,8})), Doubles({1,3,4,4,4,4,4,4,6,8}));
+    REQUIRE_EQ(winsorize(0, Doubles({1,3,4,4,4,4,4,4,6,8})), Doubles({1,3,4,4,4,4,4,4,6,8}));
+
+    const auto median_result = winsorize(0.6, Doubles({1,2}));
+    REQUIRE_EQ(median_result.size(), 2);
+    REQUIRE(fplus::is_in_range_around(0.001, 1.5)(median_result[0]));
+    REQUIRE(fplus::is_in_range_around(0.001, 1.5)(median_result[1]));
+}
+
 TEST_CASE("numeric_test, histogram")
 {
     using namespace fplus;
