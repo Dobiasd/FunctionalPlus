@@ -375,6 +375,7 @@ TEST_CASE("numeric_test, winsorize")
     REQUIRE_EQ(winsorize(0.34, Doubles({1,2,3})), Doubles({2,2,2}));
     REQUIRE_EQ(winsorize(0.1, Doubles({1,3,4,4,4,4,4,4,6,8})), Doubles({3,3,4,4,4,4,4,4,6,6}));
     REQUIRE_EQ(winsorize(-0.1, Doubles({1,3,4,4,4,4,4,4,6,8})), Doubles({1,3,4,4,4,4,4,4,6,8}));
+    REQUIRE_EQ(winsorize(0.1, Doubles({4,4,4,3,8,4,6,4,3,4})), Doubles({3,3,4,4,4,4,4,4,6,6}));
     REQUIRE_EQ(winsorize(0, Doubles({1,3,4,4,4,4,4,4,6,8})), Doubles({1,3,4,4,4,4,4,4,6,8}));
 
     const auto median_result = winsorize(0.6, Doubles({1,2}));

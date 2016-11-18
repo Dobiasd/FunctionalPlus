@@ -574,17 +574,17 @@ Container winsorize(double trim_ratio, const Container& xs)
     const auto xs_sorted = sort(xs);
     std::size_t amount =
         floor<std::size_t, double>(
-            trim_ratio * static_cast<double>(size_of_cont(xs)));
-    amount = std::min(size_of_cont(xs) / 2, amount);
+            trim_ratio * static_cast<double>(size_of_cont(xs_sorted)));
+    amount = std::min(size_of_cont(xs_sorted) / 2, amount);
     const auto parts = split_at_idxs(
-        std::vector<std::size_t>({amount, size_of_cont(xs) - amount}),
-        xs);
+        std::vector<std::size_t>({amount, size_of_cont(xs_sorted) - amount}),
+        xs_sorted);
     assert(size_of_cont(parts) == 3);
     typedef typename Container::value_type T;
     if (is_empty(parts[1]))
     {
         std::cout << "asdasd" << std::endl;
-        return Container(size_of_cont(xs), median(xs));
+        return Container(size_of_cont(xs_sorted), median(xs_sorted));
     }
     else
     {
@@ -594,7 +594,7 @@ Container winsorize(double trim_ratio, const Container& xs)
             Container(amount, lower),
             parts[1],
             Container(amount, upper)}));
-        assert(size_of_cont(result) == size_of_cont(xs));
+        assert(size_of_cont(result) == size_of_cont(xs_sorted));
         return result;
     }
 }
