@@ -789,6 +789,11 @@ TEST_CASE("container_common_test, range")
     REQUIRE_EQ(drop_while(is_odd_int, xs), IntVector({ 2,2,3,2 }));
     REQUIRE_EQ(span(is_odd_int, xs), std::make_pair(IntVector({ 1 }), IntVector({ 2,2,3,2 })));
     REQUIRE_EQ(replace_range(2, IntVector({8,9}), xs), IntVector({1,2,8,9,2}));
+    REQUIRE_EQ(take_cyclic(5, IntVector({0,1,2,3})), IntVector({0,1,2,3,0}));
+    REQUIRE_EQ(take_cyclic(7, IntVector({0,1,2,3})), IntVector({0,1,2,3,0,1,2}));
+    REQUIRE_EQ(take_cyclic(7, IntVector({0,1})), IntVector({0,1,0,1,0,1,0}));
+    REQUIRE_EQ(take_cyclic(2, IntVector({0,1,2,3})), IntVector({0,1}));
+    REQUIRE_EQ(take_cyclic(3, IntVector({0})), IntVector({0,0,0}));
 }
 
 TEST_CASE("container_common_test, keep_if")

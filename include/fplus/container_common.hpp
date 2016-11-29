@@ -415,6 +415,36 @@ Container take_exact(std::size_t amount, const Container& xs)
     return get_range(0, amount, xs);
 }
 
+// API search type: take_cyclic : (Int, [a]) -> [a]
+// take_cyclic(5, [0,1,2,3]) == [0,1,2,3,0]
+// take_cyclic(7, [0,1,2,3]) == [0,1,2,3,0,1,2]
+// take_cyclic(7, [0,1]) == [0,1,0,1,0,1,0]
+// take_cyclic(2, [0,1,2,3]) == [0,1]
+// take_cyclic(3, [0]) == [0,0,0]
+// take_cyclic(3, []) == crash!
+template <typename Container>
+Container take_cyclic(std::size_t amount, const Container& xs)
+{
+    assert(!xs.empty());
+
+    Container ys;
+    internal::prepare_container(ys, size_of_cont(xs));
+    auto it_out = internal::get_back_inserter(ys);
+    auto it_in = std::begin(xs);
+
+    while (amount != 0)
+    {
+        *it_out = *it_in;
+        --amount;
+        ++it_in;
+        if (it_in == std::end(xs))
+        {
+            it_in = std::begin(xs);
+        }
+    }
+    return ys;
+}
+
 // API search type: drop : (Int, [a]) -> [a]
 // drop(3, [0,1,2,3,4,5,6,7]) == [3,4,5,6,7]
 // Also known as skip.
