@@ -65,9 +65,42 @@ ContainerOut zip_with(F f,
     auto itYs = std::begin(ys);
     for (std::size_t i = 0; i < resultSize; ++i)
     {
-        *itResult = f(*(itXs++), *(itYs)++);
+        *itResult = f(*itXs, *itYs);
+        ++itXs;
+        ++itYs;
     }
     return result;
+}
+
+// API search type: zip_with_defaults : (((a, b) -> c), a, b, [a], [b]) -> [c]
+// zip_with_defaults((+), 6, 7, [1,2,3], [1,2]) == [2,4,10]
+// zip_with_defaults((+), 6, 7, [1,2], [1,2,3]) == [2,4,9]
+template <typename ContainerIn1, typename ContainerIn2, typename F,
+    typename X = typename ContainerIn1::value_type,
+    typename Y = typename ContainerIn2::value_type,
+    typename TOut = typename utils::function_traits<F>::result_type,
+    typename ContainerOut = typename std::vector<TOut>>
+ContainerOut zip_with_defaults(F f,
+        const X& default_x, const Y& default_y,
+        const ContainerIn1& xs, const ContainerIn2& ys)
+{
+    const auto size_xs = size_of_cont(xs);
+    const auto size_ys = size_of_cont(ys);
+    if (size_xs < size_ys)
+    {
+        const auto extended_xs = append(
+            xs,
+            replicate<X, ContainerIn1>(size_ys - size_xs, default_x));
+        return zip_with(f, extended_xs, ys);
+    }
+    else if (size_xs > size_ys)
+    {
+        const auto extended_ys = append(
+            ys,
+            replicate<Y, ContainerIn2>(size_xs - size_ys, default_y));
+        return zip_with(f, xs, extended_ys);
+    }
+    return zip_with(f, xs, ys);
 }
 
 // API search type: zip : ([a], [b]) -> [(a, b)]

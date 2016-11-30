@@ -366,8 +366,19 @@ TEST_CASE("container_common_test, show")
 TEST_CASE("container_common_test, zip_with")
 {
     using namespace fplus;
-    auto multiply = [](int x, int y){ return x * y; };
+    const auto multiply = [](int x, int y){ return x * y; };
     REQUIRE_EQ(zip_with(multiply, xs, xs), transform(squareLambda, xs));
+    const auto add = [](int x, int y){ return x + y; };
+    REQUIRE_EQ(zip_with(add, IntVector({1,2,3}), IntVector({1,2})), IntVector({2,4}));
+    REQUIRE_EQ(zip_with(add, IntVector({1,2}), IntVector({1,2,3})), IntVector({2,4}));
+}
+
+TEST_CASE("container_common_test, zip_with_defaults")
+{
+    using namespace fplus;
+    const auto add = [](int x, int y){ return x + y; };
+    REQUIRE_EQ(zip_with_defaults(add, 6, 7, IntVector({1,2,3}), IntVector({1,2})), IntVector({2,4,10}));
+    REQUIRE_EQ(zip_with_defaults(add, 6, 7, IntVector({1,2}), IntVector({1,2,3})), IntVector({2,4,9}));
 }
 
 TEST_CASE("container_common_test, show_float")

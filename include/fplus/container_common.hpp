@@ -276,6 +276,7 @@ Container replace_range(std::size_t idx_begin,
 
 // API search type: elem_at_idx : (Int, [a]) -> a
 // elem_at_idx(2, [7,6,5,4,3]) == 5
+// Curried version: nth_element
 template <typename Container,
     typename T = typename Container::value_type>
 T elem_at_idx(std::size_t idx, const Container& xs)
@@ -308,6 +309,7 @@ std::vector<T> elems_at_idxs(const ContainerIdxs& idxs, const Container& xs)
 
 // API search type: nth_element : Int -> ([a] -> a)
 // nth_element(2)([5,6,7,8]) == 7
+// Uncurried version: elem_at_idx
 template <typename Container,
         typename T = typename Container::value_type>
 std::function<T(const Container& xs)> nth_element(std::size_t n)
@@ -1321,6 +1323,15 @@ Container lexicographical_sort(const Container& xs)
 {
     typedef typename Container::value_type T;
     return sort_by(lexicographical_less<T>, xs);
+}
+
+// API search type: replicate : (Int, a) -> [a]
+// replicate(3, 1) == [1, 1, 1]
+template <typename T,
+        typename ContainerOut = std::vector<T>>
+ContainerOut replicate(std::size_t n, const T& x)
+{
+    return ContainerOut(n, x);
 }
 
 } // namespace fplus

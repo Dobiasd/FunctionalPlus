@@ -57,15 +57,6 @@ Container repeat(std::size_t n, const Container& xs)
     return concat(xss);
 }
 
-// API search type: replicate : (Int, a) -> [a]
-// replicate(3, 1) == [1, 1, 1]
-template <typename T,
-        typename ContainerOut = std::vector<T>>
-ContainerOut replicate(std::size_t n, const T& x)
-{
-    return ContainerOut(n, x);
-}
-
 // API search type: infixes : (Int, [a]) -> [[a]]
 // infixes(3, [1,2,3,4,5,6]) == [[1,2,3], [2,3,4], [3,4,5], [4,5,6]]
 template <typename ContainerIn,
