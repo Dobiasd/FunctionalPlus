@@ -274,7 +274,7 @@ Container replace_range(std::size_t idx_begin,
     return insert_at(idx_begin, token, remove_range(idx_begin, idx_end, xs));
 }
 
-// API search type: elem_at_idx : (Int, [a]) -> [a]
+// API search type: elem_at_idx : (Int, [a]) -> a
 // elem_at_idx(2, [7,6,5,4,3]) == 5
 template <typename Container,
     typename T = typename Container::value_type>
