@@ -8,6 +8,7 @@
 
 #include "fplus/container_common.hpp"
 #include "fplus/filter.hpp"
+#include "fplus/generate.hpp"
 #include "fplus/maybe.hpp"
 #include "fplus/maps.hpp"
 #include "fplus/result.hpp"
