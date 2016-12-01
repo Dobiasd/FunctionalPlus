@@ -205,7 +205,7 @@ By changing the way you think about programming from "writing your own loops and
 
 Finding the functions you need
 ------------------------------
-If you are looking for a specific FunctionalPlus function you do not know the name of yet, you can of course use the autocomplete feature of your IDE to browse the content of the namespace `fplus`. But the recommended way is to simply use the **[FunctionalPlus API search website](http://www.editgym.com/fplus-api-search/)**. You can quickly search by keywords or (curried) function type signatures there.
+If you are looking for a specific FunctionalPlus function you do not know the name of yet, you can of course use the autocomplete feature of your IDE to browse the content of the namespace `fplus`. But the recommended way is to simply use the **[FunctionalPlus API search website](http://www.editgym.com/fplus-api-search/)**. You can quickly search by keywords or function type signatures with it.
 
 
 Performance
