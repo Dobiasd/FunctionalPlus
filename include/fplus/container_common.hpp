@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "fplus/composition.hpp"
 #include "fplus/container_traits.hpp"
 #include "fplus/maybe.hpp"
 #include "fplus/compare.hpp"
