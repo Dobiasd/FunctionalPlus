@@ -25,7 +25,7 @@ T elem_at_float_idx(double idx, const Container& xs)
     }
     std::size_t idx_floor = floor<std::size_t>(idx);
     std::size_t idx_ceil = ceil<std::size_t>(idx);
-    if (idx_ceil >= static_cast<double>(size_of_cont(xs)))
+    if (idx_ceil >= size_of_cont(xs))
     {
         return xs.back();
     }
