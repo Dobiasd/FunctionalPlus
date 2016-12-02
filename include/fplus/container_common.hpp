@@ -425,6 +425,7 @@ Container take_exact(std::size_t amount, const Container& xs)
 // take_cyclic(2, [0,1,2,3]) == [0,1]
 // take_cyclic(3, [0]) == [0,0,0]
 // take_cyclic(3, []) == crash!
+// Also known as take_wrap.
 template <typename Container>
 Container take_cyclic(std::size_t amount, const Container& xs)
 {
