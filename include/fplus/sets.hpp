@@ -79,6 +79,7 @@ SetType set_symmetric_difference(const SetType& set1, const SetType& set2)
 
 // API search type: sets_intersection : [Set a] -> Set a
 // Returns the intersection of the given sets.
+// Also known as intersect_many.
 template <typename ContainerIn,
     typename SetType = typename ContainerIn::value_type>
 SetType sets_intersection(const ContainerIn& sets)
