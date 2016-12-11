@@ -987,6 +987,22 @@ TEST_CASE("container_common_test, set")
     REQUIRE_EQ(set_symmetric_difference(intSet1, intSet2), intSet7);
     REQUIRE_EQ(set_intersection(intSet1, intSet2), intSet4);
     REQUIRE_EQ(sets_intersection(IntSets({intSet1, intSet2, intSet3})), intSet8);
+
+    typedef std::unordered_set<int> IntUnordSet;
+
+    IntUnordSet intUnordSet1 = {0,1,2,3};
+    IntUnordSet intUnordSet2 = {2,3,4,5};
+    IntUnordSet intUnordSet3 = {0,2};
+    IntUnordSet intUnordSet4 = {2,3};
+    IntUnordSet intUnordSet5 = {0,1};
+    IntUnordSet intUnordSet6 = {0,1,2,3,4,5};
+    IntUnordSet intUnordSet7 = {0,1,4,5};
+
+    REQUIRE_EQ(unordered_set_includes(intUnordSet1, intUnordSet3), true);
+    REQUIRE_EQ(unordered_set_includes(intUnordSet3, intUnordSet1), false);
+    REQUIRE_EQ(unordered_set_includes(intUnordSet1, intUnordSet2), false);
+    REQUIRE_EQ(set_merge(intUnordSet1, intUnordSet2), intUnordSet6);
+    REQUIRE_EQ(set_merge(intUnordSet1, intUnordSet3), intUnordSet1);
 }
 
 TEST_CASE("container_common_test, count_occurrences_by")
