@@ -25,6 +25,20 @@ bool set_includes(const SetType& set1, const SetType& set2)
         std::begin(set2), std::end(set2));
 }
 
+// API search type: unordered_set_includes : (Unordered_Set a, Unordered_Set a) -> Bool
+// Checks if every element of the second unordered_set is also present in the first unordered_set.
+// Also known as is_subset_of.
+template <typename UnorderedSetType>
+bool unordered_set_includes(const UnorderedSetType& set1, const UnorderedSetType& set2)
+{
+    for(const auto& x : set2)
+    {
+        if (set1.find(x) == set1.end())
+            return false;
+    }
+    return true;
+}
+
 // API search type: set_merge : (Set a, Set a) -> Set a
 // Returns the union of two given sets.
 template <typename SetType>
