@@ -232,6 +232,23 @@ std::function<std::string()> read_text_file(const std::string& filename)
     };
 }
 
+// API search type: read_text_file : String -> Io (Maybe String)
+// Returns a function that reads the content of a text file.
+inline
+std::function<maybe<std::string>()> read_text_file_maybe(
+    const std::string& filename)
+{
+    return [filename]() -> maybe<std::string>
+    {
+        std::ifstream input(filename);
+        if (!input.good())
+            return {};
+        return just(std::string(
+                std::istreambuf_iterator<std::string::value_type>(input),
+                std::istreambuf_iterator<std::string::value_type>()));
+    };
+}
+
 // API search type: read_binary_file : String -> Io [Int]
 // Returns a function that reads the content of a binary file.
 inline
