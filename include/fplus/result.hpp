@@ -195,7 +195,7 @@ bool operator != (const result<Ok, Error>& x, const result<Ok, Error>& y)
 // Lifts a function into the result functor.
 // A function that for example was able to convert and int into a string,
 // now can convert a result<int> into a result<string>.
-// An errors stays the same error, regardless of the conversion.
+// An error stays the same error, regardless of the conversion.
 template <typename Error,
     typename F,
     typename A = typename std::remove_const<typename std::remove_reference<
