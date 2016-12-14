@@ -59,6 +59,7 @@ Container repeat(std::size_t n, const Container& xs)
 
 // API search type: infixes : (Int, [a]) -> [[a]]
 // infixes(3, [1,2,3,4,5,6]) == [[1,2,3], [2,3,4], [3,4,5], [4,5,6]]
+// length must be > 0
 template <typename ContainerIn,
     typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut infixes(std::size_t length, const ContainerIn& xs)

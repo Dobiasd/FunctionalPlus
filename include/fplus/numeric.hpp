@@ -221,7 +221,7 @@ Out ceil(X x)
 }
 
 // API search type: int_power : (Int, Int) -> Int
-// integer power
+// integer power, only exponents >= 0
 template <typename X>
 X int_power(X base, X exp)
 {
@@ -375,7 +375,7 @@ namespace internal
 
 // API search type: cyclic_value : a -> (a -> a)
 // Modulo for floating point values.
-// Only positive denominators allowed;
+// circumfence must be > 0
 // cyclic_value(8)(3) == 3
 // cyclic_value(8)(11) == 3
 // cyclic_value(8)(19) == 3
@@ -400,7 +400,7 @@ std::function<X(X)> cyclic_value(X circumfence)
 }
 
 // API search type: cyclic_difference : a -> ((a, a) -> a)
-// circumfence has to be positive.
+// circumfence must be > 0
 // cyclic_difference(100)(5, 2) == 3
 // cyclic_difference(100)(2, 5) == 97
 // cyclic_difference(100)(3, -2) == 5
@@ -410,7 +410,7 @@ std::function<X(X)> cyclic_value(X circumfence)
 template <typename X>
 std::function<X(X, X)> cyclic_difference(X circumfence)
 {
-    assert(circumfence >= 0);
+    assert(circumfence > 0);
     return [circumfence](X a, X b) -> X
     {
         auto cyclic_value_f = cyclic_value(circumfence);
@@ -419,7 +419,7 @@ std::function<X(X, X)> cyclic_difference(X circumfence)
 }
 
 // API search type: cyclic_shortest_difference : a -> ((a, a) -> a)
-// circumfence has to be positive.
+// circumfence must be > 0
 // cyclic_shortest_difference(100)(5, 2) == 3
 // cyclic_shortest_difference(100)(2, 5) == -3
 // cyclic_shortest_difference(100)(3, -2) == 5
@@ -429,7 +429,7 @@ std::function<X(X, X)> cyclic_difference(X circumfence)
 template <typename X>
 std::function<X(X, X)> cyclic_shortest_difference(X circumfence)
 {
-    assert(circumfence >= 0);
+    assert(circumfence > 0);
     return [circumfence](X a, X b) -> X
     {
         auto diff_func = cyclic_difference(circumfence);
@@ -440,7 +440,7 @@ std::function<X(X, X)> cyclic_shortest_difference(X circumfence)
 }
 
 // API search type: cyclic_distance : a -> ((a, a) -> a)
-// circumfence has to be positive.
+// circumfence must be > 0
 // cyclic_distance(100)(2, 5) == 3
 // cyclic_distance(100)(5, 2) == 3
 // cyclic_distance(100)(-2, 3) == 5
@@ -451,7 +451,7 @@ std::function<X(X, X)> cyclic_shortest_difference(X circumfence)
 template <typename X>
 std::function<X(X, X)> cyclic_distance(X circumfence)
 {
-    assert(circumfence >= 0);
+    assert(circumfence > 0);
     return [circumfence](X a, X b) -> X
     {
         return abs(cyclic_shortest_difference(circumfence)(a, b));
