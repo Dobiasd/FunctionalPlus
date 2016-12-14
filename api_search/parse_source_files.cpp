@@ -199,6 +199,7 @@ void print_duplicates(const std::vector<std::string>& strs)
         std::cerr << "Duplicates!\n";
         std::cerr << fplus::show_cont(dups) << std::endl;
     }
+    std::cout << "---" << std::endl;
 }
 
 int main()
@@ -207,6 +208,7 @@ int main()
     const auto functions = fplus::sort_on(get_function_help_name,
             fplus::transform_and_concat(parse_code_file, code_files));
     const auto broken = get_broken_function_helps(functions);
+    std::cout << "broken:" << std::endl;
     if (fplus::is_not_empty(broken))
     {
         std::cout << fplus::show_cont_with_frame_and_newlines(
@@ -215,11 +217,15 @@ int main()
             0) << std::endl;
         return 1;
     }
+    std::cout << "---" << std::endl;
 
     using fplus::transform;
+    std::cout << "duplicate help names:" << std::endl;
     print_duplicates(transform(get_function_help_name, functions));
     //print_duplicates(transform(get_function_help_signature, functions));
+    std::cout << "duplicate help documentations:" << std::endl;
     print_duplicates(transform(get_function_help_documentation, functions));
+    std::cout << "duplicate help declarations:" << std::endl;
     print_duplicates(transform(get_function_help_declaration, functions));
 
     auto output = functions_to_elm_code(functions);
