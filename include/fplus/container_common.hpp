@@ -289,6 +289,22 @@ T elem_at_idx(std::size_t idx, const Container& xs)
     return *it;
 }
 
+// API search type: elem_at_idx_maybe : (Int, [a]) -> Maybe a
+// elem_at_idx_maybe(2, [7,6,5,4,3]) == Just 5
+// elem_at_idx_maybe(9, [7,6,5,4,3]) == Nothing
+template <typename Container,
+    typename T = typename Container::value_type>
+maybe<T> elem_at_idx_maybe(std::size_t idx, const Container& xs)
+{
+    if (size_of_cont(xs) < idx)
+    {
+        return {};
+    }
+    auto it = std::begin(xs);
+    std::advance(it, idx);
+    return *it;
+}
+
 // API search type: elems_at_idxs : ([Int], [a]) -> [a]
 // elem_at_idxs([1, 3], [7,6,5,4,3]) == [6, 4]
 template <typename Container,
