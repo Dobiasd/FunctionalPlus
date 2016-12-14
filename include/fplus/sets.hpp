@@ -26,7 +26,8 @@ bool set_includes(const SetType& set1, const SetType& set2)
 }
 
 // API search type: unordered_set_includes : (Unordered_Set a, Unordered_Set a) -> Bool
-// Checks if every element of the second unordered_set is also present in the first unordered_set.
+// Checks if every element of the second unordered_set
+// is also present in the first unordered_set.
 // Also known as is_subset_of.
 template <typename UnorderSetType>
 bool unordered_set_includes(const UnorderSetType& set1,
@@ -94,7 +95,8 @@ SetType set_difference(const SetType& set1, const SetType& set2)
     return result;
 }
 // API search type: unordered_set_difference : (Unordered_Set a, Unordered_Set a) -> Unordered_Set a
-// Returns the elements in unordered_set1 that are not present in unordered_set2.
+// Returns the elements in unordered_set1
+// that are not present in unordered_set2.
 template <typename UnorderSetType>
 UnorderSetType unordered_set_difference(const UnorderSetType& set1,
 const UnorderSetType& set2)
