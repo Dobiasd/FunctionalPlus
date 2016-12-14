@@ -967,42 +967,36 @@ TEST_CASE("container_common_test, map")
 TEST_CASE("container_common_test, set")
 {
     using namespace fplus;
-    typedef std::set<int> IntSet;
-    typedef std::vector<IntSet> IntSets;
-    IntSet intSet1 = {0,1,2,3};
-    IntSet intSet2 = {2,3,4,5};
-    IntSet intSet3 = {0,2};
-    IntSet intSet4 = {2,3};
-    IntSet intSet5 = {0,1};
-    IntSet intSet6 = {0,1,2,3,4,5};
-    IntSet intSet7 = {0,1,4,5};
-    IntSet intSet8 = {2};
-    REQUIRE_EQ(set_includes(intSet1, intSet3), true);
-    REQUIRE_EQ(set_includes(intSet3, intSet1), false);
-    REQUIRE_EQ(set_includes(intSet1, intSet2), false);
-    REQUIRE_EQ(set_merge(intSet1, intSet2), intSet6);
-    REQUIRE_EQ(set_merge(intSet1, intSet3), intSet1);
-    REQUIRE_EQ(set_intersection(intSet1, intSet2), intSet4);
-    REQUIRE_EQ(set_difference(intSet1, intSet2), intSet5);
-    REQUIRE_EQ(set_symmetric_difference(intSet1, intSet2), intSet7);
-    REQUIRE_EQ(set_intersection(intSet1, intSet2), intSet4);
-    REQUIRE_EQ(sets_intersection(IntSets({intSet1, intSet2, intSet3})), intSet8);
+    using IntSet = std::set<int>;
+    using setVector = std::vector<IntSet>;
+    using IntUnordSet = std::unordered_set<int>;
+    using unordSetVector = std::vector<IntUnordSet>;
 
-    typedef std::unordered_set<int> IntUnordSet;
+    //std::set tests
+    REQUIRE(set_includes(IntSet({0,1,2,3}), IntSet({0,2})));
+    REQUIRE_FALSE(set_includes(IntSet({0,2}), IntSet({0,1,2,3})));
+    REQUIRE_FALSE(set_includes(IntSet({0,1,2,3}), IntSet({2,3,4,5})));
+    REQUIRE_EQ(set_merge(IntSet({0,1,2,3}), IntSet({2,3,4,5})), IntSet({0,1,2,3,4,5}));
+    REQUIRE_EQ(set_merge(IntSet({0,1,2,3}), IntSet({0,2})), IntSet({0,1,2,3}));
+    REQUIRE_EQ(set_intersection(IntSet({0,1,2,3}), IntSet({2,3,4,5})), IntSet({2,3}));
+    REQUIRE_EQ(set_difference(IntSet({0,1,2,3}), IntSet({2,3,4,5})), IntSet({0,1}));
+    REQUIRE_EQ(set_symmetric_difference(IntSet({0,1,2,3}), IntSet({2,3,4,5})), IntSet({0,1,4,5}));
+    REQUIRE_EQ(set_intersection(IntSet({0,1,2,3}), IntSet({2,3,4,5})), IntSet({2,3}));
+    REQUIRE_EQ(sets_intersection(setVector({IntSet({0,1,2,3}), IntSet({2,3,4,5}), IntSet({0,2})})), IntSet({2}));
 
-    IntUnordSet intUnordSet1 = {0,1,2,3};
-    IntUnordSet intUnordSet2 = {2,3,4,5};
-    IntUnordSet intUnordSet3 = {0,2};
-    IntUnordSet intUnordSet4 = {2,3};
-    IntUnordSet intUnordSet5 = {0,1};
-    IntUnordSet intUnordSet6 = {0,1,2,3,4,5};
-    IntUnordSet intUnordSet7 = {0,1,4,5};
+    //set::unordered_set tests
+    REQUIRE(unordered_set_includes(IntUnordSet({0,1,2,3}), IntUnordSet({0,2})));
+    REQUIRE_FALSE(unordered_set_includes(IntUnordSet({0,2}), IntUnordSet({0,1,2,3})));
+    REQUIRE_FALSE(unordered_set_includes(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})));
+    REQUIRE_EQ(set_merge(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})), IntUnordSet({0,1,2,3,4,5}));
+    REQUIRE_EQ(set_merge(IntUnordSet({0,1,2,3}), IntUnordSet({0,2})), IntUnordSet({0,1,2,3}));
+    REQUIRE_EQ(unordered_set_intersection(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})), IntUnordSet({2,3}));
+    REQUIRE_EQ(unordered_set_difference(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})), IntUnordSet({0,1}));
+    REQUIRE_EQ(unordered_set_symmetric_difference(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})), IntUnordSet({0,1,4,5}));
+    REQUIRE_EQ(unordered_set_intersection(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})), IntUnordSet({2,3}));
+    REQUIRE_EQ(unordered_sets_intersection(unordSetVector({IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5}), IntUnordSet({0,2})})), IntUnordSet({2}));
 
-    REQUIRE_EQ(unordered_set_includes(intUnordSet1, intUnordSet3), true);
-    REQUIRE_EQ(unordered_set_includes(intUnordSet3, intUnordSet1), false);
-    REQUIRE_EQ(unordered_set_includes(intUnordSet1, intUnordSet2), false);
-    REQUIRE_EQ(set_merge(intUnordSet1, intUnordSet2), intUnordSet6);
-    REQUIRE_EQ(set_merge(intUnordSet1, intUnordSet3), intUnordSet1);
+
 }
 
 TEST_CASE("container_common_test, count_occurrences_by")
