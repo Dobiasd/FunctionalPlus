@@ -97,10 +97,10 @@ TEST_CASE("result_test, lift_both")
 TEST_CASE("result_test, unify_result")
 {
     using namespace fplus;
-    const auto x = ok<std::string, std::string>("2");
-    const auto y = error<std::string, std::string>("an error");
-    REQUIRE_EQ(unify_result(x), "2");
-    REQUIRE_EQ(unify_result(y), "an error");
+    const auto x = ok<int, std::string>(2);
+    const auto y = error<int, std::string>("an error");
+    REQUIRE_EQ(unify_result(show<int>, to_upper_case<std::string>, x), "2");
+    REQUIRE_EQ(unify_result(show<int>, to_upper_case<std::string>, y), "AN ERROR");
 }
 
 TEST_CASE("result_test, equality")

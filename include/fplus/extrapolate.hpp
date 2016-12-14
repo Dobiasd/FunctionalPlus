@@ -12,7 +12,8 @@
 namespace fplus
 {
 
-// API search type: elem_at_idx_or_reflect101 : (Int, [a]) -> Maybe a
+// API search type: elem_at_idx_or_nothing : (Int, [a]) -> Maybe a
+// Returns nothing if index is out of range.
 template <typename Container,
     typename T = typename Container::value_type>
 maybe<T> elem_at_idx_or_nothing(signed int idx, const Container& xs)

@@ -237,14 +237,27 @@ std::function<result<C, D>(const result<A, B>&)> lift_result_both(F f, G g)
     };
 }
 
-
-// True if ok values are the same or if errors are the same.
-template <typename Ok_and_Error>
-Ok_and_Error unify_result(const result<Ok_and_Error, Ok_and_Error>& x)
+// API search type: unify_result : ((a -> c), (b -> c), Result a b) -> c
+// Extracts the value (Ok or Error) from a Result
+// as defined by the two given functions.
+template <
+    typename F,
+    typename G,
+    typename A = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename C = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::result_type>::type>::type,
+    typename B = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
+    typename D = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<G>::result_type>::type>::type>
+C unify_result(F f, G g, const result<A, B>& r)
 {
-    if (is_ok(x))
-        return unsafe_get_ok(x);
-    return unsafe_get_error(x);
+    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    static_assert(std::is_same<C, D>::value, "Both functions must return the same type.");
+    if (is_ok(r))
+        return f(unsafe_get_ok(r));
+    return g(unsafe_get_error(r));
 }
 
 // API search type: and_then_result : ((a -> Result b c), (b -> Result d c)) -> (a -> Result d c)

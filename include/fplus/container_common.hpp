@@ -292,6 +292,7 @@ T elem_at_idx(std::size_t idx, const Container& xs)
 // API search type: elem_at_idx_maybe : (Int, [a]) -> Maybe a
 // elem_at_idx_maybe(2, [7,6,5,4,3]) == Just 5
 // elem_at_idx_maybe(9, [7,6,5,4,3]) == Nothing
+// Use elem_at_idx_or_nothing if you want to provide a signed index type.
 template <typename Container,
     typename T = typename Container::value_type>
 maybe<T> elem_at_idx_maybe(std::size_t idx, const Container& xs)
