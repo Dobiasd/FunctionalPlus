@@ -213,6 +213,40 @@ std::function<result<B, Error>(const result<A, Error>&)> lift_result(F f)
     };
 }
 
+// API search type: lift_result_both : ((a -> c), (b -> d)) -> (Result a b -> Result c d)
+// Lifts two functions into the result functor.
+template <
+    typename F,
+    typename G,
+    typename A = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename C = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::result_type>::type>::type,
+    typename B = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
+    typename D = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<G>::result_type>::type>::type>
+std::function<result<C, D>(const result<A, B>&)> lift_result_both(F f, G g)
+{
+    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    return [f, g](const result<A, B>& r) -> result<C, D>
+    {
+        if (is_ok(r))
+            return ok<C, D>(f(unsafe_get_ok(r)));
+        return error<C, D>(g(unsafe_get_error(r)));
+    };
+}
+
+
+// True if ok values are the same or if errors are the same.
+template <typename Ok_and_Error>
+Ok_and_Error unify_result(const result<Ok_and_Error, Ok_and_Error>& x)
+{
+    if (is_ok(x))
+        return unsafe_get_ok(x);
+    return unsafe_get_error(x);
+}
+
 // API search type: and_then_result : ((a -> Result b c), (b -> Result d c)) -> (a -> Result d c)
 // Monadic bind.
 // Composes two functions taking a value and returning result.

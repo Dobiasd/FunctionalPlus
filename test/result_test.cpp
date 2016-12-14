@@ -85,6 +85,24 @@ TEST_CASE("result_test, lift")
     REQUIRE_EQ((lift_result<std::string>(SquareAndSquare))(x), (ok<int, std::string>(16)));
 }
 
+TEST_CASE("result_test, lift_both")
+{
+    using namespace fplus;
+    const auto x = ok<int, std::string>(2);
+    const auto y = error<int, std::string>("an error");
+    REQUIRE_EQ(lift_result_both(square<int>, to_upper_case<std::string>)(x), (ok<int, std::string>(4)));
+    REQUIRE_EQ(lift_result_both(square<int>, to_upper_case<std::string>)(y), (error<int, std::string>("AN ERROR")));
+}
+
+TEST_CASE("result_test, unify_result")
+{
+    using namespace fplus;
+    const auto x = ok<std::string, std::string>("2");
+    const auto y = error<std::string, std::string>("an error");
+    REQUIRE_EQ(unify_result(x), "2");
+    REQUIRE_EQ(unify_result(y), "an error");
+}
+
 TEST_CASE("result_test, equality")
 {
     using namespace fplus;
@@ -98,7 +116,6 @@ TEST_CASE("result_test, equality")
     REQUIRE((ok<int, std::string>(1)) != (error<int, std::string>(std::string("fail"))));
     REQUIRE(error<int>(std::string("fail")) == (error<int>(std::string("fail"))));
     REQUIRE(error<int>(std::string("fail 1")) != (error<int>(std::string("fail 2"))));
-
 }
 
 TEST_CASE("result_test, transform_and_keep_oks")
