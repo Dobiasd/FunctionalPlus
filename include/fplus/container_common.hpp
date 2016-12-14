@@ -277,6 +277,7 @@ Container replace_range(std::size_t idx_begin,
 
 // API search type: elem_at_idx : (Int, [a]) -> a
 // elem_at_idx(2, [7,6,5,4,3]) == 5
+// Unsafe!
 // Curried version: nth_element
 template <typename Container,
     typename T = typename Container::value_type>

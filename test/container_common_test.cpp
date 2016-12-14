@@ -651,6 +651,12 @@ TEST_CASE("container_common_test, is_elem_of")
     REQUIRE_EQ(is_elem_of(4, xs), false);
 }
 
+TEST_CASE("container_common_test, elem_at_idx")
+{
+    using namespace fplus;
+    REQUIRE_EQ(elem_at_idx(2, xs), 2);
+}
+
 TEST_CASE("container_common_test, contains")
 {
     using namespace fplus;
