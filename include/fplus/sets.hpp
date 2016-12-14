@@ -31,12 +31,9 @@ bool set_includes(const SetType& set1, const SetType& set2)
 template <typename UnorderedSetType>
 bool unordered_set_includes(const UnorderedSetType& set1, const UnorderedSetType& set2)
 {
-    for(const auto& x : set2)
-    {
-        if (set1.find(x) == set1.end())
-            return false;
-    }
-    return true;
+    auto first_not_included = std::find_if(set2.begin(), set2.end(),
+                                           [&](const typename UnorderedSetType::value_type& x) -> bool { return set1.find(x) == set1.end();});
+    return first_not_included == set2.end();
 }
 
 // API search type: set_merge : (Set a, Set a) -> Set a
@@ -65,6 +62,21 @@ SetType set_intersection(const SetType& set1, const SetType& set2)
     return result;
 }
 
+
+// API search type: unordered_set_intersection : (Unordered_Set a, Unordered_Set a) -> Unordered_Set a
+// Returns the intersection of both unordered_sets.
+template <typename UnorderedSetType>
+UnorderedSetType unordered_set_intersection(const UnorderedSetType& set1, const UnorderedSetType& set2)
+{
+    UnorderedSetType result;
+    auto itOut = internal::get_back_inserter(result);
+    std::copy_if(std::begin(set2), std::end(set2),
+                          itOut, [&](const typename UnorderedSetType::value_type &x) -> bool {return set1.find(x) != set1.end();});
+    return result;
+}
+
+
+
 // API search type: set_difference : (Set a, Set a) -> Set a
 // Returns the elements in set1 that are not present in set2.
 template <typename SetType>
@@ -75,6 +87,17 @@ SetType set_difference(const SetType& set1, const SetType& set2)
     std::set_difference(std::begin(set1), std::end(set1),
         std::begin(set2), std::end(set2),
         itOut);
+    return result;
+}
+// API search type: unordered_set_difference : (Unordered_Set a, Unordered_Set a) -> Unordered_Set a
+// Returns the elements in unordered_set1 that are not present in unordered_set2.
+template <typename UnorderedSetType>
+UnorderedSetType unordered_set_difference(const UnorderedSetType& set1, const UnorderedSetType& set2)
+{
+    UnorderedSetType result;
+    auto itOut = internal::get_back_inserter(result);
+    std::copy_if(std::begin(set1), std::end(set1),
+                 itOut, [&](const typename UnorderedSetType::value_type &x) -> bool {return set2.find(x) == set2.end();});
     return result;
 }
 
@@ -91,6 +114,20 @@ SetType set_symmetric_difference(const SetType& set1, const SetType& set2)
     return result;
 }
 
+// API search type: unordered_set_symmetric_difference : (Unordered_Set a, Unordered_Set a) -> Unordered_Set a
+// Returns the symmetric difference of both unordered_sets.
+template <typename UnorderedSetType>
+UnorderedSetType unordered_set_symmetric_difference(const UnorderedSetType& set1, const UnorderedSetType& set2)
+{
+    UnorderedSetType result;
+    auto itOut = internal::get_back_inserter(result);
+    std::copy_if(std::begin(set1), std::end(set1),
+                 itOut, [&](const typename UnorderedSetType::value_type &x) -> bool {return set2.find(x) == set2.end();});
+    std::copy_if(std::begin(set2), std::end(set2),
+                 itOut, [&](const typename UnorderedSetType::value_type &x) -> bool {return set1.find(x) == set1.end();});
+    return result;
+}
+
 // API search type: sets_intersection : [Set a] -> Set a
 // Returns the intersection of the given sets.
 // Also known as intersect_many.
@@ -99,6 +136,16 @@ template <typename ContainerIn,
 SetType sets_intersection(const ContainerIn& sets)
 {
     return fold_left_1(set_intersection<SetType>, sets);
+}
+
+// API search type: unordered_sets_intersection : [Unordered_Set a] -> Unordered_Set a
+// Returns the intersection of the given unordered_sets.
+// Also known as intersect_many.
+template <typename ContainerIn,
+    typename UnordSetType = typename ContainerIn::value_type>
+UnordSetType unordered_sets_intersection(const ContainerIn& sets)
+{
+    return fold_left_1(unordered_set_intersection<UnordSetType>, sets);
 }
 
 } // namespace fplus
