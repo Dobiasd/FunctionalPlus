@@ -237,7 +237,7 @@ std::function<result<C, D>(const result<A, B>&)> lift_result_both(F f, G g)
     };
 }
 
-// API search type: unify_result : ((a -> c), (b -> c), Result a b) -> c
+// API search type: unify_result : ((a -> c), (b -> c)) -> (Result a b -> c)
 // Extracts the value (Ok or Error) from a Result
 // as defined by the two given functions.
 template <
@@ -251,13 +251,16 @@ template <
         typename utils::function_traits<G>::template arg<0>::type>::type>::type,
     typename D = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<G>::result_type>::type>::type>
-C unify_result(F f, G g, const result<A, B>& r)
+std::function<C(const result<A, B>&)> unify_result(F f, G g)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(std::is_same<C, D>::value, "Both functions must return the same type.");
-    if (is_ok(r))
-        return f(unsafe_get_ok(r));
-    return g(unsafe_get_error(r));
+    return [f, g](const result<A, B>& r) -> C
+    {
+        if (is_ok(r))
+            return f(unsafe_get_ok(r));
+        return g(unsafe_get_error(r));
+    };
 }
 
 // API search type: and_then_result : ((a -> Result b c), (b -> Result d c)) -> (a -> Result d c)
