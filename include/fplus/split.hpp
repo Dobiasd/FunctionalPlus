@@ -539,16 +539,20 @@ std::pair<Container, Container> span(UnaryPredicate pred, const Container& xs)
 }
 
 // API search type: divvy : (Int, Int, [a]) -> [[a]]
-// Generates overlapping subsequences.
+// Generates subsequences overlapping with a specific step.
 // divvy(5, 2, [0,1,2,3,4,5,6,7,8,9]) == [[0,1,2,3,4],[2,3,4,5,6],[4,5,6,7,8]]
-// divvy(n, 1, xs) is also known as aperture.
+// divvy(length, 1, xs) is also known as aperture
+// divvy(1, step, xs) is also known as stride
+//     (but withouts the nested lists in the result)
 template <typename ContainerIn,
         typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut divvy(std::size_t length, std::size_t step, const ContainerIn& xs)
 {
+    assert(length > 0);
+    assert(step > 0);
     const auto start_idxs =
         generate_range_step<std::vector<std::size_t>, std::size_t>(
-            0, size_of_cont(xs) - length, step);
+            0, size_of_cont(xs) - (length - 1), step);
 
     ContainerOut result;
     internal::prepare_container(result, size_of_cont(start_idxs));
@@ -559,6 +563,51 @@ ContainerOut divvy(std::size_t length, std::size_t step, const ContainerIn& xs)
         *itOut = get_range(start_idx, start_idx + length, xs);
     }
     return result;
+}
+
+// API search type: aperture : (Int, [a]) -> [[a]]
+// Generates overlapping subsequences.
+// aperture(5, [0,1,2,3,4,5,6]) == [[0,1,2,3,4],[1,2,3,4,5],[2,3,4,5,6]]
+template <typename ContainerIn,
+        typename ContainerOut = std::vector<ContainerIn>>
+ContainerOut aperture(std::size_t length, const ContainerIn& xs)
+{
+    assert(length > 0);
+    const auto start_idxs =
+        generate_range<std::vector<std::size_t>, std::size_t>(
+            0, size_of_cont(xs) - (length - 1));
+
+    ContainerOut result;
+    internal::prepare_container(result, size_of_cont(start_idxs));
+    auto itOut = internal::get_back_inserter(result);
+
+    for (const auto start_idx : start_idxs)
+    {
+        *itOut = get_range(start_idx, start_idx + length, xs);
+    }
+    return result;
+}
+
+// API search type: stride : (Int, [a]) -> [a]
+// Keeps every nth element.
+// stride(3, [0,1,2,3,4,5,6,7]) == [0,3,6]
+template <typename Container>
+Container stride(std::size_t step, const Container& xs)
+{
+    assert(step > 0);
+    Container ys;
+    auto it = internal::get_back_inserter<Container>(ys);
+    auto it_in = std::begin(xs);
+    std::size_t i = 0;
+    const auto xs_size = size_of_cont(xs);
+    while(it_in != std::end(xs))
+    {
+        *it = *it_in;
+        std::size_t increment = std::min(step, xs_size - i);
+        std::advance(it_in, increment);
+        i += increment;
+    }
+    return ys;
 }
 
 // API search type: winsorize : (Float, [Float]) -> [Float]
@@ -583,7 +632,6 @@ Container winsorize(double trim_ratio, const Container& xs)
     typedef typename Container::value_type T;
     if (is_empty(parts[1]))
     {
-        std::cout << "asdasd" << std::endl;
         return Container(size_of_cont(xs_sorted), median(xs_sorted));
     }
     else

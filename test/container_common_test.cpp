@@ -1090,3 +1090,17 @@ TEST_CASE("container_common_test, divvy")
     using namespace fplus;
     REQUIRE_EQ(divvy(5, 2, IntVector({0,1,2,3,4,5,6,7,8,9})), IntVectors({{0,1,2,3,4},{2,3,4,5,6},{4,5,6,7,8}}));
 }
+
+TEST_CASE("container_common_test, aperture")
+{
+    using namespace fplus;
+    REQUIRE_EQ(aperture(5, IntVector({0,1,2,3,4,5,6})), IntVectors({{0,1,2,3,4},{1,2,3,4,5},{2,3,4,5,6}}));
+    REQUIRE_EQ(divvy(5, 1, IntVector({0,1,2,3,4,5,6})), IntVectors({{0,1,2,3,4},{1,2,3,4,5},{2,3,4,5,6}}));
+}
+
+TEST_CASE("container_common_test, stride")
+{
+    using namespace fplus;
+    REQUIRE_EQ(stride(3, IntVector({0,1,2,3,4,5,6,7})), IntVector({0,3,6}));
+    REQUIRE_EQ(divvy(1, 3, IntVector({0,1,2,3,4,5,6,7})), IntVectors({{0},{3},{6}}));
+}
