@@ -187,6 +187,7 @@ ContainerOut convert_container_and_elems(const ContainerIn& xs)
 
 // API search type: get_range : (Int, Int, [a]) -> [a]
 // get_range(2, 5, [0,1,2,3,4,5,6,7,8]) == [2,3,4]
+// Also known as slice.
 // crashes on invalid indices
 template <typename Container>
 Container get_range
