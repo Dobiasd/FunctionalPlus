@@ -870,7 +870,7 @@ TEST_CASE("container_common_test, interleave")
     typedef std::vector<IntVector> IntVectors;
     REQUIRE_EQ(interleave(IntVectors()), IntVector());
     REQUIRE_EQ(interleave(IntVectors({})), IntVector());
-    REQUIRE_EQ(interleave(IntVectors({{}})), IntVector());
+    REQUIRE_EQ(interleave(IntVectors({IntVector({})})), IntVector());
     REQUIRE_EQ(interleave(IntVectors({{},{}})), IntVector());
     REQUIRE_EQ(interleave(IntVectors({{1},{}})), IntVector({1}));
     REQUIRE_EQ(interleave(IntVectors({{1,2,3},{4,5},{6,7,8}})), IntVector({1,4,6,2,5,7,3,8}));
