@@ -204,3 +204,31 @@ TEST_CASE("filter_test, trim_token")
     auto result = fplus::trim_token(token, v);
     REQUIRE_EQ(result, std::vector<int>({7, 8, 9}));
 }
+
+TEST_CASE("filter_test, adjacent_keep_snd_if")
+{
+    const std::vector<int> v = { 0, 1, 7, 8, 9, 0, 1 };
+    REQUIRE_EQ(fplus::adjacent_keep_snd_if(std::greater<int>(), v), std::vector<int>({0,0}));
+    REQUIRE_EQ(fplus::adjacent_keep_snd_if(std::less<int>(), v), std::vector<int>({0,1,7,8,9,1}));
+}
+
+TEST_CASE("filter_test, adjacent_drop_snd_if")
+{
+    const std::vector<int> v = { 0, 1, 7, 8, 9, 0, 1 };
+    REQUIRE_EQ(fplus::adjacent_drop_snd_if(std::less<int>(), v), std::vector<int>({0,0}));
+    REQUIRE_EQ(fplus::adjacent_drop_snd_if(std::greater<int>(), v), std::vector<int>({0,1,7,8,9,1}));
+}
+
+TEST_CASE("filter_test, adjacent_drop_fst_if")
+{
+    const std::vector<int> v = { 0, 1, 7, 8, 9, 0, 1 };
+    REQUIRE_EQ(fplus::adjacent_drop_fst_if(std::less<int>(), v), std::vector<int>({9,1}));
+    REQUIRE_EQ(fplus::adjacent_drop_fst_if(std::greater<int>(), v), std::vector<int>({0,1,7,8,0,1}));
+}
+
+TEST_CASE("filter_test, adjacent_keep_fst_if")
+{
+    const std::vector<int> v = { 0, 1, 7, 8, 9, 0, 1 };
+    REQUIRE_EQ(fplus::adjacent_keep_fst_if(std::greater<int>(), v), std::vector<int>({9,1}));
+    REQUIRE_EQ(fplus::adjacent_keep_fst_if(std::less<int>(), v), std::vector<int>({0,1,7,8,0,1}));
+}

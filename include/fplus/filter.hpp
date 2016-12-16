@@ -319,4 +319,102 @@ Container trim_token(const Container& token, const Container& xs)
     return trim_token_right(token, trim_token_left(token, xs));
 }
 
+// API search type: adjacent_keep_snd_if : (((a, a) -> Bool), [a]) -> [a]
+// For each pair of adjacent elements in a source range,
+// evaluate the specified binary predicate.
+// If the predicate evaluates to false,
+// the second element of the pair is removed from the result range;
+// otherwise, it is included.
+// The first element in the source range is always included.
+// Also known as adjacent_filter.
+template <typename BinaryPredicate, typename Container>
+Container adjacent_keep_snd_if(BinaryPredicate p, const Container& xs)
+{
+    if (is_empty(xs))
+    {
+        return {};
+    }
+    internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
+    Container result;
+    auto it = internal::get_back_inserter<Container>(result);
+    auto it_in = std::begin(xs);
+    *it = *it_in;
+    while (std::next(it_in) != std::end(xs))
+    {
+        if (p(*it_in, *std::next(it_in)))
+        {
+            *it = *std::next(it_in);
+        }
+        std::advance(it_in, 1);
+    }
+    return result;
+}
+
+// API search type: adjacent_drop_fst_if : (((a, a) -> Bool), [a]) -> [a]
+// For each pair of adjacent elements in a source range,
+// evaluate the specified binary predicate.
+// If the predicate evaluates to true,
+// the first element of the pair is removed from the result range;
+// otherwise, it is included.
+// The last element in the source range is always included.
+// Also known as adjacent_remove_if.
+template <typename BinaryPredicate, typename Container>
+Container adjacent_drop_fst_if(BinaryPredicate p, const Container& xs)
+{
+    if (is_empty(xs))
+    {
+        return {};
+    }
+    internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
+    Container result;
+    auto it = internal::get_back_inserter<Container>(result);
+    auto it_in = std::begin(xs);
+    while (std::next(it_in) != std::end(xs))
+    {
+        if (!p(*it_in, *std::next(it_in)))
+        {
+            *it = *it_in;
+        }
+        std::advance(it_in, 1);
+    }
+    *it = *it_in;
+    return result;
+}
+
+// API search type: adjacent_drop_snd_if : (((a, a) -> Bool), [a]) -> [a]
+// For each pair of adjacent elements in a source range,
+// evaluate the specified binary predicate.
+// If the predicate evaluates to true,
+// the second element of the pair is removed from the result range;
+// otherwise, it is included.
+// The first element in the source range is always included.
+template <typename BinaryPredicate, typename Container>
+Container adjacent_drop_snd_if(BinaryPredicate p, const Container& xs)
+{
+    typedef typename Container::value_type T;
+    const auto not_p = [&p](const T& x, const T& y) -> bool
+    {
+        return !p(x, y);
+    };
+    return adjacent_keep_snd_if(not_p, xs);
+}
+
+// API search type: adjacent_keep_fst_if : (((a, a) -> Bool), [a]) -> [a]
+// For each pair of adjacent elements in a source range,
+// evaluate the specified binary predicate.
+// If the predicate evaluates to false,
+// the first element of the pair is removed from the result range;
+// otherwise, it is included.
+// The last element in the source range is always included.
+template <typename BinaryPredicate, typename Container>
+Container adjacent_keep_fst_if(BinaryPredicate p, const Container& xs)
+{
+    typedef typename Container::value_type T;
+    const auto not_p = [&p](const T& x, const T& y) -> bool
+    {
+        return !p(x, y);
+    };
+    return adjacent_drop_fst_if(not_p, xs);
+}
+
 } // namespace fplus
