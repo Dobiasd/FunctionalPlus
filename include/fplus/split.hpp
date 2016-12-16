@@ -7,13 +7,11 @@
 #pragma once
 
 #include "fplus/container_common.hpp"
+#include "fplus/container_properties.hpp"
 #include "fplus/generate.hpp"
-#include "fplus/search.hpp"
-#include "fplus/transform.hpp"
 #include "fplus/pairs.hpp"
 #include "fplus/numeric.hpp"
-
-#include <iostream> // todo raus
+#include "fplus/search.hpp"
 
 namespace fplus
 {
@@ -420,10 +418,13 @@ template <typename ContainerIn,
         typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut split_every(std::size_t n, const ContainerIn& xs)
 {
-    return split_at_idxs(
-        generate_range_step<std::vector<std::size_t>, std::size_t>(
-            n, size_of_cont(xs), n),
-        xs);
+    return split_at_idxs<
+        std::vector<std::size_t>,
+        ContainerIn,
+        ContainerOut>(
+            generate_range_step<std::vector<std::size_t>, std::size_t>(
+                n, size_of_cont(xs), n),
+            xs);
 }
 
 // API search type: split_by_token : ([a], Bool, [a]) -> [[a]]

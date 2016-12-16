@@ -12,6 +12,7 @@
 #include "fplus/maybe.hpp"
 #include "fplus/maps.hpp"
 #include "fplus/result.hpp"
+#include "fplus/split.hpp"
 #include "fplus/composition.hpp"
 #include "fplus/function_traits.hpp"
 
@@ -81,33 +82,53 @@ ContainerOut transform_and_concat(F f, const ContainerIn& xs)
     return concat(transform(f, xs));
 }
 
-// API search type: transpose : [[a]] -> [[a]]
-// [[1, 2, 3], [4, 5, 6]] -> [[1, 4], [2, 5], [3, 6]]
-template <typename Container>
-Container transpose(const Container& grid2d)
+// API search type: interleave : [[a]] -> [a]
+// interleave([[1,2,3],[4,5],[6,7,8]]) == [1,4,6,2,5,7,3,8]
+template <typename ContainerIn,
+    typename ContainerOut = typename ContainerIn::value_type>
+ContainerOut interleave(const ContainerIn& xss)
 {
-    std::size_t height = size_of_cont(grid2d);
-    if (height == 0)
-        return grid2d;
+    typedef typename ContainerIn::value_type inner_t;
+    typedef std::vector<typename inner_t::const_iterator> its_t;
+    const auto inner_cbegin = [](const inner_t& xs) { return xs.cbegin(); };
+    const auto inner_cend = [](const inner_t& xs) { return xs.cend(); };
+    auto it_pairs = zip(
+        transform_convert<its_t>(inner_cbegin, xss),
+        transform_convert<its_t>(inner_cend, xss));
 
-    typedef typename Container::value_type Row;
-    auto rowLenghts = transform(size_of_cont<Row>, grid2d);
-    assert(all_the_same(rowLenghts));
-    std::size_t width = rowLenghts.front();
-
-    Container result;
-    internal::prepare_container(result, width);
-
-    for (std::size_t x = 0; x < width; ++x)
+    ContainerOut result;
+    const std::size_t length = sum(transform(size_of_cont<inner_t>, xss));
+    internal::prepare_container(result, length);
+    auto it_out = internal::get_back_inserter<ContainerOut>(result);
+    bool still_appending = true;
+    while (still_appending)
     {
-        *internal::get_back_inserter(result) = Row();
-        auto itOutRow = internal::get_back_inserter(result.back());
-        for (std::size_t y = 0; y < height; ++y)
+        still_appending = false;
+        for (auto& it_pair : it_pairs)
         {
-            *itOutRow = grid2d[y][x];
+            if (it_pair.first != it_pair.second)
+            {
+                *it_out = *it_pair.first;
+                still_appending = true;
+                ++it_pair.first;
+            }
         }
     }
     return result;
+}
+
+// API search type: transpose : [[a]] -> [[a]]
+// transpose([[1,2,3],[4,5,6],[7,8,9]]) == [[1,4,7],[2,5,8],[3,6,9]]
+// transpose([[1,2,3],[4,5],[7,8,9]]) == [[1,4,7],[2,5,8],[3,9]]
+template <typename Container>
+Container transpose(const Container& rows)
+{
+    if (is_empty(rows))
+    {
+        return {};
+    }
+    return split_every<typename Container::value_type, Container>(
+        size_of_cont(rows), interleave(rows));
 }
 
 // API search type: shuffle : [a] -> [a]

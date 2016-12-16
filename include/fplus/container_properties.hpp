@@ -12,7 +12,6 @@
 #include "fplus/maybe.hpp"
 #include "fplus/numeric.hpp"
 #include "fplus/search.hpp"
-#include "fplus/transform.hpp"
 #include "fplus/composition.hpp"
 #include "fplus/sets.hpp"
 

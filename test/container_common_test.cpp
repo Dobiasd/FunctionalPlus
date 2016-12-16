@@ -864,14 +864,32 @@ TEST_CASE("container_common_test, subsequence")
     REQUIRE_EQ(is_subsequence_of(IntVector({ 3,1 }), xs), false);
 }
 
+TEST_CASE("container_common_test, interleave")
+{
+    using namespace fplus;
+    typedef std::vector<IntVector> IntVectors;
+    REQUIRE_EQ(interleave(IntVectors()), IntVector());
+    REQUIRE_EQ(interleave(IntVectors({})), IntVector());
+    REQUIRE_EQ(interleave(IntVectors({{}})), IntVector());
+    REQUIRE_EQ(interleave(IntVectors({{},{}})), IntVector());
+    REQUIRE_EQ(interleave(IntVectors({{1},{}})), IntVector({1}));
+    REQUIRE_EQ(interleave(IntVectors({{1,2,3},{4,5},{6,7,8}})), IntVector({1,4,6,2,5,7,3,8}));
+    REQUIRE_EQ(interleave(IntVectors({{1,2,3},{4,5},{6,7,8}})), IntVector({1,4,6,2,5,7,3,8}));
+}
+
 TEST_CASE("container_common_test, transpose")
 {
     using namespace fplus;
-    typedef std::vector<IntVector> IntGrid2d;
-    REQUIRE_EQ(transpose(IntGrid2d({})), IntGrid2d({}));
-    REQUIRE_EQ(transpose(IntGrid2d({ { 1, 2 } })), IntGrid2d({ { 1 }, { 2 } }));
-    REQUIRE_EQ(transpose(IntGrid2d({ { 1, 2 }, { 3, 4 } })), IntGrid2d({ { 1, 3 }, { 2, 4 } }));
-    REQUIRE_EQ(transpose(IntGrid2d({ { 1, 2, 3 }, { 4, 5, 6 } })), IntGrid2d({ { 1, 4 }, { 2, 5 }, { 3, 6 } }));
+    typedef std::vector<IntVector> IntVectors;
+    REQUIRE_EQ(transpose(IntVectors()), IntVectors());
+    REQUIRE_EQ(transpose(IntVectors({})), IntVectors());
+    REQUIRE_EQ(transpose(IntVectors({},{})), IntVectors());
+    REQUIRE_EQ(transpose(IntVectors({ { 1 }, { 2 } })), IntVectors({ { 1, 2 } }));
+    REQUIRE_EQ(transpose(IntVectors({ { 1, 2 } })), IntVectors({ { 1 }, { 2 } }));
+    REQUIRE_EQ(transpose(IntVectors({ { 1, 2 }, { 3, 4 } })), IntVectors({ { 1, 3 }, { 2, 4 } }));
+    REQUIRE_EQ(transpose(IntVectors({ { 1, 2, 3 }, { 4, 5, 6 } })), IntVectors({ { 1, 4 }, { 2, 5 }, { 3, 6 } }));
+    REQUIRE_EQ(transpose(IntVectors({{1,2,3},{4,5,6},{7,8,9}})), IntVectors({{1,4,7},{2,5,8},{3,6,9}}));
+    REQUIRE_EQ(transpose(IntVectors({{1,2,3},{4,5},{7,8,9}})), IntVectors({{1,4,7},{2,5,8},{3,9}}));
 }
 
 TEST_CASE("container_common_test, sample")
