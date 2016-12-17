@@ -53,14 +53,14 @@ std::string show(const std::pair<X, Y>& p)
 
 template <typename Container> std::string show_cont(const Container& xs);
 
-template <typename X>
-std::string show(const std::vector<X>& xs)
+template <typename T, typename A>
+std::string show(const std::vector<T, A>& xs)
 {
     return show_cont(xs);
 }
 
-template <typename X>
-std::string show(const std::list<X>& xs)
+template <typename T, typename A>
+std::string show(const std::list<T, A>& xs)
 {
     return show_cont(xs);
 }
