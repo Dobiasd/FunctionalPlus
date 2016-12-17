@@ -20,6 +20,9 @@
 namespace fplus
 {
 
+namespace internal
+{
+
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Weffc++"
@@ -78,5 +81,7 @@ struct same_cont_new_t_from_binary_f
 {
     typedef ContOut type;
 };
+
+} // namespace internal
 
 } // namespace fplus

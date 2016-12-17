@@ -128,7 +128,7 @@ Dest convert(const Source& x)
 // API search type: convert_elems : [a] -> [b]
 // convert_elems<NewT>([1, 2, 3]) == [NewT(1), NewT(2), NewT(3)]
 template <typename NewT, typename ContainerIn,
-    typename ContainerOut = typename same_cont_new_t<ContainerIn, NewT>::type>
+    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, NewT>::type>
 ContainerOut convert_elems(const ContainerIn& xs)
 {
     static_assert(std::is_constructible<NewT,
@@ -357,7 +357,7 @@ std::function<T(std::size_t n)> nth_element_flipped(const Container& xs)
 // transform((*2), [1, 3, 4]) == [2, 6, 8]
 // Also known as map.
 template <typename F, typename ContainerIn,
-    typename ContainerOut = typename same_cont_new_t_from_unary_f<
+    typename ContainerOut = typename internal::same_cont_new_t_from_unary_f<
         ContainerIn, F>::type>
 ContainerOut transform(F f, const ContainerIn& xs)
 {
@@ -389,9 +389,9 @@ ContainerOut transform_convert(F f, const ContainerIn& xs)
 // Also known as transform_nested, map_nested or map_inner.
 template <typename F, typename ContainerIn,
     typename ContainerOut =
-        typename same_cont_new_t<
+        typename internal::same_cont_new_t<
             ContainerIn,
-            typename same_cont_new_t_from_unary_f<
+            typename internal::same_cont_new_t_from_unary_f<
                 typename ContainerIn::value_type, F
             >::type
         >::type>
@@ -409,7 +409,7 @@ ContainerOut transform_inner(F f, const ContainerIn& xs)
 template <typename Container>
 Container reverse(const Container& xs)
 {
-    static_assert(has_order<Container>::value,
+    static_assert(internal::has_order<Container>::value,
         "Reverse: Container has no order.");
     Container ys = xs;
     std::reverse(std::begin(ys), std::end(ys));
@@ -551,7 +551,7 @@ Acc fold_right_1(F f, const Container& xs)
 // It returns the list of intermediate and final results.
 template <typename F, typename ContainerIn,
     typename Acc = typename utils::function_traits<F>::template arg<0>::type,
-    typename ContainerOut = typename same_cont_new_t<ContainerIn, Acc>::type>
+    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, Acc>::type>
 ContainerOut scan_left(F f, const Acc& init, const ContainerIn& xs)
 {
     ContainerOut result;
@@ -575,7 +575,7 @@ ContainerOut scan_left(F f, const Acc& init, const ContainerIn& xs)
 // xs must not be empty.
 template <typename F, typename ContainerIn,
     typename Acc = typename ContainerIn::value_type,
-    typename ContainerOut = typename same_cont_new_t<ContainerIn, Acc>::type>
+    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, Acc>::type>
 ContainerOut scan_left_1(F f, const ContainerIn& xs)
 {
     assert(!xs.empty());
@@ -590,7 +590,7 @@ ContainerOut scan_left_1(F f, const ContainerIn& xs)
 // It returns the list of intermediate and final results.
 template <typename F, typename ContainerIn,
     typename Acc = typename utils::function_traits<F>::template arg<1>::type,
-    typename ContainerOut = typename same_cont_new_t<ContainerIn, Acc>::type>
+    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, Acc>::type>
 ContainerOut scan_right(F f, const Acc& init, const ContainerIn& xs)
 {
     return reverse(scan_left(flip(f), init, reverse(xs)));
@@ -603,7 +603,7 @@ ContainerOut scan_right(F f, const Acc& init, const ContainerIn& xs)
 // It returns the list of inntermediate and final results.
 template <typename F, typename ContainerIn,
     typename Acc = typename ContainerIn::value_type,
-    typename ContainerOut = typename same_cont_new_t<ContainerIn, Acc>::type>
+    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, Acc>::type>
 ContainerOut scan_right_1(F f, const ContainerIn& xs)
 {
     return reverse(scan_left_1(flip(f), reverse(xs)));

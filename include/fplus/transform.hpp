@@ -27,7 +27,7 @@ namespace fplus
 // API search type: transform_with_idx : (((Int, a) -> b), [a]) -> [b]
 // transform_with_idx(f, [6, 4, 7]) == [f(0, 6), f(1, 4), f(2, 7)]
 template <typename F, typename ContainerIn,
-    typename ContainerOut = typename same_cont_new_t_from_binary_f<
+    typename ContainerOut = typename internal::same_cont_new_t_from_binary_f<
         ContainerIn, F, std::size_t, typename ContainerIn::value_type>::type>
 ContainerOut transform_with_idx(F f, const ContainerIn& xs)
 {
@@ -48,7 +48,7 @@ ContainerOut transform_with_idx(F f, const ContainerIn& xs)
 // Also known as filter_map.
 template <typename F, typename ContainerIn,
     typename FOut = typename utils::function_traits<F>::result_type,
-    typename ContainerOut = typename same_cont_new_t<ContainerIn,
+    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn,
         typename FOut::type>::type>
 ContainerOut transform_and_keep_justs(F f, const ContainerIn& xs)
 {
@@ -61,7 +61,7 @@ ContainerOut transform_and_keep_justs(F f, const ContainerIn& xs)
 // Map function over values and drop resulting errors.
 template <typename F, typename ContainerIn,
     typename FOut = typename utils::function_traits<F>::result_type,
-    typename ContainerOut = typename same_cont_new_t<
+    typename ContainerOut = typename internal::same_cont_new_t<
         ContainerIn, typename FOut::ok_t>::type>
 ContainerOut transform_and_keep_oks(F f, const ContainerIn& xs)
 {
@@ -74,7 +74,7 @@ ContainerOut transform_and_keep_oks(F f, const ContainerIn& xs)
 // Map function over values and concat results.
 // Also known as flat_map or concat_map.
 template <typename F, typename ContainerIn,
-    typename ContainerOut = typename same_cont_new_t_from_unary_f<
+    typename ContainerOut = typename internal::same_cont_new_t_from_unary_f<
         ContainerIn, F>::type::value_type>
 ContainerOut transform_and_concat(F f, const ContainerIn& xs)
 {
@@ -161,7 +161,7 @@ template <typename FunctionContainer,
     typename F = typename FunctionContainer::value_type,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename FOut = typename utils::function_traits<F>::result_type,
-    typename ContainerOut = typename same_cont_new_t<FunctionContainer, FOut>::type>
+    typename ContainerOut = typename internal::same_cont_new_t<FunctionContainer, FOut>::type>
 ContainerOut apply_functions(const FunctionContainer& functions, const FIn& x)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
@@ -182,7 +182,7 @@ ContainerOut apply_functions(const FunctionContainer& functions, const FIn& x)
 // takes enough time to justify the synchronization overhead.
 // Can be used for applying the MapReduce pattern.
 template <typename F, typename ContainerIn,
-    typename ContainerOut = typename same_cont_new_t_from_unary_f<
+    typename ContainerOut = typename internal::same_cont_new_t_from_unary_f<
         ContainerIn, F>::type,
     typename X = typename ContainerIn::value_type,
     typename Y = typename utils::function_traits<F>::result_type>
@@ -213,7 +213,7 @@ ContainerOut transform_parallelly(F f, const ContainerIn& xs)
 // takes enough time to justify the synchronization overhead.
 // Can be used for applying the MapReduce pattern.
 template <typename F, typename ContainerIn,
-    typename ContainerOut = typename same_cont_new_t_from_unary_f<
+    typename ContainerOut = typename internal::same_cont_new_t_from_unary_f<
         ContainerIn, F>::type,
     typename X = typename ContainerIn::value_type,
     typename Y = typename utils::function_traits<F>::result_type>

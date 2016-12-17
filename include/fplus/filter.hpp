@@ -176,7 +176,7 @@ Container drop_idxs(const ContainerIdxs& idxs_to_drop, const Container& xs)
 // and the values inside the justs are returned in a new container.
 template <typename ContainerIn,
     typename ContainerOut =
-        typename same_cont_new_t<ContainerIn,
+        typename internal::same_cont_new_t<ContainerIn,
             typename ContainerIn::value_type::type>::type>
 ContainerOut justs(const ContainerIn& xs)
 {
@@ -195,7 +195,7 @@ ContainerOut justs(const ContainerIn& xs)
 // and the values inside the ok are returned in a new container.
 template <typename ContainerIn,
     typename ContainerOut =
-        typename same_cont_new_t<ContainerIn,
+        typename internal::same_cont_new_t<ContainerIn,
             typename ContainerIn::value_type::ok_t>::type>
 ContainerOut oks(const ContainerIn& xs)
 {
@@ -215,7 +215,7 @@ ContainerOut oks(const ContainerIn& xs)
 // and the values inside the errors are returned in a new container.
 template <typename ContainerIn,
     typename ContainerOut =
-        typename same_cont_new_t<ContainerIn,
+        typename internal::same_cont_new_t<ContainerIn,
             typename ContainerIn::value_type::error_t>::type>
 ContainerOut errors(const ContainerIn& xs)
 {

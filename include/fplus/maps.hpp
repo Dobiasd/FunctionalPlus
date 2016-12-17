@@ -62,7 +62,7 @@ template <typename F, typename MapIn,
     typename InVal = typename std::remove_const<typename MapInPair::second_type>::type,
     typename OutVal = typename std::remove_reference<typename std::remove_const<
         typename utils::function_traits<F>::result_type>::type>::type,
-    typename MapOut = typename SameMapTypeNewTypes<MapIn, Key, OutVal>::type>
+    typename MapOut = typename internal::SameMapTypeNewTypes<MapIn, Key, OutVal>::type>
 MapOut transform_map_values(F f, const MapIn& map)
 {
     return pairs_to_map<MapOut>(
@@ -78,7 +78,7 @@ template <typename F, typename MapIn,
     typename Key = typename std::remove_const<typename MapInPair::first_type>::type,
     typename OutVal = typename std::remove_reference<typename std::remove_const<
         typename utils::function_traits<F>::result_type>::type>::type,
-    typename MapOut = typename SameMapTypeNewTypes<MapIn, Key, OutVal>::type>
+    typename MapOut = typename internal::SameMapTypeNewTypes<MapIn, Key, OutVal>::type>
 MapOut map_union_with(F f, const MapIn& dict1, const MapIn& dict2)
 {
     auto full_map = pairs_to_map_grouped(
@@ -135,7 +135,7 @@ template <typename MapIn,
     typename InVal = typename MapInPair::second_type,
     typename OutKey = InVal,
     typename OutVal = typename std::remove_const<InKey>::type,
-    typename MapOut = typename SameMapTypeNewTypes<MapIn, OutKey, OutVal>::type>
+    typename MapOut = typename internal::SameMapTypeNewTypes<MapIn, OutKey, OutVal>::type>
 MapOut swap_keys_and_values(const MapIn& dict)
 {
     auto inAsPairs = map_to_pairs(dict);

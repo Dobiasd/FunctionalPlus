@@ -54,8 +54,8 @@ ContainerOut zip_with(F f,
     static_assert(std::is_convertible<FOut, TOut>::value,
         "Elements produced by this function can not be stored in ContainerOut.");
     static_assert(std::is_same<
-        typename same_cont_new_t<ContainerIn1, void>::type,
-        typename same_cont_new_t<ContainerIn2, void>::type>::value,
+        typename internal::same_cont_new_t<ContainerIn1, void>::type,
+        typename internal::same_cont_new_t<ContainerIn2, void>::type>::value,
         "Both Containers must be of same outer type.");
     ContainerOut result;
     std::size_t resultSize = std::min(size_of_cont(xs), size_of_cont(ys));
@@ -123,8 +123,8 @@ template <typename ContainerIn,
     typename TIn = typename ContainerIn::value_type,
     typename X = typename TIn::first_type,
     typename Y = typename TIn::second_type,
-    typename ContainerOutX = typename same_cont_new_t<ContainerIn, X>::type,
-    typename ContainerOutY = typename same_cont_new_t<ContainerIn, Y>::type>
+    typename ContainerOutX = typename internal::same_cont_new_t<ContainerIn, X>::type,
+    typename ContainerOutY = typename internal::same_cont_new_t<ContainerIn, Y>::type>
 std::pair<ContainerOutX, ContainerOutY> unzip(const ContainerIn& pairs)
 {
     ContainerOutX firsts;
@@ -200,7 +200,7 @@ template <typename ContainerIn,
     typename X = typename ContainerIn::value_type::first_type,
     typename Y = typename ContainerIn::value_type::second_type,
     typename ContainerOut =
-        typename same_cont_new_t<ContainerIn, std::pair<Y, X>>::type>
+        typename internal::same_cont_new_t<ContainerIn, std::pair<Y, X>>::type>
 ContainerOut swap_pairs_elems(const ContainerIn& xs)
 {
     return fplus::transform(swap_pair_elems<X, Y>, xs);
@@ -210,7 +210,7 @@ ContainerOut swap_pairs_elems(const ContainerIn& xs)
 // overlapping_pairs([0,1,2,3]) == [(0,1),(1,2),(2,3)]
 template <typename Container,
     typename ContainerOut =
-        typename same_cont_new_t<Container,
+        typename internal::same_cont_new_t<Container,
             std::pair<
                 typename Container::value_type,
                     typename Container::value_type>>::type>
