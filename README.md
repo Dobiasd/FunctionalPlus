@@ -6,9 +6,21 @@
 [travis]: https://travis-ci.org/Dobiasd/FunctionalPlus
 [license]: http://www.boost.org/LICENSE_1_0.txt
 
+
 FunctionalPlus
 ==============
 **helps you write concise and readable C++ code.**
+
+Table of contents
+-----------------
+  * [Introduction](#introduction)
+  * [More examples](#more-examples)
+  * [Tutorial](#tutorial)
+  * [Type deduction and useful error messages](#type-deduction-and-useful-error-messages)
+  * [Finding the functions you need](#finding-the-functions-you-need)
+  * [Performance](#performance)
+  * [Requirements and Installation](#requirements-and-installation)
+
 
 Introduction
 ------------
@@ -184,13 +196,16 @@ Output:
 
 The functions shown not only work with default STL containers like `std::vector`, `std::list`, `std::deque`, `std::string` etc., but also with custom containers providing a similar interface.
 
+
 Tutorial
 --------
 
 The article "[Functional programming in C++ with the FunctionalPlus library; today: HackerRank challange Gemstones](https://github.com/Dobiasd/articles/blob/master/functional_programming_in_cpp_with_the_functionalplus_library_today_hackerrank_challange_gemstones.md)" provides a smooth introduction into the library by showing how one could develop an elegant solution to a problem using the FunctionalPlus approach.
 
+
 Type deduction and useful error messages
 ----------------------------------------
+
 FunctionalPlus deduces types for you where possible. Let's take one line of code from the Collatz example:
 ```c++
     auto show_collats_seq = fplus::compose(collatz_seq, show_ints);
@@ -210,6 +225,7 @@ If you are looking for a specific FunctionalPlus function you do not know the na
 
 Performance
 -----------
+
 The basic functions are fast, thanks to C++'s concept of abstraction without overhead. Here are some measurements from the first example, taken on a standard desktop PC, compiled with GCC and the `O3` flag.
 ```
 5000 random numbers, keep odd ones, 20000 consecutive runs accumulated
@@ -227,8 +243,8 @@ The more complex functions though sometimes could be written in a more optimized
 Additionally keep in mind that FunctionalPlus always produces copies and never operates in place. [Even modern compilers often can not optimize these allocations away in chained calls.](http://stackoverflow.com/questions/39658768/loop-fusion-in-c-how-to-help-the-compiler). Thanks to working with a multi-paradigm language one easily can combine manually optimized imperative code with `fplus` functions. Luckily experience (aka. profiling) shows that in most cases the vast majority of code in an application is not relevant for overall performance and memory consumption. So initially focusing on developer productivity and readability of code is a good idea.
 
 
-Installation/Requirements
--------------------------
+Requirements and Installation
+-----------------------------
 
 A **C++11**-compatible compiler is needed. The tests run successfully on GCC 4.8, Clang 3.6 and Visual C++ 2015.
 
