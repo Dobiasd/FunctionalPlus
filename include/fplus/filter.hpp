@@ -98,7 +98,7 @@ Container drop_if_with_idx(Pred pred, const Container& xs)
 template <typename UnaryPredicate, typename Container>
 Container keep_by_idx(UnaryPredicate pred, const Container& xs)
 {
-    check_unary_predicate_for_type<UnaryPredicate, std::size_t>();
+    internal::check_unary_predicate_for_type<UnaryPredicate, std::size_t>();
     Container ys;
     auto it = internal::get_back_inserter<Container>(ys);
     std::size_t idx = 0;
@@ -115,7 +115,7 @@ Container keep_by_idx(UnaryPredicate pred, const Container& xs)
 template <typename UnaryPredicate, typename Container>
 Container drop_by_idx(UnaryPredicate pred, const Container& xs)
 {
-    check_unary_predicate_for_type<UnaryPredicate, std::size_t>();
+    internal::check_unary_predicate_for_type<UnaryPredicate, std::size_t>();
     return keep_by_idx(logical_not(pred), xs);
 }
 

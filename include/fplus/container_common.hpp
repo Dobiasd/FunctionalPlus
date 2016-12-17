@@ -25,27 +25,27 @@ namespace internal
     template <typename UnaryPredicate, typename Container>
     void check_unary_predicate_for_container()
     {
-        check_unary_predicate_for_type<UnaryPredicate,
+        internal::check_unary_predicate_for_type<UnaryPredicate,
             typename Container::value_type>();
     }
 
     template <typename UnaryPredicate, typename Container>
     void check_index_with_type_predicate_for_container()
     {
-        check_index_with_type_predicate_for_type<UnaryPredicate,
+        internal::check_index_with_type_predicate_for_type<UnaryPredicate,
             typename Container::value_type>();
     }
 
     template <typename Compare, typename Container>
     void check_compare_for_container()
     {
-        check_compare_for_type<Compare, typename Container::value_type>();
+        internal::check_compare_for_type<Compare, typename Container::value_type>();
     }
 
     template <typename BinaryPredicate, typename Container>
     void check_binary_predicate_for_container()
     {
-        check_binary_predicate_for_type<BinaryPredicate,
+        internal::check_binary_predicate_for_type<BinaryPredicate,
             typename Container::value_type>();
     }
 
@@ -361,7 +361,7 @@ template <typename F, typename ContainerIn,
         ContainerIn, F>::type>
 ContainerOut transform(F f, const ContainerIn& xs)
 {
-    check_arity<1, F>();
+    internal::check_arity<1, F>();
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
     auto it = internal::get_back_inserter<ContainerOut>(ys);
@@ -376,7 +376,7 @@ ContainerOut transform(F f, const ContainerIn& xs)
 template <typename ContainerOut, typename F, typename ContainerIn>
 ContainerOut transform_convert(F f, const ContainerIn& xs)
 {
-    check_arity<1, F>();
+    internal::check_arity<1, F>();
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
     auto it = internal::get_back_inserter<ContainerOut>(ys);
@@ -397,7 +397,7 @@ template <typename F, typename ContainerIn,
         >::type>
 ContainerOut transform_inner(F f, const ContainerIn& xs)
 {
-    check_arity<1, F>();
+    internal::check_arity<1, F>();
     return fplus::transform(
         fplus::bind_1st_of_2(
             fplus::transform<F, typename ContainerIn::value_type>, f),
@@ -1276,7 +1276,7 @@ template <typename F, typename ContainerIn,
             typename utils::function_traits<F>::result_type, std::size_t>>
 MapOut count_occurrences_by(F f, const ContainerIn& xs)
 {
-    check_arity<1, F>();
+    internal::check_arity<1, F>();
     MapOut result;
     for (const auto& x : xs)
     {

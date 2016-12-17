@@ -31,7 +31,7 @@ template <typename F, typename ContainerIn,
         ContainerIn, F, std::size_t, typename ContainerIn::value_type>::type>
 ContainerOut transform_with_idx(F f, const ContainerIn& xs)
 {
-    check_arity<2, F>();
+    internal::check_arity<2, F>();
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
     auto it = internal::get_back_inserter<ContainerOut>(ys);
@@ -52,7 +52,7 @@ template <typename F, typename ContainerIn,
         typename FOut::type>::type>
 ContainerOut transform_and_keep_justs(F f, const ContainerIn& xs)
 {
-    check_arity<1, F>();
+    internal::check_arity<1, F>();
     auto transformed = transform(f, xs);
     return justs<decltype(transformed), ContainerOut>(transformed);
 }
@@ -65,7 +65,7 @@ template <typename F, typename ContainerIn,
         ContainerIn, typename FOut::ok_t>::type>
 ContainerOut transform_and_keep_oks(F f, const ContainerIn& xs)
 {
-    check_arity<1, F>();
+    internal::check_arity<1, F>();
     auto transformed = transform(f, xs);
     return oks<decltype(transformed), ContainerOut>(transformed);
 }
@@ -78,7 +78,7 @@ template <typename F, typename ContainerIn,
         ContainerIn, F>::type::value_type>
 ContainerOut transform_and_concat(F f, const ContainerIn& xs)
 {
-    check_arity<1, F>();
+    internal::check_arity<1, F>();
     return concat(transform(f, xs));
 }
 
@@ -188,7 +188,7 @@ template <typename F, typename ContainerIn,
     typename Y = typename utils::function_traits<F>::result_type>
 ContainerOut transform_parallelly(F f, const ContainerIn& xs)
 {
-    check_arity<1, F>();
+    internal::check_arity<1, F>();
     auto handles = transform([&f](const X& x) -> std::future<Y>
     {
         return std::async(std::launch::async, [&x, &f]()
