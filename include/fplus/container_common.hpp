@@ -1172,7 +1172,7 @@ bool all_the_same(const Container& xs)
 
 // API search type: generate_range_step : (a, a, a) -> [a]
 // generate_range_step(2, 9, 2) == [2, 4, 6, 8]
-template <typename ContainerOut, typename T>
+template <typename ContainerOut, typename T = typename ContainerOut::value_type>
 ContainerOut generate_range_step
         (const T start, const T end, const T step)
 {
@@ -1186,7 +1186,7 @@ ContainerOut generate_range_step
     std::size_t size = static_cast<std::size_t>((end - start) / step);
     internal::prepare_container(result, size);
     auto it = internal::get_back_inserter<ContainerOut>(result);
-    for (T x = start; x < end; x+=step)
+    for (T x = start; x < end; x += step)
         *it = x;
     return result;
 }
@@ -1197,6 +1197,15 @@ template <typename ContainerOut, typename T = typename ContainerOut::value_type>
 ContainerOut generate_range(const T start, const T end)
 {
     return generate_range_step<ContainerOut, T>(start, end, 1);
+}
+
+// API search type: numbers : (a, a) -> [a]
+// numbers(2, 9) == [2, 3, 4, 5, 6, 7, 8]
+// Convenience wrapper for generate_range.
+template <typename T, typename ContainerOut = std::vector<T>>
+ContainerOut numbers(const T start, const T end)
+{
+    return generate_range<ContainerOut, T>(start, end);
 }
 
 // API search type: all_idxs : [a] -> [Int]
