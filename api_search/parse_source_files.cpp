@@ -5,8 +5,6 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #include "fplus/fplus.hpp"
-#include <boost/filesystem.hpp>
-#include <boost/range/iterator_range.hpp>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -14,23 +12,9 @@
 
 const std::string api_search_type_key = "API search type: ";
 const std::string comment_token = "// ";
-const std::string code_dir = "../include/fplus/";
 
 const auto is_comment = fplus::bind_1st_of_2(
         fplus::is_prefix_of<std::string>, comment_token);
-
-std::vector<std::string> list_files(const std::string& dir_path)
-{
-    using namespace boost::filesystem;
-    return fplus::transform_and_keep_justs([](const directory_entry& entry) -> fplus::maybe<std::string>
-    {
-        if (boost::filesystem::is_regular_file(entry))
-        {
-            return entry.path().filename().string();
-        }
-        return {};
-    }, std::vector<directory_entry>(directory_iterator(path(dir_path)), {}));
-}
 
 struct function_help
 {
@@ -102,8 +86,7 @@ std::vector<function_help> parse_code_file(const std::string& code_file)
 {
     using namespace std;
     typedef vector<string> strings;
-    const auto lines = fplus::read_text_file_lines(
-        code_dir + code_file, true)();
+    const auto lines = fplus::read_text_file_lines(code_file, true)();
     const auto is_search_type = fplus::bind_1st_of_2(
             fplus::is_infix_of<string>, api_search_type_key);
     const auto functions_lines = fplus::split_by_keep_separators(
@@ -202,11 +185,16 @@ void print_duplicates(const std::vector<std::string>& strs)
     std::cout << "---" << std::endl;
 }
 
-int main()
+int main (int argc, char *argv[])
 {
-    const auto code_files = list_files(code_dir);
+    if (argc != 2)
+    {
+        std::cerr << "Provide code file via command line." << std::endl;
+        return 1;
+    }
+
     const auto functions = fplus::sort_on(get_function_help_name,
-            fplus::transform_and_concat(parse_code_file, code_files));
+            parse_code_file(std::string(argv[1])));
     const auto broken = get_broken_function_helps(functions);
     std::cout << "broken:" << std::endl;
     if (fplus::is_not_empty(broken))
