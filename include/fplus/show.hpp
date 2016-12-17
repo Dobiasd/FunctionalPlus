@@ -21,6 +21,12 @@ namespace fplus
 
 // API search type: show : a -> String
 // 42 -> "42"
+// Useful to simply show values, e.g.:
+// Int to String
+// Float to String
+// Double to String
+// std::vector<std::list<T>> to String
+// std::vector<T> to String
 template <typename T>
 std::string show(const T& x)
 {
@@ -37,18 +43,26 @@ std::string show(const std::string& str)
 {
     return str;
 }
-
 // API search type: show : (a, b) -> String
 // {1, "one"} -> "(1, one)"
-// Useful to simply show values, e.g.:
-// Int to String
-// Float to String
-// Double to String
-// std::vector<T> to String
 template <typename X, typename Y>
 std::string show(const std::pair<X, Y>& p)
 {
     return std::string("(") + show(p.first) + ", " + show(p.second) + ")";
+}
+
+template <typename Container> std::string show_cont(const Container& xs);
+
+template <typename X>
+std::string show(const std::vector<X>& xs)
+{
+    return show_cont(xs);
+}
+
+template <typename X>
+std::string show(const std::list<X>& xs)
+{
+    return show_cont(xs);
 }
 
 // API search type: show_cont_with_frame_and_newlines : (String, String, String, [a], Int) -> String

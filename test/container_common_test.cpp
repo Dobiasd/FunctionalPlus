@@ -361,6 +361,8 @@ TEST_CASE("container_common_test, show")
                              " 2)";
     REQUIRE_EQ(show_cont_with_frame_and_newlines(",", "(", ")", xs, 2), xsShownNLs);
     REQUIRE_EQ(show<int>(1), "1");
+
+    REQUIRE_EQ(show(std::vector<std::vector<int>>({{1,2,3},{4,5,6}})), "[[1, 2, 3], [4, 5, 6]]");
 }
 
 TEST_CASE("container_common_test, zip_with")
