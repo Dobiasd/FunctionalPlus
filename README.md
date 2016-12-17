@@ -14,7 +14,7 @@ FunctionalPlus
 Table of contents
 -----------------
   * [Introduction](#introduction)
-  * [More examples](#more-examples)
+  * [Usage examples](#usage-examples)
   * [Tutorial](#tutorial)
   * [Type deduction and useful error messages](#type-deduction-and-useful-error-messages)
   * [Finding the functions you need](#finding-the-functions-you-need)
@@ -71,8 +71,8 @@ If you think version 3 could be the one most pleasant to work with, you might li
 And if you still think the hand-written for loop is easier to understand, also consider what would happen if the loop body (i.e. a corresponding lambda function in the call to `fplus::keep_if`) would be much longer. When reading `keep_if` you would still immediately know that `odds` can only contain elements that came from `numbers` and were selected by some, possibly complicated, predicate. In the for loop case you have no idea what is happening until you read the whole loop body. The loop version probably would need a comment at the top stating what the use of `keep_if` would tell at first glance.
 
 
-More examples
--------------
+Usage examples
+--------------
 Below you find some short examples showing nice things you can do with functions and containers using FunctionalPlus.
 
 ### The same old song
