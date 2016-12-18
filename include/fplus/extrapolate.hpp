@@ -24,7 +24,7 @@ maybe<T> elem_at_idx_or_nothing(signed int idx, const Container& xs)
         return {};
     }
     auto it = std::begin(xs);
-    std::advance(it, idx);
+    internal::advance_iterator(it, static_cast<std::size_t>(idx));
     return *it;
 }
 
@@ -40,7 +40,7 @@ T elem_at_idx_or_constant(const T& c, signed int idx, const Container& xs)
         return c;
     }
     auto it = std::begin(xs);
-    std::advance(it, idx);
+    internal::advance_iterator(it, static_cast<std::size_t>(idx));
     return *it;
 }
 
@@ -62,7 +62,7 @@ T elem_at_idx_or_replicate(signed int idx, const Container& xs)
         return xs.back();
     }
     auto it = std::begin(xs);
-    std::advance(it, idx);
+    internal::advance_iterator(it, static_cast<std::size_t>(idx));
     return *it;
 }
 
@@ -82,7 +82,7 @@ T elem_at_idx_or_wrap(signed int idx, const Container& xs)
     else
         idx = idx % cont_size;
     auto it = std::begin(xs);
-    std::advance(it, idx);
+    internal::advance_iterator(it, static_cast<std::size_t>(idx));
     return *it;
 }
 

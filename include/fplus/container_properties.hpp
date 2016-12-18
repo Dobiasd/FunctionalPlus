@@ -269,13 +269,13 @@ Result median(const Container& xs)
     if (size_of_cont(xsSorted) % 2 == 1)
     {
         auto it = std::begin(xsSorted);
-        std::advance(it, size_of_cont(xsSorted) / 2);
+        internal::advance_iterator(it, size_of_cont(xsSorted) / 2);
         return static_cast<Result>(*it);
     }
     else
     {
         auto it1 = std::begin(xsSorted);
-        std::advance(it1, size_of_cont(xsSorted) / 2 - 1);
+        internal::advance_iterator(it1, size_of_cont(xsSorted) / 2 - 1);
         auto it2 = it1;
         ++it2;
         return static_cast<Result>(*it1 + *it2) / static_cast<Result>(2);

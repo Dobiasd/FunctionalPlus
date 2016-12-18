@@ -635,7 +635,7 @@ Container stride(std::size_t step, const Container& xs)
     {
         *it = *it_in;
         std::size_t increment = std::min(step, xs_size - i);
-        std::advance(it_in, increment);
+        internal::advance_iterator(it_in, increment);
         i += increment;
     }
     return ys;

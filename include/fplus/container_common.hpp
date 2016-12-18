@@ -91,6 +91,13 @@ namespace internal
     {
         return std::inserter(ys, std::end(ys));
     }
+
+    template <typename Iterator>
+    void advance_iterator(Iterator& it, std::size_t distance)
+    {
+        std::advance(it,
+            static_cast<typename Iterator::difference_type>(distance));
+    }
 } // namespace internal
 
 // API search type: is_empty : [a] -> Bool
@@ -205,9 +212,9 @@ Container get_range
     assert(idx_end <= size_of_cont(xs));
     Container result;
     auto itBegin = std::begin(xs);
-    std::advance(itBegin, idx_begin);
+    internal::advance_iterator(itBegin, idx_begin);
     auto itEnd = itBegin;
-    std::advance(itEnd, idx_end - idx_begin);
+    internal::advance_iterator(itEnd, idx_end - idx_begin);
     std::copy(itBegin, itEnd, internal::get_back_inserter(result));
     return result;
 }
@@ -223,7 +230,7 @@ Container set_range
     assert(idx_begin + size_of_cont(token) < size_of_cont(xs));
     Container result = xs;
     auto itBegin = std::begin(result);
-    std::advance(itBegin, idx_begin);
+    internal::advance_iterator(itBegin, idx_begin);
     std::copy(std::begin(token), std::end(token), itBegin);
     return result;
 }
@@ -244,11 +251,11 @@ Container remove_range
     internal::prepare_container(result, size_of_cont(xs) - length);
 
     auto firstBreakIt = std::begin(xs);
-    std::advance(firstBreakIt, idx_begin);
+    internal::advance_iterator(firstBreakIt, idx_begin);
     std::copy(std::begin(xs), firstBreakIt, internal::get_back_inserter(result));
 
     auto secondBreakIt = firstBreakIt;
-    std::advance(secondBreakIt, length);
+    internal::advance_iterator(secondBreakIt, length);
     std::copy(secondBreakIt, std::end(xs), internal::get_back_inserter(result));
 
     return result;
@@ -268,7 +275,7 @@ Container insert_at(std::size_t idx_begin,
     internal::prepare_container(result, size_of_cont(xs) + size_of_cont(token));
 
     auto breakIt = std::begin(xs);
-    std::advance(breakIt, idx_begin);
+    internal::advance_iterator(breakIt, idx_begin);
     std::copy(std::begin(xs), breakIt, internal::get_back_inserter(result));
     std::copy(std::begin(token), std::end(token), internal::get_back_inserter(result));
     std::copy(breakIt, std::end(xs), internal::get_back_inserter(result));
@@ -298,7 +305,7 @@ T elem_at_idx(std::size_t idx, const Container& xs)
 {
     assert(idx < size_of_cont(xs));
     auto it = std::begin(xs);
-    std::advance(it, idx);
+    internal::advance_iterator(it, idx);
     return *it;
 }
 
@@ -327,7 +334,7 @@ maybe<T> elem_at_idx_maybe(std::size_t idx, const Container& xs)
         return {};
     }
     auto it = std::begin(xs);
-    std::advance(it, idx);
+    internal::advance_iterator(it, idx);
     return *it;
 }
 
@@ -865,7 +872,7 @@ Container partial_sort_by(Compare comp, std::size_t count, const Container& xs)
         count = xs.size();
     }
     auto middle = std::begin(result);
-    std::advance(middle, count);
+    internal::advance_iterator(middle, count);
     std::partial_sort(std::begin(result), middle, std::end(result), comp);
     return get_range(0, count, result);
 }

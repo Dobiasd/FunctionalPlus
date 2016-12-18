@@ -237,7 +237,7 @@ ContainerOut overlapping_pairs(const Container& xs)
     auto itOut = internal::get_back_inserter(result);
     auto it1 = std::begin(xs);
     auto it2 = it1;
-    std::advance(it2, 1);
+    internal::advance_iterator(it2, 1);
     for (; it2 != std::end(xs); ++it1, ++it2)
     {
         *itOut = std::make_pair(*it1, *it2);

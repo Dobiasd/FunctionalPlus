@@ -368,7 +368,7 @@ Container adjacent_keep_snd_if(BinaryPredicate p, const Container& xs)
         {
             *it = *std::next(it_in);
         }
-        std::advance(it_in, 1);
+        internal::advance_iterator(it_in, 1);
     }
     return result;
 }
@@ -399,7 +399,7 @@ Container adjacent_drop_fst_if(BinaryPredicate p, const Container& xs)
         {
             *it = *it_in;
         }
-        std::advance(it_in, 1);
+        internal::advance_iterator(it_in, 1);
     }
     *it = *it_in;
     return result;

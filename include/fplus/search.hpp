@@ -142,7 +142,7 @@ ContainerOut find_all_instances_of_token(const Container& token,
 
     auto itInBegin = std::begin(xs);
     auto itInEnd = itInBegin;
-    std::advance(itInEnd, size_of_cont(token));
+    internal::advance_iterator(itInEnd, size_of_cont(token));
     std::size_t idx = 0;
     ContainerOut result;
     auto outIt = internal::get_back_inserter(result);
@@ -200,7 +200,7 @@ maybe<std::size_t> find_first_instance_of_token
 
     auto itInBegin = std::begin(xs);
     auto itInEnd = itInBegin;
-    std::advance(itInEnd, size_of_cont(token));
+    internal::advance_iterator(itInEnd, size_of_cont(token));
     std::size_t idx = 0;
     std::size_t last_possible_idx = size_of_cont(xs) - size_of_cont(token);
     while (idx != last_possible_idx)
