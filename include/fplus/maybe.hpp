@@ -129,7 +129,7 @@ template <typename F,
         typename utils::function_traits<
             F>::template arg<0>::type>::type>::type,
     typename B = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::result_type>::type>::type>
+        typename std::result_of<F(A)>::type>::type>::type>
 std::function<maybe<B>(const maybe<A>&)> lift_maybe(F f)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
@@ -152,7 +152,7 @@ template <typename F,
         typename utils::function_traits<
             F>::template arg<0>::type>::type>::type,
     typename B = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::result_type>::type>::type>
+        typename std::result_of<F(A)>::type>::type>::type>
 std::function<B(const maybe<A>&)> lift_maybe_def(const B& def, F f)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
@@ -175,11 +175,11 @@ template <typename F, typename G,
         typename utils::function_traits<
             F>::template arg<0>::type>::type>::type,
     typename FOut = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::result_type>::type>::type,
+        typename std::result_of<F(FIn)>::type>::type>::type,
     typename GIn = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<G>::template arg<0>::type>::type>::type,
     typename GOut = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<G>::result_type>::type>::type,
+        typename std::result_of<G(GIn)>::type>::type>::type,
     typename T = typename GOut::type>
 std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g)
 {
@@ -201,8 +201,16 @@ std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g)
 template <typename F, typename G, typename H,
     typename FIn = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename FOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<F(FIn)>::type>::type>::type,
+    typename GIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
+    typename GOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<G(GIn)>::type>::type>::type,
+    typename HIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<H>::template arg<0>::type>::type>::type,
     typename HOut = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<H>::result_type>::type>::type,
+        typename std::result_of<H(HIn)>::type>::type>::type,
     typename T = typename HOut::type>
 std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g, H h)
 {
@@ -214,8 +222,20 @@ std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g, H h)
 template <typename F, typename G, typename H, typename I,
     typename FIn = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename FOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<F(FIn)>::type>::type>::type,
+    typename GIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
+    typename GOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<G(GIn)>::type>::type>::type,
+    typename HIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<H>::template arg<0>::type>::type>::type,
+    typename HOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<H(HIn)>::type>::type>::type,
+    typename IIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<I>::template arg<0>::type>::type>::type,
     typename IOut = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<I>::result_type>::type>::type,
+        typename std::result_of<I(IIn)>::type>::type>::type,
     typename T = typename IOut::type>
 std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g, H h, I i)
 {

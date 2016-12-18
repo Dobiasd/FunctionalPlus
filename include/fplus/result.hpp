@@ -201,7 +201,7 @@ template <typename Error,
     typename A = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<F>::template arg<0>::type>::type>::type,
     typename B = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::result_type>::type>::type>
+        typename std::result_of<F(A)>::type>::type>::type>
 std::function<result<B, Error>(const result<A, Error>&)> lift_result(F f)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
@@ -221,11 +221,11 @@ template <
     typename A = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<F>::template arg<0>::type>::type>::type,
     typename C = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::result_type>::type>::type,
+        typename std::result_of<F(A)>::type>::type>::type,
     typename B = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<G>::template arg<0>::type>::type>::type,
     typename D = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<G>::result_type>::type>::type>
+        typename std::result_of<G(B)>::type>::type>::type>
 std::function<result<C, D>(const result<A, B>&)> lift_result_both(F f, G g)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
@@ -246,11 +246,11 @@ template <
     typename A = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<F>::template arg<0>::type>::type>::type,
     typename C = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::result_type>::type>::type,
+        typename std::result_of<F(A)>::type>::type>::type,
     typename B = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<G>::template arg<0>::type>::type>::type,
     typename D = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<G>::result_type>::type>::type>
+        typename std::result_of<G(B)>::type>::type>::type>
 std::function<C(const result<A, B>&)> unify_result(F f, G g)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
@@ -273,11 +273,11 @@ template <typename F, typename G,
     typename FIn = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<F>::template arg<0>::type>::type>::type,
     typename FOut = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::result_type>::type>::type,
+        typename std::result_of<F(FIn)>::type>::type>::type,
     typename GIn = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<G>::template arg<0>::type>::type>::type,
     typename GOut = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<G>::result_type>::type>::type,
+        typename std::result_of<G(GIn)>::type>::type>::type,
     typename Ok = typename GOut::ok_t,
     typename Error = typename GOut::error_t>
 std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g)
@@ -300,8 +300,16 @@ std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g)
 template <typename F, typename G, typename H,
     typename FIn = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename FOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<F(FIn)>::type>::type>::type,
+    typename GIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
+    typename GOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<G(GIn)>::type>::type>::type,
+    typename HIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<H>::template arg<0>::type>::type>::type,
     typename HOut = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<H>::result_type>::type>::type,
+        typename std::result_of<H(HIn)>::type>::type>::type,
     typename Ok = typename HOut::ok_t,
     typename Error = typename HOut::error_t>
 std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g, H h)
@@ -314,8 +322,20 @@ std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g, H h)
 template <typename F, typename G, typename H, typename I,
     typename FIn = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename FOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<F(FIn)>::type>::type>::type,
+    typename GIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
+    typename GOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<G(GIn)>::type>::type>::type,
+    typename HIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<H>::template arg<0>::type>::type>::type,
+    typename HOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<H(HIn)>::type>::type>::type,
+    typename IIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<I>::template arg<0>::type>::type>::type,
     typename IOut = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<I>::result_type>::type>::type,
+        typename std::result_of<I(IIn)>::type>::type>::type,
     typename Ok = typename IOut::ok_t,
     typename Error = typename IOut::error_t>
 std::function<result<Ok, Error>(const FIn&)>

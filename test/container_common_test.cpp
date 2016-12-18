@@ -972,7 +972,7 @@ TEST_CASE("container_common_test, map")
     IntStringMap union_map_res = {{0, "a"}, {1, "b"}, {2, "d"}};
     IntStringMap union_map_with_res = {{0, "ac"}, {1, "b"}, {2, "d"}};
     REQUIRE_EQ(map_union(union_map_1, union_map_2), union_map_res);
-    REQUIRE_EQ(map_union_with(concat<std::vector<std::string>>, union_map_1, union_map_2), union_map_with_res);
+    REQUIRE_EQ(map_union_with(append<std::string>, union_map_1, union_map_2), union_map_with_res);
 
     typedef std::map<std::string::value_type, int> CharIntMap;
     CharIntMap charIntMap = {{'a', 1}, {'b', 2}, {'A', 3}, {'C', 4}};

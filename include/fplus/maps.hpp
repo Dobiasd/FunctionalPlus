@@ -61,7 +61,7 @@ template <typename F, typename MapIn,
     typename Key = typename std::remove_const<typename MapInPair::first_type>::type,
     typename InVal = typename std::remove_const<typename MapInPair::second_type>::type,
     typename OutVal = typename std::remove_reference<typename std::remove_const<
-        typename utils::function_traits<F>::result_type>::type>::type,
+        typename std::result_of<F(InVal)>::type>::type>::type,
     typename MapOut = typename internal::SameMapTypeNewTypes<MapIn, Key, OutVal>::type>
 MapOut transform_map_values(F f, const MapIn& map)
 {
@@ -76,14 +76,19 @@ MapOut transform_map_values(F f, const MapIn& map)
 template <typename F, typename MapIn,
     typename MapInPair = typename MapIn::value_type,
     typename Key = typename std::remove_const<typename MapInPair::first_type>::type,
+    typename Val = typename std::remove_const<typename MapInPair::second_type>::type,
     typename OutVal = typename std::remove_reference<typename std::remove_const<
-        typename utils::function_traits<F>::result_type>::type>::type,
+        typename std::result_of<F(Val, Val)>::type>::type>::type,
     typename MapOut = typename internal::SameMapTypeNewTypes<MapIn, Key, OutVal>::type>
 MapOut map_union_with(F f, const MapIn& dict1, const MapIn& dict2)
 {
     auto full_map = pairs_to_map_grouped(
             append(map_to_pairs(dict1), map_to_pairs(dict2)));
-    return transform_map_values(f, full_map);
+    const auto group_f = [f](const std::vector<Val>& vals) -> OutVal
+    {
+        return fold_left_1(f, vals);
+    };
+    return transform_map_values(group_f, full_map);
 }
 
 // API search type: map_union : (Map key val, Map key val) -> Map key val
@@ -94,8 +99,11 @@ template <typename MapType,
 MapType map_union(const MapType& dict1, const MapType& dict2)
 {
     typedef typename MapType::value_type::second_type value;
-    typedef std::vector<value> values;
-    return map_union_with(nth_element<values>(0), dict1, dict2);
+    const auto get_first = [](const value& a, const value&) -> value
+    {
+        return a;
+    };
+    return map_union_with(get_first, dict1, dict2);
 }
 
 // API search type: get_map_keys : Map key val -> [key]
@@ -160,8 +168,7 @@ MapOut create_map(const ContainerIn1& keys, const ContainerIn2& values)
 template <typename ContainerIn,
     typename F,
     typename Key = typename std::remove_const<typename ContainerIn::value_type>::type,
-    typename Val = typename std::remove_reference<typename std::remove_const<
-        typename utils::function_traits<F>::result_type>::type>::type,
+    typename Val = typename std::result_of<F(Key)>::type,
     typename MapOut = std::map<Key, Val>>
 MapOut create_map_with(F f, const ContainerIn& keys)
 {
@@ -188,7 +195,7 @@ template <typename ContainerIn,
     typename F,
     typename Key = typename std::remove_const<typename ContainerIn::value_type>::type,
     typename Val = typename std::remove_reference<typename std::remove_const<
-        typename utils::function_traits<F>::result_type>::type>::type,
+        typename std::result_of<F(Key)>::type>::type>::type,
     typename MapOut = std::unordered_map<Key, Val>>
 MapOut create_unordered_map_with(F f, const ContainerIn& keys)
 {

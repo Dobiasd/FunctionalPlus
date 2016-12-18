@@ -60,8 +60,7 @@ std::function<void()> sleep_for_n_microseconds(std::size_t microseconds)
 // Returns a function that executes the given side effects one after another.
 template <typename Container,
         typename Effect = typename Container::value_type,
-        typename Result = typename utils::function_traits<
-            Effect>::result_type>
+        typename Result = typename std::result_of<Effect()>::type>
 std::function<std::vector<Result>()> execute_serially(const Container& effs)
 {
     return [effs]() -> std::vector<Result>
@@ -80,8 +79,7 @@ std::function<std::vector<Result>()> execute_serially(const Container& effs)
 // until one of it returns true.
 template <typename Container,
         typename Effect = typename Container::value_type,
-        typename Result = typename utils::function_traits<
-            Effect>::result_type>
+        typename Result = typename std::result_of<Effect()>::type>
 std::function<bool()> execute_serially_until_success(const Container& effs)
 {
     static_assert(std::is_convertible<Result, bool>::value,
@@ -116,8 +114,7 @@ std::function<Result()> execute_and_return_fixed_value(
 
 // Converts an arbitrary callable effect to an std::function.
 template <typename Effect,
-        typename Result = typename utils::function_traits<
-            Effect>::result_type>
+        typename Result = typename std::result_of<Effect()>::type>
 std::function<Result()> effect_to_std_function(Effect eff)
 {
     return [eff]() -> Result
@@ -130,8 +127,7 @@ std::function<Result()> effect_to_std_function(Effect eff)
 // Returns a function that executes a side effect until it succeds once
 // or the maximum number of attempts with an optional pause in between.
 template <typename Effect,
-        typename Result = typename utils::function_traits<
-            Effect>::result_type>
+        typename Result = typename std::result_of<Effect()>::type>
 std::function<bool()> execute_max_n_times_until_success(
         std::size_t n,
         const Effect& eff,
@@ -157,8 +153,7 @@ std::function<bool()> execute_max_n_times_until_success(
 // until one of them returns false.
 template <typename Container,
         typename Effect = typename Container::value_type,
-        typename Result = typename utils::function_traits<
-            Effect>::result_type>
+        typename Result = typename std::result_of<Effect()>::type>
 std::function<bool()> execute_serially_until_failure(const Container& effs)
 {
     static_assert(std::is_convertible<Result, bool>::value,
@@ -181,8 +176,7 @@ std::function<bool()> execute_serially_until_failure(const Container& effs)
 // and returns the collected results.
 template <typename Container,
         typename Effect = typename Container::value_type,
-        typename Result = typename utils::function_traits<
-            Effect>::result_type>
+        typename Result = typename std::result_of<Effect()>::type>
 std::function<std::vector<Result>()> execute_parallelly(const Container& effs)
 {
     return [effs]() -> std::vector<Result>

@@ -1282,7 +1282,7 @@ std::pair<Result, Result> mean_stddev(const Container& xs)
 // O(n)
 template <typename F, typename ContainerIn,
         typename MapOut = typename std::map<
-            typename utils::function_traits<F>::result_type, std::size_t>>
+            typename std::result_of<F(typename ContainerIn::value_type)>::type, std::size_t>>
 MapOut count_occurrences_by(F f, const ContainerIn& xs)
 {
     internal::check_arity<1, F>();

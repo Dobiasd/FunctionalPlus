@@ -95,7 +95,7 @@ template <typename F,
     typename Container2,
     typename X = typename Container1::value_type,
     typename Y = typename Container2::value_type,
-    typename FOut = typename utils::function_traits<F>::result_type,
+    typename FOut = typename std::result_of<F(X, Y)>::type,
     typename ContainerOut = std::vector<FOut>>
 ContainerOut carthesian_product_with_where(F f, Pred pred,
     const Container1& xs, const Container2& ys)
@@ -123,7 +123,7 @@ template <typename F,
     typename Container2,
     typename X = typename Container1::value_type,
     typename Y = typename Container2::value_type,
-    typename FOut = typename utils::function_traits<F>::result_type,
+    typename FOut = typename std::result_of<F(X, Y)>::type,
     typename ContainerOut = std::vector<FOut>>
 ContainerOut carthesian_product_with(F f,
     const Container1& xs, const Container2& ys)
@@ -337,7 +337,7 @@ ContainerOut iterate(F f, std::size_t size, const T& x)
 // adjacent_difference_by([0,4,1,2,5]) == [0,4,-3,1,3]
 template <typename ContainerIn, typename F,
     typename X = typename ContainerIn::value_type,
-    typename TOut = typename utils::function_traits<F>::result_type,
+    typename TOut = typename std::result_of<F(X, X)>::type,
     typename ContainerOut = typename std::vector<TOut>>
 ContainerOut adjacent_difference_by(F f, const ContainerIn& xs)
 {

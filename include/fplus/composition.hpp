@@ -21,7 +21,7 @@ namespace fplus
 template <typename F, typename T,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
-    typename FOut = typename utils::function_traits<F>::result_type>
+    typename FOut = typename std::result_of<F(FIn0, FIn1)>::type>
 std::function<FOut(FIn1)> bind_1st_of_2(F f, T x)
 {
     static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
@@ -37,7 +37,7 @@ std::function<FOut(FIn1)> bind_1st_of_2(F f, T x)
 template <typename F, typename T,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
-    typename FOut = typename utils::function_traits<F>::result_type>
+    typename FOut = typename std::result_of<F(FIn0, FIn1)>::type>
 std::function<FOut(FIn0)> bind_2nd_of_2(F f, T y)
 {
     static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
@@ -54,7 +54,7 @@ template <typename F, typename X,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
     typename FIn2 = typename utils::function_traits<F>::template arg<2>::type,
-    typename FOut = typename utils::function_traits<F>::result_type>
+    typename FOut = typename std::result_of<F(FIn0, FIn1)>::type>
 std::function<FOut(FIn1, FIn2)> bind_1st_of_3(F f, X x)
 {
     static_assert(utils::function_traits<F>::arity == 3, "Wrong arity.");
@@ -71,7 +71,7 @@ template <typename F, typename X, typename Y,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
     typename FIn2 = typename utils::function_traits<F>::template arg<2>::type,
-    typename FOut = typename utils::function_traits<F>::result_type>
+    typename FOut = typename std::result_of<F(FIn0, FIn1, FIn2)>::type>
 std::function<FOut(FIn2)> bind_1st_and_2nd_of_3(F f, X x, Y y)
 {
     static_assert(utils::function_traits<F>::arity == 3, "Wrong arity.");
@@ -89,7 +89,7 @@ std::function<FOut(FIn2)> bind_1st_and_2nd_of_3(F f, X x, Y y)
 template <typename F,
     typename A = typename utils::function_traits<F>::template arg<0>::type,
     typename B = typename utils::function_traits<F>::template arg<1>::type,
-    typename C = typename utils::function_traits<F>::result_type>
+    typename C = typename std::result_of<F(A, B)>::type>
 std::function<C(B, A)> flip(F f)
 {
     static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
@@ -99,7 +99,7 @@ std::function<C(B, A)> flip(F f)
 // API search type: forward_apply : (a, (a -> b)) -> b
 // Forward application.
 template <typename X, typename F,
-    typename FOut = typename utils::function_traits<F>::result_type>
+    typename FOut = typename std::result_of<F(X)>::type>
 FOut forward_apply(const X& x, F f)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
@@ -110,9 +110,9 @@ FOut forward_apply(const X& x, F f)
 // Forward composition: compose(f, g)(x) = g(f(x))
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename utils::function_traits<F>::result_type,
+    typename FOut = typename std::result_of<F(FIn)>::type,
     typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename GOut = typename utils::function_traits<G>::result_type>
+    typename GOut = typename std::result_of<G(GIn)>::type>
 std::function<GOut(FIn)> compose(F f, G g)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
@@ -126,11 +126,11 @@ std::function<GOut(FIn)> compose(F f, G g)
 // Forward composition: compose(f, g, h)(x) = h(g(f(x)))
 template <typename F, typename G, typename H,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename utils::function_traits<F>::result_type,
+    typename FOut = typename std::result_of<F(FIn)>::type,
     typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename GOut = typename utils::function_traits<G>::result_type,
+    typename GOut = typename std::result_of<G(GIn)>::type,
     typename HIn = typename utils::function_traits<H>::template arg<0>::type,
-    typename HOut = typename utils::function_traits<H>::result_type>
+    typename HOut = typename std::result_of<H(HIn)>::type>
 std::function<HOut(FIn)> compose(F f, G g, H h)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
@@ -147,13 +147,13 @@ std::function<HOut(FIn)> compose(F f, G g, H h)
 // Forward composition: compose(f, g, h, i)(x) = i(h(g(f(x))))
 template <typename F, typename G, typename H, typename I,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename utils::function_traits<F>::result_type,
+    typename FOut = typename std::result_of<F(FIn)>::type,
     typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename GOut = typename utils::function_traits<G>::result_type,
+    typename GOut = typename std::result_of<G(GIn)>::type,
     typename HIn = typename utils::function_traits<H>::template arg<0>::type,
-    typename HOut = typename utils::function_traits<H>::result_type,
+    typename HOut = typename std::result_of<H(HIn)>::type,
     typename IIn = typename utils::function_traits<I>::template arg<0>::type,
-    typename IOut = typename utils::function_traits<I>::result_type>
+    typename IOut = typename std::result_of<I(IIn)>::type>
 std::function<IOut(FIn)> compose(F f, G g, H h, I i)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
@@ -173,15 +173,15 @@ std::function<IOut(FIn)> compose(F f, G g, H h, I i)
 // Forward composition: compose(f, g, h, i, j)(x) = j(i(h(g(f(x)))))
 template <typename F, typename G, typename H, typename I, typename J,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename utils::function_traits<F>::result_type,
+    typename FOut = typename std::result_of<F(FIn)>::type,
     typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename GOut = typename utils::function_traits<G>::result_type,
+    typename GOut = typename std::result_of<G(GIn)>::type,
     typename HIn = typename utils::function_traits<H>::template arg<0>::type,
-    typename HOut = typename utils::function_traits<H>::result_type,
+    typename HOut = typename std::result_of<H(HIn)>::type,
     typename IIn = typename utils::function_traits<I>::template arg<0>::type,
-    typename IOut = typename utils::function_traits<I>::result_type,
+    typename IOut = typename std::result_of<I(IIn)>::type,
     typename JIn = typename utils::function_traits<I>::template arg<0>::type,
-    typename JOut = typename utils::function_traits<I>::result_type>
+    typename JOut = typename std::result_of<I(JIn)>::type>
 std::function<JOut(FIn)> compose(F f, G g, H h, I i, J j)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
@@ -208,7 +208,7 @@ std::function<bool(X)> logical_not(UnaryPredicate f)
 {
     static_assert(utils::function_traits<UnaryPredicate>::arity == 1,
         "Wrong arity.");
-    typedef typename utils::function_traits<UnaryPredicate>::result_type Res;
+    typedef typename std::result_of<UnaryPredicate(X)>::type Res;
     static_assert(std::is_same<Res, bool>::value, "Must return bool.");
     return [f](X x) { return !f(x); };
 }
@@ -222,8 +222,8 @@ std::function<bool(X)> logical_or(UnaryPredicateF f, UnaryPredicateG g)
 {
     static_assert(std::is_convertible<X, Y>::value,
         "Parameter types do not match");
-    typedef typename utils::function_traits<UnaryPredicateF>::result_type FRes;
-    typedef typename utils::function_traits<UnaryPredicateG>::result_type GRes;
+    typedef typename std::result_of<UnaryPredicateF(X)>::type FRes;
+    typedef typename std::result_of<UnaryPredicateG(Y)>::type GRes;
     static_assert(std::is_same<FRes, bool>::value, "Must return bool.");
     static_assert(std::is_same<GRes, bool>::value, "Must return bool.");
     static_assert(utils::function_traits<UnaryPredicateF>::arity == 1,
@@ -242,8 +242,8 @@ std::function<bool(X)> logical_and(UnaryPredicateF f, UnaryPredicateG g)
 {
     static_assert(std::is_convertible<X, Y>::value,
         "Parameter types do not match");
-    typedef typename utils::function_traits<UnaryPredicateF>::result_type FRes;
-    typedef typename utils::function_traits<UnaryPredicateG>::result_type GRes;
+    typedef typename std::result_of<UnaryPredicateF(X)>::type FRes;
+    typedef typename std::result_of<UnaryPredicateG(Y)>::type GRes;
     static_assert(std::is_same<FRes, bool>::value, "Must return bool.");
     static_assert(std::is_same<GRes, bool>::value, "Must return bool.");
     static_assert(utils::function_traits<UnaryPredicateF>::arity == 1,
@@ -262,8 +262,8 @@ std::function<bool(X)> logical_xor(UnaryPredicateF f, UnaryPredicateG g)
 {
     static_assert(std::is_convertible<X, Y>::value,
         "Parameter types do not match");
-    typedef typename utils::function_traits<UnaryPredicateF>::result_type FRes;
-    typedef typename utils::function_traits<UnaryPredicateG>::result_type GRes;
+    typedef typename std::result_of<UnaryPredicateF(X)>::type FRes;
+    typedef typename std::result_of<UnaryPredicateG(Y)>::type GRes;
     static_assert(std::is_same<FRes, bool>::value, "Must return bool.");
     static_assert(std::is_same<GRes, bool>::value, "Must return bool.");
     static_assert(utils::function_traits<UnaryPredicateF>::arity == 1,
@@ -284,7 +284,7 @@ std::function<bool(X)> logical_xor(UnaryPredicateF f, UnaryPredicateG g)
 // mapping input values to output values.
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename utils::function_traits<F>::result_type,
+    typename FOut = typename std::result_of<F(FIn)>::type,
     typename MemoMap = std::unordered_map<typename std::decay<FIn>::type, FOut>>
 std::function<FOut(FIn)> memoize(F f)
 {

@@ -89,7 +89,7 @@ namespace internal
             typename utils::function_traits<UnaryPredicate>::template arg<0>::type>::value,
             "Unary predicate can not take these values.");
         static_assert(check_callable<UnaryPredicate>::value && std::is_convertible<
-            typename utils::function_traits<UnaryPredicate>::result_type, bool>::value,
+            typename std::result_of<UnaryPredicate(T)>::type, bool>::value,
             "Predicate must return bool.");
     }
 
@@ -114,7 +114,7 @@ namespace internal
         static_assert(std::is_same<FIn0, std::size_t>::value,
             "First parameter of function must be std::size_t.");
         static_assert(std::is_convertible<
-            typename utils::function_traits<F>::result_type, bool>::value,
+            typename std::result_of<F(std::size_t, T)>::type, bool>::value,
             "Function must return bool.");
         static_assert(std::is_convertible<T, FIn1>::value,
             "Function does not work with elements of Container.");
@@ -142,7 +142,7 @@ namespace internal
         static_assert(std::is_same<FIn, FIn1>::value,
             "BinaryPredicate must take two similar types");
         static_assert(std::is_convertible<
-            typename utils::function_traits<BinaryPredicate>::result_type, bool>::value,
+            typename std::result_of<BinaryPredicate(T, T)>::type, bool>::value,
             "BinaryPredicate must return bool.");
         static_assert(std::is_convertible<T, FIn>::value,
             "BinaryPredicate does not work with elements of Container.");
@@ -169,7 +169,7 @@ namespace internal
         static_assert(std::is_same<FIn, FIn1>::value,
             "Compare must take two similar types");
         static_assert(std::is_convertible<
-            typename utils::function_traits<Compare>::result_type, bool>::value,
+            typename std::result_of<Compare(T, T)>::type, bool>::value,
             "Compare must return bool.");
         static_assert(std::is_convertible<T, FIn>::value,
             "Compare does not work with elements of Container.");
@@ -199,8 +199,8 @@ namespace internal
         static_assert(std::is_convertible<Y,
             typename utils::function_traits<G>::template arg<0>::type>::value,
             "Function can note take elements of this type.");
-        static_assert(std::is_same<typename utils::function_traits<F>::result_type,
-            typename utils::function_traits<G>::result_type>::value,
+        static_assert(std::is_same<typename std::result_of<F(X)>::type,
+            typename std::result_of<G(Y)>::type>::value,
             "Both functions must return same type.");
     }
 
@@ -249,8 +249,8 @@ std::function<X(const Y&)> always(const X& x)
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename FOut = typename utils::function_traits<F>::result_type,
-    typename GOut = typename utils::function_traits<G>::result_type>
+    typename FOut = typename std::result_of<F(FIn)>::type,
+    typename GOut = typename std::result_of<G(GIn)>::type>
 std::function<bool(const FIn& x, const GIn& y)>
         is_equal_by_and_by(F f, G g)
 {
@@ -265,7 +265,7 @@ std::function<bool(const FIn& x, const GIn& y)>
 // f(x) == f(y)
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename utils::function_traits<F>::result_type>
+    typename FOut = typename std::result_of<F(FIn)>::type>
 std::function<bool(const FIn& x, const FIn& y)>
         is_equal_by(F f)
 {
@@ -306,8 +306,8 @@ bool is_not_equal(const T& x, const T& y)
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename FOut = typename utils::function_traits<F>::result_type,
-    typename GOut = typename utils::function_traits<G>::result_type>
+    typename FOut = typename std::result_of<F(FIn)>::type,
+    typename GOut = typename std::result_of<G(GIn)>::type>
 std::function<bool(const FIn& x, const GIn& y)>
         is_not_equal_by_and_by(F f, G g)
 {
@@ -322,7 +322,7 @@ std::function<bool(const FIn& x, const GIn& y)>
 // f(x) != f(y)
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename utils::function_traits<F>::result_type>
+    typename FOut = typename std::result_of<F(FIn)>::type>
 std::function<bool(const FIn& x, const FIn& y)>
         is_not_equal_by(F f)
 {
@@ -362,8 +362,8 @@ bool is_less(const T& x, const T& y)
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename FOut = typename utils::function_traits<F>::result_type,
-    typename GOut = typename utils::function_traits<G>::result_type>
+    typename FOut = typename std::result_of<F(FIn)>::type,
+    typename GOut = typename std::result_of<G(GIn)>::type>
 std::function<bool(const FIn& x, const GIn& y)>
         is_less_by_and_by(F f, G g)
 {
@@ -378,7 +378,7 @@ std::function<bool(const FIn& x, const GIn& y)>
 // f(x) < f(y)
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename utils::function_traits<F>::result_type>
+    typename FOut = typename std::result_of<F(FIn)>::type>
 std::function<bool(const FIn& x, const FIn& y)>
         is_less_by(F f)
 {
@@ -418,8 +418,8 @@ bool is_less_or_equal(const T& x, const T& y)
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename FOut = typename utils::function_traits<F>::result_type,
-    typename GOut = typename utils::function_traits<G>::result_type>
+    typename FOut = typename std::result_of<F(FIn)>::type,
+    typename GOut = typename std::result_of<G(GIn)>::type>
 std::function<bool(const FIn& x, const GIn& y)>
         is_less_or_equal_by_and_by(F f, G g)
 {
@@ -434,7 +434,7 @@ std::function<bool(const FIn& x, const GIn& y)>
 // f(x) <= f(y)
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename utils::function_traits<F>::result_type>
+    typename FOut = typename std::result_of<F(FIn)>::type>
 std::function<bool(const FIn& x, const FIn& y)>
         is_less_or_equal_by(F f)
 {
@@ -474,8 +474,8 @@ bool is_greater(const T& x, const T& y)
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename FOut = typename utils::function_traits<F>::result_type,
-    typename GOut = typename utils::function_traits<G>::result_type>
+    typename FOut = typename std::result_of<F(FIn)>::type,
+    typename GOut = typename std::result_of<G(GIn)>::type>
 std::function<bool(const FIn& x, const GIn& y)>
         is_greater_by_and_by(F f, G g)
 {
@@ -490,7 +490,7 @@ std::function<bool(const FIn& x, const GIn& y)>
 // f(x) > f(y)
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename utils::function_traits<F>::result_type>
+    typename FOut = typename std::result_of<F(FIn)>::type>
 std::function<bool(const FIn& x, const FIn& y)>
         is_greater_by(F f)
 {
@@ -530,8 +530,8 @@ bool is_greater_or_equal(const T& x, const T& y)
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename FOut = typename utils::function_traits<F>::result_type,
-    typename GOut = typename utils::function_traits<G>::result_type>
+    typename FOut = typename std::result_of<F(FIn)>::type,
+    typename GOut = typename std::result_of<G(GIn)>::type>
 std::function<bool(const FIn& x, const GIn& y)>
         is_greater_or_equal_by_and_by(F f, G g)
 {
@@ -546,7 +546,7 @@ std::function<bool(const FIn& x, const GIn& y)>
 // f(x) >= f(y)
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename utils::function_traits<F>::result_type>
+    typename FOut = typename std::result_of<F(FIn)>::type>
 std::function<bool(const FIn& x, const FIn& y)>
         is_greater_or_equal_by(F f)
 {
@@ -588,7 +588,7 @@ bool xor_bools(const T& x, const T& y)
 template <typename Compare,
     typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<Compare>::template arg<1>::type,
-    typename FOut = typename utils::function_traits<Compare>::result_type>
+    typename FOut = typename std::result_of<Compare(FIn0, FIn1)>::type>
 std::function<FOut(FIn0, FIn1)> ord_to_eq(Compare comp)
 {
     internal::check_arity<2, Compare>();
@@ -605,7 +605,7 @@ std::function<FOut(FIn0, FIn1)> ord_to_eq(Compare comp)
 template <typename Compare,
     typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<Compare>::template arg<1>::type,
-    typename FOut = typename utils::function_traits<Compare>::result_type>
+    typename FOut = typename std::result_of<Compare(FIn0, FIn1)>::type>
 std::function<FOut(FIn0, FIn1)> ord_to_not_eq(Compare comp)
 {
     internal::check_arity<2, Compare>();
@@ -622,7 +622,7 @@ std::function<FOut(FIn0, FIn1)> ord_to_not_eq(Compare comp)
 template <typename Compare,
     typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<Compare>::template arg<1>::type,
-    typename FOut = typename utils::function_traits<Compare>::result_type>
+    typename FOut = typename std::result_of<Compare(FIn0, FIn1)>::type>
 std::function<FOut(FIn0, FIn1)> ord_eq_to_eq(Compare comp)
 {
     internal::check_arity<2, Compare>();
@@ -639,7 +639,7 @@ std::function<FOut(FIn0, FIn1)> ord_eq_to_eq(Compare comp)
 template <typename Compare,
     typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<Compare>::template arg<1>::type,
-    typename FOut = typename utils::function_traits<Compare>::result_type>
+    typename FOut = typename std::result_of<Compare(FIn0, FIn1)>::type>
 std::function<FOut(FIn0, FIn1)> ord_eq_to_not_eq(Compare comp)
 {
     internal::check_arity<2, Compare>();

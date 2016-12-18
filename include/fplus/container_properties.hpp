@@ -111,7 +111,7 @@ typename std::size_t maximum_idx(const Container& xs)
 template <typename F, typename Container>
 typename std::size_t minimum_idx_on(F f, const Container& xs)
 {
-    typedef typename utils::function_traits<F>::result_type Result;
+    typedef typename std::result_of<F(typename Container::value_type)>::type Result;
     auto transformed = transform_convert<std::vector<Result>>(f, xs);
     return minimum_idx(transformed);
 }
@@ -122,7 +122,7 @@ typename std::size_t minimum_idx_on(F f, const Container& xs)
 template <typename F, typename Container>
 typename std::size_t maximum_idx_on(F f, const Container& xs)
 {
-    typedef typename utils::function_traits<F>::result_type Result;
+    typedef typename std::result_of<F(typename Container::value_type)>::type Result;
     auto transformed = transform_convert<std::vector<Result>>(f, xs);
     return maximum_idx(transformed);
 }

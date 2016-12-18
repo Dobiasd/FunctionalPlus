@@ -19,7 +19,7 @@ namespace fplus
 template <typename F,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
-    typename FuncRes = typename utils::function_traits<F>::result_type,
+    typename FuncRes = typename std::result_of<F(FIn0, FIn1)>::type,
     typename ResFunc = typename std::function<FuncRes(const std::pair<FIn0, FIn1>&)>>
 ResFunc apply_to_pair(F f)
 {
@@ -35,14 +35,14 @@ ResFunc apply_to_pair(F f)
 template <typename ContainerIn1, typename ContainerIn2, typename F,
     typename X = typename ContainerIn1::value_type,
     typename Y = typename ContainerIn2::value_type,
-    typename TOut = typename utils::function_traits<F>::result_type,
+    typename TOut = typename std::result_of<F(X, Y)>::type,
     typename ContainerOut = typename std::vector<TOut>>
 ContainerOut zip_with(F f,
         const ContainerIn1& xs, const ContainerIn2& ys)
 {
     static_assert(utils::function_traits<F>::arity == 2,
         "Function must take two parameters.");
-    typedef typename utils::function_traits<F>::result_type FOut;
+    typedef typename std::result_of<F(X, Y)>::type FOut;
     typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
     typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
     typedef typename ContainerIn1::value_type T1;
@@ -78,7 +78,7 @@ ContainerOut zip_with(F f,
 template <typename ContainerIn1, typename ContainerIn2, typename F,
     typename X = typename ContainerIn1::value_type,
     typename Y = typename ContainerIn2::value_type,
-    typename TOut = typename utils::function_traits<F>::result_type,
+    typename TOut = typename std::result_of<F(X, Y)>::type,
     typename ContainerOut = typename std::vector<TOut>>
 ContainerOut zip_with_defaults(F f,
         const X& default_x, const Y& default_y,
@@ -160,7 +160,7 @@ Y snd(const std::pair<X, Y>& pair)
 // API search type: transform_fst : ((a -> c), (a, b)) -> (c, b)
 // transform_fst(square, (4, 5)) == (16, 5)
 template <typename X, typename Y, typename F,
-    typename ResultFirst = typename utils::function_traits<F>::result_type>
+    typename ResultFirst = typename std::result_of<F(X)>::type>
 std::pair<ResultFirst, Y> transform_fst(F f, const std::pair<X, Y>& pair)
 {
     return std::make_pair(f(pair.first), pair.second);
@@ -169,7 +169,7 @@ std::pair<ResultFirst, Y> transform_fst(F f, const std::pair<X, Y>& pair)
 // API search type: transform_snd : ((b -> c), (a, b)) -> (a, c)
 // transform_snd(square, (4, 5)) == (4, 25)
 template <typename X, typename Y, typename F,
-    typename ResultSecond = typename utils::function_traits<F>::result_type>
+    typename ResultSecond = typename std::result_of<F(Y)>::type>
 std::pair<X, ResultSecond> transform_snd(F f, const std::pair<X, Y>& pair)
 {
     return std::make_pair(pair.first, f(pair.second));
@@ -178,8 +178,8 @@ std::pair<X, ResultSecond> transform_snd(F f, const std::pair<X, Y>& pair)
 // API search type: transform_pair : ((a -> c), (b -> d), (a, b)) -> (c, d)
 // transform_pair(square, square, (4, 5)) == (16, 25)
 template <typename X, typename Y, typename F, typename G,
-    typename ResultFirst = typename utils::function_traits<F>::result_type,
-    typename ResultSecond = typename utils::function_traits<G>::result_type>
+    typename ResultFirst = typename std::result_of<F(X)>::type,
+    typename ResultSecond = typename std::result_of<G(Y)>::type>
 std::pair<ResultFirst, ResultSecond> transform_pair(
     F f, G g, const std::pair<X, Y>& pair)
 {
@@ -250,7 +250,9 @@ std::vector<std::pair<std::size_t, T>> enumerate(const Container& xs)
 template <typename ContainerIn1, typename ContainerIn2,
     typename OP1, typename OP2,
     typename Z,
-    typename TOut = typename utils::function_traits<OP2>::result_type>
+    typename OP1In0 = typename utils::function_traits<OP1>::template arg<0>::type,
+    typename OP1In1 = typename utils::function_traits<OP1>::template arg<1>::type,
+    typename TOut = typename std::result_of<OP1(OP1In0, OP1In1)>::type>
 TOut inner_product_with(OP1 op1, OP2 op2, const Z& value,
         const ContainerIn1& xs, const ContainerIn2& ys)
 {

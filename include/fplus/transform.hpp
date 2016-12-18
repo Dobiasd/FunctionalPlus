@@ -47,7 +47,8 @@ ContainerOut transform_with_idx(F f, const ContainerIn& xs)
 // Map function over values and drop resulting nothings.
 // Also known as filter_map.
 template <typename F, typename ContainerIn,
-    typename FOut = typename utils::function_traits<F>::result_type,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+    typename FOut = typename std::result_of<F(FIn)>::type,
     typename ContainerOut = typename internal::same_cont_new_t<ContainerIn,
         typename FOut::type>::type>
 ContainerOut transform_and_keep_justs(F f, const ContainerIn& xs)
@@ -60,7 +61,8 @@ ContainerOut transform_and_keep_justs(F f, const ContainerIn& xs)
 // API search type: transform_and_keep_oks : ((a -> Result b), [a]) -> [b]
 // Map function over values and drop resulting errors.
 template <typename F, typename ContainerIn,
-    typename FOut = typename utils::function_traits<F>::result_type,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+    typename FOut = typename std::result_of<F(FIn)>::type,
     typename ContainerOut = typename internal::same_cont_new_t<
         ContainerIn, typename FOut::ok_t>::type>
 ContainerOut transform_and_keep_oks(F f, const ContainerIn& xs)
@@ -160,7 +162,7 @@ Container sample(std::size_t n, const Container& xs)
 template <typename FunctionContainer,
     typename F = typename FunctionContainer::value_type,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename utils::function_traits<F>::result_type,
+    typename FOut = typename std::result_of<F(FIn)>::type,
     typename ContainerOut = typename internal::same_cont_new_t<FunctionContainer, FOut>::type>
 ContainerOut apply_functions(const FunctionContainer& functions, const FIn& x)
 {
@@ -185,7 +187,7 @@ template <typename F, typename ContainerIn,
     typename ContainerOut = typename internal::same_cont_new_t_from_unary_f<
         ContainerIn, F>::type,
     typename X = typename ContainerIn::value_type,
-    typename Y = typename utils::function_traits<F>::result_type>
+    typename Y = typename std::result_of<F(X)>::type>
 ContainerOut transform_parallelly(F f, const ContainerIn& xs)
 {
     internal::check_arity<1, F>();
@@ -216,7 +218,7 @@ template <typename F, typename ContainerIn,
     typename ContainerOut = typename internal::same_cont_new_t_from_unary_f<
         ContainerIn, F>::type,
     typename X = typename ContainerIn::value_type,
-    typename Y = typename utils::function_traits<F>::result_type>
+    typename Y = typename std::result_of<F(X)>::type>
 ContainerOut transform_parallelly_n_threads(
     std::size_t n, F f, const ContainerIn& xs)
 {
