@@ -246,7 +246,7 @@ Additionally keep in mind that FunctionalPlus always produces copies and never o
 Requirements and Installation
 -----------------------------
 
-A **C++11**-compatible compiler is needed. The tests run successfully on GCC 4.8, Clang 3.6 and Visual C++ 2015.
+A **C++11**-compatible compiler is needed (C++14 if you want to use the features from `namespace fwd`). Compilers from these versions on are fine: GCC 4.9, Clang 3.6 and Visual C++ 2015
 
 You can install FunctionalPlus in one of the following ways:
 
@@ -268,7 +268,7 @@ sudo make install
 Building the tests (optional) requires [doctest](https://github.com/onqtam/doctest). Unit Tests are disabled by default – they are enabled and executed by:
 
 ```
-cmake -DUNITTEST=ON ..
+cmake -DUNITTEST=ON -DCPP14TEST=ON ..
 make unittest
 ```
 

@@ -68,6 +68,7 @@ private:
 };
 
 // API search type: is_ok : Result a b -> Bool
+// fwd bind count: 0
 // Is not error?
 template <typename Ok, typename Error>
 bool is_ok(const result<Ok, Error>& result)
@@ -76,6 +77,7 @@ bool is_ok(const result<Ok, Error>& result)
 }
 
 // API search type: is_error : Result a b -> Bool
+// fwd bind count: 0
 // Is not OK?
 template <typename Ok, typename Error>
 bool is_error(const result<Ok, Error>& result)
@@ -84,6 +86,7 @@ bool is_error(const result<Ok, Error>& result)
 }
 
 // API search type: unsafe_get_ok : Result a b -> a
+// fwd bind count: 0
 // Crashes if result is error!
 template <typename Ok, typename Error>
 Ok unsafe_get_ok(const result<Ok, Error>& result)
@@ -92,6 +95,7 @@ Ok unsafe_get_ok(const result<Ok, Error>& result)
 }
 
 // API search type: unsafe_get_error : Result a b -> b
+// fwd bind count: 0
 // Crashes if result is ok!
 template <typename Ok, typename Error>
 Error unsafe_get_error(const result<Ok, Error>& result)
@@ -100,6 +104,7 @@ Error unsafe_get_error(const result<Ok, Error>& result)
 }
 
 // API search type: ok_with_default : (a, Result a b) -> a
+// fwd bind count: 1
 // Get the value from a result or the default in case it is error.
 template <typename Ok, typename Error>
 Ok ok_with_default(const Ok& defaultValue, const result<Ok, Error>& result)
@@ -110,6 +115,7 @@ Ok ok_with_default(const Ok& defaultValue, const result<Ok, Error>& result)
 }
 
 // API search type: ok : a -> Result a b
+// fwd bind count: 0
 // Wrap a value in a result as a Ok.
 template <typename Ok, typename Error>
 result<Ok, Error> ok(const Ok& val)
@@ -120,6 +126,7 @@ result<Ok, Error> ok(const Ok& val)
 }
 
 // API search type: error : b -> Result a b
+// fwd bind count: 0
 // Construct an error of a certain result type.
 template <typename Ok, typename Error>
 result<Ok, Error> error(const Error& error)
@@ -130,6 +137,7 @@ result<Ok, Error> error(const Error& error)
 }
 
 // API search type: to_maybe : Result a b -> Maybe a
+// fwd bind count: 0
 // Convert ok to just, error to nothing.
 template <typename Ok, typename Error>
 maybe<Ok> to_maybe(const result<Ok, Error>& result)
@@ -141,9 +149,10 @@ maybe<Ok> to_maybe(const result<Ok, Error>& result)
 }
 
 // API search type: from_maybe : (Maybe a, b) -> Result a b
+// fwd bind count: 1
 // Convert just to ok, nothing to error.
-template <typename Ok, typename Error>
-result<Ok, Error> from_maybe(const maybe<Ok>& maybe, const Error& err)
+template <typename Error, typename Ok>
+result<Ok, Error> from_maybe(const Error& err, const maybe<Ok>& maybe)
 {
     if (is_just(maybe))
         return ok<Ok, Error>(unsafe_get_just(maybe));
@@ -152,6 +161,7 @@ result<Ok, Error> from_maybe(const maybe<Ok>& maybe, const Error& err)
 }
 
 // API search type: throw_on_error : (e, Result a b) -> a
+// fwd bind count: 1
 // Throws the given exception in case of error.
 // Return ok value if ok.
 template <typename E, typename Ok, typename Error>
@@ -237,7 +247,8 @@ std::function<result<C, D>(const result<A, B>&)> lift_result_both(F f, G g)
     };
 }
 
-// API search type: unify_result : ((a -> c), (b -> c)) -> (Result a b -> c)
+// API search type: unify_result : ((a -> c), (b -> c), Result a b) -> c
+// fwd bind count: 2
 // Extracts the value (Ok or Error) from a Result
 // as defined by the two given functions.
 template <
@@ -251,16 +262,13 @@ template <
         typename utils::function_traits<G>::template arg<0>::type>::type>::type,
     typename D = typename std::remove_const<typename std::remove_reference<
         typename std::result_of<G(B)>::type>::type>::type>
-std::function<C(const result<A, B>&)> unify_result(F f, G g)
+C unify_result(F f, G g, const result<A, B>& r)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(std::is_same<C, D>::value, "Both functions must return the same type.");
-    return [f, g](const result<A, B>& r) -> C
-    {
-        if (is_ok(r))
-            return f(unsafe_get_ok(r));
-        return g(unsafe_get_error(r));
-    };
+    if (is_ok(r))
+        return f(unsafe_get_ok(r));
+    return g(unsafe_get_error(r));
 }
 
 // API search type: and_then_result : ((a -> Result b c), (b -> Result d c)) -> (a -> Result d c)

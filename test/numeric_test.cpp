@@ -33,51 +33,51 @@ namespace {
 
 TEST_CASE("numeric_test, is_in_range")
 {
-    REQUIRE(fplus::is_in_range(1, 3)(1));
-    REQUIRE(fplus::is_in_range(1, 3)(2));
-    REQUIRE_FALSE(fplus::is_in_range(1, 3)(0));
-    REQUIRE_FALSE(fplus::is_in_range(1, 3)(3));
-    REQUIRE(fplus::is_in_closed_range(1, 3)(1));
-    REQUIRE(fplus::is_in_closed_range(1, 3)(2));
-    REQUIRE(fplus::is_in_closed_range(1, 3)(3));
-    REQUIRE_FALSE(fplus::is_in_open_range(1, 3)(1));
-    REQUIRE(fplus::is_in_open_range(1, 3)(2));
-    REQUIRE_FALSE(fplus::is_in_open_range(1, 3)(3));
-    REQUIRE(fplus::is_in_range(0.09, 0.11)(fplus::abs(-0.1)));
-    REQUIRE(fplus::is_in_range(0.09, 0.11)(fplus::abs( 0.1)));
+    REQUIRE(fplus::is_in_range(1, 3, 1));
+    REQUIRE(fplus::is_in_range(1, 3, 2));
+    REQUIRE_FALSE(fplus::is_in_range(1, 3, 0));
+    REQUIRE_FALSE(fplus::is_in_range(1, 3, 3));
+    REQUIRE(fplus::is_in_closed_range(1, 3, 1));
+    REQUIRE(fplus::is_in_closed_range(1, 3, 2));
+    REQUIRE(fplus::is_in_closed_range(1, 3, 3));
+    REQUIRE_FALSE(fplus::is_in_open_range(1, 3, 1));
+    REQUIRE(fplus::is_in_open_range(1, 3, 2));
+    REQUIRE_FALSE(fplus::is_in_open_range(1, 3, 3));
+    REQUIRE(fplus::is_in_range(0.09, 0.11, fplus::abs(-0.1)));
+    REQUIRE(fplus::is_in_range(0.09, 0.11, fplus::abs( 0.1)));
 }
 
 TEST_CASE("numeric_test, is_in_range_around")
 {
-    REQUIRE_FALSE(fplus::is_in_range_around(0.1, 2.0)(1.85));
-    REQUIRE(fplus::is_in_range_around(0.1, 2.0)(1.95));
-    REQUIRE(fplus::is_in_range_around(0.1, 2.0)(2.05));
-    REQUIRE_FALSE(fplus::is_in_range_around(0.1, 2.0)(2.15));
+    REQUIRE_FALSE(fplus::is_in_range_around(0.1, 2.0, 1.85));
+    REQUIRE(fplus::is_in_range_around(0.1, 2.0, 1.95));
+    REQUIRE(fplus::is_in_range_around(0.1, 2.0, 2.05));
+    REQUIRE_FALSE(fplus::is_in_range_around(0.1, 2.0, 2.15));
 
-    REQUIRE(fplus::is_in_range_around(1, 2)(1));
-    REQUIRE_FALSE(fplus::is_in_range_around(1, 2)(3));
+    REQUIRE(fplus::is_in_range_around(1, 2, 1));
+    REQUIRE_FALSE(fplus::is_in_range_around(1, 2, 3));
 }
 
 TEST_CASE("numeric_test, is_in_open_range_around")
 {
-    REQUIRE_FALSE(fplus::is_in_open_range_around(0.1, 2.0)(1.85));
-    REQUIRE(fplus::is_in_open_range_around(0.1, 2.0)(1.95));
-    REQUIRE(fplus::is_in_open_range_around(0.1, 2.0)(2.05));
-    REQUIRE_FALSE(fplus::is_in_open_range_around(0.1, 2.0)(2.15));
+    REQUIRE_FALSE(fplus::is_in_open_range_around(0.1, 2.0, 1.85));
+    REQUIRE(fplus::is_in_open_range_around(0.1, 2.0, 1.95));
+    REQUIRE(fplus::is_in_open_range_around(0.1, 2.0, 2.05));
+    REQUIRE_FALSE(fplus::is_in_open_range_around(0.1, 2.0, 2.15));
 
-    REQUIRE_FALSE(fplus::is_in_open_range_around(1, 2)(1));
-    REQUIRE_FALSE(fplus::is_in_open_range_around(1, 2)(3));
+    REQUIRE_FALSE(fplus::is_in_open_range_around(1, 2, 1));
+    REQUIRE_FALSE(fplus::is_in_open_range_around(1, 2, 3));
 }
 
 TEST_CASE("numeric_test, is_in_closed_range_around")
 {
-    REQUIRE_FALSE(fplus::is_in_closed_range_around(0.1, 2.0)(1.85));
-    REQUIRE(fplus::is_in_closed_range_around(0.1, 2.0)(1.95));
-    REQUIRE(fplus::is_in_closed_range_around(0.1, 2.0)(2.05));
-    REQUIRE_FALSE(fplus::is_in_closed_range_around(0.1, 2.0)(2.15));
+    REQUIRE_FALSE(fplus::is_in_closed_range_around(0.1, 2.0, 1.85));
+    REQUIRE(fplus::is_in_closed_range_around(0.1, 2.0, 1.95));
+    REQUIRE(fplus::is_in_closed_range_around(0.1, 2.0, 2.05));
+    REQUIRE_FALSE(fplus::is_in_closed_range_around(0.1, 2.0, 2.15));
 
-    REQUIRE(fplus::is_in_closed_range_around(1, 2)(1));
-    REQUIRE(fplus::is_in_closed_range_around(1, 2)(3));
+    REQUIRE(fplus::is_in_closed_range_around(1, 2, 1));
+    REQUIRE(fplus::is_in_closed_range_around(1, 2, 3));
 }
 
 TEST_CASE("numeric_test, is_negative")
@@ -123,7 +123,7 @@ TEST_CASE("numeric_test, cyclic_value")
     REQUIRE_EQ(cyclic_value(8)(-5), 3);
     REQUIRE_EQ(cyclic_value(8)(-13), 3);
 
-    REQUIRE(is_in_range(3.19, 3.21)(cyclic_value(8.1)(3.2)));
+    REQUIRE(is_in_range(3.19, 3.21, cyclic_value(8.1)(3.2)));
 }
 
 TEST_CASE("numeric_test, cyclic_difference")
@@ -162,37 +162,37 @@ TEST_CASE("numeric_test, cyclic_distance")
 TEST_CASE("numeric_test, round")
 {
     using namespace fplus;
-    REQUIRE_EQ(round<int>(1.4), 1);
-    REQUIRE_EQ(round<int>(1.5), 2);
-    REQUIRE_EQ(round<int>(1.6), 2);
+    REQUIRE_EQ(round(1.4), 1);
+    REQUIRE_EQ(round(1.5), 2);
+    REQUIRE_EQ(round(1.6), 2);
 
-    REQUIRE_EQ(round<unsigned char>(300.0), 255);
-    REQUIRE_EQ(round<unsigned char>(-5.0), 0);
+    REQUIRE_EQ((round<double, unsigned char>(300.0)), 255);
+    REQUIRE_EQ((round<double, unsigned char>(-5.0)), 0);
 
-    REQUIRE_EQ(round<int>(-1.4), -1);
-    REQUIRE_EQ(round<int>(-1.6), -2);
+    REQUIRE_EQ(round(-1.4), -1);
+    REQUIRE_EQ(round(-1.6), -2);
 }
 
 TEST_CASE("numeric_test, ceil")
 {
     using namespace fplus;
-    REQUIRE_EQ(ceil<int>(1.4), 2);
-    REQUIRE_EQ(ceil<int>(-1.4), -1);
+    REQUIRE_EQ(ceil(1.4), 2);
+    REQUIRE_EQ(ceil(-1.4), -1);
 }
 
 TEST_CASE("numeric_test, floor")
 {
     using namespace fplus;
-    REQUIRE_EQ(floor<int>(1.4), 1);
-    REQUIRE_EQ(floor<int>(-1.4), -2);
+    REQUIRE_EQ(floor(1.4), 1);
+    REQUIRE_EQ(floor(-1.4), -2);
 }
 
 TEST_CASE("numeric_test, clamp")
 {
     using namespace fplus;
-    REQUIRE_EQ(clamp(2, 6)(5), 5);
-    REQUIRE_EQ(clamp(2, 6)(1), 2);
-    REQUIRE_EQ(clamp(2, 6)(8), 6);
+    REQUIRE_EQ(clamp(2, 6, 5), 5);
+    REQUIRE_EQ(clamp(2, 6, 1), 2);
+    REQUIRE_EQ(clamp(2, 6, 8), 6);
 }
 
 TEST_CASE("numeric_test, int_power")
@@ -312,9 +312,9 @@ TEST_CASE("numeric_test, mean_obj")
     auto mean_vec_div_double = mean_obj_div_double(vecs);
     auto mean_vec_div_size_t = mean_obj_div_size_t(vecs);
     double mean_vec_length_squared_dest = 2*2 + 2*2;
-    REQUIRE(is_in_range_around(0.001, mean_vec_length_squared_dest)(
+    REQUIRE(is_in_range_around(0.001, mean_vec_length_squared_dest,
         vec_2d_length_squared(mean_vec_div_double)));
-    REQUIRE(is_in_range_around(0.001, mean_vec_length_squared_dest)(
+    REQUIRE(is_in_range_around(0.001, mean_vec_length_squared_dest,
         vec_2d_length_squared(mean_vec_div_size_t)));
 }
 
@@ -349,6 +349,9 @@ TEST_CASE("numeric_test, variadic")
     REQUIRE_EQ(max(-1,-2), -1);
     REQUIRE_EQ(max(-1,-2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 0);
     REQUIRE_EQ(max('a','b','c'), 'c');
+
+    REQUIRE_EQ(max_2(2, 3), 3);
+    REQUIRE_EQ(min_2(2, 3), 2);
 }
 
 TEST_CASE("numeric_test, normalize")
@@ -380,8 +383,8 @@ TEST_CASE("numeric_test, winsorize")
 
     const auto median_result = winsorize(0.6, Doubles({1,2}));
     REQUIRE_EQ(median_result.size(), 2);
-    REQUIRE(fplus::is_in_range_around(0.001, 1.5)(median_result[0]));
-    REQUIRE(fplus::is_in_range_around(0.001, 1.5)(median_result[1]));
+    REQUIRE(fplus::is_in_range_around(0.001, 1.5, median_result[0]));
+    REQUIRE(fplus::is_in_range_around(0.001, 1.5, median_result[1]));
 }
 
 TEST_CASE("numeric_test, histogram")

@@ -387,34 +387,34 @@ TEST_CASE("container_common_test, show_float")
 {
     using namespace fplus;
     const double pi = 3.14159;
-    REQUIRE_EQ(show_float<double>(0, 3)(pi), "3.142");
-    REQUIRE_EQ(show_float<double>(1, 3)(pi), "3.142");
-    REQUIRE_EQ(show_float<double>(2, 3)(pi), "03.142");
-    REQUIRE_EQ(show_float<double>(3, 3)(pi), "003.142");
-    REQUIRE_EQ(show_float<double>(1, 2)(pi), "3.14");
-    REQUIRE_EQ(show_float<double>(1, 4)(pi), "3.1416");
-    REQUIRE_EQ(show_float<double>(1, 7)(pi), "3.1415900");
-    REQUIRE_EQ(show_float<double>(0, 3)(-pi), "-3.142");
-    REQUIRE_EQ(show_float<double>(1, 3)(-pi), "-3.142");
-    REQUIRE_EQ(show_float<double>(2, 3)(-pi), "-3.142");
-    REQUIRE_EQ(show_float<double>(3, 3)(-pi), "-03.142");
-    REQUIRE_EQ(show_float<double>(4, 3)(-pi), "-003.142");
-    REQUIRE_EQ(show_float<double>(0, 3)(0.142), "0.142");
-    REQUIRE_EQ(show_float<double>(1, 3)(0.142), "0.142");
-    REQUIRE_EQ(show_float<double>(2, 3)(0.142), "00.142");
-    REQUIRE_EQ(fill_left(' ', 8, show_float<double>(0, 3)(-pi)), "  -3.142");
+    REQUIRE_EQ(show_float<double>(0, 3, pi), "3.142");
+    REQUIRE_EQ(show_float<double>(1, 3, pi), "3.142");
+    REQUIRE_EQ(show_float<double>(2, 3, pi), "03.142");
+    REQUIRE_EQ(show_float<double>(3, 3, pi), "003.142");
+    REQUIRE_EQ(show_float<double>(1, 2, pi), "3.14");
+    REQUIRE_EQ(show_float<double>(1, 4, pi), "3.1416");
+    REQUIRE_EQ(show_float<double>(1, 7, pi), "3.1415900");
+    REQUIRE_EQ(show_float<double>(0, 3, -pi), "-3.142");
+    REQUIRE_EQ(show_float<double>(1, 3, -pi), "-3.142");
+    REQUIRE_EQ(show_float<double>(2, 3, -pi), "-3.142");
+    REQUIRE_EQ(show_float<double>(3, 3, -pi), "-03.142");
+    REQUIRE_EQ(show_float<double>(4, 3, -pi), "-003.142");
+    REQUIRE_EQ(show_float<double>(0, 3, 0.142), "0.142");
+    REQUIRE_EQ(show_float<double>(1, 3, 0.142), "0.142");
+    REQUIRE_EQ(show_float<double>(2, 3, 0.142), "00.142");
+    REQUIRE_EQ(fill_left(' ', 8, show_float<double>(0, 3, -pi)), "  -3.142");
 
-    REQUIRE_EQ(show_float_fill_left<double>(' ', 8, 3)(pi), "   3.142");
-    REQUIRE_EQ(show_float_fill_left<double>(' ', 8, 6)(pi), "3.141590");
-    REQUIRE_EQ(show_float_fill_left<double>(' ', 8, 3)(-pi), "  -3.142");
-    REQUIRE_EQ(show_float_fill_left<double>(' ', 2, 3)(-pi), "-3.142");
+    REQUIRE_EQ(show_float_fill_left<double>(' ', 8, 3, pi), "   3.142");
+    REQUIRE_EQ(show_float_fill_left<double>(' ', 8, 6, pi), "3.141590");
+    REQUIRE_EQ(show_float_fill_left<double>(' ', 8, 3, -pi), "  -3.142");
+    REQUIRE_EQ(show_float_fill_left<double>(' ', 2, 3, -pi), "-3.142");
 
-    REQUIRE_EQ(show_fill_left<int>(' ', 4)(3), "   3");
-    REQUIRE_EQ(show_fill_left<int>('0', 4)(3), "0003");
-    REQUIRE_EQ(show_fill_left<int>(' ', 4)(12345), "12345");
+    REQUIRE_EQ(show_fill_left<int>(' ', 4, 3), "   3");
+    REQUIRE_EQ(show_fill_left<int>('0', 4, 3), "0003");
+    REQUIRE_EQ(show_fill_left<int>(' ', 4, 12345), "12345");
 
-    REQUIRE_EQ(show_fill_right<int>(' ', 4)(3), "3   ");
-    REQUIRE_EQ(show_fill_right<int>(' ', 4)(12345), "12345");
+    REQUIRE_EQ(show_fill_right<int>(' ', 4, 3), "3   ");
+    REQUIRE_EQ(show_fill_right<int>(' ', 4, 12345), "12345");
 }
 
 TEST_CASE("container_common_test, zip")
@@ -515,15 +515,15 @@ TEST_CASE("container_common_test, mean")
     REQUIRE_EQ(mean_using_doubles<unsigned char>(uchars), 201);
     REQUIRE_EQ(median(IntVector({ 3 })), 3);
     REQUIRE_EQ(median(IntVector({ 3, 5 })), 4);
-    REQUIRE(is_in_range(3.49f, 3.51f)(median<IntVector, float>(IntVector({ 3, 4 }))));
-    REQUIRE(is_in_range(3.49, 3.51)(mean<double>(DoubleVector({ 3, 4 }))));
+    REQUIRE(is_in_range(3.49f, 3.51f, median<IntVector, float>(IntVector({ 3, 4 }))));
+    REQUIRE(is_in_range(3.49, 3.51, mean<double>(DoubleVector({ 3, 4 }))));
     REQUIRE_EQ(median(IntVector({ 3, 9, 5 })), 5);
     REQUIRE_EQ(median(xs), 2);
     REQUIRE_EQ(sum(convert_container_and_elems<std::vector<int>>(std::string("hello"))), 532);
-    REQUIRE(is_in_range(5.99, 6.01)(mean_stddev<double>(DoubleVector({ 4, 8 })).first));
-    REQUIRE(is_in_range(1.99, 2.01)(mean_stddev<double>(DoubleVector({ 4, 8 })).second));
-    REQUIRE(is_in_range(3.749f, 3.751f)(mean_stddev<float>(IntVector({ 1, 3, 7, 4 })).first));
-    REQUIRE(is_in_range(2.16f, 2.17f)(mean_stddev<float>(IntVector({ 1, 3, 7, 4 })).second));
+    REQUIRE(is_in_range(5.99, 6.01, mean_stddev<double>(DoubleVector({ 4, 8 })).first));
+    REQUIRE(is_in_range(1.99, 2.01, mean_stddev<double>(DoubleVector({ 4, 8 })).second));
+    REQUIRE(is_in_range(3.749f, 3.751f, mean_stddev<float>(IntVector({ 1, 3, 7, 4 })).first));
+    REQUIRE(is_in_range(2.16f, 2.17f, mean_stddev<float>(IntVector({ 1, 3, 7, 4 })).second));
 }
 
 TEST_CASE("container_common_test, sort")
@@ -615,13 +615,6 @@ TEST_CASE("container_common_test, find")
     REQUIRE_EQ(find_last_idx(4, xs), nothing<std::size_t>());
 }
 
-TEST_CASE("container_common_test, nth_element")
-{
-    using namespace fplus;
-    REQUIRE_EQ(nth_element<IntVector>(2)(xs), 2);
-    REQUIRE_EQ(nth_element_flipped(xs)(2), 2);
-}
-
 TEST_CASE("container_common_test, pairs")
 {
     using namespace fplus;
@@ -657,6 +650,7 @@ TEST_CASE("container_common_test, elem_at_idx")
 {
     using namespace fplus;
     REQUIRE_EQ(elem_at_idx(2, xs), 2);
+    REQUIRE_EQ(elem_at_idx_flipped(xs, 2), 2);
 }
 
 TEST_CASE("container_common_test, elem_at_idx_maybe")
@@ -1038,7 +1032,7 @@ TEST_CASE("container_common_test, count_occurrences_by")
     typedef std::map<int, std::size_t> IntSizeTMap;
     IntSizeTMap OccurrencesResult = {{1, 1}, {2, 3}, {3, 1}};
     std::vector<double> double_values = {1.1, 2.3, 2.7, 3.6, 2.4};
-    const auto f = floor<int, double>;
+    const auto f = floor<double>;
     REQUIRE_EQ(count_occurrences_by(f, double_values), OccurrencesResult);
 }
 

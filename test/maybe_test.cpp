@@ -20,7 +20,7 @@ namespace {
     fplus::maybe<int> sqrtToMaybeInt(int x)
     {
         return x < 0 ? fplus::nothing<int>() :
-                fplus::just(fplus::round<int>(sqrt(static_cast<float>(x))));
+                fplus::just(fplus::round(sqrt(static_cast<float>(x))));
     }
 
     float IntToFloat(const int& x)
@@ -85,7 +85,7 @@ TEST_CASE("maybe_test, and_then")
     auto JustInt = just<int>;
     auto IntToMaybeFloat = compose(JustInt, LiftedIntToFloat);
     auto IntToFloatAndSqrtAndSqrt = and_then_maybe(IntToMaybeFloat, sqrtAndSqrt);
-    REQUIRE(is_in_range(1.41f, 1.42f)(unsafe_get_just<float>
+    REQUIRE(is_in_range(1.41f, 1.42f, unsafe_get_just<float>
             (IntToFloatAndSqrtAndSqrt(4))));
 }
 

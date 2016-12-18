@@ -30,3 +30,7 @@
 #include "fplus/string_tools.hpp"
 #include "fplus/transform.hpp"
 #include "fplus/side_effects.hpp"
+
+#if __cplusplus >= 201402L
+    #include "fplus/fwd.hpp"
+#endif

@@ -25,6 +25,7 @@ namespace fplus
 {
 
 // API search type: transform_with_idx : (((Int, a) -> b), [a]) -> [b]
+// fwd bind count: 1
 // transform_with_idx(f, [6, 4, 7]) == [f(0, 6), f(1, 4), f(2, 7)]
 template <typename F, typename ContainerIn,
     typename ContainerOut = typename internal::same_cont_new_t_from_binary_f<
@@ -44,6 +45,7 @@ ContainerOut transform_with_idx(F f, const ContainerIn& xs)
 }
 
 // API search type: transform_and_keep_justs : ((a -> Maybe b), [a]) -> [b]
+// fwd bind count: 1
 // Map function over values and drop resulting nothings.
 // Also known as filter_map.
 template <typename F, typename ContainerIn,
@@ -59,6 +61,7 @@ ContainerOut transform_and_keep_justs(F f, const ContainerIn& xs)
 }
 
 // API search type: transform_and_keep_oks : ((a -> Result b), [a]) -> [b]
+// fwd bind count: 1
 // Map function over values and drop resulting errors.
 template <typename F, typename ContainerIn,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
@@ -73,6 +76,7 @@ ContainerOut transform_and_keep_oks(F f, const ContainerIn& xs)
 }
 
 // API search type: transform_and_concat : ((a -> [b]), [a]) -> [b]
+// fwd bind count: 1
 // Map function over values and concat results.
 // Also known as flat_map or concat_map.
 template <typename F, typename ContainerIn,
@@ -85,6 +89,7 @@ ContainerOut transform_and_concat(F f, const ContainerIn& xs)
 }
 
 // API search type: interleave : [[a]] -> [a]
+// fwd bind count: 0
 // interleave([[1,2,3],[4,5],[6,7,8]]) == [1,4,6,2,5,7,3,8]
 template <typename ContainerIn,
     typename ContainerOut = typename ContainerIn::value_type>
@@ -120,6 +125,7 @@ ContainerOut interleave(const ContainerIn& xss)
 }
 
 // API search type: transpose : [[a]] -> [[a]]
+// fwd bind count: 0
 // transpose([[1,2,3],[4,5,6],[7,8,9]]) == [[1,4,7],[2,5,8],[3,6,9]]
 // transpose([[1,2,3],[4,5],[7,8,9]]) == [[1,4,7],[2,5,8],[3,9]]
 template <typename Container>
@@ -134,11 +140,12 @@ Container transpose(const Container& rows)
 }
 
 // API search type: shuffle : [a] -> [a]
+// fwd bind count: 0
 // Returns a shuffled version of xs.
 // If you want a different seed, use something like
 // std::srand(std::time(nullptr));
 template <typename Container>
-Container shuffle( const Container& xs)
+Container shuffle(const Container& xs)
 {
     Container ys = xs;
     std::random_shuffle(begin(ys), end(ys));
@@ -146,6 +153,7 @@ Container shuffle( const Container& xs)
 }
 
 // API search type: sample : (Int, [a]) -> [a]
+// fwd bind count: 1
 // Returns n random elements from xs.
 // n has to be smaller than or equal to the number of elements in xs.
 // If you want a different seed, use something like
@@ -158,6 +166,7 @@ Container sample(std::size_t n, const Container& xs)
 }
 
 // API search type: apply_functions : [(a -> b)] -> a -> [b]
+// fwd bind count: 1
 // Applies a list of functions to a value.
 template <typename FunctionContainer,
     typename F = typename FunctionContainer::value_type,
@@ -178,6 +187,7 @@ ContainerOut apply_functions(const FunctionContainer& functions, const FIn& x)
 }
 
 // API search type: transform_parallelly : ((a -> b), [a]) -> [b]
+// fwd bind count: 1
 // transform_parallelly((*2), [1, 3, 4]) == [2, 6, 8]
 // Same as transform, but can utilize multiple CPUs by using std::async.
 // Only makes sense if one run of the provided function
@@ -209,6 +219,7 @@ ContainerOut transform_parallelly(F f, const ContainerIn& xs)
 }
 
 // API search type: transform_parallelly_n_threads : (Int, (a -> b), [a]) -> [b]
+// fwd bind count: 2
 // transform_parallelly_n_threads(4, (*2), [1, 3, 4]) == [2, 6, 8]
 // Same as transform, but uses n threads in parallel.
 // Only makes sense if one run of the provided function

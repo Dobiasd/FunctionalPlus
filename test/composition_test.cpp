@@ -99,8 +99,8 @@ TEST_CASE("composition_test, apply_to_pair")
 {
     using namespace fplus;
     auto APlusTwoTimesB = [](int a, int b) { return a + 2 * b; };
-    REQUIRE_EQ((apply_to_pair(APlusTwoTimesB)(std::make_pair(1, 2))), 5);
-    REQUIRE_EQ((apply_to_pair(APlusTwoTimesBFunc)(std::make_pair(1, 2))), 5);
+    REQUIRE_EQ((apply_to_pair(APlusTwoTimesB, std::make_pair(1, 2))), 5);
+    REQUIRE_EQ((apply_to_pair(APlusTwoTimesBFunc, std::make_pair(1, 2))), 5);
 }
 
 TEST_CASE("composition_test, state")

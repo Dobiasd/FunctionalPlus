@@ -220,6 +220,7 @@ namespace internal
 } // namespace internal
 
 // API search type: identity : a -> a
+// fwd bind count: 0
 // identity(x) == x
 template <typename T>
 T identity(const T& x)
@@ -227,8 +228,8 @@ T identity(const T& x)
     return x;
 }
 
-
 // API search type: is_equal : (a, a) -> Bool
+// fwd bind count: 1
 // x == y
 template <typename T>
 bool is_equal(const T& x, const T& y)
@@ -294,6 +295,7 @@ std::function<bool(const X&)> is_equal_to(const X& x)
 }
 
 // API search type: is_not_equal : (a, a) -> Bool
+// fwd bind count: 1
 // x != y
 template <typename T>
 bool is_not_equal(const T& x, const T& y)
@@ -350,6 +352,7 @@ std::function<bool(const X&)> is_not_equal_to(const X& x)
 }
 
 // API search type: is_less : (a, a) -> Bool
+// fwd bind count: 1
 // x < y
 template <typename T>
 bool is_less(const T& x, const T& y)
@@ -406,6 +409,7 @@ std::function<bool(const X&)> is_less_than(const X& x)
 }
 
 // API search type: is_less_or_equal : (a, a) -> Bool
+// fwd bind count: 1
 // x <= y
 template <typename T>
 bool is_less_or_equal(const T& x, const T& y)
@@ -462,6 +466,7 @@ std::function<bool(const X&)> is_less_or_equal_than(const X& x)
 }
 
 // API search type: is_greater : a -> a -> Bool
+// fwd bind count: 1
 // x > y
 template <typename T>
 bool is_greater(const T& x, const T& y)
@@ -518,6 +523,7 @@ std::function<bool(const X&)> is_greater_than(const X& x)
 }
 
 // API search type: is_greater_or_equal : (a, a) -> Bool
+// fwd bind count: 1
 // x >= y
 template <typename T>
 bool is_greater_or_equal(const T& x, const T& y)
@@ -574,6 +580,7 @@ std::function<bool(const X&)> is_greater_or_equal_than(const X& x)
 }
 
 // API search type: xor_bools : (Bool, Bool) -> Bool
+// fwd bind count: 1
 // Exclusive or.
 template <typename T>
 bool xor_bools(const T& x, const T& y)

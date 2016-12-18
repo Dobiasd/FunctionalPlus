@@ -276,7 +276,7 @@ std::function<std::vector<std::string>()> read_text_file_lines(
 {
     return [filename, allow_empty]() -> std::vector<std::string>
     {
-        return split_lines(read_text_file(filename)(), allow_empty);
+        return split_lines(allow_empty, read_text_file(filename)());
     };
 }
 

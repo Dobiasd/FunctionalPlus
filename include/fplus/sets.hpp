@@ -16,6 +16,7 @@ namespace fplus
 {
 
 // API search type: set_includes : (Set a, Set a) -> Bool
+// fwd bind count: 1
 // Checks if every element of the second set is also present in the first set.
 // Also known as is_subset_of.
 template <typename SetType>
@@ -26,6 +27,7 @@ bool set_includes(const SetType& set1, const SetType& set2)
 }
 
 // API search type: unordered_set_includes : (Unordered_Set a, Unordered_Set a) -> Bool
+// fwd bind count: 1
 // Checks if every element of the second unordered_set
 // is also present in the first unordered_set.
 // Also known as is_subset_of.
@@ -40,6 +42,7 @@ bool unordered_set_includes(const UnorderSetType& set1,
 }
 
 // API search type: set_merge : (Set a, Set a) -> Set a
+// fwd bind count: 1
 // Returns the union of two given sets.
 template <typename SetType>
 SetType set_merge(const SetType& set1, const SetType& set2)
@@ -53,6 +56,7 @@ SetType set_merge(const SetType& set1, const SetType& set2)
 }
 
 // API search type: set_intersection : (Set a, Set a) -> Set a
+// fwd bind count: 1
 // Returns the intersection of both sets.
 template <typename SetType>
 SetType set_intersection(const SetType& set1, const SetType& set2)
@@ -67,10 +71,11 @@ SetType set_intersection(const SetType& set1, const SetType& set2)
 
 
 // API search type: unordered_set_intersection : (Unordered_Set a, Unordered_Set a) -> Unordered_Set a
+// fwd bind count: 1
 // Returns the intersection of both unordered_sets.
 template <typename UnorderSetType>
-UnorderSetType unordered_set_intersection(const UnorderSetType& set1,
-                                            const UnorderSetType& set2)
+UnorderSetType unordered_set_intersection(
+    const UnorderSetType& set1, const UnorderSetType& set2)
 {
     UnorderSetType result;
     auto itOut = internal::get_back_inserter(result);
@@ -83,6 +88,7 @@ UnorderSetType unordered_set_intersection(const UnorderSetType& set1,
 
 
 // API search type: set_difference : (Set a, Set a) -> Set a
+// fwd bind count: 1
 // Returns the elements in set1 that are not present in set2.
 template <typename SetType>
 SetType set_difference(const SetType& set1, const SetType& set2)
@@ -95,6 +101,7 @@ SetType set_difference(const SetType& set1, const SetType& set2)
     return result;
 }
 // API search type: unordered_set_difference : (Unordered_Set a, Unordered_Set a) -> Unordered_Set a
+// fwd bind count: 1
 // Returns the elements in unordered_set1
 // that are not present in unordered_set2.
 template <typename UnorderSetType>
@@ -110,6 +117,7 @@ const UnorderSetType& set2)
 }
 
 // API search type: set_symmetric_difference : (Set a, Set a) -> Set a
+// fwd bind count: 1
 // Returns the symmetric difference of both sets.
 template <typename SetType>
 SetType set_symmetric_difference(const SetType& set1, const SetType& set2)
@@ -123,10 +131,11 @@ SetType set_symmetric_difference(const SetType& set1, const SetType& set2)
 }
 
 // API search type: unordered_set_symmetric_difference : (Unordered_Set a, Unordered_Set a) -> Unordered_Set a
+// fwd bind count: 1
 // Returns the symmetric difference of both unordered_sets.
 template <typename UnorderSetType>
-UnorderSetType unordered_set_symmetric_difference(const UnorderSetType& set1,
-                                                    const UnorderSetType& set2)
+UnorderSetType unordered_set_symmetric_difference(
+    const UnorderSetType& set1, const UnorderSetType& set2)
 {
     UnorderSetType result;
     auto itOut = internal::get_back_inserter(result);
@@ -140,6 +149,7 @@ UnorderSetType unordered_set_symmetric_difference(const UnorderSetType& set1,
 }
 
 // API search type: sets_intersection : [Set a] -> Set a
+// fwd bind count: 0
 // Returns the intersection of the given sets.
 // Also known as intersect_many.
 template <typename ContainerIn,
@@ -150,6 +160,7 @@ SetType sets_intersection(const ContainerIn& sets)
 }
 
 // API search type: unordered_sets_intersection : [Unordered_Set a] -> Unordered_Set a
+// fwd bind count: 0
 // Returns the intersection of the given unordered_sets.
 // Also known as intersect_many.
 template <typename ContainerIn,

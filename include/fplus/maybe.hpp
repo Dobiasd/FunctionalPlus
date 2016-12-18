@@ -44,6 +44,7 @@ private:
 };
 
 // API search type: is_just : Maybe a -> Bool
+// fwd bind count: 0
 // Is not nothing?
 template <typename T>
 bool is_just(const maybe<T>& maybe)
@@ -52,6 +53,7 @@ bool is_just(const maybe<T>& maybe)
 }
 
 // API search type: is_nothing : Maybe a -> Bool
+// fwd bind count: 0
 // Has no value?
 template <typename T>
 bool is_nothing(const maybe<T>& maybe)
@@ -60,6 +62,7 @@ bool is_nothing(const maybe<T>& maybe)
 }
 
 // API search type: unsafe_get_just : Maybe a -> a
+// fwd bind count: 0
 // Crashes if maybe is nothing!
 template <typename T>
 T unsafe_get_just(const maybe<T>& maybe)
@@ -68,6 +71,7 @@ T unsafe_get_just(const maybe<T>& maybe)
 }
 
 // API search type: just_with_default : (a, Maybe a) -> a
+// fwd bind count: 0
 // Get the value from a maybe or the default in case it is nothing.
 template <typename T>
 T just_with_default(const T& defaultValue, const maybe<T>& maybe)
@@ -78,6 +82,7 @@ T just_with_default(const T& defaultValue, const maybe<T>& maybe)
 }
 
 // API search type: throw_on_nothing : (e, Maybe a) -> a
+// fwd bind count: 1
 // Throw exception if nothing. Return value if just.
 template <typename E, typename T>
 T throw_on_nothing(const E& e, const maybe<T>& maybe)
@@ -88,6 +93,7 @@ T throw_on_nothing(const E& e, const maybe<T>& maybe)
 }
 
 // API search type: just : a -> Maybe a
+// fwd bind count: 0
 // Wrap a value in a Maybe as a Just.
 template <typename T>
 maybe<T> just(const T& val)
@@ -243,6 +249,7 @@ std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g, H h, I i)
 }
 
 // API search type: flatten_maybe : (Maybe (Maybe a)) -> Maybe a
+// fwd bind count: 0
 // Also known as join.
 template <typename T>
 maybe<T> flatten_maybe(const maybe<maybe<T>>& maybe_maybe)

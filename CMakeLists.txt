@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.11)
 
 project(FunctionalPlus)
-set(PROJECT_VERSION 0.1)
+set(PROJECT_VERSION 0.2)
 
 message(STATUS "===( ${PROJECT_NAME} ${PROJECT_VERSION} )===")
 
@@ -34,6 +34,10 @@ include_directories(include)
 if( UNITTEST )
     enable_testing()
     subdirs(test)
+endif()
+
+if( CPP14TEST )
+    add_compile_options(-std=c++14)
 endif()
 
 

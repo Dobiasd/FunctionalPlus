@@ -49,6 +49,7 @@ ContainerOut generate_by_idx(F f, std::size_t amount)
 }
 
 // API search type: repeat : (Int, [a]) -> [a]
+// fwd bind count: 1
 // repeat(3, [1, 2]) == [1, 2, 1, 2, 1, 2]
 template <typename Container>
 Container repeat(std::size_t n, const Container& xs)
@@ -58,6 +59,7 @@ Container repeat(std::size_t n, const Container& xs)
 }
 
 // API search type: infixes : (Int, [a]) -> [[a]]
+// fwd bind count: 1
 // infixes(3, [1,2,3,4,5,6]) == [[1,2,3], [2,3,4], [3,4,5], [4,5,6]]
 // length must be > 0
 template <typename ContainerIn,
@@ -81,6 +83,7 @@ ContainerOut infixes(std::size_t length, const ContainerIn& xs)
 }
 
 // API search type: carthesian_product_with_where : (((a, b) -> c), ((a -> b), Bool), [a], [b]) -> [c]
+// fwd bind count: 3
 // carthesian_product_with_where(make_pair, always(true), "ABC", "XY")
 //   == [(A,X),(A,Y),(B,X),(B,Y),(C,X),(C,Y)]
 // same as (in Haskell):
@@ -116,6 +119,7 @@ ContainerOut carthesian_product_with_where(F f, Pred pred,
 }
 
 // API search type: carthesian_product_with : (((a, b) -> c), [a], [b]) -> [c]
+// fwd bind count: 2
 // carthesian_product_with(make_pair, "ABC", "XY")
 // == [(A,X),(A,Y),(B,X),(B,Y),(C,X),(C,Y)]
 template <typename F,
@@ -133,6 +137,7 @@ ContainerOut carthesian_product_with(F f,
 }
 
 // API search type: carthesian_product_where : (((a, b) -> Bool), [a], [b]) -> [(a, b)]
+// fwd bind count: 2
 // carthesian_product_where(always(true), "ABC", "XY")
 // == [(A,X),(A,Y),(B,X),(B,Y),(C,X),(C,Y)]
 template <typename Pred,
@@ -153,6 +158,7 @@ ContainerOut carthesian_product_where(Pred pred,
 }
 
 // API search type: carthesian_product : ([a], [b]) -> [(a, b)]
+// fwd bind count: 1
 // carthesian_product("ABC", "XY") == [(A,X),(A,Y),(B,X),(B,Y),(C,X),(C,Y)]
 template <typename Container1,
     typename Container2,
@@ -204,6 +210,7 @@ namespace internal
 }
 
 // API search type: carthesian_product_n : (Int, [a]) -> [[a]]
+// fwd bind count: 1
 // carthesian_product_n(2, "ABCD") == AA AB AC AD BA BB BC BD CA CB CC CD DA DB DC DD
 template <typename ContainerIn,
     typename T = typename ContainerIn::value_type,
@@ -225,6 +232,7 @@ ContainerOut carthesian_product_n(std::size_t power, const ContainerIn& xs_in)
 }
 
 // API search type: permutations : (Int, [a]) -> [[a]]
+// fwd bind count: 1
 // permutations(2, "ABCD") == AB AC AD BA BC BD CA CB CD DA DB DC
 template <typename ContainerIn,
     typename T = typename ContainerIn::value_type,
@@ -248,6 +256,7 @@ ContainerOut permutations(std::size_t power, const ContainerIn& xs_in)
 }
 
 // API search type: combinations : (Int, [a]) -> [[a]]
+// fwd bind count: 1
 // combinations(2, "ABCD") == AB AC AD BC BD CD
 template <typename ContainerIn,
     typename T = typename ContainerIn::value_type,
@@ -271,6 +280,7 @@ ContainerOut combinations(std::size_t power, const ContainerIn& xs_in)
 }
 
 // API search type: combinations_with_replacement : (Int, [a]) -> [[a]]
+// fwd bind count: 1
 // combinations_with_replacement(2, "ABCD") == AA AB AC AD BB BC BD CC CD DD
 template <typename ContainerIn,
     typename T = typename ContainerIn::value_type,
@@ -295,6 +305,7 @@ ContainerOut combinations_with_replacement(std::size_t power,
 }
 
 // API search type: power_set : [a] -> [[a]]
+// fwd bind count: 0
 // power_set("xyz") == ["", "x", "y", "z", "xy", "xz", "yz", "xyz"]
 // Also known as subsequences.
 template <typename ContainerIn,
@@ -311,6 +322,7 @@ ContainerOut power_set(const ContainerIn& xs_in)
 }
 
 // API search type: iterate : ((a -> a), Int, a) -> [a]
+// fwd bind count: 2
 // iterate((*2), 5, 3) = [3, 6, 12, 24, 48]
 // = [3, f(3), f(f(3)), f(f(f(3))), f(f(f(f(3))))]
 template <typename F,
@@ -334,6 +346,7 @@ ContainerOut iterate(F f, std::size_t size, const T& x)
 }
 
 // API search type: adjacent_difference_by : [a] -> [a]
+// fwd bind count: 1
 // adjacent_difference_by([0,4,1,2,5]) == [0,4,-3,1,3]
 template <typename ContainerIn, typename F,
     typename X = typename ContainerIn::value_type,
@@ -349,6 +362,7 @@ ContainerOut adjacent_difference_by(F f, const ContainerIn& xs)
 }
 
 // API search type: adjacent_difference : [a] -> [a]
+// fwd bind count: 0
 // adjacent_difference([0,4,1,2,5]) == [0,4,-3,1,3]
 template <typename Container>
 Container adjacent_difference(const Container& xs)
@@ -358,6 +372,7 @@ Container adjacent_difference(const Container& xs)
 }
 
 // API search type: rotate_left : [a] -> [a]
+// fwd bind count: 0
 // rotate_left("xyz") == "yzx"
 template <typename Container>
 Container rotate_left(const Container& xs)
@@ -380,6 +395,7 @@ Container rotate_left(const Container& xs)
 }
 
 // API search type: rotate_right : [a] -> [a]
+// fwd bind count: 0
 // rotate_right("xyz") == "zxy"
 template <typename Container>
 Container rotate_right(const Container& xs)
@@ -388,6 +404,7 @@ Container rotate_right(const Container& xs)
 }
 
 // API search type: rotations_left : [a] -> [[a]]
+// fwd bind count: 0
 // rotations_left("abcd") == ["abcd", "bcda", "cdab", "dabc"]
 template <typename ContainerIn,
     typename T = typename ContainerIn::value_type,
@@ -398,6 +415,7 @@ ContainerOut rotations_left(const ContainerIn& xs_in)
 }
 
 // API search type: rotations_right : [a] -> [[a]]
+// fwd bind count: 0
 // rotations_right("abcd") == ["abcd", "dabc", "cdab", "bcda"]
 template <typename ContainerIn,
     typename T = typename ContainerIn::value_type,
@@ -408,6 +426,7 @@ ContainerOut rotations_right(const ContainerIn& xs_in)
 }
 
 // API search type: fill_left : (a, Int, [a]) -> [a]
+// fwd bind count: 2
 // fill_left(0, 6, [1,2,3,4]) == [0,0,1,2,3,4]
 template <typename Container,
         typename T = typename Container::value_type>
@@ -419,6 +438,7 @@ Container fill_left(const T& x, std::size_t min_size, const Container& xs)
 }
 
 // API search type: fill_right : (a, Int, [a]) -> [a]
+// fwd bind count: 2
 // fill_right(0, 6, [1,2,3,4]) == [1,2,3,4,0,0]
 template <typename Container,
         typename T = typename Container::value_type>
@@ -430,6 +450,7 @@ Container fill_right(const T& x, std::size_t min_size, const Container& xs)
 }
 
 // API search type: inits : [a] -> [[a]]
+// fwd bind count: 0
 // inits([0,1,2,3]) == [[],[0],[0,1],[0,1,2],[0,1,2,3]]
 template <typename ContainerIn,
     typename T = typename ContainerIn::value_type,
@@ -446,6 +467,7 @@ ContainerOut inits(const ContainerIn& xs)
 }
 
 // API search type: tails : [a] -> [[a]]
+// fwd bind count: 0
 // tails([0,1,2,3]) == [[0,1,2,3],[1,2,3],[2,3],[3],[]]
 template <typename ContainerIn,
     typename T = typename ContainerIn::value_type,

@@ -112,7 +112,6 @@ namespace internal
     };
 }
 
-
 // API search type: read_value_result : String -> Result a
 // Try to deserialize a value.
 template <typename T>
@@ -150,6 +149,7 @@ maybe<T> read_value(const std::string& str)
 }
 
 // API search type: read_value_with_default : (a, String) -> a
+// fwd bind count: 1
 // Try to deserialize a value, return given default on failure, e.g.:
 // String to Int
 // String to Float

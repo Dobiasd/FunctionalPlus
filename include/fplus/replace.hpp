@@ -14,6 +14,7 @@ namespace fplus
 {
 
 // API search type: replace_if : ((a -> Bool), a, [a]) -> [a]
+// fwd bind count: 2
 // replace_if(is_even, 0, [1, 3, 4, 6, 7]) == [1, 3, 0, 0, 7]
 template <typename UnaryPredicate, typename Container>
 Container replace_if(UnaryPredicate p,
@@ -31,6 +32,7 @@ Container replace_if(UnaryPredicate p,
 }
 
 // API search type: replace_elems : (a, a, [a]) -> [a]
+// fwd bind count: 2
 // replace_elems(4, 0, [1, 3, 4, 4, 7]) == [1, 3, 0, 0, 7]
 template <typename Container,
         typename T = typename Container::value_type>
@@ -40,6 +42,7 @@ Container replace_elems(const T& source, const T& dest, const Container& xs)
 }
 
 // API search type: replace_tokens : ([a], [a], [a]) -> [a]
+// fwd bind count: 2
 // replace_tokens("haha", "hihi", "oh, hahaha!") == "oh, hihiha!"
 template <typename Container>
 Container replace_tokens

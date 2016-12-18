@@ -94,6 +94,7 @@ namespace internal
 } // namespace internal
 
 // API search type: is_empty : [a] -> Bool
+// fwd bind count: 0
 // is_empty([1, 2]) == false
 template <typename Container>
 bool is_empty(const Container& xs)
@@ -102,6 +103,7 @@ bool is_empty(const Container& xs)
 }
 
 // API search type: is_not_empty : [a] -> Bool
+// fwd bind count: 0
 // is_not_empty([1, 2]) == true
 template <typename Container>
 bool is_not_empty(const Container& xs)
@@ -110,6 +112,7 @@ bool is_not_empty(const Container& xs)
 }
 
 // API search type: size_of_cont : [a] -> Int
+// fwd bind count: 0
 // size_of_cont([3, 4]) == 2
 template <typename Container>
 std::size_t size_of_cont(const Container& xs)
@@ -118,6 +121,7 @@ std::size_t size_of_cont(const Container& xs)
 }
 
 // API search type: convert : a -> b
+// fwd bind count: 0
 // Converts one type of element to another.
 template <typename Dest, typename Source>
 Dest convert(const Source& x)
@@ -126,6 +130,7 @@ Dest convert(const Source& x)
 }
 
 // API search type: convert_elems : [a] -> [b]
+// fwd bind count: 0
 // convert_elems<NewT>([1, 2, 3]) == [NewT(1), NewT(2), NewT(3)]
 template <typename NewT, typename ContainerIn,
     typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, NewT>::type>
@@ -148,6 +153,7 @@ ContainerOut convert_elems(const ContainerIn& xs)
 }
 
 // API search type: convert_container : [a] -> [a]
+// fwd bind count: 0
 // convert_container([1, 2, 3]) == [1, 2, 3]
 // Useful for example if you want to convert an std::list to an std::vector.
 template <typename ContainerOut, typename ContainerIn>
@@ -165,6 +171,7 @@ ContainerOut convert_container(const ContainerIn& xs)
 }
 
 // API search type: convert_container_and_elems : [a] -> [b]
+// fwd bind count: 0
 // Converts between different containers and elements.
 // Dest elements are allowed to have explicit constructors.
 // convert([1, 2, 3]) == [1, 2, 3]
@@ -186,6 +193,7 @@ ContainerOut convert_container_and_elems(const ContainerIn& xs)
 }
 
 // API search type: get_range : (Int, Int, [a]) -> [a]
+// fwd bind count: 2
 // get_range(2, 5, [0,1,2,3,4,5,6,7,8]) == [2,3,4]
 // Also known as slice.
 // crashes on invalid indices
@@ -205,6 +213,7 @@ Container get_range
 }
 
 // API search type: set_range : (Int, [a], [a]) -> [a]
+// fwd bind count: 2
 // set_range(2, [9,9,9], [0,1,2,3,4,5,6,7,8]) == [0,1,9,9,9,5,6,7,8]
 // crashes on invalid indices
 template <typename Container>
@@ -220,6 +229,7 @@ Container set_range
 }
 
 // API search type: remove_range : (Int, Int, [a]) -> [a]
+// fwd bind count: 2
 // remove_range(2, 5, [0,1,2,3,4,5,6,7]) == [0,1,5,6,7]
 // crashes on invalid indices
 template <typename Container>
@@ -245,6 +255,7 @@ Container remove_range
 }
 
 // API search type: insert_at : (Int, [a], [a]) -> [a]
+// fwd bind count: 2
 // insert_at(2, [8,9], [0,1,2,3,4]) == [0,1,8,9,2,3,4]
 // crashes on invalid index
 template <typename Container>
@@ -266,6 +277,7 @@ Container insert_at(std::size_t idx_begin,
 }
 
 // API search type: replace_range : (Int, [a], [a]) -> [a]
+// fwd bind count: 2
 // replace_range(2, [8,9], [0,1,2,3,4]) == [0,1,8,9,4]
 // crashes on invalid index
 template <typename Container>
@@ -277,9 +289,9 @@ Container replace_range(std::size_t idx_begin,
 }
 
 // API search type: elem_at_idx : (Int, [a]) -> a
+// fwd bind count: 1
 // elem_at_idx(2, [7,6,5,4,3]) == 5
 // Unsafe!
-// Curried version: nth_element
 template <typename Container,
     typename T = typename Container::value_type>
 T elem_at_idx(std::size_t idx, const Container& xs)
@@ -290,7 +302,19 @@ T elem_at_idx(std::size_t idx, const Container& xs)
     return *it;
 }
 
+// API search type: elem_at_idx_flipped : ([a], Int) -> a
+// fwd bind count: 1
+// elem_at_idx_flipped([7,6,5,4,3], 2) == 5
+// Unsafe!
+template <typename Container,
+    typename T = typename Container::value_type>
+T elem_at_idx_flipped(const Container& xs, std::size_t idx)
+{
+    return elem_at_idx(idx, xs);
+}
+
 // API search type: elem_at_idx_maybe : (Int, [a]) -> Maybe a
+// fwd bind count: 1
 // elem_at_idx_maybe(2, [7,6,5,4,3]) == Just 5
 // elem_at_idx_maybe(9, [7,6,5,4,3]) == Nothing
 // Use elem_at_idx_or_nothing if you want to provide a signed index type.
@@ -308,6 +332,7 @@ maybe<T> elem_at_idx_maybe(std::size_t idx, const Container& xs)
 }
 
 // API search type: elems_at_idxs : ([Int], [a]) -> [a]
+// fwd bind count: 1
 // elem_at_idxs([1, 3], [7,6,5,4,3]) == [6, 4]
 template <typename Container,
     typename ContainerIdxs,
@@ -327,33 +352,8 @@ std::vector<T> elems_at_idxs(const ContainerIdxs& idxs, const Container& xs)
     return result;
 }
 
-// API search type: nth_element : Int -> ([a] -> a)
-// nth_element(2)([5,6,7,8]) == 7
-// Uncurried version: elem_at_idx
-template <typename Container,
-        typename T = typename Container::value_type>
-std::function<T(const Container& xs)> nth_element(std::size_t n)
-{
-    return [n](const Container& xs) -> T
-    {
-        return elem_at_idx(n, xs);
-    };
-}
-
-// API search type: nth_element_flipped : [a] -> (Int -> a)
-// nth_element_flipped([5,6,7,8])(2) == 7
-// Can be used to erase outer container type.
-template <typename Container,
-        typename T = typename Container::value_type>
-std::function<T(std::size_t n)> nth_element_flipped(const Container& xs)
-{
-    return [xs](std::size_t n) -> T
-    {
-        return elem_at_idx(n, xs);
-    };
-}
-
 // API search type: transform : ((a -> b), [a]) -> [b]
+// fwd bind count: 1
 // transform((*2), [1, 3, 4]) == [2, 6, 8]
 // Also known as map.
 template <typename F, typename ContainerIn,
@@ -370,6 +370,7 @@ ContainerOut transform(F f, const ContainerIn& xs)
 }
 
 // API search type: transform_convert : ((a -> b), [a]) -> [b]
+// fwd bind count: 1
 // transform_convert((*2), [1, 3, 4]) == [2, 6, 8]
 // Same as transform, but makes it easy to
 // use an output container type different from the input container type.
@@ -385,6 +386,7 @@ ContainerOut transform_convert(F f, const ContainerIn& xs)
 }
 
 // API search type: transform_inner : ((a -> b), [a]) -> [b]
+// fwd bind count: 1
 // transform_inner((*2), [[1, 3, 4], [1, 2]]) == [[2, 6, 8], [2, 4]]
 // Also known as transform_nested, map_nested or map_inner.
 template <typename F, typename ContainerIn,
@@ -405,6 +407,7 @@ ContainerOut transform_inner(F f, const ContainerIn& xs)
 }
 
 // API search type: reverse : [a] -> [a]
+// fwd bind count: 0
 // reverse([0,4,2,6]) == [6,2,4,0]
 template <typename Container>
 Container reverse(const Container& xs)
@@ -417,6 +420,7 @@ Container reverse(const Container& xs)
 }
 
 // API search type: take : (Int, [a]) -> [a]
+// fwd bind count: 1
 // take(3, [0,1,2,3,4,5,6,7]) == [0,1,2]
 // take(10, [0,1,2]) == [0,1,2]
 template <typename Container>
@@ -428,6 +432,7 @@ Container take(std::size_t amount, const Container& xs)
 }
 
 // API search type: take_exact : (Int, [a]) -> [a]
+// fwd bind count: 1
 // Unsafe!
 // take_exact(3, [0,1,2,3,4,5,6,7]) == [0,1,2]
 // take_exact(10, [0,1,2]) == crash
@@ -438,6 +443,7 @@ Container take_exact(std::size_t amount, const Container& xs)
 }
 
 // API search type: take_cyclic : (Int, [a]) -> [a]
+// fwd bind count: 1
 // take_cyclic(5, [0,1,2,3]) == [0,1,2,3,0]
 // take_cyclic(7, [0,1,2,3]) == [0,1,2,3,0,1,2]
 // take_cyclic(7, [0,1]) == [0,1,0,1,0,1,0]
@@ -470,6 +476,7 @@ Container take_cyclic(std::size_t amount, const Container& xs)
 }
 
 // API search type: drop : (Int, [a]) -> [a]
+// fwd bind count: 1
 // drop(3, [0,1,2,3,4,5,6,7]) == [3,4,5,6,7]
 // Also known as skip.
 template <typename Container>
@@ -481,6 +488,7 @@ Container drop(std::size_t amount, const Container& xs)
 }
 
 // API search type: drop_exact : (Int, [a]) -> [a]
+// fwd bind count: 1
 // Unsafe!
 // drop_exact(3, [0,1,2,3,4,5,6,7]) == [3,4,5,6,7]
 // drop_exact(10, [0,1,2,3,4,5,6,7]) == crash
@@ -491,6 +499,7 @@ Container drop_exact(std::size_t amount, const Container& xs)
 }
 
 // API search type: fold_left : (((a, b) -> a), a, [b]) -> a
+// fwd bind count: 2
 // fold_left((+), 0, [1, 2, 3]) == ((0+1)+2)+3 == 6
 // Takes the second argument and the first item of the list
 // and applies the function to them,
@@ -508,6 +517,7 @@ Acc fold_left(F f, const Acc& init, const Container& xs)
 }
 
 // API search type: fold_left_1 : (((a, a) -> a), [a]) -> a
+// fwd bind count: 2
 // fold_left_1((+), [1, 2, 3]) == (1+2)+3 == 6
 // Takes the first 2 items of the list and applies the function to them,
 // then feeds the function with this result and the third argument and so on.
@@ -521,6 +531,7 @@ Acc fold_left_1(F f, const Container& xs)
 }
 
 // API search type: fold_right : (((a, b) -> b), b) -> [a] -> b
+// fwd bind count: 2
 // fold_right((+), 0, [1, 2, 3]) == 1+(2+(3+0)) == 6
 // Takes the second argument and the last item of the list
 // and applies the function,
@@ -533,6 +544,7 @@ Acc fold_right(F f, const Acc& init, const Container& xs)
 }
 
 // API search type: fold_right_1 : (((a, a) -> a), [a]) -> a
+// fwd bind count: 2
 // fold_right_1((+), [1, 2, 3]) == 1+(2+3)) == 6
 // Takes the last two items of the list and applies the function,
 // then it takes the third item from the end and the result, and so on.
@@ -544,6 +556,7 @@ Acc fold_right_1(F f, const Container& xs)
 }
 
 // API search type: scan_left : (((a, b) -> a), a, [b]) -> [a]
+// fwd bind count: 2
 // scan_left((+), 0, [1, 2, 3]) == [0, 1, 3, 6]
 // Takes the second argument and the first item of the list
 // and applies the function to them,
@@ -568,6 +581,7 @@ ContainerOut scan_left(F f, const Acc& init, const ContainerIn& xs)
 }
 
 // API search type: scan_left_1 : (((a, a) -> a), [a]) -> [a]
+// fwd bind count: 2
 // scan_left_1((+), [1, 2, 3]) == [1, 3, 6]
 // Takes the first 2 items of the list and applies the function to them,
 // then feeds the function with this result and the third argument and so on.
@@ -583,6 +597,7 @@ ContainerOut scan_left_1(F f, const ContainerIn& xs)
 }
 
 // API search type: scan_right : (((a, b) -> b), b, [a]) -> [b]
+// fwd bind count: 2
 // scan_right((+), 0, [1, 2, 3]) == [6, 5, 3, 0]
 // Takes the second argument and the last item of the list
 // and applies the function,
@@ -597,6 +612,7 @@ ContainerOut scan_right(F f, const Acc& init, const ContainerIn& xs)
 }
 
 // API search type: scan_right_1 : (((a, a) -> a), [a]) -> [a]
+// fwd bind count: 2
 // scan_right_1((+), [1, 2, 3]) == [6, 5, 3]
 // Takes the last two items of the list and applies the function,
 // then it takes the third item from the end and the result, and so on.
@@ -610,6 +626,7 @@ ContainerOut scan_right_1(F f, const ContainerIn& xs)
 }
 
 // API search type: sum : [a] -> a
+// fwd bind count: 0
 // sum([0,3,1]) == 4
 // sum([]) == 0
 template <typename Container,
@@ -625,6 +642,7 @@ T sum(const Container& xs)
 }
 
 // API search type: product : [a] -> a
+// fwd bind count: 0
 // product([3,1,2]) == 6
 // product([]) == 1
 template <typename Container,
@@ -640,6 +658,7 @@ T product(const Container& xs)
 }
 
 // API search type: append_elem : ([a], a) -> [a]
+// fwd bind count: 1
 // append_elem([1, 2], 3) == [1, 2, 3]
 template <typename Container,
     typename T = typename Container::value_type>
@@ -654,6 +673,7 @@ Container append_elem(const Container& xs, const T& y)
 }
 
 // API search type: prepend_elem : ([a], a) -> [a]
+// fwd bind count: 1
 // prepend_elem([2, 3], 1) == [1, 2, 3]
 template <typename Container,
     typename T = typename Container::value_type>
@@ -668,6 +688,7 @@ Container prepend_elem(const Container& xs, const T& y)
 }
 
 // API search type: append : ([a], [a]) -> [a]
+// fwd bind count: 1
 // append([1, 2], [3, 4, 5]) == [1, 2, 3, 4, 5]
 template <typename Container>
 Container append(const Container& xs, const Container& ys)
@@ -682,6 +703,7 @@ Container append(const Container& xs, const Container& ys)
 }
 
 // API search type: concat : [[a]] -> [a]
+// fwd bind count: 0
 // concat([[1, 2], [], [3]]) == [1, 2, 3]
 // also known as flatten
 template <typename ContainerIn,
@@ -700,6 +722,7 @@ ContainerOut concat(const ContainerIn& xss)
 }
 
 // API search type: interweave : ([a], [a]) -> [a]
+// fwd bind count: 1
 // Return a list that contains elements from the two provided,
 // in alternate order. If one list runs out of items,
 // append the items from the remaining list.
@@ -724,6 +747,7 @@ Container interweave(const Container& xs, const Container& ys)
 }
 
 // API search type: unweave : [a] -> ([a], [a])
+// fwd bind count: 0
 // Puts the elements with an even index into the first list,
 // and the elements with an odd index into the second list.
 // Inverse of interweave.
@@ -761,6 +785,7 @@ std::list<T> sort_by(Compare comp, const std::list<T>& xs)
 }
 
 // API search type: sort_by : (((a, a) -> Bool), [a]) -> [a]
+// fwd bind count: 1
 // sort by given less comparator
 template <typename Compare, typename Container>
 Container sort_by(Compare comp, const Container& xs)
@@ -771,6 +796,7 @@ Container sort_by(Compare comp, const Container& xs)
 }
 
 // API search type: sort_on : ((a -> b), [a]) -> [a]
+// fwd bind count: 1
 // sort by given transformer
 template <typename F, typename Container>
 Container sort_on(F f, const Container& xs)
@@ -779,6 +805,7 @@ Container sort_on(F f, const Container& xs)
 }
 
 // API search type: sort : [a] -> [a]
+// fwd bind count: 0
 // sort by std::less
 template <typename Container>
 Container sort(const Container& xs)
@@ -797,6 +824,7 @@ std::list<T> stable_sort_by(Compare comp, const std::list<T>& xs)
 }
 
 // API search type: stable_sort_by : (((a, a) -> Bool), [a]) -> [a]
+// fwd bind count: 1
 // sort stably by given less comparator
 template <typename Compare, typename Container>
 Container stable_sort_by(Compare comp, const Container& xs)
@@ -807,6 +835,7 @@ Container stable_sort_by(Compare comp, const Container& xs)
 }
 
 // API search type: stable_sort_on : ((a -> b), [a]) -> [a]
+// fwd bind count: 1
 // sort stably by given transformer
 template <typename F, typename Container>
 Container stable_sort_on(F f, const Container& xs)
@@ -815,6 +844,7 @@ Container stable_sort_on(F f, const Container& xs)
 }
 
 // API search type: stable_sort : [a] -> [a]
+// fwd bind count: 0
 // sort stably by std::less
 template <typename Container>
 Container stable_sort(const Container& xs)
@@ -824,6 +854,7 @@ Container stable_sort(const Container& xs)
 }
 
 // API search type: partial_sort_by : (((a, a) -> Bool), Int, [a]) -> [a]
+// fwd bind count: 2
 // partially sort by given less comparator
 template <typename Compare, typename Container>
 Container partial_sort_by(Compare comp, std::size_t count, const Container& xs)
@@ -840,6 +871,7 @@ Container partial_sort_by(Compare comp, std::size_t count, const Container& xs)
 }
 
 // API search type: partial_sort_on : ((a -> b), Int, [a]) -> [a]
+// fwd bind count: 2
 // partially sort by given transformer
 template <typename F, typename Container>
 Container partial_sort_on(F f, std::size_t count, const Container& xs)
@@ -848,6 +880,7 @@ Container partial_sort_on(F f, std::size_t count, const Container& xs)
 }
 
 // API search type: partial_sort : (Int, [a]) -> [a]
+// fwd bind count: 1
 // partially sort by std::less
 template <typename Container>
 Container partial_sort(std::size_t count, const Container& xs)
@@ -857,6 +890,7 @@ Container partial_sort(std::size_t count, const Container& xs)
 }
 
 // API search type: unique_by : (((a, a) -> Bool), [a]) -> [a]
+// fwd bind count: 1
 // Like unique but with user supplied equality predicate.
 // O(n)
 template <typename Container, typename BinaryPredicate>
@@ -870,6 +904,7 @@ Container unique_by(BinaryPredicate p, const Container& xs)
 }
 
 // API search type: unique_on : ((a -> b), [a]) -> [a]
+// fwd bind count: 1
 // Like unique but with user supplied transformation (e.g. getter).
 // O(n)
 // Also known as drop_repeats.
@@ -880,6 +915,7 @@ Container unique_on(F f, const Container& xs)
 }
 
 // API search type: unique : [a] -> [a]
+// fwd bind count: 0
 // unique([1,2,2,3,2]) == [1,2,3,2]
 // O(n)
 template <typename Container>
@@ -892,6 +928,7 @@ Container unique(const Container& xs)
 }
 
 // API search type: intersperse : (a, [a]) -> [a]
+// fwd bind count: 1
 // intersperse(0, [1, 2, 3]) == [1, 0, 2, 0, 3]
 template <typename Container,
     typename X = typename Container::value_type>
@@ -914,6 +951,7 @@ Container intersperse(const X& value, const Container& xs)
 }
 
 // API search type: join : ([a], [[a]]) -> [a]
+// fwd bind count: 1
 // Also known as intercalate.
 // join(";", "["a", "b", "c"]) == "a;b;c"
 // join([0, 0], [[1], [2], [3, 4]]) == [1, 0, 0, 2, 0, 0, 3, 4]
@@ -925,6 +963,7 @@ X join(const X& separator, const Container& xs)
 }
 
 // API search type: is_elem_of_by : ((a -> Bool), [a]) -> Bool
+// fwd bind count: 1
 // Checks if at least one element of the container fulfils a predicate.
 // is_elem_of_by((==), [1,2,3]) == true
 template <typename UnaryPredicate, typename Container>
@@ -934,6 +973,7 @@ bool is_elem_of_by(UnaryPredicate pred, const Container& xs)
 }
 
 // API search type: is_elem_of : (a, [a]) -> Bool
+// fwd bind count: 1
 // Checks if an element is a member of a container.
 // is_elem_of(2, [1,2,3]) == true
 // Equals flip(contains).
@@ -944,6 +984,7 @@ bool is_elem_of(const typename Container::value_type& x, const Container& xs)
 }
 
 // API search type: contains : ([a], a) -> Bool
+// fwd bind count: 1
 // Checks if an element is a member of a container.
 // contains([1,2,3], 2) == true
 // Equals flip(is_elem_of).
@@ -954,6 +995,7 @@ bool contains(const Container& xs, const typename Container::value_type& x)
 }
 
 // API search type: nub_by : (((a, a) -> Bool), [a]) -> [a]
+// fwd bind count: 1
 // Makes the elements in a container unique with respect to a predicate
 // nub_by((==), [1,2,2,3,2]) == [1,2,3]
 // O(n^2)
@@ -974,6 +1016,7 @@ Container nub_by(BinaryPredicate p, const Container& xs)
 }
 
 // API search type: nub_on : ((a -> b), [a]) -> [a]
+// fwd bind count: 1
 // Makes the elements in a container unique with respect to their function value
 // nub_on((mod 10), [12,32,15]) == [12,15]
 // O(n^2)
@@ -984,6 +1027,7 @@ Container nub_on(F f, const Container& xs)
 }
 
 // API search type: nub : [a] -> [a]
+// fwd bind count: 0
 // Makes the elements in a container unique
 // nub([1,2,2,3,2]) == [1,2,3]
 // O(n^2)
@@ -996,6 +1040,7 @@ Container nub(const Container& xs)
 }
 
 // API search type: all_unique_by_eq : (((a, a) -> Bool), [a]) -> Bool
+// fwd bind count: 1
 // Checks if all elements in a container are unique with respect to a predicate
 // Returns true for empty containers.
 // O(n^2)
@@ -1007,6 +1052,7 @@ bool all_unique_by_eq(BinaryPredicate p, const Container& xs)
 }
 
 // API search type: all_unique_on : ((a -> b), [a]) -> Bool
+// fwd bind count: 1
 // Checks if all elements in a container are unique with respect to their function value
 // Returns true for empty containers.
 // O(n^2)
@@ -1017,6 +1063,7 @@ bool all_unique_on(F f, const Container& xs)
 }
 
 // API search type: all_unique : [a] -> Bool
+// fwd bind count: 0
 // Checks if all elements in a container are unique
 // Returns true for empty containers.
 // O(n^2)
@@ -1029,6 +1076,7 @@ bool all_unique(const Container& xs)
 }
 
 // API search type: is_strictly_sorted_by : (((a, a) -> Bool), [a]) -> Bool
+// fwd bind count: 1
 // comp(a, b) must return true only if a < b.
 // O(n)
 template <typename Container, typename Compare>
@@ -1045,6 +1093,7 @@ bool is_strictly_sorted_by(Compare comp, const Container& xs)
 }
 
 // API search type: is_strictly_sorted_on : ((a -> b), [a]) -> Bool
+// fwd bind count: 1
 // O(n)
 template <typename Container, typename F>
 bool is_strictly_sorted_on(F f, const Container& xs)
@@ -1053,6 +1102,7 @@ bool is_strictly_sorted_on(F f, const Container& xs)
 }
 
 // API search type: is_strictly_sorted : [a] -> Bool
+// fwd bind count: 0
 // O(n)
 template <typename Container>
 bool is_strictly_sorted(const Container& xs)
@@ -1063,6 +1113,7 @@ bool is_strictly_sorted(const Container& xs)
 }
 
 // API search type: is_sorted_by : (((a, a) -> Bool), [a]) -> Bool
+// fwd bind count: 1
 // comp(a, b) must return true only if a < b.
 // O(n)
 template <typename Container, typename Compare>
@@ -1079,6 +1130,7 @@ bool is_sorted_by(Compare comp, const Container& xs)
 }
 
 // API search type: is_sorted_on : ((a -> b), [a]) -> Bool
+// fwd bind count: 1
 // O(n)
 template <typename Container, typename F>
 bool is_sorted_on(F f, const Container& xs)
@@ -1087,6 +1139,7 @@ bool is_sorted_on(F f, const Container& xs)
 }
 
 // API search type: is_sorted : [a] -> Bool
+// fwd bind count: 0
 // O(n)
 template <typename Container>
 bool is_sorted(const Container& xs)
@@ -1097,6 +1150,7 @@ bool is_sorted(const Container& xs)
 }
 
 // API search type: is_prefix_of : ([a], [a]) -> Bool
+// fwd bind count: 1
 // is_prefix_of("Fun", "FunctionalPlus") == true
 template <typename Container>
 bool is_prefix_of(const Container& token, const Container& xs)
@@ -1107,6 +1161,7 @@ bool is_prefix_of(const Container& token, const Container& xs)
 }
 
 // API search type: is_suffix_of : ([a], [a]) -> Bool
+// fwd bind count: 1
 // is_suffix_of("us", "FunctionalPlus") == true
 template <typename Container>
 bool is_suffix_of(const Container& token, const Container& xs)
@@ -1118,6 +1173,7 @@ bool is_suffix_of(const Container& token, const Container& xs)
 }
 
 // API search type: all_by : ((a -> Bool), [a]) -> Bool
+// fwd bind count: 1
 // all_by(is_even, [2, 4, 6]) == true
 // Returns true for empty containers.
 template <typename UnaryPredicate, typename Container>
@@ -1128,6 +1184,7 @@ bool all_by(UnaryPredicate p, const Container& xs)
 }
 
 // API search type: all : [Bool] -> Bool
+// fwd bind count: 0
 // all([true, false, true]) == false
 // Returns true for empty containers.
 template <typename Container>
@@ -1138,6 +1195,7 @@ bool all(const Container& xs)
 }
 
 // API search type: all_the_same_by : (((a, a) -> Bool), [a]) -> Bool
+// fwd bind count: 1
 // Returns true for empty containers.
 template <typename Container, typename BinaryPredicate>
 bool all_the_same_by(BinaryPredicate p, const Container& xs)
@@ -1150,6 +1208,7 @@ bool all_the_same_by(BinaryPredicate p, const Container& xs)
 }
 
 // API search type: all_the_same_on : ((a -> Bool), [a]) -> Bool
+// fwd bind count: 1
 // Returns true for empty containers.
 template <typename Container, typename F>
 bool all_the_same_on(F f, const Container& xs)
@@ -1161,6 +1220,7 @@ bool all_the_same_on(F f, const Container& xs)
 }
 
 // API search type: all_the_same : [a] -> Bool
+// fwd bind count: 0
 // Returns true for empty containers.
 template <typename Container>
 bool all_the_same(const Container& xs)
@@ -1171,6 +1231,7 @@ bool all_the_same(const Container& xs)
 }
 
 // API search type: generate_range_step : (a, a, a) -> [a]
+// fwd bind count: 2
 // generate_range_step(2, 9, 2) == [2, 4, 6, 8]
 template <typename ContainerOut, typename T = typename ContainerOut::value_type>
 ContainerOut generate_range_step
@@ -1192,6 +1253,7 @@ ContainerOut generate_range_step
 }
 
 // API search type: generate_range : (a, a) -> [a]
+// fwd bind count: 1
 // generate_range(2, 9) == [2, 3, 4, 5, 6, 7, 8]
 template <typename ContainerOut, typename T = typename ContainerOut::value_type>
 ContainerOut generate_range(const T start, const T end)
@@ -1200,6 +1262,7 @@ ContainerOut generate_range(const T start, const T end)
 }
 
 // API search type: numbers : (a, a) -> [a]
+// fwd bind count: 1
 // numbers(2, 9) == [2, 3, 4, 5, 6, 7, 8]
 // Convenience wrapper for generate_range.
 template <typename T, typename ContainerOut = std::vector<T>>
@@ -1209,6 +1272,7 @@ ContainerOut numbers(const T start, const T end)
 }
 
 // API search type: all_idxs : [a] -> [Int]
+// fwd bind count: 0
 // all_idxs([6,4,7,6]) == [0,1,2,3]
 template <typename Container>
 std::vector<std::size_t> all_idxs(const Container& xs)
@@ -1218,6 +1282,7 @@ std::vector<std::size_t> all_idxs(const Container& xs)
 }
 
 // API search type: init : [a] -> [a]
+// fwd bind count: 0
 // init([0,1,2,3]) == [0,1,2]
 // Unsafe! xs must not be empty.
 template <typename Container>
@@ -1228,6 +1293,7 @@ Container init(const Container& xs)
 }
 
 // API search type: tail : [a] -> [a]
+// fwd bind count: 0
 // Drops the first element of a container, keeps the rest. Unsafe!
 // tail([0,1,2,3]) == [1,2,3]
 // Unsafe! xs must not be empty.
@@ -1239,6 +1305,7 @@ Container tail(const Container& xs)
 }
 
 // API search type: head : [a] -> a
+// fwd bind count: 0
 // Return the first element of a container. Unsafe!
 // head([0,1,2,3]) == 0
 // Unsafe! xs must not be empty.
@@ -1250,6 +1317,7 @@ typename Container::value_type head(const Container& xs)
 }
 
 // API search type: mean_stddev : [a] -> (a, a)
+// fwd bind count: 0
 // calculates the mean and the population standard deviation
 // mean_stddev([4, 8]) == (6, 2)
 // mean_stddev([1, 3, 7, 4]) == (3.75, 2.5)
@@ -1278,6 +1346,7 @@ std::pair<Result, Result> mean_stddev(const Container& xs)
 }
 
 // API search type: count_occurrences_by : ((a -> b), [a]) -> Map b Int
+// fwd bind count: 1
 // count_occurrences_by(floor, [1.1, 2.3, 2.7, 3.6, 2.4]) == [(1, 1), (2, 3), (3, 1)]
 // O(n)
 template <typename F, typename ContainerIn,
@@ -1295,6 +1364,7 @@ MapOut count_occurrences_by(F f, const ContainerIn& xs)
 }
 
 // API search type: count_occurrences : [a] -> Map a Int
+// fwd bind count: 0
 // count_occurrences([1,2,2,3,2]) == [(1, 1), (2, 3), (3, 1)]
 // O(n)
 template <typename ContainerIn,
@@ -1306,6 +1376,7 @@ MapOut count_occurrences(const ContainerIn& xs)
 }
 
 // API search type: lexicographical_less_by : (((a, a) -> Bool), [a], [a]) -> Bool
+// fwd bind count: 2
 // lexicographical_less_by((<), [0,1,2,2,4,5], [0,1,2,3,4,5]) == true
 // lexicographical_less_by((<), "012245", "012345") == true
 // lexicographical_less_by((<), "01234", "012345") == true
@@ -1339,6 +1410,7 @@ bool lexicographical_less_by(BinaryPredicate p,
 }
 
 // API search type: lexicographical_less : ([a], [a]) -> Bool
+// fwd bind count: 1
 // lexicographical_less([0,1,2,2,4,5], [0,1,2,3,4,5]) == true
 // lexicographical_less("012245", "012345") == true
 // lexicographical_less("01234", "012345") == true
@@ -1352,6 +1424,7 @@ bool lexicographical_less(const Container& xs, const Container& ys)
 }
 
 // API search type: lexicographical_sort : [[a]] -> [[a]]
+// fwd bind count: 0
 // sort by lexicographical_less
 template <typename Container>
 Container lexicographical_sort(const Container& xs)
@@ -1361,6 +1434,7 @@ Container lexicographical_sort(const Container& xs)
 }
 
 // API search type: replicate : (Int, a) -> [a]
+// fwd bind count: 1
 // replicate(3, 1) == [1, 1, 1]
 template <typename T,
         typename ContainerOut = std::vector<T>>

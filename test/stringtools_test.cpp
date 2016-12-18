@@ -52,11 +52,11 @@ TEST_CASE("stringtools_test, split")
         std::string("***strange***"),
         std::string("string.") };
 
-    REQUIRE_EQ(split_lines(text, true), textAsLinesWithEmty);
-    REQUIRE_EQ(split_lines(text, false), textAsLinesWithoutEmpty);
-    REQUIRE_EQ(split_words(text, false), textAsWords);
-    REQUIRE_EQ(split_words_by(text, ' ', false), textSplitBySpaceOnly);
-    REQUIRE_EQ(split_words_by_many(text, std::string{ " ,\r\n" }, false), textSplitBySpaceAndCommaAndLine);
+    REQUIRE_EQ(split_lines(true, text), textAsLinesWithEmty);
+    REQUIRE_EQ(split_lines(false, text), textAsLinesWithoutEmpty);
+    REQUIRE_EQ(split_words(false, text), textAsWords);
+    REQUIRE_EQ(split_words_by(' ', false, text), textSplitBySpaceOnly);
+    REQUIRE_EQ(split_words_by_many(std::string{ " ,\r\n" }, false, text), textSplitBySpaceAndCommaAndLine);
 }
 
 TEST_CASE("stringtools_test, to_string_filled")

@@ -16,8 +16,9 @@ _add_test(compare_test)
 _add_test(composition_test)
 _add_test(container_common_test)
 _add_test(extrapolate_test)
-_add_test(function_traits_test)
 _add_test(filter_test)
+_add_test(function_traits_test)
+_add_test(fwd_test)
 _add_test(generate_test)
 _add_test(interpolate_test)
 _add_test(maybe_test)
@@ -37,6 +38,7 @@ add_custom_target(unittest compare_test
                         COMMAND extrapolate_test
                         COMMAND filter_test
                         COMMAND function_traits_test
+                        COMMAND fwd_test
                         COMMAND generate_test
                         COMMAND interpolate_test
                         COMMAND maybe_test

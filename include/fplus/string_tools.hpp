@@ -17,6 +17,7 @@ namespace fplus
 {
 
 // API search type: is_letter_or_digit : Char -> Bool
+// fwd bind count: 0
 // Is character alphanumerical?
 template <typename String>
 bool is_letter_or_digit(const typename String::value_type& c)
@@ -27,14 +28,16 @@ bool is_letter_or_digit(const typename String::value_type& c)
 }
 
 // API search type: is_whitespace : Char -> Bool
+// fwd bind count: 0
 // Is character a whitespace.
 template <typename String>
 bool is_whitespace(const typename String::value_type& c)
 {
-    return (c == 32 || is_in_range(9, 14)(c));
+    return (c == 32 || is_in_range(9, 14, static_cast<int>(c)));
 }
 
 // API search type: is_line_break : Char -> Bool
+// fwd bind count: 0
 // Newline character ('\n')?
 template <typename String>
 bool is_line_break(const typename String::value_type& c)
@@ -43,6 +46,7 @@ bool is_line_break(const typename String::value_type& c)
 }
 
 // API search type: clean_newlines : String -> String
+// fwd bind count: 0
 // Replaces windows and mac newlines with linux newlines.
 template <typename String>
 String clean_newlines(const String& str)
@@ -52,21 +56,23 @@ String clean_newlines(const String& str)
 }
 
 // API search type: split_words : (String, Bool) -> [String]
+// fwd bind count: 1
 // Splits a string by non-letter and non-digit characters.
 // split_words("How are you?", false) == ["How", "are", "you"]
 template <typename String, typename ContainerOut = std::vector<String>>
-ContainerOut split_words(const String& str, const bool allowEmpty)
+ContainerOut split_words(const bool allowEmpty, const String& str)
 {
     return split_by(logical_not(is_letter_or_digit<String>), allowEmpty, str);
 }
 
 // API search type: split_words_by : (String, Char, Bool) -> [String]
+// fwd bind count: 2
 // Splits a string by non-letter and non-digit characters.
 // split_words("How-are you?", ' ', false) == ["How-are", "you?"]
 template <typename String, typename ContainerOut = std::vector<String>>
 ContainerOut split_words_by
-        (const String& str, const typename String::value_type delim,
-         const bool allowEmpty)
+        (const typename String::value_type delim,
+         const bool allowEmpty, const String& str)
 {
     const auto comparator = [delim](const typename String::value_type ch)
     {
@@ -76,11 +82,12 @@ ContainerOut split_words_by
 }
 
 // API search type: split_words_by_many : (String, [Char], Bool) -> [String]
+// fwd bind count: 2
 // Splits a string by the given delimiter(s).
 // split_words_by_many("How are u?", " o", false) == ["H","w","are","u?"]
 template <typename String, typename ContainerOut = std::vector<String>>
 ContainerOut split_words_by_many
-        (const String& str, const String& delims, const bool allowEmpty)
+        (const String& delims, const bool allowEmpty, const String& str)
 {
     typedef typename String::value_type CharType;
     const auto comparator = [&delims](const CharType ch)
@@ -91,16 +98,18 @@ ContainerOut split_words_by_many
     return split_by(comparator, allowEmpty, str);
 }
 
-// API search type: split_lines : (String, Bool) -> [String]
+// API search type: split_lines : (Bool, String) -> [String]
+// fwd bind count: 1
 // Splits a string by the found newlines.
-// split_lines("Hi,\nhow are you?", false) == ["Hi,", "How are you"]
+// split_lines(false, "Hi,\nhow are you?") == ["Hi,", "How are you"]
 template <typename String, typename ContainerOut = std::vector<String>>
-ContainerOut split_lines(const String& str, bool allowEmpty)
+ContainerOut split_lines(bool allowEmpty, const String& str)
 {
     return split_by(is_line_break<String>, allowEmpty, clean_newlines(str));
 }
 
 // API search type: trim_whitespace_left : String -> String
+// fwd bind count: 0
 // trim_whitespace_left("    text  ") == "text  "
 template <typename String>
 String trim_whitespace_left(const String& str)
@@ -109,6 +118,7 @@ String trim_whitespace_left(const String& str)
 }
 
 // API search type: trim_whitespace_right : String -> String
+// fwd bind count: 0
 // trim_whitespace_right("    text  ") == "    text"
 template <typename String>
 String trim_whitespace_right(const String& str)
@@ -117,6 +127,7 @@ String trim_whitespace_right(const String& str)
 }
 
 // API search type: trim_whitespace : String -> String
+// fwd bind count: 0
 // trim_whitespace("    text  ") == "text"
 template <typename String>
 String trim_whitespace(const String& str)
@@ -125,6 +136,7 @@ String trim_whitespace(const String& str)
 }
 
 // API search type: to_lower_case : String -> String
+// fwd bind count: 0
 // to_lower_case("ChaRacTer&WorDs23") == "character&words23"
 template <typename String>
 String to_lower_case(const String& str)
@@ -138,6 +150,7 @@ String to_lower_case(const String& str)
 }
 
 // API search type: to_upper_case : String -> String
+// fwd bind count: 0
 // to_upper_case("ChaRacTer&WorDs34") == "CHARACTER&WORDS34"
 template <typename String>
 String to_upper_case(const String& str)
@@ -151,6 +164,7 @@ String to_upper_case(const String& str)
 }
 
 // API search type: to_string_fill_left : (Char, Int, a) -> String
+// fwd bind count: 2
 // to_string_fill_left('0', 5, 42) == "00042"
 // to_string_fill_left(' ', 5, 42) == "   42"
 template <typename T>
@@ -161,6 +175,7 @@ std::string to_string_fill_left(const std::string::value_type& filler,
 }
 
 // API search type: to_string_fill_right : (Char, Int, a) -> String
+// fwd bind count: 2
 // to_string_fill_right(' ', 5, 42) == "42   "
 template <typename T>
 std::string to_string_fill_right(const std::string::value_type& filler,

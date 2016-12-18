@@ -20,7 +20,7 @@ namespace {
     fplus::result<int, std::string> sqrtToResultInt(int x)
     {
         return x < 0 ? fplus::error<int>(std::string("no sqrt of negative numbers")) :
-                fplus::ok<int, std::string>(fplus::round<int>(sqrt(static_cast<float>(x))));
+                fplus::ok<int, std::string>(fplus::round(sqrt(static_cast<float>(x))));
     }
 
     float IntToFloat(const int& x)
@@ -72,7 +72,7 @@ TEST_CASE("result_test, and_then_result")
     auto OkInt = ok<int, std::string>;
     auto IntToResultFloat = compose(OkInt, LiftedIntToFloat);
     auto IntToFloatAndSqrtAndSqrt = and_then_result(IntToResultFloat, sqrtAndSqrt);
-    REQUIRE(is_in_range(1.41f, 1.42f)(unsafe_get_ok<float>
+    REQUIRE(is_in_range(1.41f, 1.42f, unsafe_get_ok<float>
             (IntToFloatAndSqrtAndSqrt(4))));
 }
 
@@ -99,7 +99,10 @@ TEST_CASE("result_test, unify_result")
     using namespace fplus;
     const auto x = ok<int, std::string>(2);
     const auto y = error<int, std::string>("an error");
-    const auto unify = unify_result(show<int>, to_upper_case<std::string>);
+    const auto unify = [](const result<int, std::string>& r) -> std::string
+    {
+        return unify_result(show<int>, to_upper_case<std::string>, r);
+    };
     REQUIRE_EQ(unify(x), "2");
     REQUIRE_EQ(unify(y), "AN ERROR");
 }
@@ -138,7 +141,7 @@ TEST_CASE("result_test, show_result")
     REQUIRE_EQ(show_result(error<int, std::string>("fail")), std::string("Error fail"));
     auto x = ok<int, std::string>(2);
     REQUIRE_EQ((to_maybe<int, std::string>(x)), just(2));
-    REQUIRE_EQ((from_maybe<int, std::string>(just(2), std::string("no error"))), x);
+    REQUIRE_EQ((from_maybe<std::string, int>(std::string("no error"), just(2))), x);
 }
 
 TEST_CASE("result_test, exceptions")

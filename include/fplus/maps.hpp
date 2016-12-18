@@ -17,6 +17,7 @@ namespace fplus
 {
 
 // API search type: pairs_to_map : [(key, val)] -> Map key val
+// fwd bind count: 0
 // Converts a Container of pairs (key, value) into a dictionary.
 template <typename MapOut, typename ContainerIn>
 MapOut pairs_to_map(const ContainerIn& pairs)
@@ -25,6 +26,7 @@ MapOut pairs_to_map(const ContainerIn& pairs)
 }
 
 // API search type: pairs_to_map_grouped : [(key, val)] -> Map key [val]
+// fwd bind count: 0
 // pairs_to_map_grouped([("a", 1), ("a", 2), ("b", 6), ("a", 4)])
 //     -> {"a": [1, 2, 4], "b": [6]}
 template <typename ContainerIn,
@@ -42,6 +44,7 @@ MapOut pairs_to_map_grouped(const ContainerIn& pairs)
 }
 
 // API search type: map_to_pairs : Map key val -> [(key, val)]
+// fwd bind count: 0
 // Converts a dictionary into a Container of pairs (key, value).
 template <typename MapType,
     typename MapPair = typename MapType::value_type,
@@ -55,6 +58,7 @@ ContainerOut map_to_pairs(const MapType& dict)
 }
 
 // API search type: transform_map_values : ((old_val -> new_val), Map key old_val) -> Map key new_val
+// fwd bind count: 1
 // transform_map_values((*2), {0: 2, 1: 3}) == {0: 4, 1: 6}
 template <typename F, typename MapIn,
     typename MapInPair = typename MapIn::value_type,
@@ -72,6 +76,7 @@ MapOut transform_map_values(F f, const MapIn& map)
 }
 
 // API search type: map_union_with : (((val, val) -> val), Map key val, Map key val) -> Map key val
+// fwd bind count: 2
 // map_union_with((++), {0: a, 1: b}, {0: c, 2: d}) == {0: ac, 1: b, 2: d}
 template <typename F, typename MapIn,
     typename MapInPair = typename MapIn::value_type,
@@ -92,6 +97,7 @@ MapOut map_union_with(F f, const MapIn& dict1, const MapIn& dict2)
 }
 
 // API search type: map_union : (Map key val, Map key val) -> Map key val
+// fwd bind count: 1
 // map_union({0: a, 1: b}, {0: c, 2: d}) == {0: a, 1: b, 2: d}
 template <typename MapType,
     typename MapInPair = typename MapType::value_type,
@@ -107,6 +113,7 @@ MapType map_union(const MapType& dict1, const MapType& dict2)
 }
 
 // API search type: get_map_keys : Map key val -> [key]
+// fwd bind count: 0
 // Returns all keys used in a map.
 template <typename MapType,
     typename ContainerOut =
@@ -121,6 +128,7 @@ ContainerOut get_map_keys(const MapType& dict)
 }
 
 // API search type: get_map_values : Map key val -> [val]
+// fwd bind count: 0
 // Returns all values present in a map.
 template <typename MapType,
     typename ContainerOut =
@@ -135,6 +143,7 @@ ContainerOut get_map_values(const MapType& dict)
 }
 
 // API search type: swap_keys_and_values : Map a b -> Map b a
+// fwd bind count: 0
 // Swaps keys and Values of a dict:
 // swap_keys_and_values({1: "a", 2: "b"}) == {"a": 1, "b": 2}
 template <typename MapIn,
@@ -152,6 +161,7 @@ MapOut swap_keys_and_values(const MapIn& dict)
 }
 
 // API search type: create_map : ([key], [val]) -> Map key val
+// fwd bind count: 1
 // create_map([1,2,3], ["one", "two"]) == {1: "one", 2: "two"}
 template <typename ContainerIn1, typename ContainerIn2,
     typename Key = typename std::remove_const<typename ContainerIn1::value_type>::type,
@@ -164,6 +174,7 @@ MapOut create_map(const ContainerIn1& keys, const ContainerIn2& values)
 }
 
 // API search type: create_map_with : ((key -> val), [key]) -> Map key val
+// fwd bind count: 1
 // create_map_with(show, [1,2]) == {1: "1", 2: "2"}
 template <typename ContainerIn,
     typename F,
@@ -176,6 +187,7 @@ MapOut create_map_with(F f, const ContainerIn& keys)
 }
 
 // API search type: create_unordered_map : ([key], [val]) -> Map key val
+// fwd bind count: 1
 // create_unordered_map([1,2,3], ["one", "two"]) == {1: "one", 2: "two"}
 template <typename ContainerIn1, typename ContainerIn2,
     typename Key = typename std::remove_const<typename ContainerIn1::value_type>::type,
@@ -190,6 +202,7 @@ MapOut create_unordered_map(
 }
 
 // API search type: create_unordered_map_with : ((key -> val), [key]) -> Map key val
+// fwd bind count: 1
 // create_unordered_map_with(show, [1,2]) == {1: "1", 2: "2"}
 template <typename ContainerIn,
     typename F,
@@ -203,6 +216,7 @@ MapOut create_unordered_map_with(F f, const ContainerIn& keys)
 }
 
 // API search type: get_from_map : (Map key val, key) -> Maybe val
+// fwd bind count: 1
 // Returns just the value of a key if key is present.
 // Otherwise returns nothing.
 template <typename MapType,
@@ -217,6 +231,7 @@ maybe<Val> get_from_map(const MapType& map, const Key& key)
 }
 
 // API search type: get_from_map_unsafe : (Map key val, key) -> val
+// fwd bind count: 1
 // Returns the value of a key if key is present.
 // Crashes otherwise.
 template <typename MapType,
@@ -233,6 +248,7 @@ Val get_from_map_unsafe(const MapType& map, const Key& key)
 }
 
 // API search type: get_from_map_with_def : (Map key val, val, key) -> val
+// fwd bind count: 2
 // Returns the value of a key if key is present.
 // Otherwise returns the provided default.
 // Also known as prop_or.
@@ -246,6 +262,7 @@ Val get_from_map_with_def(const MapType& map, const Val& defVal,
 }
 
 // API search type: map_contains : (Map key val, key) -> Bool
+// fwd bind count: 1
 // Checks if a map contains a key.
 template <typename MapType, typename Key = typename MapType::key_type>
 bool map_contains(const MapType& map, const Key& key)
@@ -255,6 +272,7 @@ bool map_contains(const MapType& map, const Key& key)
 }
 
 // API search type: map_keep_if : ((key -> Bool), Map key val) -> Map key val
+// fwd bind count: 1
 // Filters the map by keys.
 // map_keep_if(is_upper_case, {a: 1, b: 2, A: 3, C: 4}) == {A: 3, C: 4}
 // Also known as pick_by.
@@ -276,6 +294,7 @@ MapType map_keep_if(Pred pred, const MapType& map)
 }
 
 // API search type: map_drop_if : ((key -> Bool), Map key val) -> Map key val
+// fwd bind count: 1
 // Filters the map by keys.
 // map_drop_if(is_lower_case, {a: 1, b: 2, A: 3, C: 4}) == {A: 3, C: 4}
 // Inverse of map_keep_if.
@@ -289,6 +308,7 @@ MapType map_drop_if(Pred pred, const MapType& map)
 }
 
 // API search type: map_keep : ([key], Map key val) -> Map key val
+// fwd bind count: 1
 // Keeps only the pairs of the map found in the key list.
 // map_keep([a, d], {a: 1, b: 2, c: 3, d: 4}) == {a: 1, d: 4}
 // map_keep([a, e, f], {a: 1, b: 2, c: 3, d: 4}) == {a: 1}
@@ -307,6 +327,7 @@ MapType map_keep(const KeyContainer& keys, const MapType& map)
 }
 
 // API search type: map_drop : ([key], Map key val) -> Map key val
+// fwd bind count: 1
 // Keeps only the pairs of the map not found in the key list.
 // Inverse of map_keep.
 // map_drop([b, c], {a: 1, b: 2, c: 3, d: 4}); //=> {a: 1, d: 4}
@@ -324,6 +345,7 @@ MapType map_drop(const KeyContainer& keys, const MapType& map)
 }
 
 // API search type: map_pluck : (key, [Map key val]) -> [val]
+// fwd bind count: 1
 // Extracts values to a specific key from a list of maps.
 // map_pluck('a', [{a: 1, b: 2}, {a: 3}, {c: 4}]) == [Just 1, Just 3, Nothing]
 template <typename MapContainer,

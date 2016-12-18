@@ -19,85 +19,73 @@
 namespace fplus
 {
 
-// API search type: is_in_range : (a, a) -> (a -> Bool)
+// API search type: is_in_range : (a, a, a) -> Bool
+// fwd bind count: 2
 // Checks if x is in [low, high), i.e. left-closed and right-open.
 template <typename T>
-std::function<bool(const T&)>
-        is_in_range(const T& low, const T& high)
+bool is_in_range(const T& low, const T& high, const T& x)
 {
-    return [low, high](const T& x)
-    {
-        return (low <= x) && (x < high);
-    };
+    return (low <= x) && (x < high);
 }
 
-// API search type: is_in_range_around : (a, a) -> (a -> Bool)
+// API search type: is_in_range_around : (a, a, a) -> Bool
+// fwd bind count: 2
 // Checks if x is in [center - radius, center + radius),
 // i.e. left-closed and right-open.
 template <typename T>
-std::function<bool(const T&)>
-        is_in_range_around(const T& radius, const T& center)
+bool is_in_range_around(const T& radius, const T& center, const T& x)
 {
-    return is_in_range(center - radius, center + radius);
+    return is_in_range(center - radius, center + radius, x);
 }
 
-// API search type: is_in_open_range : (a, a) -> (a -> Bool)
+// API search type: is_in_open_range : (a, a, a) -> Bool
+// fwd bind count: 2
 // Checks if x is in (low, high), i.e. left-open and right-open.
 template <typename T>
-std::function<bool(const T&)>
-        is_in_open_range(const T& low, const T& high)
+bool is_in_open_range(const T& low, const T& high, const T& x)
 {
-    return [low, high](const T& x)
-    {
-        return (low < x) && (x < high);
-    };
+    return (low < x) && (x < high);
 }
 
-// API search type: is_in_open_range_around : (a, a) -> (a -> Bool)
+// API search type: is_in_open_range_around : (a, a, a) -> Bool
+// fwd bind count: 2
 // Checks if x is in (center - radius, center + radius),
 // i.e. left-open and right-open.
 template <typename T>
-std::function<bool(const T&)>
-        is_in_open_range_around(const T& radius, const T& center)
+bool is_in_open_range_around(const T& radius, const T& center, const T& x)
 {
-    return is_in_open_range(center - radius, center + radius);
+    return is_in_open_range(center - radius, center + radius, x);
 }
 
-// API search type: is_in_closed_range : (a, a) -> (a -> Bool)
+// API search type: is_in_closed_range : (a, a, a) -> Bool)
+// fwd bind count: 2
 // Checks if x is in [low, high], i.e. left-closed and right-closed.
 template <typename T>
-std::function<bool(const T&)>
-        is_in_closed_range(const T& low, const T& high)
+bool is_in_closed_range(const T& low, const T& high, const T& x)
 {
-    return [low, high](const T& x)
-    {
-        return (low <= x) && (x <= high);
-    };
+    return (low <= x) && (x <= high);
 }
 
-// API search type: is_in_closed_range_around : (a, a) -> (a -> Bool)
+// API search type: is_in_closed_range_around : (a, a, a) -> Bool
 // Checks if x is in [center - radius, center + radius],
 // i.e. left-open and right-open.
 template <typename T>
-std::function<bool(const T&)>
-        is_in_closed_range_around(const T& radius, const T& center)
+bool is_in_closed_range_around(const T& radius, const T& center, const T& x)
 {
-    return is_in_closed_range(center - radius, center + radius);
+    return is_in_closed_range(center - radius, center + radius, x);
 }
 
-// API search type: clamp : (a, a) -> (a -> a)
+// API search type: clamp : (a, a, a) -> a
+// fwd bind count: 2
 // Puts value into [low, high], i.e. left-closed and right-closed.
 template <typename T>
-std::function<T(const T&)>
-        clamp(const T& low, const T& high)
+T clamp(const T& low, const T& high, const T& x)
 {
-    return [low, high](const T& x)
-    {
-        return std::max(low, std::min(high, x));
-    };
+    return std::max(low, std::min(high, x));
 }
 
 // API search type: is_negative : a -> Bool
+// fwd bind count: 0
 // Checks if x < 0.
 template <typename X>
 bool is_negative(X x)
@@ -106,6 +94,7 @@ bool is_negative(X x)
 }
 
 // API search type: is_positive : a -> Bool
+// fwd bind count: 0
 // Checks if x is not negative.
 template <typename X>
 bool is_positive(X x)
@@ -114,6 +103,7 @@ bool is_positive(X x)
 }
 
 // API search type: is_even : Int -> Bool
+// fwd bind count: 0
 // Checks if x is even.
 template <typename X>
 bool is_even(X x)
@@ -123,6 +113,7 @@ bool is_even(X x)
 }
 
 // API search type: is_odd : Int -> Bool
+// fwd bind count: 0
 // Checks if x is odd.
 template <typename X>
 bool is_odd(X x)
@@ -132,6 +123,7 @@ bool is_odd(X x)
 }
 
 // API search type: abs : a -> a
+// fwd bind count: 0
 // Returns the absolute (always non-negative) value of x.
 template <typename X>
 X abs(X x)
@@ -140,6 +132,7 @@ X abs(X x)
 }
 
 // API search type: abs_diff : (a, a) -> a
+// fwd bind count: 1
 // Returns the absolute difference of two values.
 template <typename X>
 X abs_diff(X a, X b)
@@ -148,6 +141,7 @@ X abs_diff(X a, X b)
 }
 
 // API search type: square : a -> a
+// fwd bind count: 0
 // Returns the square (x*x) of a value x.
 template <typename X>
 X square(X x)
@@ -156,6 +150,7 @@ X square(X x)
 }
 
 // API search type: cube : a -> a
+// fwd bind count: 0
 // Returns the cube (x*x*x) of a value x.
 template <typename X>
 X cube(X x)
@@ -164,6 +159,7 @@ X cube(X x)
 }
 
 // API search type: sign : a -> Int
+// fwd bind count: 0
 // Returns -1 for negative values, 1 otherwise.
 // sign(-3) == -1
 // sign(0) == 1
@@ -175,6 +171,7 @@ int sign(X x)
 }
 
 // API search type: sign_with_zero : a -> Int
+// fwd bind count: 0
 // Returns -1 for negative values, 0 for zero, 1 for positive values.
 // sign_with_zero(-3) == -1
 // sign_with_zero(0) == 0
@@ -186,10 +183,12 @@ int sign_with_zero(X x)
 }
 
 // API search type: round : a -> b
+// fwd bind count: 0
 // Converts a value to the nearest integer.
-template <typename Out, typename X>
+template <typename X, typename Out = int>
 Out round(X x)
 {
+    static_assert(!std::is_integral<X>::value, "type must be non-integral");
     static_assert(std::is_integral<Out>::value, "type must be integral");
     if (static_cast<double>(x) < static_cast<double>(std::numeric_limits<Out>::lowest()))
         return std::numeric_limits<Out>::lowest();
@@ -201,10 +200,12 @@ Out round(X x)
 }
 
 // API search type: floor : a -> b
+// fwd bind count: 0
 // Converts a value to the nearest smaller integer.
-template <typename Out, typename X>
+template <typename X, typename Out = int>
 Out floor(X x)
 {
+    static_assert(!std::is_integral<X>::value, "type must be non-integral");
     static_assert(std::is_integral<Out>::value, "type must be integral");
     if (is_negative(x))
         x -= 1;
@@ -212,15 +213,18 @@ Out floor(X x)
 }
 
 // API search type: ceil : a -> b
+// fwd bind count: 0
 // Converts a value to the nearest greater integer.
-template <typename Out, typename X>
+template <typename X, typename Out = int>
 Out ceil(X x)
 {
+    static_assert(!std::is_integral<X>::value, "type must be non-integral");
     static_assert(std::is_integral<Out>::value, "type must be integral");
-    return floor<Out>(x) + 1;
+    return floor<X, Out>(x) + 1;
 }
 
 // API search type: int_power : (Int, Int) -> Int
+// fwd bind count: 1
 // integer power, only exponents >= 0
 template <typename X>
 X int_power(X base, X exp)
@@ -273,13 +277,23 @@ namespace internal
 }
 
 // API search type: min_on : ((a -> b), a, a) -> a
-// minimum of x values after transformation  (curried version)
+// minimum of x values after transformation (curried version)
 // min_on(mod2)(4, 3) == 4
 // min_on(mod7)(3, 5, 7, 3) == 7
 template <typename F>
 auto min_on(F f) -> internal::helper_min_on_t<F>
 {
     return internal::helper_min_on_t<F>{f};
+}
+
+// API search type: min_2_on : ((a -> b), a, a) -> a
+// fwd bind count: 2
+// minimum of 2 values after transformation
+// min_2_on(mod2, 4, 3) == 4
+template <typename F, typename T>
+T min_2_on(F f, const T& x, const T& y)
+{
+    return f(y) < f(x) ? y : x;
 }
 
 namespace internal
@@ -330,6 +344,16 @@ auto max_on(F f) -> internal::helper_max_on_t<F>
     return internal::helper_max_on_t<F>{f};
 }
 
+// API search type: max_2_on : ((a -> b), a, a) -> a
+// fwd bind count: 2
+// maximum of 2 values after transformation
+// max_2_on(mod2, 4, 3) == 3
+template <typename F, typename T>
+T max_2_on(F f, const T& x, const T& y)
+{
+    return f(y) > f(x) ? y : x;
+}
+
 // API search type: min : (a, a) -> a
 // Minimum of x number of values
 // min(4, 3) == 3
@@ -343,6 +367,16 @@ auto min(const U& u, const V&... v) -> typename std::common_type<U, V...>::type
   return result;
 }
 
+// API search type: min_2 : (a, a) -> a
+// fwd bind count: 1
+// minimum of 2 values
+// min_2(4, 3) == 3
+template <typename T>
+T min_2(const T& x, const T& y)
+{
+    return y < x ? y : x;
+}
+
 // API search type: max : (a, a) -> a
 // Maximum of x number of values.
 // max(4, 3) == 4
@@ -354,6 +388,16 @@ auto max(const U& u, const V&... v) -> typename std::common_type<U, V...>::type
   rettype result = static_cast<rettype>(u);
   (void)std::initializer_list<int>{((v > result) ? (result = static_cast<rettype>(v), 0) : 0)...};
   return result;
+}
+
+// API search type: max_2 : (a, a) -> a
+// fwd bind count: 1
+// maximum of 2 values
+// max_2(4, 3) == 4
+template <typename T>
+T max_2(const T& x, const T& y)
+{
+    return y > x ? y : x;
 }
 
 namespace internal
@@ -466,6 +510,7 @@ constexpr inline double pi()
 }
 
 // API search type: deg_to_rad : Float -> Float
+// fwd bind count: 0
 // converts degrees to radians
 template <typename T>
 T deg_to_rad(T x)
@@ -475,6 +520,7 @@ T deg_to_rad(T x)
 }
 
 // API search type: rad_to_deg : Float -> Float
+// fwd bind count: 0
 // converts radians to degrees
 template <typename T>
 T rad_to_deg(T x)
@@ -484,6 +530,7 @@ T rad_to_deg(T x)
 }
 
 // API search type: normalize_min_max : (a, a, [a]) -> [a]
+// fwd bind count: 2
 // Linearly scales the values into the given interval.
 // normalize_min_max(0, 10, [1, 3, 6]) == [0, 4, 10]
 // It is recommended to convert integers to double beforehand.
@@ -506,6 +553,7 @@ Container normalize_min_max(
 }
 
 // API search type: normalize_mean_stddev : (a, a, [a]) -> [a]
+// fwd bind count: 2
 // Linearly scales the values
 // to match the given mean and population standard deviation.
 // normalize_mean_stddev(3, 2, [7, 8]) == [1, 5]
@@ -527,6 +575,7 @@ Container normalize_mean_stddev(
 }
 
 // API search type: standardize : [a] -> [a]
+// fwd bind count: 0
 // Linearly scales the values to zero mean and population standard deviation 1.
 // standardize([7, 8]) == [-1, 1]
 template <typename Container>
@@ -580,6 +629,7 @@ std::function<X(X)> divide_by(const X& x)
 }
 
 // API search type: histogram_using_ranges : ([(a, a)], [a]) -> [((a, a), Int)]
+// fwd bind count: 1
 // histogram_using_ranges([(0,4), (4,5), (6,8)], [0,1,4,5,6,7,8,9]) ==
 //     [((0, 4), 2), ((4, 5), 1), ((6, 8), 2)]
 template <typename ContainerIn,
@@ -614,6 +664,7 @@ ContainerOut histogram_using_ranges(
 }
 
 // API search type: generate_consecutive_ranges : (a, a, a) -> [(a, a)]
+// fwd bind count: 2
 // generate_consecutive_ranges(0, 2, 4) == [(0,2), (2,4), (4,6), (6,8)]
 template <typename T>
 std::vector<std::pair<T, T>> generate_consecutive_ranges(
@@ -632,6 +683,7 @@ std::vector<std::pair<T, T>> generate_consecutive_ranges(
 }
 
 // API search type: histogram : (a, a, a, [a]) -> [((a, a), Int)]
+// fwd bind count: 3
 // histogram(1, 2, 4, [0,1,4,5,7,8,9]) == [(1, 2), (3, 0), (5, 2), (7, 1)]
 template <typename ContainerIn,
         typename ContainerOut =

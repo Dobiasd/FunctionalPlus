@@ -17,6 +17,7 @@ namespace fplus
 {
 
 // API search type: find_first_by : ((a -> Bool), [a]) -> Maybe a
+// fwd bind count: 1
 // find_first_by(is_even, [1, 3, 4, 6, 9]) == Just(4)
 // find_first_by(is_even, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container, typename UnaryPredicate,
@@ -31,6 +32,7 @@ maybe<T> find_first_by(UnaryPredicate pred, const Container& xs)
 }
 
 // API search type: find_last_by : ((a -> Bool), [a]) -> Maybe a
+// fwd bind count: 1
 // find_last_by(is_even, [1, 3, 4, 6, 9]) == Just(6)
 // find_last_by(is_even, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container, typename UnaryPredicate,
@@ -42,6 +44,7 @@ maybe<T> find_last_by(UnaryPredicate pred, const Container& xs)
 }
 
 // API search type: find_first_idx_by : ((a -> Bool), [a]) -> Maybe Int
+// fwd bind count: 1
 // find_first_idx_by(is_even, [1, 3, 4, 6, 9]) == Just(2)
 // find_first_idx_by(is_even, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container, typename UnaryPredicate>
@@ -56,6 +59,7 @@ maybe<std::size_t> find_first_idx_by
 }
 
 // API search type: find_last_idx_by : ((a -> Bool), [a]) -> Maybe Int
+// fwd bind count: 1
 // find_last_idx_by(is_even, [1, 3, 4, 6, 9]) == Just(3)
 // find_last_idx_by(is_even, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container, typename UnaryPredicate>
@@ -72,6 +76,7 @@ maybe<std::size_t> find_last_idx_by
 }
 
 // API search type: find_first_idx : (a, [a]) -> Maybe Int
+// fwd bind count: 1
 // find_first_idx(4, [1, 3, 4, 4, 9]) == Just(2)
 // find_first_idx(4, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container>
@@ -82,6 +87,7 @@ maybe<std::size_t> find_first_idx
 }
 
 // API search type: find_last_idx : (a, [a]) -> Maybe Int
+// fwd bind count: 1
 // find_last_idx(4, [1, 3, 4, 4, 9]) == Just(3)
 // find_last_idx(4, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container>
@@ -92,6 +98,7 @@ maybe<std::size_t> find_last_idx
 }
 
 // API search type: find_all_idxs_by : ((a -> Bool), [a]) -> [Int]
+// fwd bind count: 1
 // find_all_idxs_by(is_even, [1, 3, 4, 6, 9]) == [2, 3]
 template <typename ContainerOut = std::vector<std::size_t>,
         typename UnaryPredicate, typename Container>
@@ -111,6 +118,7 @@ ContainerOut find_all_idxs_by(UnaryPredicate p, const Container& xs)
 }
 
 // API search type: find_all_idxs_of : (a, [a]) -> [Int]
+// fwd bind count: 1
 // find_all_idxs_of(4, [1, 3, 4, 4, 9]) == [2, 3]
 template <typename ContainerOut = std::vector<std::size_t>,
         typename Container,
@@ -122,6 +130,7 @@ ContainerOut find_all_idxs_of
 }
 
 // API search type: find_all_instances_of_token : ([a], [a]) -> [Int]
+// fwd bind count: 1
 // find_all_instances_of_token("haha", "oh, hahaha!") == [4, 6]
 template <typename ContainerOut =
     std::vector<std::size_t>, typename Container>
@@ -158,6 +167,7 @@ ContainerOut find_all_instances_of_token(const Container& token,
 }
 
 // API search type: find_all_instances_of_token_non_overlapping : ([a], [a]) -> [Int]
+// fwd bind count: 1
 // find_all_instances_of_token_non_overlapping("haha", "oh, hahaha!") == [4]
 template <typename ContainerOut = std::vector<std::size_t>, typename Container>
 ContainerOut find_all_instances_of_token_non_overlapping
@@ -179,6 +189,7 @@ ContainerOut find_all_instances_of_token_non_overlapping
 }
 
 // API search type: find_first_instance_of_token : ([a], [a]) -> Maybe Int
+// fwd bind count: 1
 // find_first_instance_of_token("haha", "oh, hahaha!") == just 4
 template <typename Container>
 maybe<std::size_t> find_first_instance_of_token
