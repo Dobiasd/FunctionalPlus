@@ -15,8 +15,9 @@ Table of contents
 -----------------
   * [Introduction](#introduction)
   * [Usage examples](#usage-examples)
-  * [Tutorial](#tutorial)
   * [Type deduction and useful error messages](#type-deduction-and-useful-error-messages)
+  * [Tutorial](#tutorial)
+  * [Forward composition and application](#forward-composition-and-application)
   * [Finding the functions you need](#finding-the-functions-you-need)
   * [Performance](#performance)
   * [Requirements and Installation](#requirements-and-installation)
