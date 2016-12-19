@@ -57,7 +57,7 @@ bool is_in_open_range_around(const T& radius, const T& center, const T& x)
     return is_in_open_range(center - radius, center + radius, x);
 }
 
-// API search type: is_in_closed_range : (a, a, a) -> Bool)
+// API search type: is_in_closed_range : (a, a, a) -> Bool
 // fwd bind count: 2
 // Checks if x is in [low, high], i.e. left-closed and right-closed.
 template <typename T>
