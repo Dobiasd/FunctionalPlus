@@ -105,7 +105,7 @@ void Test_example_IInTeam()
 {
     std::string team = "Our team is great. I love everybody I work with.";
     std::cout << "There actually are this many 'I's in team: " <<
-        fplus::count("I", fplus::split_words(team, false)) << std::endl;
+        fplus::count("I", fplus::split_words(false, team)) << std::endl;
 }
 
 struct Entity
