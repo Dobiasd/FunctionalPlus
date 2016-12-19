@@ -55,20 +55,20 @@ String clean_newlines(const String& str)
         replace_tokens(String("\r\n"), String("\n"), str));
 }
 
-// API search type: split_words : (String, Bool) -> [String]
+// API search type: split_words : (Bool, String) -> [String]
 // fwd bind count: 1
 // Splits a string by non-letter and non-digit characters.
-// split_words("How are you?", false) == ["How", "are", "you"]
+// split_words(false, "How are you?") == ["How", "are", "you"]
 template <typename String, typename ContainerOut = std::vector<String>>
 ContainerOut split_words(const bool allowEmpty, const String& str)
 {
     return split_by(logical_not(is_letter_or_digit<String>), allowEmpty, str);
 }
 
-// API search type: split_words_by : (String, Char, Bool) -> [String]
+// API search type: split_words_by : (Char, Bool, String) -> [String]
 // fwd bind count: 2
 // Splits a string by non-letter and non-digit characters.
-// split_words("How-are you?", ' ', false) == ["How-are", "you?"]
+// split_words(' ', false, "How-are you?") == ["How-are", "you?"]
 template <typename String, typename ContainerOut = std::vector<String>>
 ContainerOut split_words_by
         (const typename String::value_type delim,
@@ -81,10 +81,10 @@ ContainerOut split_words_by
     return split_by(comparator, allowEmpty, str);
 }
 
-// API search type: split_words_by_many : (String, [Char], Bool) -> [String]
+// API search type: split_words_by_many : ([Char], Bool, String) -> [String]
 // fwd bind count: 2
 // Splits a string by the given delimiter(s).
-// split_words_by_many("How are u?", " o", false) == ["H","w","are","u?"]
+// split_words_by_many(" o", false, "How are u?") == ["H","w","are","u?"]
 template <typename String, typename ContainerOut = std::vector<String>>
 ContainerOut split_words_by_many
         (const String& delims, const bool allowEmpty, const String& str)

@@ -99,7 +99,7 @@ int main()
 {
     std::string team = "Our team is great. I love everybody I work with.";
     std::cout << "There actually are this many 'I's in team: " <<
-        fplus::count("I", fplus::split_words(team, false)) << std::endl;
+        fplus::count("I", fplus::split_words(false, team)) << std::endl;
 }
 ```
 
@@ -283,7 +283,7 @@ cget install Dobiasd/FunctionalPlus
 
 Disclaimer
 ----------
-The functionality in this library initially grew due to my personal need for it while using C++ on a regular basis. I try my best to make it error free and as comfortable to use as I can. The API still might change in the future. If you have any suggestions, find errors, miss some functions or want to give general feedback/criticism, I'd [love to hear from you](https://github.com/Dobiasd/FunctionalPlus/issues). Of course, [contributions](https://github.com/Dobiasd/FunctionalPlus/pulls) are also very welcome.
+The functionality in this library initially grew due to my personal need for it while using C++ on a regular basis. I try my best to make it error free and as comfortable to use as I can. The API still might change in the future. If you have any suggestions, find errors, miss some functions or want to give general feedback/criticism, I'd [love to hear from you](https://github.com/Dobiasd/FunctionalPlus/issues). Of course, [contributions](CONTRIBUTING.md) are also very welcome.
 
 
 License

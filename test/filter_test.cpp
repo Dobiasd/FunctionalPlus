@@ -43,9 +43,11 @@ TEST_CASE("filter_test, drop_if")
 
 TEST_CASE("filter_test, without")
 {
-    const std::vector<int> v = { 1, 0, 0, 5, 3, 0, 1 };
-    auto result = fplus::drop_if(is_even, v);
-    REQUIRE_EQ(result, std::vector<int>({1, 5, 3, 1}));
+    using namespace fplus;
+    typedef std::vector<int> Ints;
+    REQUIRE_EQ(without(1, Ints({1,2,3})), Ints({2,3}));
+    REQUIRE_EQ(without(5, Ints({1,2,3})), Ints({1,2,3}));
+    REQUIRE_EQ(without(5, Ints({})), Ints({}));
 }
 
 TEST_CASE("filter_test, keep_if_with_idx")
