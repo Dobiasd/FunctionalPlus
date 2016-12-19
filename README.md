@@ -31,7 +31,7 @@ Great code should mostly be self-documenting, but while using C++ in reality you
 Say you have a list of numbers and are interested in the odd ones only.
 
 ```c++
-bool is_odd(int x) { return x % 2 == 1; }
+bool is_odd_int(int x) { return x % 2 == 1; }
 
 int main()
 {
@@ -48,7 +48,7 @@ There are different possibilities to attain your goal. Some of them are:
      Ints odds;
      for (int x : numbers)
      {
-         if (is_odd(x))
+         if (is_odd_int(x))
          {
              odds.push_back(x);
          }
@@ -59,12 +59,12 @@ There are different possibilities to attain your goal. Some of them are:
  ```c++
      Ints odds;
      std::copy_if(std::begin(numbers), std::end(numbers),
-             std::back_inserter(odds), is_odd);
+             std::back_inserter(odds), is_odd_int);
  ```
 
 3. use `keep_if` from `FunctionalPlus`
  ```c++
-     auto odds = fplus::keep_if(is_odd, numbers);
+     auto odds = fplus::keep_if(is_odd_int, numbers);
  ```
 
 If you think version 3 could be the one most pleasant to work with, you might like FunctionalPlus.
@@ -197,12 +197,6 @@ Output:
 The functions shown not only work with default STL containers like `std::vector`, `std::list`, `std::deque`, `std::string` etc., but also with custom containers providing a similar interface.
 
 
-Tutorial
---------
-
-The article "[Functional programming in C++ with the FunctionalPlus library; today: HackerRank challange Gemstones](https://github.com/Dobiasd/articles/blob/master/functional_programming_in_cpp_with_the_functionalplus_library_today_hackerrank_challange_gemstones.md)" provides a smooth introduction into the library by showing how one could develop an elegant solution to a problem using the FunctionalPlus approach.
-
-
 Type deduction and useful error messages
 ----------------------------------------
 
@@ -218,9 +212,79 @@ In case you would accidentally pass two functions whose "connecting type" does n
 By changing the way you think about programming from "writing your own loops and nested ifs" to "using and composing small functions" you will first perhaps get more errors at compile time, but this will pay out in having fewer errors at runtime and in spending less time debugging.
 
 
+Tutorial
+--------
+
+The article "[Functional programming in C++ with the FunctionalPlus library; today: HackerRank challenge Gemstones](https://github.com/Dobiasd/articles/blob/master/functional_programming_in_cpp_with_the_functionalplus_library_today_hackerrank_challange_gemstones.md)" provides a smooth introduction into the library by showing how one could develop an elegant solution to a problem using the FunctionalPlus approach.
+
+
+Forward composition and application
+-----------------------------------
+
+The "Gemstones" tutorial above explains how one can apply functional thinking to arrive at the solution below for the following problem:
+
+> Find the number of characters present in every line of an input text.
+
+```c++
+std::string gemstone_count(const std::string& input)
+{
+    using namespace fplus;
+
+    typedef std::set<std::string::value_type> character_set;
+
+    const auto lines = split_lines(false, input);
+
+    const auto sets = transform(
+        convert_container<character_set, std::string>,
+        lines);
+
+    const auto gem_elements = fold_left_1(
+        set_intersection<character_set>, sets);
+
+    return show(size_of_cont(gem_elements));
+}
+```
+
+By using the functionality from `namespace fwd`, you can get along without temporary variables, and making it clear that the whole process is simply pushing the input through a chain of functions:
+
+```c++
+std::string gemstone_count_fwd_apply(const std::string& input)
+{
+    using namespace fplus;
+    typedef std::set<std::string::value_type> character_set;
+    return fwd::apply(
+        input
+        , fwd::split_lines(false)
+        , fwd::transform(convert_container<character_set, std::string>)
+        , fwd::fold_left_1(set_intersection<character_set>)
+        , fwd::size_of_cont()
+        , fwd::show()
+    );
+}
+```
+
+In `fplus::fwd::` you find many normal `fplus::` functions in a partially [curried](http://stackoverflow.com/a/36321/1866775) version, i.e. `fplus::foo : (a, b, c) -> d` has its counterpart with `fplus::foo : (a, b) -> (c -> d)`. This makes the style above possible.
+
+Alternatively, you could also write [point-free](https://en.wikipedia.org/wiki/Tacit_programming) and define your function by composition:
+
+```c++
+using namespace fplus;
+typedef std::set<std::string::value_type> character_set;
+
+const auto gemstone_count_fwd_compose = fwd::compose(
+    fwd::split_lines(false),
+    fwd::transform(convert_container<character_set, std::string>),
+    fwd::fold_left_1(set_intersection<character_set>),
+    fwd::size_of_cont(),
+    fwd::show()
+);
+```
+
+
+
 Finding the functions you need
 ------------------------------
-If you are looking for a specific FunctionalPlus function you do not know the name of yet, you can of course use the autocomplete feature of your IDE to browse the content of the namespace `fplus`. But the recommended way is to simply use the **[FunctionalPlus API search website](http://www.editgym.com/fplus-api-search/)**. You can quickly search by keywords or function type signatures with it.
+If you are looking for a specific FunctionalPlus function you do not know the name of yet, you can of course use the auto-complete feature of your IDE to browse the content of the `namespace fplus`. But the recommended way is to simply use the **[FunctionalPlus API search website](http://www.editgym.com/fplus-api-search/)**. You can quickly search by keywords or function type signatures with it.
 
 
 Performance

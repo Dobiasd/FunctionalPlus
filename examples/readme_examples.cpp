@@ -4,7 +4,7 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include "fplus/fplus.hpp"
+#include <fplus/fplus.hpp>
 
 #include <atomic>
 #include <cassert>
@@ -18,27 +18,28 @@
 #include <string>
 #include <vector>
 
-bool is_odd(int x) { return x % 2 == 1; }
+bool is_odd_int(int x) { return x % 2 == 1; }
+
 void Test_example_KeepIf()
 {
     typedef std::vector<int> Ints;
     Ints numbers = { 24, 11, 65, 44, 80, 18, 73, 90, 69, 18 };
 
     { // Version 1: hand written range based for loop
-    Ints odds;
-    for (int x : numbers)
-        if (is_odd(x))
-            odds.push_back(x);
+        Ints odds;
+        for (int x : numbers)
+            if (is_odd_int(x))
+                odds.push_back(x);
     }
 
     { // Version 2: STL
-    Ints odds;
-    std::copy_if(std::begin(numbers), std::end(numbers),
-            std::back_inserter(odds), is_odd);
+        Ints odds;
+        std::copy_if(std::begin(numbers), std::end(numbers),
+                std::back_inserter(odds), is_odd_int);
     }
 
     { // Version : FunctionalPlus
-    auto odds = fplus::keep_if(is_odd, numbers);
+        auto odds = fplus::keep_if(is_odd_int, numbers);
     }
 }
 
@@ -66,19 +67,19 @@ void Test_example_KeepIf_performance()
     {
         Ints odds;
         for (int x : numbers)
-            if (is_odd(x))
+            if (is_odd_int(x))
                 odds.push_back(x);
         return odds;
     };
     auto run_stl = [&](const Ints numbers)
     {
         Ints odds;
-            std::copy_if(std::begin(numbers), std::end(numbers),
-                    std::back_inserter(odds), is_odd);
+        std::copy_if(std::begin(numbers), std::end(numbers),
+                std::back_inserter(odds), is_odd_int);
         return odds;
     };
     auto run_FunctionalPlus = [&](const Ints numbers)
-        { return keep_if(is_odd, numbers); };
+        { return keep_if(is_odd_int, numbers); };
 
     // make debug runs faster
 #if defined NDEBUG || defined _DEBUG
@@ -187,6 +188,61 @@ void Test_example_CollatzSequence()
     // Print some of the sequences.
     std::cout << collatz_dict[13] << std::endl;
     std::cout << collatz_dict[17] << std::endl;
+}
+
+std::string gemstone_count(const std::string& input)
+{
+    using namespace fplus;
+
+    typedef std::set<std::string::value_type> character_set;
+
+    const auto lines = split_lines(false, input);
+
+    const auto sets = transform(
+        convert_container<character_set, std::string>,
+        lines);
+
+    const auto gem_elements = fold_left_1(
+        set_intersection<character_set>, sets);
+
+    return show(size_of_cont(gem_elements));
+}
+
+std::string gemstone_count_fwd_apply(const std::string& input)
+{
+    using namespace fplus;
+    typedef std::set<std::string::value_type> character_set;
+    return fwd::apply(
+        input
+        , fwd::split_lines(false)
+        , fwd::transform(convert_container<character_set, std::string>)
+        , fwd::fold_left_1(set_intersection<character_set>)
+        , fwd::size_of_cont()
+        , fwd::show()
+    );
+}
+
+using namespace fplus;
+typedef std::set<std::string::value_type> character_set;
+const auto gemstone_count_fwd_compose = fwd::compose(
+    fwd::split_lines(false),
+    fwd::transform(convert_container<character_set, std::string>),
+    fwd::fold_left_1(set_intersection<character_set>),
+    fwd::size_of_cont(),
+    fwd::show()
+);
+
+void Test_fwd_style()
+{
+    const auto result =
+        gemstone_count(
+            "Lorem ipsum\ndolor sit amet,\nconsectetur,\nadipisci velit");
+    const auto result_fwd_apply =
+        gemstone_count_fwd_apply(
+            "Lorem ipsum\ndolor sit amet,\nconsectetur,\nadipisci velit");
+    const auto result_fwd_compose =
+        gemstone_count_fwd_compose(
+            "Lorem ipsum\ndolor sit amet,\nconsectetur,\nadipisci velit");
 }
 
 int main()
