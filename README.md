@@ -246,7 +246,7 @@ std::string gemstone_count(const std::string& input)
 }
 ```
 
-By using the functionality from `namespace fwd`, you can get along without temporary variables, and making it clear that the whole process is simply pushing the input through a chain of functions:
+By using the functionality from `namespace fwd`, you can get along without temporary variables, and making it clear that the whole process is simply pushing the input through a chain of functions, similar to the pipe concept in the Unix command line.
 
 ```c++
 std::string gemstone_count_fwd_apply(const std::string& input)
