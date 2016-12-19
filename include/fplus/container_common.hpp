@@ -524,7 +524,7 @@ Acc fold_left(F f, const Acc& init, const Container& xs)
 }
 
 // API search type: fold_left_1 : (((a, a) -> a), [a]) -> a
-// fwd bind count: 2
+// fwd bind count: 1
 // fold_left_1((+), [1, 2, 3]) == (1+2)+3 == 6
 // Takes the first 2 items of the list and applies the function to them,
 // then feeds the function with this result and the third argument and so on.
@@ -551,7 +551,7 @@ Acc fold_right(F f, const Acc& init, const Container& xs)
 }
 
 // API search type: fold_right_1 : (((a, a) -> a), [a]) -> a
-// fwd bind count: 2
+// fwd bind count: 1
 // fold_right_1((+), [1, 2, 3]) == 1+(2+3)) == 6
 // Takes the last two items of the list and applies the function,
 // then it takes the third item from the end and the result, and so on.
@@ -588,7 +588,7 @@ ContainerOut scan_left(F f, const Acc& init, const ContainerIn& xs)
 }
 
 // API search type: scan_left_1 : (((a, a) -> a), [a]) -> [a]
-// fwd bind count: 2
+// fwd bind count: 1
 // scan_left_1((+), [1, 2, 3]) == [1, 3, 6]
 // Takes the first 2 items of the list and applies the function to them,
 // then feeds the function with this result and the third argument and so on.
@@ -619,7 +619,7 @@ ContainerOut scan_right(F f, const Acc& init, const ContainerIn& xs)
 }
 
 // API search type: scan_right_1 : (((a, a) -> a), [a]) -> [a]
-// fwd bind count: 2
+// fwd bind count: 1
 // scan_right_1((+), [1, 2, 3]) == [6, 5, 3]
 // Takes the last two items of the list and applies the function,
 // then it takes the third item from the end and the result, and so on.
