@@ -5,17 +5,27 @@ The main intention of this library is to provide small composable and [referenti
 
 ### New Issues
 
+Feel free to open [issues](https://github.com/Dobiasd/FunctionalPlus/issues) for any kind of bugs, problems, feature requests or questions.
+
+A good bug report should include:
+
+- A clear title
+- A detailed description of the problem or error
+- The expected behaviour
+- (If possible) a minimal example or steps to reproduce
+- Information about used compiler and platform
+
 If you have problems installing fplus please let us know by opening an issue. This will help us optimize the setup experience.
 
 
 ### Open Issues
 
-If you are still looking for a way to contribute, have a look into the [open issues](https://github.com/Dobiasd/FunctionalPlus/issues). Especially the ones tagged with "help wanted" could be interesting to you.
+If you are looking for a way to contribute, have a look into the [open issues](https://github.com/Dobiasd/FunctionalPlus/issues). Especially the ones tagged with "help wanted" could be interesting to you.
 
 
 ### Pull requests
 
-A good PR should include:
+A good [PR](https://github.com/Dobiasd/FunctionalPlus/pulls) should include:
 
 - A clear Description
 - Test cases
