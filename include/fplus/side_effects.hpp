@@ -331,7 +331,7 @@ std::function<bool()> write_text_file_lines(const std::string& filename,
 // and returns a function that
 // reads the entire input from standard input,
 // passes it through the given function,
-// and its the output to standard output.
+// and writes the result to standard output.
 template <typename F>
 std::function<void()> interact(F f)
 {
