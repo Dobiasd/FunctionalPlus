@@ -232,17 +232,13 @@ const auto gemstone_count_fwd_compose = fwd::compose(
     fwd::show()
 );
 
-void Test_fwd_style()
+void Test_example_fwd_style()
 {
-    const auto result =
-        gemstone_count(
-            "Lorem ipsum\ndolor sit amet,\nconsectetur,\nadipisci velit");
-    const auto result_fwd_apply =
-        gemstone_count_fwd_apply(
-            "Lorem ipsum\ndolor sit amet,\nconsectetur,\nadipisci velit");
-    const auto result_fwd_compose =
-        gemstone_count_fwd_compose(
-            "Lorem ipsum\ndolor sit amet,\nconsectetur,\nadipisci velit");
+    const std::string input =
+        "Lorem ipsum\ndolor sit amet,\nconsectetur,\nadipisci velit";
+    const auto result = gemstone_count(input);
+    const auto result_fwd_apply = gemstone_count_fwd_apply(input);
+    const auto result_fwd_compose = gemstone_count_fwd_compose(input);
 }
 
 int main()
@@ -255,6 +251,7 @@ int main()
     Test_example_AllIsCalmAndBright();
     Test_example_TheCutestCat();
     Test_example_CollatzSequence();
+    Test_example_fwd_style();
     std::cout << "-------" << std::endl;
     std::cout << "Applications OK." << std::endl;
     std::cout << "=======" << std::endl;
