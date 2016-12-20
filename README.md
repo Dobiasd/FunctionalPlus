@@ -246,7 +246,7 @@ std::string gemstone_count(const std::string& input)
 }
 ```
 
-By using the functionality from `namespace fwd`, you can get along without temporary variables, and making it clear that the whole process is simply pushing the input through a chain of functions, similar to the pipe concept in the Unix command line.
+By using the functionality from `namespace fwd`, you can get along without temporary variables, and make it clear that the whole process is simply pushing the input through a chain of functions, similar to the pipe concept in the Unix command line.
 
 ```c++
 std::string gemstone_count_fwd_apply(const std::string& input)
@@ -264,9 +264,9 @@ std::string gemstone_count_fwd_apply(const std::string& input)
 }
 ```
 
-In `fplus::fwd::` you find many normal `fplus::` functions in a partially [curried](http://stackoverflow.com/a/36321/1866775) version, i.e. `fplus::foo : (a, b, c) -> d` has its counterpart with `fplus::foo : (a, b) -> (c -> d)`. This makes the style above possible.
+In `fplus::fwd::` you find many `fplus::` functions again, but in a partially [curried](http://stackoverflow.com/a/36321/1866775) version, i.e. `fplus::foo : (a, b, c) -> d` has its counterpart with `fplus::foo : (a, b) -> (c -> d)`. This makes the style above possible.
 
-Alternatively, you could also write [point-free](https://en.wikipedia.org/wiki/Tacit_programming) and define your function by composition:
+Alternatively to the forward application version, you can also write [point-free](https://en.wikipedia.org/wiki/Tacit_programming) and define your function by composition:
 
 ```c++
 using namespace fplus;
@@ -280,7 +280,6 @@ const auto gemstone_count_fwd_compose = fwd::compose(
     fwd::show()
 );
 ```
-
 
 
 Finding the functions you need
