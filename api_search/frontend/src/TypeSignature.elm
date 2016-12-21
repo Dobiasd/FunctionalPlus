@@ -1,4 +1,4 @@
-module TypeSignature exposing (Signature, parseSignature, showSignature, normalizeSignature, functionCompatibility)
+module TypeSignature exposing (Signature, parseSignature, showSignature, normalizeSignature, functionCompatibility, curry1)
 
 {-| This module provides the possibility to parse Haskell and Elm type signatures.
 -}
@@ -33,6 +33,33 @@ type alias ParseResult =
 showSignature : Bool -> Signature -> String
 showSignature charListAsString =
     showSignatureHelper charListAsString False False
+
+
+splitLast : List a -> ( List a, a )
+splitLast xs =
+    case List.reverse xs of
+        y :: ys ->
+            ( List.reverse ys, y )
+        _ -> "Error splitLast"
+                |> Debug.crash
+
+
+curry1 : Signature -> Signature
+curry1 sig =
+    case sig of
+        Arrow (Tuple []) ret ->
+            "Error curry1 (empty tuple): " ++ showSignature True sig
+                |> Debug.crash
+        Arrow (Tuple params) ret ->
+            let
+                ( ps, x ) =
+                    splitLast params
+            in
+                Arrow (Tuple ps) (Arrow x ret)
+        Arrow sig ret ->
+                Arrow (Tuple []) (Arrow sig ret)
+        _ -> "Error curry1: " ++ showSignature True sig
+                |> Debug.crash
 
 
 mapS : (s -> String -> ( s, String )) -> s -> List Signature -> ( List Signature, s )

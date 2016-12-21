@@ -34,6 +34,7 @@ initModelAndCommands =
 type alias WithParsedSignature a =
     { a
         | parsedSignature : TypeSignature.Signature
+        , signatureFwd : Maybe String
     }
 
 
@@ -46,9 +47,7 @@ parseSignatureCrashOnError :
     -> TypeSignature.Signature
 parseSignatureCrashOnError function =
     case
-        (TypeSignature.parseSignature function.signature
-            |> Maybe.map TypeSignature.normalizeSignature
-        )
+        TypeSignature.parseSignature function.signature
     of
         Just sig ->
             sig
@@ -61,14 +60,39 @@ parseSignatureCrashOnError function =
                 |> Debug.crash
 
 
+hasFwdSignature : String -> Bool
+hasFwdSignature documentation =
+    String.contains "fwd bind count" documentation
+
+
+removeFwdBindCount : String -> String
+removeFwdBindCount documentation =
+    documentation
+        |> String.lines
+        |> List.filter (\x -> String.contains "fwd bind count" x |> not)
+        |> String.join "\n"
+
+
 addParsedSignatureToFunction : Database.Function -> Function
 addParsedSignatureToFunction function =
-    { name = function.name
-    , signature = function.signature
-    , parsedSignature = parseSignatureCrashOnError function
-    , documentation = function.documentation
-    , declaration = function.declaration
-    }
+    let
+        parsedSig =
+            parseSignatureCrashOnError function
+    in
+        { name = function.name
+        , signature = function.signature
+        , parsedSignature = parsedSig |> TypeSignature.normalizeSignature
+        , signatureFwd =
+            if hasFwdSignature function.documentation then
+                parsedSig
+                    |> TypeSignature.curry1
+                    |> TypeSignature.showSignature True
+                    |> Maybe.Just
+            else
+                Maybe.Nothing
+        , documentation = removeFwdBindCount function.documentation
+        , declaration = function.declaration
+        }
 
 
 functions : List Function
@@ -529,6 +553,20 @@ showRatedFunction ( function, rating ) =
                     |> stringToCode "haskell"
                 ]
 
+        functionNameAndSigFwd =
+            case function.signatureFwd of
+                Maybe.Just sigFwd ->
+                    div [ class "functionnameandsig" ]
+                        [ "fwd::"
+                            ++ function.name
+                            ++ " : "
+                            ++ sigFwd
+                            |> stringToCode "haskell"
+                        ]
+
+                Maybe.Nothing ->
+                    div [] []
+
         functionDocumentation =
             div [ class "functiondoc" ]
                 [ function.documentation
@@ -549,6 +587,7 @@ showRatedFunction ( function, rating ) =
     in
         div [ class "function" ]
             [ functionNameAndSig
+            , functionNameAndSigFwd
             , functionDocumentation
             , functionDeclaration
             , functionRating
