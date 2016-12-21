@@ -35,6 +35,7 @@ type alias WithParsedSignature a =
     { a
         | parsedSignature : TypeSignature.Signature
         , signatureFwd : Maybe String
+        , parsedSignatureFwd : Maybe TypeSignature.Signature
     }
 
 
@@ -78,18 +79,24 @@ addParsedSignatureToFunction function =
     let
         parsedSig =
             parseSignatureCrashOnError function
+
+        parsedSigFwd =
+            if hasFwdSignature function.documentation then
+                parsedSig
+                    |> TypeSignature.curry1
+                    |> Maybe.Just
+            else
+                Maybe.Nothing
     in
         { name = function.name
         , signature = function.signature
         , parsedSignature = parsedSig |> TypeSignature.normalizeSignature
+        , parsedSignatureFwd =
+            parsedSigFwd
+                |> Maybe.map TypeSignature.normalizeSignature
         , signatureFwd =
-            if hasFwdSignature function.documentation then
-                parsedSig
-                    |> TypeSignature.curry1
-                    |> TypeSignature.showSignature True
-                    |> Maybe.Just
-            else
-                Maybe.Nothing
+            parsedSigFwd
+                |> Maybe.map (TypeSignature.showSignature True)
         , documentation = removeFwdBindCount function.documentation
         , declaration = function.declaration
         }
@@ -454,9 +461,20 @@ functionRating queryOrig querySig querySigLower function =
                         Just sig ->
                             let
                                 sigRating =
-                                    typeRating factor
-                                        sig
-                                        function.parsedSignature
+                                    Basics.max
+                                        (typeRating factor
+                                            sig
+                                            function.parsedSignature
+                                        )
+                                        (case function.parsedSignatureFwd of
+                                            Maybe.Just psFwd ->
+                                                typeRating factor
+                                                    sig
+                                                    psFwd
+
+                                            Maybe.Nothing ->
+                                                0
+                                        )
 
                                 name_shortness_factor =
                                     120 / (120 + stringLengthFloat function.name)
