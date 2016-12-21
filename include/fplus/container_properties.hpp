@@ -63,7 +63,7 @@ bool none(const Container& xs)
 }
 
 
-// API search type: minimum_idx_by : [a] -> Int
+// API search type: minimum_idx_by : (((a, a) -> Bool), [a]) -> Int
 // fwd bind count: 1
 // minimum_idx_by(lessLength, ["123", "12", "1234", "123"]) -> "1"
 // return index of first minimum element
@@ -77,7 +77,7 @@ typename std::size_t minimum_idx_by(Compare comp,
         std::min_element(std::begin(xs), std::end(xs), comp)));
 }
 
-// API search type: maximum_idx_by : [a] -> Int
+// API search type: maximum_idx_by : (((a, a) -> Bool), [a]) -> Int
 // fwd bind count: 1
 // maximum_idx_by(lessLength, ["123", "12", "1234", "123"]) == "2"
 // return index of first maximum element
