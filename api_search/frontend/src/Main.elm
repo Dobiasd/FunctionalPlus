@@ -417,6 +417,16 @@ adjustQuery query =
             query
 
 
+maybeSigIsArrow : Maybe TypeSignature.Signature -> Bool
+maybeSigIsArrow maybeSig =
+    case maybeSig of
+        Maybe.Just sig ->
+            TypeSignature.sigIsArrow sig
+
+        _ ->
+            False
+
+
 functionRating :
     String
     -> Maybe TypeSignature.Signature
@@ -453,6 +463,11 @@ functionRating queryOrig querySig querySigLower function =
                             queryWord
                     )
                 |> List.sum
+                |> \x ->
+                    if maybeSigIsArrow querySig then
+                        0
+                    else
+                        x
 
         bestTypeRating =
             let

@@ -233,12 +233,13 @@ std::string gemstone_count(const std::string& input)
 
     typedef std::set<std::string::value_type> character_set;
 
-    const auto lines = split_lines(false, input);
+    const auto lines = split_lines(false, input); // false = no empty lines
 
     const auto sets = transform(
         convert_container<character_set, std::string>,
         lines);
 
+    // Build the intersection of all given character sets (one per line).
     const auto gem_elements = fold_left_1(
         set_intersection<character_set>, sets);
 

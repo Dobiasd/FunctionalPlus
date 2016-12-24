@@ -1,4 +1,4 @@
-module TypeSignature exposing (Signature, parseSignature, showSignature, normalizeSignature, functionCompatibility, curry1)
+module TypeSignature exposing (Signature, parseSignature, showSignature, normalizeSignature, functionCompatibility, curry1, sigIsArrow)
 
 {-| This module provides the possibility to parse Haskell and Elm type signatures.
 -}
@@ -40,7 +40,9 @@ splitLast xs =
     case List.reverse xs of
         y :: ys ->
             ( List.reverse ys, y )
-        _ -> "Error splitLast"
+
+        _ ->
+            "Error splitLast"
                 |> Debug.crash
 
 
@@ -48,17 +50,23 @@ curry1 : Signature -> Signature
 curry1 sig =
     case sig of
         Arrow (Tuple []) ret ->
-            "Error curry1 (empty tuple): " ++ showSignature True sig
+            "Error curry1 (empty tuple): "
+                ++ showSignature True sig
                 |> Debug.crash
+
         Arrow (Tuple params) ret ->
             let
                 ( ps, x ) =
                     splitLast params
             in
                 Arrow (Tuple ps) (Arrow x ret)
+
         Arrow sig ret ->
-                Arrow (Tuple []) (Arrow sig ret)
-        _ -> "Error curry1: " ++ showSignature True sig
+            Arrow (Tuple []) (Arrow sig ret)
+
+        _ ->
+            "Error curry1: "
+                ++ showSignature True sig
                 |> Debug.crash
 
 
@@ -386,6 +394,16 @@ equalityToFloat x y =
         1
     else
         0
+
+
+sigIsArrow : Signature -> Bool
+sigIsArrow sig =
+    case sig of
+        Arrow _ _ ->
+            True
+
+        _ ->
+            False
 
 
 functionCompatibility : Signature -> Signature -> Float
