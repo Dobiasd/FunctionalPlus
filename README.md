@@ -314,28 +314,30 @@ Comparison with Range-v3
 
 [Range-v3](https://github.com/ericniebler/range-v3) and FunctionalPlus do have things in common, as the following code snippet shows.
 
-    const auto times_3 = [](int i){return 3 * i;};
-    const auto is_odd = [](int i){return i % 2 == 0;};
-    const auto as_string_length = [](int i){return std::to_string(i).size();};
+```c++
+const auto times_3 = [](int i){return 3 * i;};
+const auto is_odd = [](int i){return i % 2 == 0;};
+const auto as_string_length = [](int i){return std::to_string(i).size();};
 
-    // FunctionalPlus
-    using namespace fplus;
-    const auto result_fplus = fwd::apply(
-        numbers(0, 15000000)
-        , fwd::transform(times_3)
-        , fwd::drop_if(is_odd)
-        , fwd::transform(as_string_length)
-        , fwd::sum());
+// FunctionalPlus
+using namespace fplus;
+const auto result_fplus = fwd::apply(
+    numbers(0, 15000000)
+    , fwd::transform(times_3)
+    , fwd::drop_if(is_odd)
+    , fwd::transform(as_string_length)
+    , fwd::sum());
 
-    // Range-v3
-    const auto result_range_v3 =
-        accumulate(
-            view::ints(0)
-            | view::take(15000000)
-            | view::transform(times_3)
-            | view::remove_if(is_odd)
-            | view::transform(as_string_length)
-            , 0);
+// Range-v3
+const auto result_range_v3 =
+    accumulate(
+        view::ints(0)
+        | view::take(15000000)
+        | view::transform(times_3)
+        | view::remove_if(is_odd)
+        | view::transform(as_string_length)
+        , 0);
+```
 
 There are some differences though. Range-v3 ranges are lazy, which means no intermediate copies of the containers are made during the single steps of a processing chain like above. Also Range-v3 will probably be [part of the C++ standard](https://ericniebler.github.io/std/wg21/D4128.html) at some point in the future.
 When using FunctionalPlus on the other hand you work with normal STL-containers. Also [implementing a new function](https://github.com/Dobiasd/FunctionalPlus/blob/a17fc716d40a4370eed13f16e7d9105c4cc75e26/include/fplus/generate.hpp#L19) is simpler compared to [writing a new range adaptor](https://github.com/ericniebler/range-v3/blob/4cfcb59c3db1c279d72c64ccf15de3c724a0362d/include/range/v3/algorithm/generate.hpp#L32). Additionally FunctionalPlus provides much more functions out of the box and has the [API search website](http://www.editgym.com/fplus-api-search/). So the choice between the two libraries depends on your project's needs.
