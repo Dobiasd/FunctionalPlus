@@ -1278,6 +1278,15 @@ ContainerOut numbers(const T start, const T end)
     return generate_range<ContainerOut, T>(start, end);
 }
 
+// API search type: singleton_seq : a -> [a]
+// fwd bind count: 0
+// singleton_seq(3) == [3].
+template <typename T, typename ContainerOut = std::vector<T>>
+ContainerOut singleton_seq(const T& x)
+{
+    return ContainerOut(1, x);
+}
+
 // API search type: all_idxs : [a] -> [Int]
 // fwd bind count: 0
 // all_idxs([6,4,7,6]) == [0,1,2,3]

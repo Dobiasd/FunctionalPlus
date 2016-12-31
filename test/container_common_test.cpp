@@ -61,6 +61,12 @@ TEST_CASE("container_common_test, group")
     REQUIRE_EQ(group_by(abs_diff_less_or_equal_3, IntVector({2,3,6,4,22,21,8,5})), IntVectors({{2,3,6,4},{22,21},{8,5}}));
 }
 
+TEST_CASE("container_common_test, singleton_seq")
+{
+    using namespace fplus;
+    REQUIRE_EQ(singleton_seq(3), IntVector({3}));
+}
+
 TEST_CASE("container_common_test, transform")
 {
     using namespace fplus;
