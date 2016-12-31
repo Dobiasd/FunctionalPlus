@@ -36,7 +36,7 @@ Container replace_if(UnaryPredicate p,
 // replace_elem_at_idx(2, 0, [1, 3, 4, 4, 7]) == [1, 3, 0, 4, 7]
 template <typename Container,
         typename T = typename Container::value_type>
-Container replace_elem(std::size_t idx, const T& dest, const Container& xs)
+Container replace_elem_at_idx(std::size_t idx, const T& dest, const Container& xs)
 {
     Container result;
     internal::prepare_container(result, size_of_cont(xs));
