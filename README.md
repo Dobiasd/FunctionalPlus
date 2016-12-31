@@ -38,8 +38,8 @@ bool is_odd_int(int x) { return x % 2 == 1; }
 int main()
 {
     typedef vector<int> Ints;
-    Ints values = { 24, 11, 65, 44, 80, 18, 73, 90, 69, 18 };
-    // todo: get odd values from values ...
+    Ints values = {24, 11, 65, 44, 80, 18, 73, 90, 69, 18};
+    // todo: get odd numbers from values ...
 }
 ```
 
