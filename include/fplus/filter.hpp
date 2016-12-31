@@ -181,6 +181,15 @@ Container drop_idxs(const ContainerIdxs& idxs_to_drop, const Container& xs)
     return ys;
 }
 
+// API search type: drop_idx : (Int, [a]) -> [a]
+// fwd bind count: 1
+// drop_idx(2, [1,2,3,4,5,6,7]) == [1,2,4,5,6,7]
+template <typename Container>
+Container drop_idx(std::size_t idx, const Container& xs)
+{
+    return drop_by_idx(is_equal_to(idx), xs);
+}
+
 // API search type: justs : [Maybe a] -> [a]
 // fwd bind count: 0
 // From a Container filled with Maybe<T> the nothings are dropped

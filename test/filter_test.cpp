@@ -86,6 +86,13 @@ TEST_CASE("filter_test, keep_idxs")
     REQUIRE_EQ(result, std::vector<int>({3, 6}));
 }
 
+TEST_CASE("filter_test, drop_idx")
+{
+    const std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7 };
+    auto result = fplus::drop_idx(2, v);
+    REQUIRE_EQ(result, std::vector<int>({1, 2, 4, 5, 6, 7}));
+}
+
 TEST_CASE("filter_test, drop_idxs")
 {
     const std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7 };
