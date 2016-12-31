@@ -19,60 +19,60 @@
 namespace fplus
 {
 
-// API search type: is_in_range : (a, a, a) -> Bool
+// API search type: is_in_interval : (a, a, a) -> Bool
 // fwd bind count: 2
 // Checks if x is in [low, high), i.e. left-closed and right-open.
 template <typename T>
-bool is_in_range(const T& low, const T& high, const T& x)
+bool is_in_interval(const T& low, const T& high, const T& x)
 {
     return (low <= x) && (x < high);
 }
 
-// API search type: is_in_range_around : (a, a, a) -> Bool
+// API search type: is_in_interval_around : (a, a, a) -> Bool
 // fwd bind count: 2
 // Checks if x is in [center - radius, center + radius),
 // i.e. left-closed and right-open.
 template <typename T>
-bool is_in_range_around(const T& radius, const T& center, const T& x)
+bool is_in_interval_around(const T& radius, const T& center, const T& x)
 {
-    return is_in_range(center - radius, center + radius, x);
+    return is_in_interval(center - radius, center + radius, x);
 }
 
-// API search type: is_in_open_range : (a, a, a) -> Bool
+// API search type: is_in_open_interval : (a, a, a) -> Bool
 // fwd bind count: 2
 // Checks if x is in (low, high), i.e. left-open and right-open.
 template <typename T>
-bool is_in_open_range(const T& low, const T& high, const T& x)
+bool is_in_open_interval(const T& low, const T& high, const T& x)
 {
     return (low < x) && (x < high);
 }
 
-// API search type: is_in_open_range_around : (a, a, a) -> Bool
+// API search type: is_in_open_interval_around : (a, a, a) -> Bool
 // fwd bind count: 2
 // Checks if x is in (center - radius, center + radius),
 // i.e. left-open and right-open.
 template <typename T>
-bool is_in_open_range_around(const T& radius, const T& center, const T& x)
+bool is_in_open_interval_around(const T& radius, const T& center, const T& x)
 {
-    return is_in_open_range(center - radius, center + radius, x);
+    return is_in_open_interval(center - radius, center + radius, x);
 }
 
-// API search type: is_in_closed_range : (a, a, a) -> Bool
+// API search type: is_in_closed_interval : (a, a, a) -> Bool
 // fwd bind count: 2
 // Checks if x is in [low, high], i.e. left-closed and right-closed.
 template <typename T>
-bool is_in_closed_range(const T& low, const T& high, const T& x)
+bool is_in_closed_interval(const T& low, const T& high, const T& x)
 {
     return (low <= x) && (x <= high);
 }
 
-// API search type: is_in_closed_range_around : (a, a, a) -> Bool
+// API search type: is_in_closed_interval_around : (a, a, a) -> Bool
 // Checks if x is in [center - radius, center + radius],
 // i.e. left-open and right-open.
 template <typename T>
-bool is_in_closed_range_around(const T& radius, const T& center, const T& x)
+bool is_in_closed_interval_around(const T& radius, const T& center, const T& x)
 {
-    return is_in_closed_range(center - radius, center + radius, x);
+    return is_in_closed_interval(center - radius, center + radius, x);
 }
 
 // API search type: clamp : (a, a, a) -> a
@@ -628,27 +628,27 @@ std::function<X(X)> divide_by(const X& x)
     };
 }
 
-// API search type: histogram_using_ranges : ([(a, a)], [a]) -> [((a, a), Int)]
+// API search type: histogram_using_intervals : ([(a, a)], [a]) -> [((a, a), Int)]
 // fwd bind count: 1
-// histogram_using_ranges([(0,4), (4,5), (6,8)], [0,1,4,5,6,7,8,9]) ==
+// histogram_using_intervals([(0,4), (4,5), (6,8)], [0,1,4,5,6,7,8,9]) ==
 //     [((0, 4), 2), ((4, 5), 1), ((6, 8), 2)]
 template <typename ContainerIn,
-        typename ContainerRanges,
+        typename ContainerIntervals,
         typename ContainerOut =
             std::vector<
                 std::pair<
-                    typename ContainerRanges::value_type,
+                    typename ContainerIntervals::value_type,
                     std::size_t>>,
         typename T = typename ContainerIn::value_type>
-ContainerOut histogram_using_ranges(
-        const ContainerRanges& ranges, const ContainerIn& xs)
+ContainerOut histogram_using_intervals(
+        const ContainerIntervals& intervals, const ContainerIn& xs)
 {
     ContainerOut bins;
-    internal::prepare_container(bins, size_of_cont(ranges));
+    internal::prepare_container(bins, size_of_cont(intervals));
     auto itOut = internal::get_back_inserter(bins);
-    for (const auto& range : ranges)
+    for (const auto& interval : intervals)
     {
-        *itOut = std::make_pair(range, 0);
+        *itOut = std::make_pair(interval, 0);
     }
     for (const auto& x : xs)
     {
@@ -663,20 +663,20 @@ ContainerOut histogram_using_ranges(
     return bins;
 }
 
-// API search type: generate_consecutive_ranges : (a, a, a) -> [(a, a)]
+// API search type: generate_consecutive_intervals : (a, a, a) -> [(a, a)]
 // fwd bind count: 2
-// generate_consecutive_ranges(0, 2, 4) == [(0,2), (2,4), (4,6), (6,8)]
+// generate_consecutive_intervals(0, 2, 4) == [(0,2), (2,4), (4,6), (6,8)]
 template <typename T>
-std::vector<std::pair<T, T>> generate_consecutive_ranges(
+std::vector<std::pair<T, T>> generate_consecutive_intervals(
         const T& first_lower_bound, const T& step, std::size_t count)
 {
     const auto count_as_T = static_cast<T>(count);
     return zip(
-        generate_range_step<std::vector<T>>(
+        numbers_step<T>(
             first_lower_bound,
             first_lower_bound + count_as_T * step,
             step),
-        generate_range_step<std::vector<T>>(
+        numbers_step<T>(
             first_lower_bound + step,
             first_lower_bound + step + count_as_T * step,
             step));
@@ -696,19 +696,19 @@ ContainerOut histogram(
         const T& first_center, const T& bin_width, std::size_t count,
         const ContainerIn& xs)
 {
-    const auto range_histogram = histogram_using_ranges(
-        generate_consecutive_ranges(
+    const auto interval_histogram = histogram_using_intervals(
+        generate_consecutive_intervals(
             first_center - bin_width / 2,
             bin_width,
             count),
         xs);
 
-    assert(size_of_cont(range_histogram) == count);
+    assert(size_of_cont(interval_histogram) == count);
 
     ContainerOut histo;
     internal::prepare_container(histo, count);
     auto itOut = internal::get_back_inserter(histo);
-    for (const auto& bin : range_histogram)
+    for (const auto& bin : interval_histogram)
     {
         const auto current_center = (bin.first.first + bin.first.second) / 2;
         *itOut = std::make_pair(current_center, bin.second);

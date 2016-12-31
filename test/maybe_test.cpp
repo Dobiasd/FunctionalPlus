@@ -85,7 +85,7 @@ TEST_CASE("maybe_test, and_then")
     auto JustInt = just<int>;
     auto IntToMaybeFloat = compose(JustInt, LiftedIntToFloat);
     auto IntToFloatAndSqrtAndSqrt = and_then_maybe(IntToMaybeFloat, sqrtAndSqrt);
-    REQUIRE(is_in_range(1.41f, 1.42f, unsafe_get_just<float>
+    REQUIRE(is_in_interval(1.41f, 1.42f, unsafe_get_just<float>
             (IntToFloatAndSqrtAndSqrt(4))));
 }
 

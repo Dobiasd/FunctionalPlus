@@ -31,53 +31,53 @@ namespace {
     typedef std::vector<double> Doubles;
 }
 
-TEST_CASE("numeric_test, is_in_range")
+TEST_CASE("numeric_test, is_in_interval")
 {
-    REQUIRE(fplus::is_in_range(1, 3, 1));
-    REQUIRE(fplus::is_in_range(1, 3, 2));
-    REQUIRE_FALSE(fplus::is_in_range(1, 3, 0));
-    REQUIRE_FALSE(fplus::is_in_range(1, 3, 3));
-    REQUIRE(fplus::is_in_closed_range(1, 3, 1));
-    REQUIRE(fplus::is_in_closed_range(1, 3, 2));
-    REQUIRE(fplus::is_in_closed_range(1, 3, 3));
-    REQUIRE_FALSE(fplus::is_in_open_range(1, 3, 1));
-    REQUIRE(fplus::is_in_open_range(1, 3, 2));
-    REQUIRE_FALSE(fplus::is_in_open_range(1, 3, 3));
-    REQUIRE(fplus::is_in_range(0.09, 0.11, fplus::abs(-0.1)));
-    REQUIRE(fplus::is_in_range(0.09, 0.11, fplus::abs( 0.1)));
+    REQUIRE(fplus::is_in_interval(1, 3, 1));
+    REQUIRE(fplus::is_in_interval(1, 3, 2));
+    REQUIRE_FALSE(fplus::is_in_interval(1, 3, 0));
+    REQUIRE_FALSE(fplus::is_in_interval(1, 3, 3));
+    REQUIRE(fplus::is_in_closed_interval(1, 3, 1));
+    REQUIRE(fplus::is_in_closed_interval(1, 3, 2));
+    REQUIRE(fplus::is_in_closed_interval(1, 3, 3));
+    REQUIRE_FALSE(fplus::is_in_open_interval(1, 3, 1));
+    REQUIRE(fplus::is_in_open_interval(1, 3, 2));
+    REQUIRE_FALSE(fplus::is_in_open_interval(1, 3, 3));
+    REQUIRE(fplus::is_in_interval(0.09, 0.11, fplus::abs(-0.1)));
+    REQUIRE(fplus::is_in_interval(0.09, 0.11, fplus::abs( 0.1)));
 }
 
-TEST_CASE("numeric_test, is_in_range_around")
+TEST_CASE("numeric_test, is_in_interval_around")
 {
-    REQUIRE_FALSE(fplus::is_in_range_around(0.1, 2.0, 1.85));
-    REQUIRE(fplus::is_in_range_around(0.1, 2.0, 1.95));
-    REQUIRE(fplus::is_in_range_around(0.1, 2.0, 2.05));
-    REQUIRE_FALSE(fplus::is_in_range_around(0.1, 2.0, 2.15));
+    REQUIRE_FALSE(fplus::is_in_interval_around(0.1, 2.0, 1.85));
+    REQUIRE(fplus::is_in_interval_around(0.1, 2.0, 1.95));
+    REQUIRE(fplus::is_in_interval_around(0.1, 2.0, 2.05));
+    REQUIRE_FALSE(fplus::is_in_interval_around(0.1, 2.0, 2.15));
 
-    REQUIRE(fplus::is_in_range_around(1, 2, 1));
-    REQUIRE_FALSE(fplus::is_in_range_around(1, 2, 3));
+    REQUIRE(fplus::is_in_interval_around(1, 2, 1));
+    REQUIRE_FALSE(fplus::is_in_interval_around(1, 2, 3));
 }
 
-TEST_CASE("numeric_test, is_in_open_range_around")
+TEST_CASE("numeric_test, is_in_open_interval_around")
 {
-    REQUIRE_FALSE(fplus::is_in_open_range_around(0.1, 2.0, 1.85));
-    REQUIRE(fplus::is_in_open_range_around(0.1, 2.0, 1.95));
-    REQUIRE(fplus::is_in_open_range_around(0.1, 2.0, 2.05));
-    REQUIRE_FALSE(fplus::is_in_open_range_around(0.1, 2.0, 2.15));
+    REQUIRE_FALSE(fplus::is_in_open_interval_around(0.1, 2.0, 1.85));
+    REQUIRE(fplus::is_in_open_interval_around(0.1, 2.0, 1.95));
+    REQUIRE(fplus::is_in_open_interval_around(0.1, 2.0, 2.05));
+    REQUIRE_FALSE(fplus::is_in_open_interval_around(0.1, 2.0, 2.15));
 
-    REQUIRE_FALSE(fplus::is_in_open_range_around(1, 2, 1));
-    REQUIRE_FALSE(fplus::is_in_open_range_around(1, 2, 3));
+    REQUIRE_FALSE(fplus::is_in_open_interval_around(1, 2, 1));
+    REQUIRE_FALSE(fplus::is_in_open_interval_around(1, 2, 3));
 }
 
-TEST_CASE("numeric_test, is_in_closed_range_around")
+TEST_CASE("numeric_test, is_in_closed_interval_around")
 {
-    REQUIRE_FALSE(fplus::is_in_closed_range_around(0.1, 2.0, 1.85));
-    REQUIRE(fplus::is_in_closed_range_around(0.1, 2.0, 1.95));
-    REQUIRE(fplus::is_in_closed_range_around(0.1, 2.0, 2.05));
-    REQUIRE_FALSE(fplus::is_in_closed_range_around(0.1, 2.0, 2.15));
+    REQUIRE_FALSE(fplus::is_in_closed_interval_around(0.1, 2.0, 1.85));
+    REQUIRE(fplus::is_in_closed_interval_around(0.1, 2.0, 1.95));
+    REQUIRE(fplus::is_in_closed_interval_around(0.1, 2.0, 2.05));
+    REQUIRE_FALSE(fplus::is_in_closed_interval_around(0.1, 2.0, 2.15));
 
-    REQUIRE(fplus::is_in_closed_range_around(1, 2, 1));
-    REQUIRE(fplus::is_in_closed_range_around(1, 2, 3));
+    REQUIRE(fplus::is_in_closed_interval_around(1, 2, 1));
+    REQUIRE(fplus::is_in_closed_interval_around(1, 2, 3));
 }
 
 TEST_CASE("numeric_test, is_negative")
@@ -123,7 +123,7 @@ TEST_CASE("numeric_test, cyclic_value")
     REQUIRE_EQ(cyclic_value(8)(-5), 3);
     REQUIRE_EQ(cyclic_value(8)(-13), 3);
 
-    REQUIRE(is_in_range(3.19, 3.21, cyclic_value(8.1)(3.2)));
+    REQUIRE(is_in_interval(3.19, 3.21, cyclic_value(8.1)(3.2)));
 }
 
 TEST_CASE("numeric_test, cyclic_difference")
@@ -312,9 +312,9 @@ TEST_CASE("numeric_test, mean_obj")
     auto mean_vec_div_double = mean_obj_div_double(vecs);
     auto mean_vec_div_size_t = mean_obj_div_size_t(vecs);
     double mean_vec_length_squared_dest = 2*2 + 2*2;
-    REQUIRE(is_in_range_around(0.001, mean_vec_length_squared_dest,
+    REQUIRE(is_in_interval_around(0.001, mean_vec_length_squared_dest,
         vec_2d_length_squared(mean_vec_div_double)));
-    REQUIRE(is_in_range_around(0.001, mean_vec_length_squared_dest,
+    REQUIRE(is_in_interval_around(0.001, mean_vec_length_squared_dest,
         vec_2d_length_squared(mean_vec_div_size_t)));
 }
 
@@ -383,8 +383,8 @@ TEST_CASE("numeric_test, winsorize")
 
     const auto median_result = winsorize(0.6, Doubles({1,2}));
     REQUIRE_EQ(median_result.size(), 2);
-    REQUIRE(fplus::is_in_range_around(0.001, 1.5, median_result[0]));
-    REQUIRE(fplus::is_in_range_around(0.001, 1.5, median_result[1]));
+    REQUIRE(fplus::is_in_interval_around(0.001, 1.5, median_result[0]));
+    REQUIRE(fplus::is_in_interval_around(0.001, 1.5, median_result[1]));
 }
 
 TEST_CASE("numeric_test, histogram")
@@ -392,31 +392,31 @@ TEST_CASE("numeric_test, histogram")
     using namespace fplus;
 
     typedef std::vector<int> ints;
-    typedef std::pair<int, int> range;
-    typedef std::vector<range> ranges;
-    typedef std::pair<range, std::size_t> bin;
+    typedef std::pair<int, int> interval;
+    typedef std::vector<interval> intervals;
+    typedef std::pair<interval, std::size_t> bin;
     typedef std::vector<bin> bins;
 
     const ints xs = {0,1,4,5,6,7,8,9};
-    const ranges ranges1 = {{0,4}, {4,5}, {6,8}};
+    const intervals intervals1 = {{0,4}, {4,5}, {6,8}};
     const bins result1 = {{{0, 4}, 2}, {{4, 5}, 1}, {{6, 8}, 2}};
 
-    REQUIRE_EQ(histogram_using_ranges(ranges1, xs), result1);
+    REQUIRE_EQ(histogram_using_intervals(intervals1, xs), result1);
 }
 
-TEST_CASE("numeric_test, generate_consecutive_ranges")
+TEST_CASE("numeric_test, generate_consecutive_intervals")
 {
     using namespace fplus;
 
-    typedef std::pair<int, int> range;
-    typedef std::vector<range> ranges;
+    typedef std::pair<int, int> interval;
+    typedef std::vector<interval> intervals;
 
-    const ranges result = {{0,2}, {2,4}, {4,6}, {6,8}};
+    const intervals result = {{0,2}, {2,4}, {4,6}, {6,8}};
 
-    REQUIRE_EQ(generate_consecutive_ranges(0, 2, 4), result);
+    REQUIRE_EQ(generate_consecutive_intervals(0, 2, 4), result);
 }
 
-TEST_CASE("numeric_test, histogram_ranges")
+TEST_CASE("numeric_test, histogram_intervals")
 {
     using namespace fplus;
 

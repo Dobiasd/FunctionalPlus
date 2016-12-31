@@ -285,7 +285,7 @@ Container trim_token_left(const Container& token, const Container& xs)
     auto result = xs;
     while (is_prefix_of(token, result))
     {
-        result = get_range(size_of_cont(token), size_of_cont(result), result);
+        result = get_segment(size_of_cont(token), size_of_cont(result), result);
     }
     return result;
 }
@@ -352,12 +352,12 @@ Container trim_token(const Container& token, const Container& xs)
 
 // API search type: adjacent_keep_snd_if : (((a, a) -> Bool), [a]) -> [a]
 // fwd bind count: 1
-// For each pair of adjacent elements in a source range,
+// For each pair of adjacent elements in a source sequence,
 // evaluate the specified binary predicate.
 // If the predicate evaluates to false,
-// the second element of the pair is removed from the result range;
+// the second element of the pair is removed from the result sequence;
 // otherwise, it is included.
-// The first element in the source range is always included.
+// The first element in the source sequence is always included.
 // Also known as adjacent_filter.
 template <typename BinaryPredicate, typename Container>
 Container adjacent_keep_snd_if(BinaryPredicate p, const Container& xs)
@@ -384,12 +384,12 @@ Container adjacent_keep_snd_if(BinaryPredicate p, const Container& xs)
 
 // API search type: adjacent_drop_fst_if : (((a, a) -> Bool), [a]) -> [a]
 // fwd bind count: 1
-// For each pair of adjacent elements in a source range,
+// For each pair of adjacent elements in a source sequence,
 // evaluate the specified binary predicate.
 // If the predicate evaluates to true,
-// the first element of the pair is removed from the result range;
+// the first element of the pair is removed from the result sequence;
 // otherwise, it is included.
-// The last element in the source range is always included.
+// The last element in the source sequence is always included.
 // Also known as adjacent_remove_if.
 template <typename BinaryPredicate, typename Container>
 Container adjacent_drop_fst_if(BinaryPredicate p, const Container& xs)
@@ -416,12 +416,12 @@ Container adjacent_drop_fst_if(BinaryPredicate p, const Container& xs)
 
 // API search type: adjacent_drop_snd_if : (((a, a) -> Bool), [a]) -> [a]
 // fwd bind count: 1
-// For each pair of adjacent elements in a source range,
+// For each pair of adjacent elements in a source sequence,
 // evaluate the specified binary predicate.
 // If the predicate evaluates to true,
-// the second element of the pair is removed from the result range;
+// the second element of the pair is removed from the result sequence;
 // otherwise, it is included.
-// The first element in the source range is always included.
+// The first element in the source sequence is always included.
 template <typename BinaryPredicate, typename Container>
 Container adjacent_drop_snd_if(BinaryPredicate p, const Container& xs)
 {
@@ -435,12 +435,12 @@ Container adjacent_drop_snd_if(BinaryPredicate p, const Container& xs)
 
 // API search type: adjacent_keep_fst_if : (((a, a) -> Bool), [a]) -> [a]
 // fwd bind count: 1
-// For each pair of adjacent elements in a source range,
+// For each pair of adjacent elements in a source sequence,
 // evaluate the specified binary predicate.
 // If the predicate evaluates to false,
-// the first element of the pair is removed from the result range;
+// the first element of the pair is removed from the result sequence;
 // otherwise, it is included.
-// The last element in the source range is always included.
+// The last element in the source sequence is always included.
 template <typename BinaryPredicate, typename Container>
 Container adjacent_keep_fst_if(BinaryPredicate p, const Container& xs)
 {

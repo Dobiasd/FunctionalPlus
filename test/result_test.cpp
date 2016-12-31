@@ -72,7 +72,7 @@ TEST_CASE("result_test, and_then_result")
     auto OkInt = ok<int, std::string>;
     auto IntToResultFloat = compose(OkInt, LiftedIntToFloat);
     auto IntToFloatAndSqrtAndSqrt = and_then_result(IntToResultFloat, sqrtAndSqrt);
-    REQUIRE(is_in_range(1.41f, 1.42f, unsafe_get_ok<float>
+    REQUIRE(is_in_interval(1.41f, 1.42f, unsafe_get_ok<float>
             (IntToFloatAndSqrtAndSqrt(4))));
 }
 

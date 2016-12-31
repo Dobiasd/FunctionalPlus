@@ -199,13 +199,13 @@ ContainerOut convert_container_and_elems(const ContainerIn& xs)
     return ys;
 }
 
-// API search type: get_range : (Int, Int, [a]) -> [a]
+// API search type: get_segment : (Int, Int, [a]) -> [a]
 // fwd bind count: 2
-// get_range(2, 5, [0,1,2,3,4,5,6,7,8]) == [2,3,4]
+// get_segment(2, 5, [0,1,2,3,4,5,6,7,8]) == [2,3,4]
 // Also known as slice.
 // crashes on invalid indices
 template <typename Container>
-Container get_range
+Container get_segment
         (std::size_t idx_begin, std::size_t idx_end, const Container& xs)
 {
     assert(idx_begin <= idx_end);
@@ -219,12 +219,12 @@ Container get_range
     return result;
 }
 
-// API search type: set_range : (Int, [a], [a]) -> [a]
+// API search type: set_segment : (Int, [a], [a]) -> [a]
 // fwd bind count: 2
-// set_range(2, [9,9,9], [0,1,2,3,4,5,6,7,8]) == [0,1,9,9,9,5,6,7,8]
+// set_segment(2, [9,9,9], [0,1,2,3,4,5,6,7,8]) == [0,1,9,9,9,5,6,7,8]
 // crashes on invalid indices
 template <typename Container>
-Container set_range
+Container set_segment
         (std::size_t idx_begin, const Container& token, const Container& xs)
 {
     assert(idx_begin + size_of_cont(token) < size_of_cont(xs));
@@ -235,12 +235,12 @@ Container set_range
     return result;
 }
 
-// API search type: remove_range : (Int, Int, [a]) -> [a]
+// API search type: remove_segment : (Int, Int, [a]) -> [a]
 // fwd bind count: 2
-// remove_range(2, 5, [0,1,2,3,4,5,6,7]) == [0,1,5,6,7]
+// remove_segment(2, 5, [0,1,2,3,4,5,6,7]) == [0,1,5,6,7]
 // crashes on invalid indices
 template <typename Container>
-Container remove_range
+Container remove_segment
         (std::size_t idx_begin, std::size_t idx_end, const Container& xs)
 {
     assert(idx_begin <= idx_end);
@@ -283,16 +283,16 @@ Container insert_at(std::size_t idx_begin,
     return result;
 }
 
-// API search type: replace_range : (Int, [a], [a]) -> [a]
+// API search type: replace_segment : (Int, [a], [a]) -> [a]
 // fwd bind count: 2
-// replace_range(2, [8,9], [0,1,2,3,4]) == [0,1,8,9,4]
+// replace_segment(2, [8,9], [0,1,2,3,4]) == [0,1,8,9,4]
 // crashes on invalid index
 template <typename Container>
-Container replace_range(std::size_t idx_begin,
+Container replace_segment(std::size_t idx_begin,
         const Container& token, const Container& xs)
 {
     std::size_t idx_end = idx_begin + size_of_cont(token);
-    return insert_at(idx_begin, token, remove_range(idx_begin, idx_end, xs));
+    return insert_at(idx_begin, token, remove_segment(idx_begin, idx_end, xs));
 }
 
 // API search type: elem_at_idx : (Int, [a]) -> a
@@ -435,7 +435,7 @@ Container take(std::size_t amount, const Container& xs)
 {
     if (amount >= size_of_cont(xs))
         return xs;
-    return get_range(0, amount, xs);
+    return get_segment(0, amount, xs);
 }
 
 // API search type: take_exact : (Int, [a]) -> [a]
@@ -446,7 +446,7 @@ Container take(std::size_t amount, const Container& xs)
 template <typename Container>
 Container take_exact(std::size_t amount, const Container& xs)
 {
-    return get_range(0, amount, xs);
+    return get_segment(0, amount, xs);
 }
 
 // API search type: take_cyclic : (Int, [a]) -> [a]
@@ -491,7 +491,7 @@ Container drop(std::size_t amount, const Container& xs)
 {
     if (amount >= size_of_cont(xs))
         return Container();
-    return get_range(amount, size_of_cont(xs), xs);
+    return get_segment(amount, size_of_cont(xs), xs);
 }
 
 // API search type: drop_exact : (Int, [a]) -> [a]
@@ -502,7 +502,7 @@ Container drop(std::size_t amount, const Container& xs)
 template <typename Container>
 Container drop_exact(std::size_t amount, const Container& xs)
 {
-    return get_range(amount, size_of_cont(xs), xs);
+    return get_segment(amount, size_of_cont(xs), xs);
 }
 
 // API search type: fold_left : (((a, b) -> a), a, [b]) -> a
@@ -874,7 +874,7 @@ Container partial_sort_by(Compare comp, std::size_t count, const Container& xs)
     auto middle = std::begin(result);
     internal::advance_iterator(middle, count);
     std::partial_sort(std::begin(result), middle, std::end(result), comp);
-    return get_range(0, count, result);
+    return get_segment(0, count, result);
 }
 
 // API search type: partial_sort_on : ((a -> b), Int, [a]) -> [a]
@@ -1164,7 +1164,7 @@ bool is_prefix_of(const Container& token, const Container& xs)
 {
     if (size_of_cont(token) > size_of_cont(xs))
         return false;
-    return get_range(0, size_of_cont(token), xs) == token;
+    return get_segment(0, size_of_cont(token), xs) == token;
 }
 
 // API search type: is_suffix_of : ([a], [a]) -> Bool
@@ -1175,7 +1175,7 @@ bool is_suffix_of(const Container& token, const Container& xs)
 {
     if (size_of_cont(token) > size_of_cont(xs))
         return false;
-    return get_range(size_of_cont(xs) - size_of_cont(token),
+    return get_segment(size_of_cont(xs) - size_of_cont(token),
         size_of_cont(xs), xs) == token;
 }
 
@@ -1237,11 +1237,12 @@ bool all_the_same(const Container& xs)
     return all_the_same_by(binaryPredicate, xs);
 }
 
-// API search type: generate_range_step : (a, a, a) -> [a]
+// API search type: numbers_step : (a, a, a) -> [a]
 // fwd bind count: 2
-// generate_range_step(2, 9, 2) == [2, 4, 6, 8]
-template <typename ContainerOut, typename T = typename ContainerOut::value_type>
-ContainerOut generate_range_step
+// numbers_step(2, 9, 2) == [2, 4, 6, 8]
+template <typename T,
+        typename ContainerOut = std::vector<T>>
+ContainerOut numbers_step
         (const T start, const T end, const T step)
 {
     ContainerOut result;
@@ -1259,23 +1260,14 @@ ContainerOut generate_range_step
     return result;
 }
 
-// API search type: generate_range : (a, a) -> [a]
-// fwd bind count: 1
-// generate_range(2, 9) == [2, 3, 4, 5, 6, 7, 8]
-template <typename ContainerOut, typename T = typename ContainerOut::value_type>
-ContainerOut generate_range(const T start, const T end)
-{
-    return generate_range_step<ContainerOut, T>(start, end, 1);
-}
-
 // API search type: numbers : (a, a) -> [a]
 // fwd bind count: 1
 // numbers(2, 9) == [2, 3, 4, 5, 6, 7, 8]
-// Convenience wrapper for generate_range.
-template <typename T, typename ContainerOut = std::vector<T>>
+template <typename T,
+        typename ContainerOut = std::vector<T>>
 ContainerOut numbers(const T start, const T end)
 {
-    return generate_range<ContainerOut, T>(start, end);
+    return numbers_step<T, ContainerOut>(start, end, 1);
 }
 
 // API search type: singleton_seq : a -> [a]
@@ -1293,8 +1285,7 @@ ContainerOut singleton_seq(const T& x)
 template <typename Container>
 std::vector<std::size_t> all_idxs(const Container& xs)
 {
-    return generate_range<std::vector<std::size_t>, std::size_t>
-        (0, size_of_cont(xs));
+    return numbers<std::size_t>(0, size_of_cont(xs));
 }
 
 // API search type: init : [a] -> [a]
@@ -1305,7 +1296,7 @@ template <typename Container>
 Container init(const Container& xs)
 {
     assert(!is_empty(xs));
-    return get_range(0, size_of_cont(xs) - 1, xs);
+    return get_segment(0, size_of_cont(xs) - 1, xs);
 }
 
 // API search type: tail : [a] -> [a]
@@ -1317,7 +1308,7 @@ template <typename Container>
 Container tail(const Container& xs)
 {
     assert(!is_empty(xs));
-    return get_range(1, size_of_cont(xs), xs);
+    return get_segment(1, size_of_cont(xs), xs);
 }
 
 // API search type: head : [a] -> a

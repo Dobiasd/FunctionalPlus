@@ -77,7 +77,7 @@ ContainerOut infixes(std::size_t length, const ContainerIn& xs)
     auto itOut = internal::get_back_inserter(result);
     for (std::size_t idx = 0; idx <= size_of_cont(xs) - length; ++idx)
     {
-        *itOut = get_range(idx, idx + length, xs);
+        *itOut = get_segment(idx, idx + length, xs);
     }
     return result;
 }
@@ -462,7 +462,7 @@ ContainerOut inits(const ContainerIn& xs)
     internal::prepare_container(result, xs_size + 1);
     auto it_out = internal::get_back_inserter(result);
     for (std::size_t i = 0; i <= xs_size; ++i)
-        *it_out = get_range(0, i, xs);
+        *it_out = get_segment(0, i, xs);
     return result;
 }
 
@@ -479,7 +479,7 @@ ContainerOut tails(const ContainerIn& xs)
     internal::prepare_container(result, xs_size + 1);
     auto it_out = internal::get_back_inserter(result);
     for (std::size_t i = 0; i <= xs_size; ++i)
-        *it_out = get_range(i, xs_size, xs);
+        *it_out = get_segment(i, xs_size, xs);
     return result;
 }
 

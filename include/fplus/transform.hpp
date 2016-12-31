@@ -173,7 +173,7 @@ template <typename Container>
 Container sample(std::size_t n, const Container& xs)
 {
     assert(n <= size_of_cont(xs));
-    return get_range(0, n, shuffle(xs));
+    return get_segment(0, n, shuffle(xs));
 }
 
 // API search type: random_element : [a] -> [a]

@@ -361,10 +361,9 @@ TEST_CASE("generate_test, fill_pigeonholes")
     REQUIRE_EQ(fplus::fill_pigeonholes_bool(xs), std::vector<unsigned char>({1,1,0,1}));
 }
 
-TEST_CASE("generate_test, generate_range")
+TEST_CASE("generate_test, numbers")
 {
     typedef std::vector<int> ints;
-    REQUIRE_EQ(fplus::generate_range<ints>(2, 5), ints({2,3,4}));
-    REQUIRE_EQ(fplus::generate_range_step<ints>(0, 6, 2), ints({0,2,4}));
     REQUIRE_EQ(fplus::numbers<int>(2, 5), ints({2,3,4}));
+    REQUIRE_EQ(fplus::numbers_step<int>(0, 6, 2), ints({0,2,4}));
 }

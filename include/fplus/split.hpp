@@ -372,8 +372,8 @@ std::pair<Container, Container> split_at_idx
         (std::size_t idx, const Container& xs)
 {
     assert(idx <= size_of_cont(xs));
-    return make_pair(get_range(0, idx, xs),
-        get_range(idx, size_of_cont(xs), xs));
+    return make_pair(get_segment(0, idx, xs),
+        get_segment(idx, size_of_cont(xs), xs));
 }
 
 // API search type: insert_at_idx : (Int, a, [a]) -> [a]
@@ -438,7 +438,7 @@ ContainerOut split_at_idxs(const ContainerIdxs& idxsIn, const ContainerIn& xs)
     auto idxPairs = overlapping_pairs(idxsClean);
     for (const auto& idxPair : idxPairs)
     {
-        *itOut = get_range(idxPair.first, idxPair.second, xs);
+        *itOut = get_segment(idxPair.first, idxPair.second, xs);
     }
     return result;
 }
@@ -455,7 +455,7 @@ ContainerOut split_every(std::size_t n, const ContainerIn& xs)
         std::vector<std::size_t>,
         ContainerIn,
         ContainerOut>(
-            generate_range_step<std::vector<std::size_t>, std::size_t>(
+            numbers_step<std::size_t>(
                 n, size_of_cont(xs), n),
             xs);
 }
@@ -478,16 +478,16 @@ ContainerOut split_by_token(const ContainerIn& token,
     assert(is_sorted(interweave(token_begins, token_ends)));
 
     typedef std::vector<std::size_t> idx_vec;
-    const auto ranges = zip(
+    const auto segments = zip(
         fplus::append(idx_vec(1, 0), token_ends),
         fplus::append(token_begins, idx_vec(1, size_of_cont(xs))));
 
     ContainerOut result;
     auto itOut = internal::get_back_inserter(result);
-    for (const auto& range : ranges)
+    for (const auto& segment : segments)
     {
-        if (range.first != range.second || allow_empty)
-        *itOut = get_range(range.first, range.second, xs);
+        if (segment.first != segment.second || allow_empty)
+        *itOut = get_segment(segment.first, segment.second, xs);
     }
     return result;
 }
@@ -597,7 +597,7 @@ ContainerOut divvy(std::size_t length, std::size_t step, const ContainerIn& xs)
     assert(length > 0);
     assert(step > 0);
     const auto start_idxs =
-        generate_range_step<std::vector<std::size_t>, std::size_t>(
+        numbers_step<std::size_t>(
             0, size_of_cont(xs) - (length - 1), step);
 
     ContainerOut result;
@@ -606,7 +606,7 @@ ContainerOut divvy(std::size_t length, std::size_t step, const ContainerIn& xs)
 
     for (const auto start_idx : start_idxs)
     {
-        *itOut = get_range(start_idx, start_idx + length, xs);
+        *itOut = get_segment(start_idx, start_idx + length, xs);
     }
     return result;
 }
@@ -621,7 +621,7 @@ ContainerOut aperture(std::size_t length, const ContainerIn& xs)
 {
     assert(length > 0);
     const auto start_idxs =
-        generate_range<std::vector<std::size_t>, std::size_t>(
+        numbers<std::size_t>(
             0, size_of_cont(xs) - (length - 1));
 
     ContainerOut result;
@@ -630,7 +630,7 @@ ContainerOut aperture(std::size_t length, const ContainerIn& xs)
 
     for (const auto start_idx : start_idxs)
     {
-        *itOut = get_range(start_idx, start_idx + length, xs);
+        *itOut = get_segment(start_idx, start_idx + length, xs);
     }
     return result;
 }

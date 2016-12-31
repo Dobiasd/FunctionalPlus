@@ -529,15 +529,15 @@ TEST_CASE("container_common_test, mean")
     REQUIRE_EQ(mean_using_doubles<unsigned char>(uchars), 201);
     REQUIRE_EQ(median(IntVector({ 3 })), 3);
     REQUIRE_EQ(median(IntVector({ 3, 5 })), 4);
-    REQUIRE(is_in_range(3.49f, 3.51f, median<IntVector, float>(IntVector({ 3, 4 }))));
-    REQUIRE(is_in_range(3.49, 3.51, mean<double>(DoubleVector({ 3, 4 }))));
+    REQUIRE(is_in_interval(3.49f, 3.51f, median<IntVector, float>(IntVector({ 3, 4 }))));
+    REQUIRE(is_in_interval(3.49, 3.51, mean<double>(DoubleVector({ 3, 4 }))));
     REQUIRE_EQ(median(IntVector({ 3, 9, 5 })), 5);
     REQUIRE_EQ(median(xs), 2);
     REQUIRE_EQ(sum(convert_container_and_elems<std::vector<int>>(std::string("hello"))), 532);
-    REQUIRE(is_in_range(5.99, 6.01, mean_stddev<double>(DoubleVector({ 4, 8 })).first));
-    REQUIRE(is_in_range(1.99, 2.01, mean_stddev<double>(DoubleVector({ 4, 8 })).second));
-    REQUIRE(is_in_range(3.749f, 3.751f, mean_stddev<float>(IntVector({ 1, 3, 7, 4 })).first));
-    REQUIRE(is_in_range(2.16f, 2.17f, mean_stddev<float>(IntVector({ 1, 3, 7, 4 })).second));
+    REQUIRE(is_in_interval(5.99, 6.01, mean_stddev<double>(DoubleVector({ 4, 8 })).first));
+    REQUIRE(is_in_interval(1.99, 2.01, mean_stddev<double>(DoubleVector({ 4, 8 })).second));
+    REQUIRE(is_in_interval(3.749f, 3.751f, mean_stddev<float>(IntVector({ 1, 3, 7, 4 })).first));
+    REQUIRE(is_in_interval(2.16f, 2.17f, mean_stddev<float>(IntVector({ 1, 3, 7, 4 })).second));
 }
 
 TEST_CASE("container_common_test, sort")
@@ -548,6 +548,7 @@ TEST_CASE("container_common_test, sort")
     REQUIRE_EQ(sort_by(std::greater<int>(), xs), reverse(xsSorted));
 
     REQUIRE_EQ(sort_on(int_mod_10, IntVector({26,3,14})), IntVector({3,14,26}));
+    REQUIRE_EQ(sort_on(size_of_cont<IntVector>, IntVectors({{1,2,3},{4,5}})), IntVectors({{4,5},{1,2,3}}));
 
     REQUIRE_EQ(partial_sort(2, reverse(xs)), IntVector({1,2}));
 }
@@ -811,12 +812,12 @@ TEST_CASE("container_common_test, enumerate")
     REQUIRE_EQ(enumerate(xs), (std::vector<std::pair<std::size_t, int>>({{0,1}, {1,2}, {2,2}, {3,3}, {4,2}})));
 }
 
-TEST_CASE("container_common_test, range")
+TEST_CASE("container_common_test, segment")
 {
     using namespace fplus;
     IntList v789 = { 7,8,9 };
-    REQUIRE_EQ(set_range(1, v789, intList), IntList({ 1,7,8,9,2 }));
-    REQUIRE_EQ(get_range(1, 4, intList), IntList({ 2,2,3 }));
+    REQUIRE_EQ(set_segment(1, v789, intList), IntList({ 1,7,8,9,2 }));
+    REQUIRE_EQ(get_segment(1, 4, intList), IntList({ 2,2,3 }));
     REQUIRE_EQ(replace_elems(2, 5, xs), IntVector({1,5,5,3,5}));
     REQUIRE_EQ(replace_tokens(std::string("123"), std::string("_"), std::string("--123----123123")), std::string("--_----__"));
     REQUIRE_EQ(take(2, xs), IntVector({ 1,2 }));
@@ -828,7 +829,7 @@ TEST_CASE("container_common_test, range")
     REQUIRE_EQ(take_while(is_odd_int, xs), IntVector({ 1 }));
     REQUIRE_EQ(drop_while(is_odd_int, xs), IntVector({ 2,2,3,2 }));
     REQUIRE_EQ(span(is_odd_int, xs), std::make_pair(IntVector({ 1 }), IntVector({ 2,2,3,2 })));
-    REQUIRE_EQ(replace_range(2, IntVector({8,9}), xs), IntVector({1,2,8,9,2}));
+    REQUIRE_EQ(replace_segment(2, IntVector({8,9}), xs), IntVector({1,2,8,9,2}));
     REQUIRE_EQ(take_cyclic(5, IntVector({0,1,2,3})), IntVector({0,1,2,3,0}));
     REQUIRE_EQ(take_cyclic(7, IntVector({0,1,2,3})), IntVector({0,1,2,3,0,1,2}));
     REQUIRE_EQ(take_cyclic(7, IntVector({0,1})), IntVector({0,1,0,1,0,1,0}));

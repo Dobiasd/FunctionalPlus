@@ -33,7 +33,7 @@ bool is_letter_or_digit(const typename String::value_type& c)
 template <typename String>
 bool is_whitespace(const typename String::value_type& c)
 {
-    return (c == 32 || is_in_range(9, 14, static_cast<int>(c)));
+    return (c == 32 || is_in_interval(9, 14, static_cast<int>(c)));
 }
 
 // API search type: is_line_break : Char -> Bool

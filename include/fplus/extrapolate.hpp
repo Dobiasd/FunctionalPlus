@@ -14,7 +14,7 @@ namespace fplus
 
 // API search type: elem_at_idx_or_nothing : (Int, [a]) -> Maybe a
 // fwd bind count: 1
-// Returns nothing if index is out of range.
+// Returns nothing if index is outside of xs.
 template <typename Container,
     typename T = typename Container::value_type>
 maybe<T> elem_at_idx_or_nothing(signed int idx, const Container& xs)
