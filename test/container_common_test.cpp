@@ -1076,6 +1076,12 @@ TEST_CASE("container_common_test, head")
     REQUIRE_EQ(head(xs), 1);
 }
 
+TEST_CASE("container_common_test, last")
+{
+    using namespace fplus;
+    REQUIRE_EQ(last(xs), 2);
+}
+
 TEST_CASE("container_common_test, tail")
 {
     using namespace fplus;

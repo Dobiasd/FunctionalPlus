@@ -1322,7 +1322,7 @@ Container tail(const Container& xs)
 
 // API search type: head : [a] -> a
 // fwd bind count: 0
-// Return the first element of a container. Unsafe!
+// Return the first element of a container.
 // head([0,1,2,3]) == 0
 // Unsafe! xs must not be empty.
 template <typename Container>
@@ -1330,6 +1330,18 @@ typename Container::value_type head(const Container& xs)
 {
     assert(!is_empty(xs));
     return xs.front();
+}
+
+// API search type: last : [a] -> a
+// fwd bind count: 0
+// Return the last element of a container.
+// last([0,1,2,3]) == 3
+// Unsafe! xs must not be empty.
+template <typename Container>
+typename Container::value_type last(const Container& xs)
+{
+    assert(!is_empty(xs));
+    return xs.back();
 }
 
 // API search type: mean_stddev : [a] -> (a, a)
