@@ -95,6 +95,8 @@ TEST_CASE("container_common_test, transform")
     auto showInt = [](int x) -> std::string { return fplus::show(x); };
     std::vector<std::function<std::string(int)>> showIntFuncs = {showInt, showInt};
     REQUIRE_EQ(apply_functions(showIntFuncs, 4), std::vector<std::string>({"4", "4"}));
+
+    REQUIRE_EQ(apply_function_n_times(squareLambda, 3, 2), 256);
 }
 
 TEST_CASE("container_common_test, filter")

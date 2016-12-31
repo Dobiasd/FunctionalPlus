@@ -175,7 +175,7 @@ Container sample(std::size_t n, const Container& xs)
     return get_range(0, n, shuffle(xs));
 }
 
-// API search type: apply_functions : [(a -> b)] -> a -> [b]
+// API search type: apply_functions : ([(a -> b)], a) -> [b]
 // fwd bind count: 1
 // Applies a list of functions to a value.
 template <typename FunctionContainer,
@@ -194,6 +194,29 @@ ContainerOut apply_functions(const FunctionContainer& functions, const FIn& x)
         *it = f(x);
     }
     return ys;
+}
+
+// API search type: apply_function_n_times : ((a -> a), Int, a) -> a
+// fwd bind count: 2
+// Applies a functional n times in a row.
+template <typename F,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+    typename FOut = typename std::result_of<F(FIn)>::type>
+FOut apply_function_n_times(const F f, std::size_t n, const FIn& x)
+{
+    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    static_assert(std::is_same<FOut, FIn>::value,
+        "Input and output of F must be the same type.");
+    if (n == 0)
+    {
+        return x;
+    }
+    FOut y = f(x);
+    for (std::size_t i = 1; i < n; ++i)
+    {
+        y = f(y);
+    }
+    return y;
 }
 
 // API search type: transform_parallelly : ((a -> b), [a]) -> [b]
