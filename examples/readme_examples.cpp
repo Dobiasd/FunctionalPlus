@@ -23,23 +23,23 @@ bool is_odd_int(int x) { return x % 2 == 1; }
 void Test_example_KeepIf()
 {
     typedef std::vector<int> Ints;
-    Ints numbers = { 24, 11, 65, 44, 80, 18, 73, 90, 69, 18 };
+    Ints values = { 24, 11, 65, 44, 80, 18, 73, 90, 69, 18 };
 
     { // Version 1: hand written range based for loop
         Ints odds;
-        for (int x : numbers)
+        for (int x : values)
             if (is_odd_int(x))
                 odds.push_back(x);
     }
 
     { // Version 2: STL
         Ints odds;
-        std::copy_if(std::begin(numbers), std::end(numbers),
+        std::copy_if(std::begin(values), std::end(values),
                 std::back_inserter(odds), is_odd_int);
     }
 
     { // Version : FunctionalPlus
-        auto odds = fplus::keep_if(is_odd_int, numbers);
+        auto odds = fplus::keep_if(is_odd_int, values);
     }
 }
 
@@ -63,23 +63,23 @@ void Test_example_KeepIf_performance()
     using namespace fplus;
 
     typedef std::vector<int> Ints;
-    auto run_loop = [&](const Ints numbers)
+    auto run_loop = [&](const Ints values)
     {
         Ints odds;
-        for (int x : numbers)
+        for (int x : values)
             if (is_odd_int(x))
                 odds.push_back(x);
         return odds;
     };
-    auto run_stl = [&](const Ints numbers)
+    auto run_stl = [&](const Ints values)
     {
         Ints odds;
-        std::copy_if(std::begin(numbers), std::end(numbers),
+        std::copy_if(std::begin(values), std::end(values),
                 std::back_inserter(odds), is_odd_int);
         return odds;
     };
-    auto run_FunctionalPlus = [&](const Ints numbers)
-        { return keep_if(is_odd_int, numbers); };
+    auto run_FunctionalPlus = [&](const Ints values)
+        { return keep_if(is_odd_int, values); };
 
     // make debug runs faster
 #if defined NDEBUG || defined _DEBUG
@@ -88,10 +88,10 @@ void Test_example_KeepIf_performance()
     std::size_t numRuns = 20000;
 #endif
 
-    Ints numbers = generate<Ints>(rand, 5000);
-    run_n_times(run_loop, numRuns, "Hand-written for loop", numbers);
-    run_n_times(run_stl, numRuns, "std::copy_if", numbers);
-    run_n_times(run_FunctionalPlus, numRuns, "FunctionalPlus::keep_if", numbers);
+    Ints values = generate<Ints>(rand, 5000);
+    run_n_times(run_loop, numRuns, "Hand-written for loop", values);
+    run_n_times(run_stl, numRuns, "std::copy_if", values);
+    run_n_times(run_FunctionalPlus, numRuns, "FunctionalPlus::keep_if", values);
 }
 
 
@@ -174,7 +174,7 @@ void Test_example_CollatzSequence()
     typedef std::list<int> Ints;
 
     // [1, 2, 3 ... 29]
-    auto numbers = fplus::numbers<int>(1, 30);
+    auto xs = fplus::numbers<int>(1, 30);
 
     // A function that does [1, 2, 3, 4, 5] -> "[1 => 2 => 3 => 4 => 5]"
     auto show_ints = fplus::bind_1st_of_2(fplus::show_cont_with<Ints>, " => ");
@@ -183,7 +183,7 @@ void Test_example_CollatzSequence()
     auto show_collats_seq = fplus::compose(collatz_seq, show_ints);
 
     // Associate the numbers with the string representation of their sequences.
-    auto collatz_dict = fplus::create_map_with(show_collats_seq, numbers);
+    auto collatz_dict = fplus::create_map_with(show_collats_seq, xs);
 
     // Print some of the sequences.
     std::cout << collatz_dict[13] << std::endl;

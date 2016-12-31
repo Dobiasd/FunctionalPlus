@@ -38,8 +38,8 @@ bool is_odd_int(int x) { return x % 2 == 1; }
 int main()
 {
     typedef vector<int> Ints;
-    Ints numbers = { 24, 11, 65, 44, 80, 18, 73, 90, 69, 18 };
-    // todo: get odd values from numbers ...
+    Ints values = { 24, 11, 65, 44, 80, 18, 73, 90, 69, 18 };
+    // todo: get odd values from values ...
 }
 ```
 
@@ -48,7 +48,7 @@ There are different possibilities to attain your goal. Some of them are:
 1. write a (range based) for loop
  ```c++
      Ints odds;
-     for (int x : numbers)
+     for (int x : values)
      {
          if (is_odd_int(x))
          {
@@ -60,17 +60,17 @@ There are different possibilities to attain your goal. Some of them are:
 2. use `std::copy_if` from the STL
  ```c++
      Ints odds;
-     std::copy_if(std::begin(numbers), std::end(numbers),
+     std::copy_if(std::begin(values), std::end(values),
              std::back_inserter(odds), is_odd_int);
  ```
 
 3. use `keep_if` from `FunctionalPlus`
  ```c++
-     auto odds = fplus::keep_if(is_odd_int, numbers);
+     auto odds = fplus::keep_if(is_odd_int, values);
  ```
 
 If you think version 3 could be the one most pleasant to work with, you might like FunctionalPlus.
-And if you still think the hand-written for loop is easier to understand, also consider what would happen if the loop body (i.e. a corresponding lambda function in the call to `fplus::keep_if`) would be much longer. When reading `keep_if` you would still immediately know that `odds` can only contain elements that came from `numbers` and were selected by some, possibly complicated, predicate. In the for loop case you have no idea what is happening until you read the whole loop body. The loop version probably would need a comment at the top stating what the use of `keep_if` would tell at first glance.
+And if you still think the hand-written for loop is easier to understand, also consider what would happen if the loop body (i.e. a corresponding lambda function in the call to `fplus::keep_if`) would be much longer. When reading `keep_if` you would still immediately know that `odds` can only contain elements that came from `values` and were selected by some, possibly complicated, predicate. In the for loop case you have no idea what is happening until you read the whole loop body. The loop version probably would need a comment at the top stating what the use of `keep_if` would tell at first glance.
 
 
 Usage examples
@@ -172,7 +172,7 @@ int main()
     typedef std::list<int> Ints;
 
     // [1, 2, 3 ... 29]
-    auto numbers = fplus::numbers<Ints>(1, 30);
+    auto xs = fplus::numbers<Ints>(1, 30);
 
     // A function that does [1, 2, 3, 4, 5] -> "[1 => 2 => 3 => 4 => 5]"
     auto show_ints = fplus::bind_1st_of_2(fplus::show_cont_with<Ints>, " => ");
@@ -181,7 +181,7 @@ int main()
     auto show_collats_seq = fplus::compose(collatz_seq, show_ints);
 
     // Associate the numbers with the string representation of their sequences.
-    auto collatz_dict = fplus::create_map_with(show_collats_seq, numbers);
+    auto collatz_dict = fplus::create_map_with(show_collats_seq, xs);
 
     // Print some of the sequences.
     std::cout << collatz_dict[13] << std::endl;
