@@ -802,13 +802,32 @@ Container sort_by(Compare comp, const Container& xs)
     return result;
 }
 
+namespace internal
+{
+    // workaround for clang bug 24115 (std::sort with std::function as comp)
+    // https://llvm.org/bugs/show_bug.cgi?id=24115
+    template <typename F,
+        typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+        typename FOut = typename std::result_of<F(FIn)>::type>
+    struct is_less_by_struct
+    {
+        is_less_by_struct(F f) : f_(f) {};
+        bool operator()(const FIn& x, const FIn& y)
+        {
+            return f_(x) < f_(y);
+        }
+    private:
+        F f_;
+    };
+}
+
 // API search type: sort_on : ((a -> b), [a]) -> [a]
 // fwd bind count: 1
 // sort by given transformer
 template <typename F, typename Container>
 Container sort_on(F f, const Container& xs)
 {
-    return sort_by(is_less_by(f), xs);
+    return sort_by(internal::is_less_by_struct<F>(f), xs);
 }
 
 // API search type: sort : [a] -> [a]
@@ -847,7 +866,7 @@ Container stable_sort_by(Compare comp, const Container& xs)
 template <typename F, typename Container>
 Container stable_sort_on(F f, const Container& xs)
 {
-    return stable_sort_by(is_less_by(f), xs);
+    return stable_sort_by(internal::is_less_by_struct<F>(f), xs);
 }
 
 // API search type: stable_sort : [a] -> [a]
@@ -883,7 +902,8 @@ Container partial_sort_by(Compare comp, std::size_t count, const Container& xs)
 template <typename F, typename Container>
 Container partial_sort_on(F f, std::size_t count, const Container& xs)
 {
-    return partial_sort_by(is_less_by(f), count, xs);
+    return partial_sort_by(internal::is_less_by_struct<F>(f),
+        count, xs);
 }
 
 // API search type: partial_sort : (Int, [a]) -> [a]
