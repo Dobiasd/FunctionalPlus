@@ -505,7 +505,7 @@ ContainerOut run_length_encode_by(BinaryPredicate pred, const ContainerIn& xs)
     internal::check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
     ContainerOut result;
     auto groups = group_by(pred, xs);
-    auto group_to_pair = [](const ContainerIn& group )
+    auto group_to_pair = [](const ContainerIn& group) -> std::pair<std::size_t, T>
     {
         return std::make_pair(size_of_cont(group), group.front());
     };
@@ -521,7 +521,7 @@ template <typename ContainerIn,
             typename std::vector<std::pair<std::size_t, T>>>
 ContainerOut run_length_encode(const ContainerIn& xs)
 {
-    return run_length_encode_by(is_equal_by(identity<T>), xs);
+    return run_length_encode_by(is_equal<T>, xs);
 }
 
 // API search type: run_length_decode : [(Int, a)] -> [a]
