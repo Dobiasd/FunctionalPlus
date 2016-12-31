@@ -168,11 +168,24 @@ Container shuffle(const Container& xs)
 // n has to be smaller than or equal to the number of elements in xs.
 // If you want a different seed, use something like
 // std::srand(std::time(nullptr));
+// Also known as rnd_select.
 template <typename Container>
 Container sample(std::size_t n, const Container& xs)
 {
     assert(n <= size_of_cont(xs));
     return get_range(0, n, shuffle(xs));
+}
+
+// API search type: random_element : [a] -> [a]
+// fwd bind count: 0
+// Returns one random element from xs.
+// xs must be non-empty.
+// If you want a different seed, use something like
+// std::srand(std::time(nullptr));
+template <typename Container>
+Container random_element(const Container& xs)
+{
+    return sample(xs).front();
 }
 
 // API search type: apply_functions : ([(a -> b)], a) -> [b]
