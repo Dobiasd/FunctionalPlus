@@ -15,7 +15,7 @@ namespace fplus
 // API search type: elem_at_float_idx : (Float, [a]) -> a
 // fwd bind count: 1
 // Interpolates linearly between elements.
-// xs must not be empty.
+// xs must be non-empty.
 template <typename Container,
     typename T = typename Container::value_type>
 T elem_at_float_idx(double idx, const Container& xs)

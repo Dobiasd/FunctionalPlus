@@ -47,7 +47,7 @@ T elem_at_idx_or_constant(const T& c, signed int idx, const Container& xs)
 // API search type: elem_at_idx_or_replicate : (Int, [a]) -> a
 // fwd bind count: 1
 // aaaaaa|abcdefgh|hhhhhhh
-// xs must not be empty.
+// xs must be non-empty.
 template <typename Container,
     typename T = typename Container::value_type>
 T elem_at_idx_or_replicate(signed int idx, const Container& xs)
@@ -70,7 +70,7 @@ T elem_at_idx_or_replicate(signed int idx, const Container& xs)
 // fwd bind count: 1
 // For cyclic element access
 // cdefgh|abcdefgh|abcdefg
-// xs must not be empty.
+// xs must be non-empty.
 template <typename Container,
     typename T = typename Container::value_type>
 T elem_at_idx_or_wrap(signed int idx, const Container& xs)
@@ -89,7 +89,7 @@ T elem_at_idx_or_wrap(signed int idx, const Container& xs)
 // API search type: extrapolate_replicate : (Int, Int, [a]) -> [a]
 // fwd bind count: 2
 // aaaaaa|abcdefgh|hhhhhhh
-// xs must not be empty.
+// xs must be non-empty.
 template <typename Container,
     typename T = typename Container::value_type>
 Container extrapolate_replicate(std::size_t count_begin, std::size_t count_end,
@@ -112,7 +112,7 @@ Container extrapolate_replicate(std::size_t count_begin, std::size_t count_end,
 // API search type: extrapolate_wrap : (Int, Int, [a]) -> [a]
 // fwd bind count: 2
 // cdefgh|abcdefgh|abcdefg
-// xs must not be empty.
+// xs must be non-empty.
 template <typename Container,
     typename T = typename Container::value_type>
 Container extrapolate_wrap(std::size_t count_begin, std::size_t count_end,

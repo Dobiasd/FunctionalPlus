@@ -458,7 +458,7 @@ Container take_exact(std::size_t amount, const Container& xs)
 // take_cyclic(3, [0]) == [0,0,0]
 // take_cyclic(3, []) == crash!
 // Also known as take_wrap.
-// xs must not be empty.
+// xs must be non-empty.
 template <typename Container>
 Container take_cyclic(std::size_t amount, const Container& xs)
 {
@@ -528,7 +528,7 @@ Acc fold_left(F f, const Acc& init, const Container& xs)
 // fold_left_1((+), [1, 2, 3]) == (1+2)+3 == 6
 // Takes the first 2 items of the list and applies the function to them,
 // then feeds the function with this result and the third argument and so on.
-// xs must not be empty.
+// xs must be non-empty.
 template <typename F, typename Container,
     typename Acc = typename Container::value_type>
 Acc fold_left_1(F f, const Container& xs)
@@ -593,7 +593,7 @@ ContainerOut scan_left(F f, const Acc& init, const ContainerIn& xs)
 // Takes the first 2 items of the list and applies the function to them,
 // then feeds the function with this result and the third argument and so on.
 // It returns the list of intermediate and final results.
-// xs must not be empty.
+// xs must be non-empty.
 template <typename F, typename ContainerIn,
     typename Acc = typename ContainerIn::value_type,
     typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, Acc>::type>
@@ -1300,7 +1300,7 @@ std::vector<std::size_t> all_idxs(const Container& xs)
 // API search type: init : [a] -> [a]
 // fwd bind count: 0
 // init([0,1,2,3]) == [0,1,2]
-// Unsafe! xs must not be empty.
+// Unsafe! xs must be non-empty.
 template <typename Container>
 Container init(const Container& xs)
 {
@@ -1312,7 +1312,7 @@ Container init(const Container& xs)
 // fwd bind count: 0
 // Drops the first element of a container, keeps the rest. Unsafe!
 // tail([0,1,2,3]) == [1,2,3]
-// Unsafe! xs must not be empty.
+// Unsafe! xs must be non-empty.
 template <typename Container>
 Container tail(const Container& xs)
 {
@@ -1324,7 +1324,7 @@ Container tail(const Container& xs)
 // fwd bind count: 0
 // Return the first element of a container.
 // head([0,1,2,3]) == 0
-// Unsafe! xs must not be empty.
+// Unsafe! xs must be non-empty.
 template <typename Container>
 typename Container::value_type head(const Container& xs)
 {
@@ -1336,7 +1336,7 @@ typename Container::value_type head(const Container& xs)
 // fwd bind count: 0
 // Return the last element of a container.
 // last([0,1,2,3]) == 3
-// Unsafe! xs must not be empty.
+// Unsafe! xs must be non-empty.
 template <typename Container>
 typename Container::value_type last(const Container& xs)
 {
@@ -1349,7 +1349,7 @@ typename Container::value_type last(const Container& xs)
 // calculates the mean and the population standard deviation
 // mean_stddev([4, 8]) == (6, 2)
 // mean_stddev([1, 3, 7, 4]) == (3.75, 2.5)
-// xs must not be empty.
+// xs must be non-empty.
 template <typename Result, typename Container>
 std::pair<Result, Result> mean_stddev(const Container& xs)
 {
