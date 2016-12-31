@@ -799,6 +799,12 @@ TEST_CASE("container_common_test, split")
     REQUIRE_EQ(split_keep_separators(2, IntList({1,3,2,2,5,5,3,2,7,9})), IntLists({{1,3},{2},{2,5,5,3},{2,7,9}}));
 }
 
+TEST_CASE("container_common_test, insert_at_idx")
+{
+    using namespace fplus;
+    REQUIRE_EQ(insert_at_idx(2, 0, IntVector({1,2,3,4})), IntVector({1,2,0,3,4}));
+}
+
 TEST_CASE("container_common_test, enumerate")
 {
     using namespace fplus;

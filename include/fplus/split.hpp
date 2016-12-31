@@ -376,6 +376,22 @@ std::pair<Container, Container> split_at_idx
         get_range(idx, size_of_cont(xs), xs));
 }
 
+// API search type: insert_at_idx : (Int, a, [a]) -> [a]
+// fwd bind count: 3
+// insert_at_idx(2, 0, [1,2,3,4]) == [1,2,0,3,4].
+template <typename Container,
+        typename T = typename Container::value_type>
+Container insert_at_idx(std::size_t idx, const T& x, const Container& xs)
+{
+    const auto splitted = split_at_idx(idx, xs);
+    return concat(std::vector<Container>(
+        {
+            splitted.first,
+            singleton_seq<T, Container>(x),
+            splitted.second
+        }));
+}
+
 // API search type: partition : ((a -> Bool), [a]) -> ([a], [a])
 // fwd bind count: 1
 // partition(is_even, [0,1,1,3,7,2,3,4]) == ([0,2,4],[1,1,3,7,3])
