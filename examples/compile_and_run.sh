@@ -1,16 +1,30 @@
 #!/usr/bin/env bash
 
-g++ -std=c++14 -O3 -Wall -Wextra -pedantic -Wshadow -Werror -Weffc++ -Wconversion -Wsign-conversion -Wctor-dtor-privacy -Wreorder -Wold-style-cast -Wparentheses -pthread -o ./temp_FunctionalPlus_tests__gcc -I./../include readme_examples.cpp
-clang++ -std=c++14 -O3 -Wall -Wextra -pedantic -Wshadow -Werror -Weffc++ -Wconversion -Wsign-conversion -Wctor-dtor-privacy -Wreorder -Wold-style-cast -Wparentheses -pthread -o ./temp_FunctionalPlus_tests__clang -I./../include readme_examples.cpp
-
-if [ -f ./temp_FunctionalPlus_tests__gcc ];
+g++ -std=c++14 -O3 -Wall -Wextra -pedantic -Wshadow -Werror -Weffc++ -Wconversion -Wsign-conversion -Wctor-dtor-privacy -Wreorder -Wold-style-cast -Wparentheses -pthread -o ./temp_99_problems__gcc -I./../include 99_problems.cpp
+if [ -f ./temp_99_problems__gcc ];
 then
-    ./temp_FunctionalPlus_tests__gcc
-    rm ./temp_FunctionalPlus_tests__gcc
+    ./temp_99_problems__gcc
+    rm ./temp_99_problems__gcc
 fi
 
-if [ -f ./temp_FunctionalPlus_tests__clang ];
+clang++ -std=c++14 -O3 -Wall -Wextra -pedantic -Wshadow -Werror -Weffc++ -Wconversion -Wsign-conversion -Wctor-dtor-privacy -Wreorder -Wold-style-cast -Wparentheses -pthread -o ./temp_99_problems__clang -I./../include 99_problems.cpp
+if [ -f ./temp_99_problems__clang ];
 then
-    ./temp_FunctionalPlus_tests__clang
-    rm ./temp_FunctionalPlus_tests__clang
+    ./temp_99_problems__clang
+    rm ./temp_99_problems__clang
+fi
+
+
+g++ -std=c++14 -O3 -Wall -Wextra -pedantic -Wshadow -Werror -Weffc++ -Wconversion -Wsign-conversion -Wctor-dtor-privacy -Wreorder -Wold-style-cast -Wparentheses -pthread -o ./temp_readme_examples__gcc -I./../include readme_examples.cpp
+if [ -f ./temp_readme_examples__gcc ];
+then
+    ./temp_readme_examples__gcc
+    rm ./temp_readme_examples__gcc
+fi
+
+clang++ -std=c++14 -O3 -Wall -Wextra -pedantic -Wshadow -Werror -Weffc++ -Wconversion -Wsign-conversion -Wctor-dtor-privacy -Wreorder -Wold-style-cast -Wparentheses -pthread -o ./temp_readme_examples__clang -I./../include readme_examples.cpp
+if [ -f ./temp_readme_examples__clang ];
+then
+    ./temp_readme_examples__clang
+    rm ./temp_readme_examples__clang
 fi
