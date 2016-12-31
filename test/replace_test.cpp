@@ -18,6 +18,13 @@ TEST_CASE("replace_test, replace_if")
     REQUIRE_EQ(result, std::vector<int>({1, 3, 0, 0, 7}));
 }
 
+TEST_CASE("replace_test, replace_elem")
+{
+    std::vector<int> v = { 1, 3, 4, 4, 7 };
+    auto result = fplus::replace_elem(2, 0, v);
+    REQUIRE_EQ(result, std::vector<int>({1, 3, 0, 4, 7}));
+}
+
 TEST_CASE("replace_test, replace_elems")
 {
     std::vector<int> v = { 1, 3, 4, 4, 7 };
