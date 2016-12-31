@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "fplus/maybe.hpp"
-#include "fplus/result.hpp"
-#include "fplus/container_common.hpp"
+#include <fplus/maybe.hpp>
+#include <fplus/result.hpp>
+#include <fplus/container_common.hpp>
 
 #include <algorithm>
 

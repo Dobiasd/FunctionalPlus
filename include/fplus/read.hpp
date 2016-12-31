@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "fplus/maybe.hpp"
-#include "fplus/result.hpp"
+#include <fplus/maybe.hpp>
+#include <fplus/result.hpp>
 
 #include <string>
 #include <type_traits>

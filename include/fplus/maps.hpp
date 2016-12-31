@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "fplus/composition.hpp"
-#include "fplus/container_common.hpp"
-#include "fplus/pairs.hpp"
+#include <fplus/composition.hpp>
+#include <fplus/container_common.hpp>
+#include <fplus/pairs.hpp>
 
 #include <map>
 #include <unordered_map>

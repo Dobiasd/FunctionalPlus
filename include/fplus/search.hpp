@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include "fplus/container_common.hpp"
-#include "fplus/composition.hpp"
-#include "fplus/generate.hpp"
-#include "fplus/maybe.hpp"
+#include <fplus/container_common.hpp>
+#include <fplus/composition.hpp>
+#include <fplus/generate.hpp>
+#include <fplus/maybe.hpp>
 
 #include <algorithm>
 

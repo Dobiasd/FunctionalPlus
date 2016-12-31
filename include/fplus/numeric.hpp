@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "fplus/function_traits.hpp"
-#include "fplus/container_common.hpp"
-#include "fplus/pairs.hpp"
+#include <fplus/function_traits.hpp>
+#include <fplus/container_common.hpp>
+#include <fplus/pairs.hpp>
 
 #include <algorithm>
 #include <cmath>

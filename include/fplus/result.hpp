@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "fplus/function_traits.hpp"
-#include "fplus/maybe.hpp"
+#include <fplus/function_traits.hpp>
+#include <fplus/maybe.hpp>
 
 #include <cassert>
 #include <functional>

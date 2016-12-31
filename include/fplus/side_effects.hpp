@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include "fplus/container_common.hpp"
-#include "fplus/function_traits.hpp"
-#include "fplus/generate.hpp"
-#include "fplus/string_tools.hpp"
+#include <fplus/container_common.hpp>
+#include <fplus/function_traits.hpp>
+#include <fplus/generate.hpp>
+#include <fplus/string_tools.hpp>
 
 #include <chrono>
 #include <fstream>

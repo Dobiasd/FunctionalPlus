@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include "fplus/container_common.hpp"
-#include "fplus/container_properties.hpp"
-#include "fplus/generate.hpp"
-#include "fplus/pairs.hpp"
-#include "fplus/numeric.hpp"
-#include "fplus/search.hpp"
+#include <fplus/container_common.hpp>
+#include <fplus/container_properties.hpp>
+#include <fplus/generate.hpp>
+#include <fplus/pairs.hpp>
+#include <fplus/numeric.hpp>
+#include <fplus/search.hpp>
 
 namespace fplus
 {

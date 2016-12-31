@@ -6,15 +6,15 @@
 
 #pragma once
 
-#include "fplus/container_common.hpp"
-#include "fplus/filter.hpp"
-#include "fplus/generate.hpp"
-#include "fplus/maybe.hpp"
-#include "fplus/maps.hpp"
-#include "fplus/result.hpp"
-#include "fplus/split.hpp"
-#include "fplus/composition.hpp"
-#include "fplus/function_traits.hpp"
+#include <fplus/container_common.hpp>
+#include <fplus/filter.hpp>
+#include <fplus/generate.hpp>
+#include <fplus/maybe.hpp>
+#include <fplus/maps.hpp>
+#include <fplus/result.hpp>
+#include <fplus/split.hpp>
+#include <fplus/composition.hpp>
+#include <fplus/function_traits.hpp>
 
 #include <algorithm>
 #include <future>
