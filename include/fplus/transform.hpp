@@ -88,6 +88,16 @@ ContainerOut transform_and_concat(F f, const ContainerIn& xs)
     return concat(transform(f, xs));
 }
 
+// API search type: replicate_elems : (Int, [a]) -> [a]
+// fwd bind count: 1
+// replicate_elems(3, [1,2]) == [1, 1, 1, 2, 2, 2]
+template <typename Container>
+Container replicate_elems(std::size_t n, const Container& xs)
+{
+    typedef typename Container::value_type T;
+    return transform_and_concat(bind_1st_of_2(replicate<T, Container>, n), xs);
+}
+
 // API search type: interleave : [[a]] -> [a]
 // fwd bind count: 0
 // interleave([[1,2,3],[4,5],[6,7,8]]) == [1,4,6,2,5,7,3,8]

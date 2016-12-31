@@ -242,6 +242,12 @@ TEST_CASE("container_common_test, replicate")
     REQUIRE_EQ(replicate(2, xs), IntVectors({xs, xs}));
 }
 
+TEST_CASE("container_common_test, replicate_elems")
+{
+    using namespace fplus;
+    REQUIRE_EQ(replicate_elems(2, xs), IntVector({1,1,2,2,2,2,3,3,2,2}));
+}
+
 TEST_CASE("container_common_test, infixes")
 {
     using namespace fplus;
