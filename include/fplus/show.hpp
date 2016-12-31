@@ -45,6 +45,12 @@ std::string show(const std::string& str)
     return str;
 }
 
+template <typename T, typename A>
+std::string show(const std::vector<T, A>& xs);
+
+template <typename T, typename A>
+std::string show(const std::list<T, A>& xs);
+
 // {1, "one"} -> "(1, one)"
 template <typename X, typename Y>
 std::string show(const std::pair<X, Y>& p)
