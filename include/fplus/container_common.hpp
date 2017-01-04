@@ -804,17 +804,29 @@ Container sort_by(Compare comp, const Container& xs)
 
 namespace internal
 {
-    // workaround for clang bug 24115 (std::sort with std::function as comp)
+    // workarounds for clang bug 24115
+    // (std::sort and std::unique with std::function as comp)
     // https://llvm.org/bugs/show_bug.cgi?id=24115
     template <typename F,
-        typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-        typename FOut = typename std::result_of<F(FIn)>::type>
+        typename FIn = typename utils::function_traits<F>::template arg<0>::type>
     struct is_less_by_struct
     {
         is_less_by_struct(F f) : f_(f) {};
         bool operator()(const FIn& x, const FIn& y)
         {
             return f_(x) < f_(y);
+        }
+    private:
+        F f_;
+    };
+    template <typename F,
+        typename FIn = typename utils::function_traits<F>::template arg<0>::type>
+    struct is_equal_by_struct
+    {
+        is_equal_by_struct(F f) : f_(f) {};
+        bool operator()(const FIn& x, const FIn& y)
+        {
+            return f_(x) == f_(y);
         }
     private:
         F f_;
@@ -938,7 +950,7 @@ Container unique_by(BinaryPredicate p, const Container& xs)
 template <typename Container, typename F>
 Container unique_on(F f, const Container& xs)
 {
-    return unique_by(is_equal_by(f), xs);
+    return unique_by(internal::is_equal_by_struct<F>(f), xs);
 }
 
 // API search type: unique : [a] -> [a]
