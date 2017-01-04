@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-rm -r build
+rm -r -f build
 
-mkdir build
-mkdir build/js
+mkdir -p build
+mkdir -p build/js
 
 elm-make src/Main.elm --output build/js/fplus_api_search.js
 
