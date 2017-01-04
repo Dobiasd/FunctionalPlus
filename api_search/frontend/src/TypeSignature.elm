@@ -3,12 +3,12 @@ module TypeSignature exposing (Signature, parseSignature, showSignature, normali
 {-| This module provides the possibility to parse Haskell and Elm type signatures.
 -}
 
-import Combine as C
+import Combine as C exposing ((<$))
 import Combine.Char as CC
-import Combine.Infix exposing (..)
 import Combine.Num as CN
 import Char
 import Dict
+import Tuple exposing (first)
 import List exposing ((::))
 import List.Extra exposing (permutations, subsequences)
 import Maybe
@@ -24,10 +24,6 @@ type Signature
     | TypeConstructor String
     | TypeApplication Signature Signature
     | VariableType String
-
-
-type alias ParseResult =
-    ( Result (List String) Signature, C.Context )
 
 
 showSignature : Bool -> Signature -> String
@@ -75,10 +71,10 @@ mapS f s =
     let
         go sig ( sigs, s ) =
             let
-                ( sig', s' ) =
+                ( sig_, s_ ) =
                     mapLRS f s sig
             in
-                ( sig' :: sigs, s' )
+                ( sig_ :: sigs, s_ )
     in
         List.foldl go ( [], s ) >> \( xs, s ) -> ( List.reverse xs, s )
 
@@ -92,54 +88,54 @@ mapLRS f s sig =
     case sig of
         Arrow a b ->
             let
-                ( a', s' ) =
+                ( a_, s_ ) =
                     mapLRS f s a
 
-                ( b', s'' ) =
-                    mapLRS f s' b
+                ( b_, s__ ) =
+                    mapLRS f s_ b
             in
-                ( Arrow a' b', s'' )
+                ( Arrow a_ b_, s__ )
 
         TypeConstructor x ->
             ( TypeConstructor x, s )
 
         VariableType x ->
             let
-                ( s', x' ) =
+                ( s_, x_ ) =
                     f s x
             in
-                ( VariableType x', s' )
+                ( VariableType x_, s_ )
 
         TypeApplication a b ->
             let
-                ( a', s' ) =
+                ( a_, s_ ) =
                     mapLRS f s a
 
-                ( b', s'' ) =
-                    mapLRS f s' b
+                ( b_, s__ ) =
+                    mapLRS f s_ b
             in
-                ( TypeApplication a' b', s'' )
+                ( TypeApplication a_ b_, s__ )
 
         ListType x ->
             let
-                ( x', s' ) =
+                ( x_, s_ ) =
                     mapLRS f s x
             in
-                ( ListType x', s' )
+                ( ListType x_, s_ )
 
         Tuple xs ->
             let
-                ( xs', s' ) =
+                ( xs_, s_ ) =
                     mapS f s xs
             in
-                ( Tuple xs', s' )
+                ( Tuple xs_, s_ )
 
 
 nthVarName : Int -> String
 nthVarName i =
     let
         charPart =
-            97 + (i `rem` 26) |> Char.fromCode |> String.fromChar
+            97 + (rem i 26) |> Char.fromCode |> String.fromChar
 
         addNumber =
             i // 26
@@ -171,19 +167,19 @@ normalizeSignatureGo dict str =
         nextFree =
             nextFreeVarName (Dict.keys dict)
 
-        str' =
+        str_ =
             Dict.get str dict |> Maybe.withDefault nextFree
     in
-        ( Dict.insert str str' dict, str' )
+        ( Dict.insert str str_ dict, str_ )
 
 
 normalizeSignature : Signature -> Signature
 normalizeSignature =
-    mapLRS normalizeSignatureGo Dict.empty >> fst
+    mapLRS normalizeSignatureGo Dict.empty >> first
 
 
 
---mapLRS (\s -> ( s + 1, s |> Char.fromCode |> String.fromChar )) 97 >> fst
+--mapLRS (\s -> ( s + 1, s |> Char.fromCode |> String.fromChar )) 97 >> first
 
 
 addParenthesis : String -> String
@@ -240,13 +236,13 @@ showSignatureHelper charListAsString arrowsInParens typeAppInParens sig =
                     |> addParenthesis
 
 
-listParser : C.Parser Signature
+listParser : C.Parser s Signature
 listParser =
-    C.brackets (C.rec <| \() -> signatureParser)
+    C.brackets (C.lazy <| \() -> signatureParser)
         |> C.map ListType
 
 
-trimSpaces : C.Parser a -> C.Parser a
+trimSpaces : C.Parser s a -> C.Parser s a
 trimSpaces =
     let
         skipSpaces =
@@ -255,12 +251,12 @@ trimSpaces =
         C.between skipSpaces skipSpaces
 
 
-tupleParser : C.Parser Signature
+tupleParser : C.Parser s Signature
 tupleParser =
     let
         innerParser =
             C.sepBy (trimSpaces <| CC.char ',')
-                (C.rec <| \() -> signatureParser)
+                (C.lazy <| \() -> signatureParser)
                 |> C.map simplify
 
         simplify xs =
@@ -275,13 +271,13 @@ tupleParser =
             |> C.parens
 
 
-arrowParser : C.Parser Signature
+arrowParser : C.Parser s Signature
 arrowParser =
     let
         arrowOp =
             Arrow <$ trimSpaces (C.string "->")
     in
-        C.chainr (C.rec <| \() -> nonAppSignatureParser) arrowOp
+        C.chainr arrowOp (C.lazy <| \() -> nonAppSignatureParser)
 
 
 isValidTypeApplication : Signature -> Bool
@@ -297,7 +293,7 @@ isValidTypeApplication sig =
             False
 
 
-typeApplicationParser : C.Parser Signature
+typeApplicationParser : C.Parser s Signature
 typeApplicationParser =
     let
         typeApplyOp =
@@ -307,13 +303,14 @@ typeApplicationParser =
             if isValidTypeApplication ta then
                 C.succeed ta
             else
-                C.fail [ "invalid type application" ]
+                C.fail "invalid type application"
     in
-        C.andThen (C.chainl (C.rec <| \() -> nonOpSignatureParser) typeApplyOp)
-            validate
+        C.andThen validate
+            (C.chainl typeApplyOp (C.lazy <| \() -> nonOpSignatureParser))
 
 
-typeStartsWithParser : C.Parser Char -> (String -> Signature) -> C.Parser Signature
+
+typeStartsWithParser : C.Parser s Char -> (String -> Signature) -> C.Parser s Signature
 typeStartsWithParser p tagger =
     [ p |> C.map (\x -> [ x ])
     , C.many <| C.choice [ CC.lower, CC.upper, CC.char '.', CC.char '_', CC.digit ]
@@ -323,7 +320,7 @@ typeStartsWithParser p tagger =
         |> C.map (String.fromList >> tagger)
 
 
-variableTypeParser : C.Parser Signature
+variableTypeParser : C.Parser s Signature
 variableTypeParser =
     typeStartsWithParser CC.lower VariableType
 
@@ -338,54 +335,51 @@ stringToListChar sig =
             sig
 
 
-fixedTypeParser : C.Parser Signature
+fixedTypeParser : C.Parser s Signature
 fixedTypeParser =
     typeStartsWithParser CC.upper TypeConstructor |> C.map stringToListChar
 
 
-nonOpSignatureParser : C.Parser Signature
+nonOpSignatureParser : C.Parser s Signature
 nonOpSignatureParser =
     C.choice
-        [ C.rec <| \() -> listParser
-        , C.rec <| \() -> tupleParser
+        [ C.lazy <| \() -> listParser
+        , C.lazy <| \() -> tupleParser
         , variableTypeParser
         , fixedTypeParser
         ]
 
 
-nonAppSignatureParser : C.Parser Signature
+nonAppSignatureParser : C.Parser s Signature
 nonAppSignatureParser =
     C.choice
-        [ C.rec <| \() -> typeApplicationParser
-        , C.rec <| \() -> nonOpSignatureParser
+        [ C.lazy <| \() -> typeApplicationParser
+        , C.lazy <| \() -> nonOpSignatureParser
         ]
 
 
-signatureParser : C.Parser Signature
+signatureParser : C.Parser s Signature
 signatureParser =
     C.choice
-        [ C.rec <| \() -> arrowParser
+        [ C.lazy <| \() -> arrowParser
         , nonAppSignatureParser
         ]
         |> trimSpaces
 
 
-parseResultToMaybeSig : ParseResult -> Maybe Signature
-parseResultToMaybeSig parseResult =
-    case parseResult of
-        ( Ok s, { input } ) ->
-            if String.isEmpty input then
-                Maybe.Just s
-            else
-                Maybe.Nothing
-
-        _ ->
-            Maybe.Nothing
 
 
 parseSignature : String -> Maybe Signature
-parseSignature =
-    C.parse signatureParser >> parseResultToMaybeSig
+parseSignature inputData =
+    case C.parse signatureParser inputData of
+        Ok (state, { input }, result) ->
+            if String.isEmpty input then
+                Maybe.Just result
+            else
+                Maybe.Nothing
+
+        Err (state, stream, errors) ->
+            Maybe.Nothing
 
 
 equalityToFloat : a -> a -> Float
@@ -439,8 +433,8 @@ functionCompatibility db query =
         ( Tuple xs, Tuple ys ) ->
             if List.length xs > List.length ys then
                 List.map
-                    (\xs' ->
-                        List.map2 functionCompatibility xs' ys
+                    (\xs_ ->
+                        List.map2 functionCompatibility xs_ ys
                             |> List.product
                             |> (\x ->
                                     x
@@ -453,8 +447,8 @@ functionCompatibility db query =
                     |> Maybe.withDefault 0
             else if List.length xs == List.length ys then
                 List.map
-                    (\ys' ->
-                        List.map2 functionCompatibility xs ys'
+                    (\ys_ ->
+                        List.map2 functionCompatibility xs ys_
                             |> List.product
                     )
                     (permutations ys)

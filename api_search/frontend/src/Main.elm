@@ -3,7 +3,6 @@ module FPlusApiSearch exposing (..)
 import Database
 import TypeSignature
 import Html exposing (..)
-import Html.App exposing (program)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Markdown
@@ -170,7 +169,7 @@ update action model =
                             |> cleanFunctionSignature
                             |> TypeSignature.parseSignature
                             |> Maybe.map TypeSignature.normalizeSignature
-                            |> \x -> Maybe.andThen x singletonSignatureToNothing
+                            |> \x -> Maybe.andThen singletonSignatureToNothing x
 
                     newQuerySigLower =
                         newQuerySig
@@ -179,10 +178,11 @@ update action model =
                                     >> String.toLower
                                 )
                             |> (\x ->
-                                    Maybe.andThen x
+                                    Maybe.andThen
                                         (TypeSignature.parseSignature
                                             >> Maybe.map TypeSignature.normalizeSignature
                                         )
+                                        x
                                )
 
                     newQuerySigStr =

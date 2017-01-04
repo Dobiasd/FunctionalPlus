@@ -2,7 +2,6 @@ module TypeSignatureTestMain exposing (..)
 
 import TypeSignature
 import Html exposing (..)
-import Html.App exposing (beginnerProgram)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Maybe
