@@ -79,7 +79,7 @@ function_help lines_to_function_help(const std::vector<std::string>& lines)
 bool begins_with_curly_open(const std::string& line)
 {
     return (!line.empty() && line.front() == '{');
-};
+}
 const auto no_curly_open = fplus::logical_not(begins_with_curly_open);
 
 std::vector<function_help> parse_code_file(const std::string& code_file)
