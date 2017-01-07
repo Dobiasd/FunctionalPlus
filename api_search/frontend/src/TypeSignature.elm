@@ -55,7 +55,9 @@ curry1 sig =
                 ( ps, x ) =
                     splitLast params
             in
-                Arrow (Tuple ps) (Arrow x ret)
+                case ps of
+                    [p] -> Arrow p (Arrow x ret)
+                    _ -> Arrow (Tuple ps) (Arrow x ret)
 
         Arrow sig ret ->
             Arrow (Tuple []) (Arrow sig ret)
