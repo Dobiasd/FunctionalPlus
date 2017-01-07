@@ -322,7 +322,7 @@ ContainerOut split_by_keep_separators
     return result;
 }
 
-// API search type: split : (a, [a]) -> [[a]]
+// API search type: split : (a, Bool, [a]) -> [[a]]
 // fwd bind count: 2
 // split(0, true, [1,3,2,0,0,6,0,7,5]) == [[1,3,2],[],[6],[7,5]]
 // O(n)
