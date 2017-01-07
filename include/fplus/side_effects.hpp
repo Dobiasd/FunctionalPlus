@@ -331,6 +331,17 @@ std::function<bool()> write_text_file_lines(const std::string& filename,
     return write_text_file(filename, content);
 }
 
+// API search type: execute_effect : Io a -> a
+// Simply run a side effect (call a function without parameters)
+// and returns the result.
+// Can be useful for chaining.
+template <typename F,
+    typename FOut = typename std::result_of<F()>::type>
+FOut execute_effect(const F f)
+{
+    return f();
+}
+
 // API search type: interact : (String -> String) -> Io ()
 // Takes a function F of type (String -> String)
 // and returns a function that
