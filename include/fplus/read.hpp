@@ -136,7 +136,7 @@ result<T, std::string> read_value_result(const std::string& str)
 }
 
 // API search type: read_value : String -> Maybe a
-// Try to deserialize a value, e.g.:
+// Try to deserialize/parse a value, e.g.:
 // String to Int
 // String to Float
 // String to Double

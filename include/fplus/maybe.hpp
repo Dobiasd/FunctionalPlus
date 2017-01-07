@@ -170,8 +170,30 @@ std::function<B(const maybe<A>&)> lift_maybe_def(const B& def, F f)
     };
 }
 
-// API search type: and_then_maybe : ((a -> Maybe b), (b -> Maybe c)) -> (a -> Maybe c)
+// API search type: and_then_maybe : ((a -> Maybe b), (Maybe a)) -> Maybe b
+// fwd bind count: 1
 // Monadic bind.
+// Returns nothing if the maybe already is nothing.
+// Otherwise return the result of applying
+// the function to the just value of the maybe.
+template <typename T, typename F,
+    typename FIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename FOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<F(FIn)>::type>::type>::type,
+    typename FOutJustT = typename FOut::type>
+maybe<FOutJustT> and_then_maybe(F f, const maybe<T>& m)
+{
+    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    static_assert(std::is_convertible<T, FIn>::value,
+        "Function parameter types do not match.");
+    if (is_just(m))
+        return f(unsafe_get_just(m));
+    return m;
+}
+
+// API search type: compose_maybe : ((a -> Maybe b), (b -> Maybe c)) -> (a -> Maybe c)
+// Left-to-right Kleisli composition of monads (2 functions).
 // Composes two functions taking a value and returning Maybe.
 // If the first function returns a just, the value from the just
 // is extracted and shoved into the second function.
@@ -187,7 +209,7 @@ template <typename F, typename G,
     typename GOut = typename std::remove_const<typename std::remove_reference<
         typename std::result_of<G(GIn)>::type>::type>::type,
     typename T = typename GOut::type>
-std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g)
+std::function<maybe<T>(const FIn&)> compose_maybe(F f, G g)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
@@ -202,8 +224,8 @@ std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g)
     };
 }
 
-// API search type: and_then_maybe : ((a -> Maybe b), (b -> Maybe c), (c -> Maybe d)) -> (Maybe a -> Maybe d)
-// Monadic bind three functions.
+// API search type: compose_maybe : ((a -> Maybe b), (b -> Maybe c), (c -> Maybe d)) -> (Maybe a -> Maybe d)
+// Left-to-right Kleisli composition of monads (3 functions).
 template <typename F, typename G, typename H,
     typename FIn = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<F>::template arg<0>::type>::type>::type,
@@ -218,13 +240,13 @@ template <typename F, typename G, typename H,
     typename HOut = typename std::remove_const<typename std::remove_reference<
         typename std::result_of<H(HIn)>::type>::type>::type,
     typename T = typename HOut::type>
-std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g, H h)
+std::function<maybe<T>(const FIn&)> compose_maybe(F f, G g, H h)
 {
-    return and_then_maybe(and_then_maybe(f, g), h);
+    return compose_maybe(compose_maybe(f, g), h);
 }
 
-// API search type: and_then_maybe : ((a -> Maybe b), (b -> Maybe c), (c -> Maybe d), (d -> Maybe e)) -> (Maybe a -> Maybe e)
-// Monadic bind four functions.
+// API search type: compose_maybe : ((a -> Maybe b), (b -> Maybe c), (c -> Maybe d), (d -> Maybe e)) -> (Maybe a -> Maybe e)
+// Left-to-right Kleisli composition of monads (4 functions).
 template <typename F, typename G, typename H, typename I,
     typename FIn = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<F>::template arg<0>::type>::type>::type,
@@ -243,9 +265,9 @@ template <typename F, typename G, typename H, typename I,
     typename IOut = typename std::remove_const<typename std::remove_reference<
         typename std::result_of<I(IIn)>::type>::type>::type,
     typename T = typename IOut::type>
-std::function<maybe<T>(const FIn&)> and_then_maybe(F f, G g, H h, I i)
+std::function<maybe<T>(const FIn&)> compose_maybe(F f, G g, H h, I i)
 {
-    return and_then_maybe(and_then_maybe(and_then_maybe(f, g), h), i);
+    return compose_maybe(compose_maybe(compose_maybe(f, g), h), i);
 }
 
 // API search type: flatten_maybe : (Maybe (Maybe a)) -> Maybe a

@@ -83,6 +83,20 @@ TEST_CASE("fwd_test, compose")
     REQUIRE_EQ(function_chain_old_style(xs), function_chain_new_style(xs));
 }
 
+TEST_CASE("fwd_test, and_then_maybe")
+{
+    using namespace fplus;
+    const auto sqrtToMaybeInt = [](int x) -> fplus::maybe<int>
+    {
+        return x < 0 ? fplus::nothing<int>() :
+                fplus::just(fplus::round(sqrt(static_cast<float>(x))));
+    };
+    REQUIRE_EQ(
+        fwd::apply(just(4)
+            , fwd::and_then_maybe(sqrtToMaybeInt))
+        , just(2));
+}
+
 TEST_CASE("fwd_test, fold_left")
 {
     using namespace fplus;

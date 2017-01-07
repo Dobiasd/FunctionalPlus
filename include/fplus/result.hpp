@@ -148,7 +148,7 @@ maybe<Ok> to_maybe(const result<Ok, Error>& result)
         return nothing<Ok>();
 }
 
-// API search type: from_maybe : (Maybe a, b) -> Result a b
+// API search type: from_maybe : (b, Maybe a) -> Result a b
 // fwd bind count: 1
 // Convert just to ok, nothing to error.
 template <typename Error, typename Ok>
@@ -265,14 +265,40 @@ template <
 C unify_result(F f, G g, const result<A, B>& r)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
     static_assert(std::is_same<C, D>::value, "Both functions must return the same type.");
     if (is_ok(r))
         return f(unsafe_get_ok(r));
     return g(unsafe_get_error(r));
 }
 
-// API search type: and_then_result : ((a -> Result b c), (b -> Result d c)) -> (a -> Result d c)
+// API search type: and_then_result : ((a -> Result c b), (Result a b)) -> Result c b
+// fwd bind count: 1
 // Monadic bind.
+// Returns the error if the result is an error.
+// Otherwise return the result of applying
+// the function to the ok value of the result.
+template <typename Ok, typename Error, typename F,
+    typename FIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename FOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<F(FIn)>::type>::type>::type,
+    typename FOutOk = typename FOut::ok_t,
+    typename FOutError = typename FOut::error_t>
+result<FOutOk, FOutError> and_then_result(F f, const result<Ok, Error>& r)
+{
+    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    static_assert(std::is_same<Error, FOutError>::value,
+        "Error type must stay the same.");
+    static_assert(std::is_convertible<Ok, FIn>::value,
+        "Function parameter types do not match.");
+    if (is_ok(r))
+        return f(unsafe_get_ok(r));
+    return r;
+}
+
+// API search type: compose_result : ((a -> Result b c), (b -> Result d c)) -> (a -> Result d c)
+// Left-to-right Kleisli composition of monads (2 functions).
 // Composes two functions taking a value and returning result.
 // If the first function returns a ok, the value from the ok
 // is extracted and shoved into the second function.
@@ -288,12 +314,14 @@ template <typename F, typename G,
         typename std::result_of<G(GIn)>::type>::type>::type,
     typename Ok = typename GOut::ok_t,
     typename Error = typename GOut::error_t>
-std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g)
+std::function<result<Ok, Error>(const FIn&)> compose_result(F f, G g)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
     static_assert(std::is_convertible<typename FOut::ok_t,GIn>::value,
         "Function parameter types do not match");
+    static_assert(std::is_same<typename FOut::error_t, typename GOut::error_t>::value,
+        "Error type must stay the same.");
     return [f, g](const FIn& x) -> result<Ok, Error>
     {
         auto resultB = f(x);
@@ -303,8 +331,8 @@ std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g)
     };
 }
 
-// API search type: and_then_result : ((a -> Result b c), (b -> Result d c), (d -> Result e c)) -> (a -> Result e c)
-// Monadic bind three functions.
+// API search type: compose_result : ((a -> Result b c), (b -> Result d c), (d -> Result e c)) -> (a -> Result e c)
+// Left-to-right Kleisli composition of monads (3 functions).
 template <typename F, typename G, typename H,
     typename FIn = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<F>::template arg<0>::type>::type>::type,
@@ -320,13 +348,13 @@ template <typename F, typename G, typename H,
         typename std::result_of<H(HIn)>::type>::type>::type,
     typename Ok = typename HOut::ok_t,
     typename Error = typename HOut::error_t>
-std::function<result<Ok, Error>(const FIn&)> and_then_result(F f, G g, H h)
+std::function<result<Ok, Error>(const FIn&)> compose_result(F f, G g, H h)
 {
-    return and_then_result(and_then_result(f, g), h);
+    return compose_result(compose_result(f, g), h);
 }
 
-// API search type: and_then_result : ((a -> Result b c), (b -> Result d c), (d -> Result e c), (e -> Result f c)) -> (a -> Result f c)
-// Monadic bind four functions.
+// API search type: compose_result : ((a -> Result b c), (b -> Result d c), (d -> Result e c), (e -> Result f c)) -> (a -> Result f c)
+// Left-to-right Kleisli composition of monads (4 functions).
 template <typename F, typename G, typename H, typename I,
     typename FIn = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<F>::template arg<0>::type>::type>::type,
@@ -347,9 +375,9 @@ template <typename F, typename G, typename H, typename I,
     typename Ok = typename IOut::ok_t,
     typename Error = typename IOut::error_t>
 std::function<result<Ok, Error>(const FIn&)>
-and_then_result(F f, G g, H h, I i)
+compose_result(F f, G g, H h, I i)
 {
-    return and_then_result(and_then_result(and_then_result(f, g), h), i);
+    return compose_result(compose_result(compose_result(f, g), h), i);
 }
 
 } // namespace fplus

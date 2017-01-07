@@ -75,16 +75,23 @@ TEST_CASE("maybe_test, lift")
 TEST_CASE("maybe_test, and_then")
 {
     using namespace fplus;
-    auto sqrtAndSqrt = and_then_maybe(sqrtToMaybe, sqrtToMaybe);
-    auto sqrtIntAndSqrtIntAndSqrtInt = and_then_maybe(sqrtToMaybeInt, sqrtToMaybeInt, sqrtToMaybeInt);
+    REQUIRE_EQ(and_then_maybe(sqrtToMaybeInt, just(4)), just(2));
+    REQUIRE_EQ(and_then_maybe(sqrtToMaybeInt, nothing<int>()), nothing<int>());
+}
+
+TEST_CASE("maybe_test, compose")
+{
+    using namespace fplus;
+    auto sqrtAndSqrt = compose_maybe(sqrtToMaybe, sqrtToMaybe);
+    auto sqrtIntAndSqrtIntAndSqrtInt = compose_maybe(sqrtToMaybeInt, sqrtToMaybeInt, sqrtToMaybeInt);
     REQUIRE_EQ(sqrtIntAndSqrtIntAndSqrtInt(256), just(2));
-    auto sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt = and_then_maybe(sqrtToMaybeInt, sqrtToMaybeInt, sqrtToMaybeInt, sqrtToMaybeInt);
+    auto sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt = compose_maybe(sqrtToMaybeInt, sqrtToMaybeInt, sqrtToMaybeInt, sqrtToMaybeInt);
     REQUIRE_EQ(sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt(65536), just(2));
 
     auto LiftedIntToFloat = lift_maybe(IntToFloat);
     auto JustInt = just<int>;
     auto IntToMaybeFloat = compose(JustInt, LiftedIntToFloat);
-    auto IntToFloatAndSqrtAndSqrt = and_then_maybe(IntToMaybeFloat, sqrtAndSqrt);
+    auto IntToFloatAndSqrtAndSqrt = compose_maybe(IntToMaybeFloat, sqrtAndSqrt);
     REQUIRE(is_in_interval(1.41f, 1.42f, unsafe_get_just<float>
             (IntToFloatAndSqrtAndSqrt(4))));
 }

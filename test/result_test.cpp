@@ -53,25 +53,35 @@ TEST_CASE("result_test, ok_with_default")
     REQUIRE_EQ(Or42(y), 42);
 }
 
-TEST_CASE("result_test, and_then_result")
+TEST_CASE("result_test, and_theand_then_resultn")
+{
+    using namespace fplus;
+    auto ok_4 = ok<int, std::string>(4);
+    auto ok_2 = ok<int, std::string>(2);
+    auto an_error = error<int, std::string>("an error");
+    REQUIRE_EQ(and_then_result(sqrtToResultInt, ok_4), ok_2);
+    REQUIRE_EQ(and_then_result(sqrtToResultInt, an_error), an_error);
+}
+
+TEST_CASE("result_test, compose_result")
 {
     using namespace fplus;
     auto x = ok<int, std::string>(2);
     auto y = error<int, std::string>("an error");
     auto squareResult = lift_result<std::string>(square<int>);
-    auto sqrtAndSqrt = and_then_result(sqrtToResult, sqrtToResult);
+    auto sqrtAndSqrt = compose_result(sqrtToResult, sqrtToResult);
     REQUIRE_EQ(squareResult(x), (ok<int, std::string>(4)));
     REQUIRE_EQ(squareResult(y), (error<int>(std::string("an error"))));
 
-    auto sqrtIntAndSqrtIntAndSqrtInt = and_then_result(sqrtToResultInt, sqrtToResultInt, sqrtToResultInt);
+    auto sqrtIntAndSqrtIntAndSqrtInt = compose_result(sqrtToResultInt, sqrtToResultInt, sqrtToResultInt);
     REQUIRE_EQ(sqrtIntAndSqrtIntAndSqrtInt(256), (ok<int, std::string>(2)));
-    auto sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt = and_then_result(sqrtToResultInt, sqrtToResultInt, sqrtToResultInt, sqrtToResultInt);
+    auto sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt = compose_result(sqrtToResultInt, sqrtToResultInt, sqrtToResultInt, sqrtToResultInt);
     REQUIRE_EQ(sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt(65536), (ok<int, std::string>(2)));
 
     auto LiftedIntToFloat = lift_result<std::string>(IntToFloat);
     auto OkInt = ok<int, std::string>;
     auto IntToResultFloat = compose(OkInt, LiftedIntToFloat);
-    auto IntToFloatAndSqrtAndSqrt = and_then_result(IntToResultFloat, sqrtAndSqrt);
+    auto IntToFloatAndSqrtAndSqrt = compose_result(IntToResultFloat, sqrtAndSqrt);
     REQUIRE(is_in_interval(1.41f, 1.42f, unsafe_get_ok<float>
             (IntToFloatAndSqrtAndSqrt(4))));
 }
