@@ -226,7 +226,7 @@ std::function<std::string()> read_text_file(const std::string& filename)
     };
 }
 
-// API search type: read_text_file : String -> Io (Maybe String)
+// API search type: read_text_file_maybe : String -> Io (Maybe String)
 // Returns a function that reads the content of a text file.
 inline
 std::function<maybe<std::string>()> read_text_file_maybe(
