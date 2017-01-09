@@ -31,6 +31,6 @@
 #include <fplus/transform.hpp>
 #include <fplus/side_effects.hpp>
 
-#if __cplusplus >= 201402L
+#if __cplusplus >= 201402L || _MSC_VER >= 1900
     #include <fplus/fwd.hpp>
 #endif
