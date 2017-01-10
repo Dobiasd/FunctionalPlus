@@ -119,6 +119,10 @@ Finding the highest rated element in a container is very simple compared to [a h
 
 struct cat
 {
+    double cuteness() const
+    {
+        return softness_ * temperature_ * roundness_ * fur_amount_ - size_;
+    }
     std::string name_;
     double softness_;
     double temperature_;
@@ -127,20 +131,15 @@ struct cat
     double fur_amount_;
 };
 
-int main()
+void Test_example_TheCutestCat()
 {
-    auto cuteness = [](const cat& c) -> double
-    {
-        return c.softness_ * c.temperature_ * c.roundness_ *
-            c.fur_amount_ - c.size_;
-    };
     std::vector<cat> cats = {
         {"Tigger",   5, 5, 5, 5, 5},
         {"Simba",    2, 9, 9, 2, 7},
         {"Muffin",   9, 4, 2, 8, 6},
         {"Garfield", 6, 5, 7, 9, 5}};
 
-    auto cutest_cat = fplus::maximum_on(cuteness, cats);
+    auto cutest_cat = fplus::maximum_on(std::mem_fn(&cat::cuteness), cats);
 
     std::cout << cutest_cat.name_ <<
         " is happy and sleepy. *purr* *purr* *purr*" << std::endl;
