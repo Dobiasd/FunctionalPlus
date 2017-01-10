@@ -58,6 +58,26 @@ ContainerOut group_on(F f, const ContainerIn& xs)
     return group_by(is_equal_by(f), xs);
 }
 
+// API search type: group_on_labeled : ((a -> b), [a]) -> [(b, [a])]
+// fwd bind count: 1
+// group_on_labeled((mod 10), [12,22,34]) == [(2,[12,22]), (4,[34])]
+// O(n)
+template <typename F, typename ContainerIn,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+    typename FOut = typename std::result_of<F(FIn)>::type,
+    typename ContainerOutValue = std::pair<FOut,ContainerIn>,
+    typename ContainerOut = typename std::vector<ContainerOutValue>>
+ContainerOut group_on_labeled(F f, const ContainerIn& xs)
+{
+    const auto grouped = group_by(is_equal_by(f), xs);
+    typedef typename decltype(grouped)::value_type Group;
+    const auto attach_label = [f](const Group& g) -> ContainerOutValue
+    {
+        return std::make_pair(f(g.front()), g);
+    };
+    return transform(attach_label, grouped);
+}
+
 // API search type: group : [a] -> [[a]]
 // fwd bind count: 0
 // group([1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2],[3],[2,2],[4],[5,5]]
@@ -81,6 +101,7 @@ ContainerOut group(const ContainerIn& xs)
 // BinaryPredicate p is a
 // transitive (whenever p(x,y) and p(y,z), then also p(x,z)) equality check.
 // O(n^2)
+// If you need O(n*log(n)), sort and then use group_by
 template <typename BinaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group_globally_by(BinaryPredicate p, const ContainerIn& xs)
@@ -115,6 +136,7 @@ ContainerOut group_globally_by(BinaryPredicate p, const ContainerIn& xs)
 // fwd bind count: 1
 // group_globally_on((mod 10), [12,34,22]) == [[12,34],[22]]
 // O(n^2)
+// If you need O(n*log(n)), sort and then use group_on
 template <typename F, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group_globally_on(F f, const ContainerIn& xs)
@@ -122,10 +144,32 @@ ContainerOut group_globally_on(F f, const ContainerIn& xs)
     return group_globally_by(is_equal_by(f), xs);
 }
 
+// API search type: group_globally_on_labeled : ((a -> b), [a]) -> [(b, [a])]
+// fwd bind count: 1
+// group_globally_on_labeled((mod 10), [12,34,22]) == [(2,[12,22]),(4, [34])]
+// O(n^2)
+// If you need O(n*log(n)), sort and then use group_on
+template <typename F, typename ContainerIn,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+    typename FOut = typename std::result_of<F(FIn)>::type,
+    typename ContainerOutValue = std::pair<FOut,ContainerIn>,
+    typename ContainerOut = typename std::vector<ContainerOutValue>>
+ContainerOut group_globally_on_labeled(F f, const ContainerIn& xs)
+{
+    const auto grouped = group_globally_by(is_equal_by(f), xs);
+    typedef typename decltype(grouped)::value_type Group;
+    const auto attach_label = [f](const Group& g) -> ContainerOutValue
+    {
+        return std::make_pair(f(g.front()), g);
+    };
+    return transform(attach_label, grouped);
+}
+
 // API search type: group_globally : [a] -> [[a]]
 // fwd bind count: 0
 // group_globally([1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2,2,2],[3],[4],[5,5]]
 // O(n^2)
+// If you need O(n*log(n)), sort and then use group
 template <typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group_globally(const ContainerIn& xs)
