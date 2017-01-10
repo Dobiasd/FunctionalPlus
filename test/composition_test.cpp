@@ -129,4 +129,14 @@ TEST_CASE("composition_test, memoize")
     REQUIRE_EQ(f(2), 4);
     REQUIRE_EQ(f(3), 9);
     REQUIRE_EQ(f(3), 9);
+
+    const auto add = [](int x, int y) -> int
+    {
+        return x + y;
+    };
+    auto add_memo = memoize_binary(add);
+    REQUIRE_EQ(add_memo(2, 3), 5);
+    REQUIRE_EQ(add_memo(2, 3), 5);
+    REQUIRE_EQ(add_memo(1, 2), 3);
+    REQUIRE_EQ(add_memo(1, 2), 3);
 }

@@ -9,6 +9,7 @@
 #include <fplus/function_traits.hpp>
 
 #include <functional>
+#include <map>
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
@@ -279,18 +280,21 @@ std::function<bool(X)> logical_xor(UnaryPredicateF f, UnaryPredicateG g)
 }
 
 // API search type: memoize : (a -> b) -> (a -> b)
-// Provides Memoization for a given (referentially transparent) function.
+// Provides Memoization for a given (referentially transparent)
+// unary function.
 // Returns a closure mutating an internally held dictionary
 // mapping input values to output values.
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename FOut = typename std::result_of<F(FIn)>::type,
-    typename MemoMap = std::unordered_map<typename std::decay<FIn>::type, FOut>>
+    typename MemoMap = std::unordered_map<
+        typename std::remove_reference<typename std::remove_const<FIn>::type>::type,
+        FOut>>
 std::function<FOut(FIn)> memoize(F f)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     MemoMap storage;
-    return [=](const FIn& x) mutable -> FOut
+    return [=](FIn x) mutable -> FOut
     {
         const auto it = storage.find(x);
         if (it == storage.end())
@@ -301,6 +305,33 @@ std::function<FOut(FIn)> memoize(F f)
         {
             return it->second;
         }
+    };
+}
+
+// API search type: memoize : ((a, b) -> c) -> ((a, b) -> c)
+// Provides Memoization for a given (referentially transparent)
+// binary function.
+// Returns a closure mutating an internally held dictionary
+// mapping input values to output values.
+template <typename F,
+    typename FIn1 = typename utils::function_traits<F>::template arg<0>::type,
+    typename FIn2 = typename utils::function_traits<F>::template arg<1>::type,
+    typename FOut = typename std::result_of<F(FIn1, FIn2)>::type,
+    typename ParamPair = std::pair<
+        typename std::remove_reference<typename std::remove_const<FIn1>::type>::type,
+        typename std::remove_reference<typename std::remove_const<FIn2>::type>::type>,
+    typename MemoMap = std::unordered_map<ParamPair, FOut>>
+std::function<FOut(FIn1, FIn2)> memoize_binary(F f)
+{
+    const auto unary_f = [f](const ParamPair& params) -> FOut
+    {
+        return f(params.first, params.second);
+    };
+    auto unary_f_memoized = memoize<decltype(unary_f),
+        ParamPair, FOut, std::map<ParamPair, FOut>>(unary_f);
+    return [unary_f_memoized](FIn1 a, FIn2 b) mutable -> FOut
+    {
+        return unary_f_memoized(std::make_pair(a, b));
     };
 }
 
