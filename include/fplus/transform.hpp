@@ -152,14 +152,13 @@ Container transpose(const Container& rows)
 // API search type: shuffle : [a] -> [a]
 // fwd bind count: 0
 // Returns a randomly shuffled version of xs.
-// If you want a different seed, use something like
-// std::srand(std::time(nullptr));
-// beforehand.
 template <typename Container>
 Container shuffle(const Container& xs)
 {
+    std::random_device rd;
+    std::mt19937 g(rd());
     Container ys = xs;
-    std::random_shuffle(begin(ys), end(ys));
+    std::shuffle(std::begin(ys), std::end(ys), g);
     return ys;
 }
 
@@ -167,9 +166,6 @@ Container shuffle(const Container& xs)
 // fwd bind count: 1
 // Returns n random elements from xs.
 // n has to be smaller than or equal to the number of elements in xs.
-// If you want a different seed, use something like
-// std::srand(std::time(nullptr));
-// beforehand.
 // Also known as rnd_select.
 template <typename Container>
 Container sample(std::size_t n, const Container& xs)
@@ -178,17 +174,18 @@ Container sample(std::size_t n, const Container& xs)
     return get_segment(0, n, shuffle(xs));
 }
 
-// API search type: random_element : [a] -> [a]
+// API search type: random_element : [a] -> a
 // fwd bind count: 0
 // Returns one random element from xs.
 // xs must be non-empty.
-// If you want a different seed, use something like
-// std::srand(std::time(nullptr));
-// beforehand.
 template <typename Container>
-Container random_element(const Container& xs)
+typename Container::value_type random_element(const Container& xs)
 {
-    return sample(xs).front();
+    assert(is_not_empty(xs));
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<std::size_t> dis(0, size_of_cont(xs) - 1);
+    return elem_at_idx(dis(gen), xs);
 }
 
 // API search type: apply_functions : ([(a -> b)], a) -> [b]

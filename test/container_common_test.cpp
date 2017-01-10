@@ -912,10 +912,30 @@ TEST_CASE("container_common_test, transpose")
     REQUIRE_EQ(transpose(IntVectors({{1,2,3},{4,5},{7,8,9}})), IntVectors({{1,4,7},{2,5,8},{3,9}}));
 }
 
+TEST_CASE("container_common_test, shuffle")
+{
+    using namespace fplus;
+    const auto shuffled = shuffle(xs);
+    REQUIRE(is_permutation_of(shuffled, xs));
+}
+
 TEST_CASE("container_common_test, sample")
 {
     using namespace fplus;
-    REQUIRE_EQ(sample(3, xs).size(), 3);
+    const auto elem = random_element(xs);
+    REQUIRE(contains(xs, elem));
+}
+
+TEST_CASE("container_common_test, sample")
+{
+    using namespace fplus;
+    const auto sampled = sample(3, xs);
+    const auto check_is_elem_of_xs = [&](int x)
+    {
+        return contains(xs, x);
+    };
+    REQUIRE_EQ(sampled.size(), 3);
+    REQUIRE(all_by(check_is_elem_of_xs, sampled));
 }
 
 TEST_CASE("container_common_test, generate")
