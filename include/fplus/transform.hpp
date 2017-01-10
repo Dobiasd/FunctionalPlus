@@ -151,9 +151,10 @@ Container transpose(const Container& rows)
 
 // API search type: shuffle : [a] -> [a]
 // fwd bind count: 0
-// Returns a shuffled version of xs.
+// Returns a randomly shuffled version of xs.
 // If you want a different seed, use something like
 // std::srand(std::time(nullptr));
+// beforehand.
 template <typename Container>
 Container shuffle(const Container& xs)
 {
@@ -168,6 +169,7 @@ Container shuffle(const Container& xs)
 // n has to be smaller than or equal to the number of elements in xs.
 // If you want a different seed, use something like
 // std::srand(std::time(nullptr));
+// beforehand.
 // Also known as rnd_select.
 template <typename Container>
 Container sample(std::size_t n, const Container& xs)
@@ -182,6 +184,7 @@ Container sample(std::size_t n, const Container& xs)
 // xs must be non-empty.
 // If you want a different seed, use something like
 // std::srand(std::time(nullptr));
+// beforehand.
 template <typename Container>
 Container random_element(const Container& xs)
 {
