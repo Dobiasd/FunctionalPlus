@@ -16,6 +16,10 @@ namespace {
     std::array<int, 5> xs_array = {{1,2,2,3,2}};
     typedef std::list<int> IntList;
     IntList intList = { 1,2,2,3,2 };
+    bool is_even(int value)
+    {
+        return ( value % 2 == 0 );
+    }
 }
 
 TEST_CASE("transform_test, replicate_elems")
@@ -122,4 +126,11 @@ TEST_CASE("transform_test, reduce")
     using namespace fplus;
     REQUIRE_EQ(reduce_parallelly(std::plus<int>(), 100, xs), 110);
     REQUIRE_EQ(reduce_1_parallelly(std::plus<int>(), xs), 10);
+}
+
+TEST_CASE("transform_test, keep_if_parellelly")
+{
+    const std::vector<int> v = { 1, 2, 3, 2, 4, 5 };
+    auto result = fplus::keep_if_parellelly(is_even, v);
+    REQUIRE_EQ(result, std::vector<int>({2, 2, 4}));
 }

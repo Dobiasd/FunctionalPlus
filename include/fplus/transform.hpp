@@ -332,6 +332,17 @@ typename Container::value_type reduce_1_parallelly(F f, const Container& xs)
     }
 }
 
+// API search type: keep_if_parellelly : ((a -> Bool), [a]) -> [a]
+// fwd bind count: 1
+// keep_if_parellelly(is_even, [1, 2, 3, 2, 4, 5]) == [2, 2, 4]
+template <typename Pred, typename Container>
+Container keep_if_parellelly(Pred pred, const Container& xs)
+{
+    const auto idxs = find_all_idxs_by(
+        identity<bool>, transform_parallelly(pred, xs));
+    return elems_at_idxs(idxs, xs);
+}
+
 // API search type: transform_parallelly_n_threads : (Int, (a -> b), [a]) -> [b]
 // fwd bind count: 2
 // transform_parallelly_n_threads(4, (*2), [1, 3, 4]) == [2, 6, 8]
