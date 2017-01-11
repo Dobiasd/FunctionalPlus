@@ -15,41 +15,57 @@ endmacro()
 _add_test(compare_test)
 _add_test(composition_test)
 _add_test(container_common_test)
+_add_test(container_properties_test)
+_add_test(container_traits_test)
 _add_test(extrapolate_test)
 _add_test(filter_test)
 _add_test(function_traits_test)
 _add_test(fwd_test)
 _add_test(generate_test)
 _add_test(interpolate_test)
+_add_test(maps_test)
 _add_test(maybe_test)
 _add_test(numeric_test)
 _add_test(optimize_test)
+_add_test(pairs_test)
 _add_test(read_test)
 _add_test(result_test)
 _add_test(replace_test)
 _add_test(search_test)
+_add_test(sets_test)
+_add_test(show_test)
 _add_test(side_effects_test)
+_add_test(split_test)
 _add_test(stringtools_test)
+_add_test(transform_test)
 
 
 add_custom_target(unittest compare_test
                         COMMAND composition_test
                         COMMAND container_common_test
+                        COMMAND container_properties_test
+                        COMMAND container_traits_test
                         COMMAND extrapolate_test
                         COMMAND filter_test
                         COMMAND function_traits_test
                         COMMAND fwd_test
                         COMMAND generate_test
                         COMMAND interpolate_test
+                        COMMAND maps_test
                         COMMAND maybe_test
                         COMMAND numeric_test
                         COMMAND optimize_test
+                        COMMAND pairs_test
                         COMMAND read_test
                         COMMAND result_test
                         COMMAND replace_test
                         COMMAND search_test
+                        COMMAND sets_test
+                        COMMAND show_test
                         COMMAND side_effects_test
+                        COMMAND split_test
                         COMMAND stringtools_test
+                        COMMAND transform_test
                         COMMENT "Running unittests\n\n"
                         VERBATIM
                         )

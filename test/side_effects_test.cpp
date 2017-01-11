@@ -9,7 +9,6 @@
 #include <fplus/fplus.hpp>
 #include <vector>
 
-
 TEST_CASE("side_effects_test, execute")
 {
     using namespace fplus;

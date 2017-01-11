@@ -349,18 +349,6 @@ TEST_CASE("generate_test, inner_product")
     REQUIRE_EQ(fplus::inner_product_with(plus, mult, 0, xs, ys), 32);
 }
 
-TEST_CASE("generate_test, fill_pigeonholes")
-{
-    const std::vector<unsigned int> xs = { 0, 1, 3, 1 };
-    REQUIRE_EQ(fplus::fill_pigeonholes_to(5, xs), std::vector<std::size_t>({1,2,0,1,0}));
-    REQUIRE_EQ(fplus::fill_pigeonholes_to(3, xs), std::vector<std::size_t>({1,2,0}));
-    REQUIRE_EQ(fplus::fill_pigeonholes(xs), std::vector<std::size_t>({1,2,0,1}));
-
-    REQUIRE_EQ(fplus::fill_pigeonholes_bool_to(3, xs), std::vector<unsigned char>({1,1,0}));
-    REQUIRE_EQ(fplus::fill_pigeonholes_bool_to(5, xs), std::vector<unsigned char>({1,1,0,1,0}));
-    REQUIRE_EQ(fplus::fill_pigeonholes_bool(xs), std::vector<unsigned char>({1,1,0,1}));
-}
-
 TEST_CASE("generate_test, numbers")
 {
     typedef std::vector<int> ints;

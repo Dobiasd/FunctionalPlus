@@ -21,9 +21,7 @@ namespace {
     typedef std::vector<bool> BoolVector;
     typedef std::vector<std::size_t> IdxVector;
     IntVector xs = {1,2,2,3,2};
-    std::array<int, 5> xs_array = {{1,2,2,3,2}};
     IntVector xsSorted = {1,2,2,2,3};
-    std::string xsShown("[1, 2, 2, 3, 2]");
     IntVector xs2Times = {1,2,2,3,2,1,2,2,3,2};
     typedef std::list<int> IntList;
     typedef std::vector<IntList> IntLists;
@@ -68,44 +66,6 @@ TEST_CASE("container_common_test, singleton_seq")
 {
     using namespace fplus;
     REQUIRE_EQ(singleton_seq(3), IntVector({3}));
-}
-
-TEST_CASE("container_common_test, transform")
-{
-    using namespace fplus;
-
-    auto intTimes2 = [](int x) -> int { return x*2; };
-    auto intTimes3 = [](int x) -> int { return x*3; };
-
-    // The following works with C++14.
-    // REQUIRE_EQ(transform([](auto x) { return x*x; }, xs), IntVector({1,4,4,9,4}));
-    std::initializer_list<int> initListInts = { 1,2,2,3,2 };
-    REQUIRE_EQ(transform(squareLambda, std::vector<int>(initListInts)), IntVector({1,4,4,9,4}));
-    REQUIRE_EQ(transform_convert<std::vector<int>>(squareLambda, initListInts), IntVector({1,4,4,9,4}));
-    REQUIRE_EQ(transform_convert<std::vector<int>>(squareLambda, xs_array), IntVector({1,4,4,9,4}));
-    REQUIRE_EQ(transform(squareLambda, xs), IntVector({1,4,4,9,4}));
-    REQUIRE_EQ(transform(squareLambda, intList), IntList({ 1,4,4,9,4 }));
-    REQUIRE_EQ(transform_parallelly(squareLambda, intList), IntList({ 1,4,4,9,4 }));
-    REQUIRE_EQ(transform_parallelly_n_threads(3, squareLambda, intList), IntList({ 1,4,4,9,4 }));
-    REQUIRE_EQ(transform_convert<IntList>(squareLambda, xs), IntList({ 1,4,4,9,4 }));
-
-    REQUIRE_EQ(transform(squareLambda, std::set<int>({1,2,3,-3})), std::set<int>({1,4,9}));
-    REQUIRE_EQ(transform_inner(intTimes2, IntVectors({{1,3,4},{1,2}})), IntVectors({{2,6,8},{2,4}}));
-
-    auto add_size_t_and_int = [](std::size_t a, int b) -> int
-    {
-        return static_cast<int>(a) + b;
-    };
-    REQUIRE_EQ(transform_with_idx(add_size_t_and_int, xs), IntVector({1+0,2+1,2+2,3+3,2+4}));
-
-    std::vector<std::function<int(int)>> multiplyFunctions = {intTimes2, intTimes3};
-    REQUIRE_EQ(apply_functions(multiplyFunctions, 4), IntVector({8, 12}));
-
-    auto showInt = [](int x) -> std::string { return fplus::show(x); };
-    std::vector<std::function<std::string(int)>> showIntFuncs = {showInt, showInt};
-    REQUIRE_EQ(apply_functions(showIntFuncs, 4), std::vector<std::string>({"4", "4"}));
-
-    REQUIRE_EQ(apply_function_n_times(squareLambda, 3, 2), 256);
 }
 
 TEST_CASE("container_common_test, filter")
@@ -253,12 +213,6 @@ TEST_CASE("container_common_test, replicate")
     REQUIRE_EQ(replicate(2, xs), IntVectors({xs, xs}));
 }
 
-TEST_CASE("container_common_test, replicate_elems")
-{
-    using namespace fplus;
-    REQUIRE_EQ(replicate_elems(2, xs), IntVector({1,1,2,2,2,2,3,3,2,2}));
-}
-
 TEST_CASE("container_common_test, infixes")
 {
     using namespace fplus;
@@ -366,81 +320,6 @@ TEST_CASE("container_common_test, join")
     REQUIRE_EQ(join(IntList({0}), intLists), IntList({1,0,2,2,0,3,0,2}));
 }
 
-TEST_CASE("container_common_test, show")
-{
-    using namespace fplus;
-    std::map<int, std::string> mapToShow = {{1, "one"}, {2, "two"}};
-    REQUIRE_EQ(show_cont(mapToShow), "[(1, one), (2, two)]");
-    REQUIRE_EQ(show_cont(xs), xsShown);
-    REQUIRE_EQ(show_cont_with(", ", xs), xsShown);
-    std::string xsShownNLs = "(1,2,\n"
-                             " 2,3,\n"
-                             " 2)";
-    REQUIRE_EQ(show_cont_with_frame_and_newlines(",", "(", ")", xs, 2), xsShownNLs);
-    REQUIRE_EQ(show<int>(1), "1");
-
-    REQUIRE_EQ(show(std::vector<std::vector<int>>({{1,2,3},{4,5,6}})), "[[1, 2, 3], [4, 5, 6]]");
-}
-
-TEST_CASE("container_common_test, zip_with")
-{
-    using namespace fplus;
-    const auto multiply = [](int x, int y){ return x * y; };
-    REQUIRE_EQ(zip_with(multiply, xs, xs), transform(squareLambda, xs));
-    const auto add = [](int x, int y){ return x + y; };
-    REQUIRE_EQ(zip_with(add, IntVector({1,2,3}), IntVector({1,2})), IntVector({2,4}));
-    REQUIRE_EQ(zip_with(add, IntVector({1,2}), IntVector({1,2,3})), IntVector({2,4}));
-}
-
-TEST_CASE("container_common_test, zip_with_defaults")
-{
-    using namespace fplus;
-    const auto add = [](int x, int y){ return x + y; };
-    REQUIRE_EQ(zip_with_defaults(add, 6, 7, IntVector({1,2,3}), IntVector({1,2})), IntVector({2,4,10}));
-    REQUIRE_EQ(zip_with_defaults(add, 6, 7, IntVector({1,2}), IntVector({1,2,3})), IntVector({2,4,9}));
-}
-
-TEST_CASE("container_common_test, show_float")
-{
-    using namespace fplus;
-    const double pi = 3.14159;
-    REQUIRE_EQ(show_float<double>(0, 3, pi), "3.142");
-    REQUIRE_EQ(show_float<double>(1, 3, pi), "3.142");
-    REQUIRE_EQ(show_float<double>(2, 3, pi), "03.142");
-    REQUIRE_EQ(show_float<double>(3, 3, pi), "003.142");
-    REQUIRE_EQ(show_float<double>(1, 2, pi), "3.14");
-    REQUIRE_EQ(show_float<double>(1, 4, pi), "3.1416");
-    REQUIRE_EQ(show_float<double>(1, 7, pi), "3.1415900");
-    REQUIRE_EQ(show_float<double>(0, 3, -pi), "-3.142");
-    REQUIRE_EQ(show_float<double>(1, 3, -pi), "-3.142");
-    REQUIRE_EQ(show_float<double>(2, 3, -pi), "-3.142");
-    REQUIRE_EQ(show_float<double>(3, 3, -pi), "-03.142");
-    REQUIRE_EQ(show_float<double>(4, 3, -pi), "-003.142");
-    REQUIRE_EQ(show_float<double>(0, 3, 0.142), "0.142");
-    REQUIRE_EQ(show_float<double>(1, 3, 0.142), "0.142");
-    REQUIRE_EQ(show_float<double>(2, 3, 0.142), "00.142");
-    REQUIRE_EQ(fill_left(' ', 8, show_float<double>(0, 3, -pi)), "  -3.142");
-
-    REQUIRE_EQ(show_float_fill_left<double>(' ', 8, 3, pi), "   3.142");
-    REQUIRE_EQ(show_float_fill_left<double>(' ', 8, 6, pi), "3.141590");
-    REQUIRE_EQ(show_float_fill_left<double>(' ', 8, 3, -pi), "  -3.142");
-    REQUIRE_EQ(show_float_fill_left<double>(' ', 2, 3, -pi), "-3.142");
-
-    REQUIRE_EQ(show_fill_left<int>(' ', 4, 3), "   3");
-    REQUIRE_EQ(show_fill_left<int>('0', 4, 3), "0003");
-    REQUIRE_EQ(show_fill_left<int>(' ', 4, 12345), "12345");
-
-    REQUIRE_EQ(show_fill_right<int>(' ', 4, 3), "3   ");
-    REQUIRE_EQ(show_fill_right<int>(' ', 4, 12345), "12345");
-}
-
-TEST_CASE("container_common_test, zip")
-{
-    using namespace fplus;
-    auto xsZippedWithXs = zip(xs, xs);
-    REQUIRE_EQ(unzip(xsZippedWithXs).first, xs);
-}
-
 TEST_CASE("container_common_test, all")
 {
     using namespace fplus;
@@ -457,90 +336,12 @@ TEST_CASE("container_common_test, all")
     REQUIRE_EQ(all_by(is_even_int, IntVector({2, 1})), false);
 }
 
-TEST_CASE("container_common_test, any")
-{
-    using namespace fplus;
-    REQUIRE_EQ(any(BoolVector()), false);
-    REQUIRE_EQ(any(BoolVector({true})), true);
-    REQUIRE_EQ(any(BoolVector({false})), false);
-    REQUIRE_EQ(any(BoolVector({false, false})), false);
-    REQUIRE_EQ(any(BoolVector({true, false})), true);
-
-    REQUIRE_EQ(any_by(is_even_int, IntVector()), false);
-    REQUIRE_EQ(any_by(is_even_int, IntVector({2})), true);
-    REQUIRE_EQ(any_by(is_even_int, IntVector({1})), false);
-    REQUIRE_EQ(any_by(is_even_int, IntVector({1, 1})), false);
-    REQUIRE_EQ(any_by(is_even_int, IntVector({2, 1})), true);
-}
-
-TEST_CASE("container_common_test, none")
-{
-    using namespace fplus;
-    REQUIRE_EQ(none(BoolVector()), true);
-    REQUIRE_EQ(none(BoolVector({true})), false);
-    REQUIRE_EQ(none(BoolVector({false})), true);
-    REQUIRE_EQ(none(BoolVector({false, false})), true);
-    REQUIRE_EQ(none(BoolVector({true, false})), false);
-
-    REQUIRE_EQ(none_by(is_even_int, IntVector()), true);
-    REQUIRE_EQ(none_by(is_even_int, IntVector({2})), false);
-    REQUIRE_EQ(none_by(is_even_int, IntVector({1})), true);
-    REQUIRE_EQ(none_by(is_even_int, IntVector({1, 1})), true);
-    REQUIRE_EQ(none_by(is_even_int, IntVector({2, 1})), false);
-}
-
-TEST_CASE("container_common_test, minmax")
-{
-    using namespace fplus;
-    auto negateInt = [](int i) -> int { return -i; };
-
-    REQUIRE_EQ(minimum(xs), 1);
-    REQUIRE_EQ(maximum(xs), 3);
-
-    REQUIRE_EQ(minimum_by(std::greater<int>(), xs), 3);
-    REQUIRE_EQ(maximum_by(std::greater<int>(), xs), 1);
-
-    REQUIRE_EQ(minimum_on(negateInt, xs), 3);
-    REQUIRE_EQ(maximum_on(negateInt, xs), 1);
-
-    REQUIRE_EQ(minimum_idx(xs), 0);
-    REQUIRE_EQ(maximum_idx(xs), 3);
-
-    REQUIRE_EQ(minimum_idx_by(std::greater<int>(), xs), 3);
-    REQUIRE_EQ(maximum_idx_by(std::greater<int>(), xs), 0);
-
-    REQUIRE_EQ(minimum_idx_on(negateInt, xs), 3);
-    REQUIRE_EQ(maximum_idx_on(negateInt, xs), 0);
-}
-
 TEST_CASE("container_common_test, size")
 {
     using namespace fplus;
     REQUIRE_EQ(fplus::size_of_cont(xs), 5);
     REQUIRE_EQ(fplus::size_of_cont(IntVector()), 0);
     REQUIRE_EQ(is_not_empty(xs), true);
-}
-
-TEST_CASE("container_common_test, mean")
-{
-    using namespace fplus;
-    std::vector<unsigned char> uchars = {200, 202};
-    typedef std::vector<double> DoubleVector;
-    REQUIRE_EQ(sum(xs), 10);
-    REQUIRE_EQ(product(xs), 24);
-    REQUIRE_EQ(mean<int>(xs), 2);
-    REQUIRE_EQ(mean_using_doubles<unsigned char>(uchars), 201);
-    REQUIRE_EQ(median(IntVector({ 3 })), 3);
-    REQUIRE_EQ(median(IntVector({ 3, 5 })), 4);
-    REQUIRE(is_in_interval(3.49f, 3.51f, median<IntVector, float>(IntVector({ 3, 4 }))));
-    REQUIRE(is_in_interval(3.49, 3.51, mean<double>(DoubleVector({ 3, 4 }))));
-    REQUIRE_EQ(median(IntVector({ 3, 9, 5 })), 5);
-    REQUIRE_EQ(median(xs), 2);
-    REQUIRE_EQ(sum(convert_container_and_elems<std::vector<int>>(std::string("hello"))), 532);
-    REQUIRE(is_in_interval(5.99, 6.01, mean_stddev<double>(DoubleVector({ 4, 8 })).first));
-    REQUIRE(is_in_interval(1.99, 2.01, mean_stddev<double>(DoubleVector({ 4, 8 })).second));
-    REQUIRE(is_in_interval(3.749f, 3.751f, mean_stddev<float>(IntVector({ 1, 3, 7, 4 })).first));
-    REQUIRE(is_in_interval(2.16f, 2.17f, mean_stddev<float>(IntVector({ 1, 3, 7, 4 })).second));
 }
 
 TEST_CASE("container_common_test, sort")
@@ -633,30 +434,6 @@ TEST_CASE("container_common_test, find")
     REQUIRE_EQ(find_last_idx(4, xs), nothing<std::size_t>());
 }
 
-TEST_CASE("container_common_test, pairs")
-{
-    using namespace fplus;
-    IntPair intPair = std::make_pair(2, 3);
-    IntPairs intPairs = {{1,2}, {3,4}};
-    IntPairs intPairsSwapped = {{2,1}, {4,3}};
-    REQUIRE_EQ(fst(intPair), 2);
-    REQUIRE_EQ(snd(intPair), 3);
-    REQUIRE_EQ(swap_pair_elems(intPair), std::make_pair(3, 2));
-    REQUIRE_EQ(swap_pairs_elems(intPairs), intPairsSwapped);
-    REQUIRE_EQ(transform_fst(squareLambda, intPair), std::make_pair(4, 3));
-    REQUIRE_EQ(transform_snd(squareLambda, intPair), std::make_pair(2, 9));
-
-    typedef std::vector<std::pair<std::string, int>> StringIntPairs;
-    StringIntPairs stringIntPairs = {{"a", 1}, {"a", 2}, {"b", 6}, {"a", 4}};
-    auto stringIntPairsAsMapGrouped = pairs_to_map_grouped(stringIntPairs);
-    auto groupNameToMedianMap = transform_map_values(median<std::vector<int>>, stringIntPairsAsMapGrouped);
-    auto groupNames = transform(fst<std::string, int>, stringIntPairs);
-    auto getMedianValue = bind_1st_and_2nd_of_3(get_from_map_with_def<std::map<std::string, int>>, groupNameToMedianMap, 0);
-    auto groupMendianValues = transform(getMedianValue, groupNames);
-    auto stringIntPairsSndReplacedWithGroupMedian = zip(groupNames, groupMendianValues);
-    REQUIRE_EQ(stringIntPairsSndReplacedWithGroupMedian, StringIntPairs({{"a", 2}, {"a", 2}, {"b", 6}, {"a", 2}}));
-}
-
 TEST_CASE("container_common_test, is_elem_of")
 {
     using namespace fplus;
@@ -706,114 +483,12 @@ TEST_CASE("container_common_test, find_token")
     REQUIRE_EQ(find_first_instance_of_token(std::string("haha"), std::string("oh, hahaha!")), just<std::size_t>(4));
 }
 
-TEST_CASE("container_common_test, split")
-{
-    using namespace fplus;
-
-    REQUIRE_EQ(split(0, true, IntVector{1,0,1}), IntVectors({{1},{1}}));
-    REQUIRE_EQ(split(0, true, IntVector{0,1,0}), IntVectors({{},{1},{}}));
-    REQUIRE_EQ(split(0, true, IntVector{0,1}), IntVectors({{},{1}}));
-    REQUIRE_EQ(split(0, true, IntVector{1,0}), IntVectors({{1},{}}));
-    REQUIRE_EQ(split(0, true, IntVector{0}), IntVectors({{},{}}));
-    REQUIRE_EQ(split(0, true, IntVector{}), IntVectors{{}});
-
-    REQUIRE_EQ(split(0, false, IntVector{1,0,1}), IntVectors({{1},{1}}));
-    REQUIRE_EQ(split(0, false, IntVector{0,1,0}), IntVectors{{1}});
-    REQUIRE_EQ(split(0, false, IntVector{0,1}), IntVectors{{1}});
-    REQUIRE_EQ(split(0, false, IntVector{1,0}), IntVectors{{1}});
-    REQUIRE_EQ(split(0, false, IntVector{0}), IntVectors({}));
-    REQUIRE_EQ(split(0, false, IntVector{}), IntVectors({}));
-
-    REQUIRE_EQ(split(0, true, IntVector{1,0,1}), IntVectors({{1},{1}}));
-    REQUIRE_EQ(split(0, true, IntVector{0,1,0}), IntVectors({{},{1},{}}));
-    REQUIRE_EQ(split(0, true, IntVector{0,1}), IntVectors({{},{1}}));
-    REQUIRE_EQ(split(0, true, IntVector{1,0}), IntVectors({{1},{}}));
-    REQUIRE_EQ(split(0, true, IntVector{0}), IntVectors({{},{}}));
-    REQUIRE_EQ(split(0, true, IntVector{}), IntVectors{{}});
-
-    REQUIRE_EQ(split(0, false, IntVector{1,0,1}), IntVectors({{1},{1}}));
-    REQUIRE_EQ(split(0, false, IntVector{0,1,0}), IntVectors{{1}});
-    REQUIRE_EQ(split(0, false, IntVector{0,1}), IntVectors{{1}});
-    REQUIRE_EQ(split(0, false, IntVector{1,0}), IntVectors{{1}});
-    REQUIRE_EQ(split(0, false, IntVector{0}), IntVectors({}));
-    REQUIRE_EQ(split(0, false, IntVector{}), IntVectors({}));
-
-    REQUIRE_EQ(split_by_token(IntVector({0}), true, IntVector{1,0,1}), IntVectors({{1},{1}}));
-    REQUIRE_EQ(split_by_token(IntVector({0}), true, IntVector{0,1,0}), IntVectors({{},{1},{}}));
-    REQUIRE_EQ(split_by_token(IntVector({0}), true, IntVector{0,1}), IntVectors({{},{1}}));
-    REQUIRE_EQ(split_by_token(IntVector({0}), true, IntVector{1,0}), IntVectors({{1},{}}));
-    REQUIRE_EQ(split_by_token(IntVector({0}), true, IntVector{0}), IntVectors({{},{}}));
-    REQUIRE_EQ(split_by_token(IntVector({0}), true, IntVector{}), IntVectors{{}});
-
-    REQUIRE_EQ(split_by_token(IntVector({0}), false, IntVector{1,0,1}), IntVectors({{1},{1}}));
-    REQUIRE_EQ(split_by_token(IntVector({0}), false, IntVector{0,1,0}), IntVectors{{1}});
-    REQUIRE_EQ(split_by_token(IntVector({0}), false, IntVector{0,1}), IntVectors{{1}});
-    REQUIRE_EQ(split_by_token(IntVector({0}), false, IntVector{1,0}), IntVectors{{1}});
-    REQUIRE_EQ(split_by_token(IntVector({0}), false, IntVector{0}), IntVectors({}));
-    REQUIRE_EQ(split_by_token(IntVector({0}), false, IntVector{}), IntVectors({}));
-
-    REQUIRE_EQ(split_by_token(IntVector({0,9}), true, IntVector{1,0,9,1}), IntVectors({{1},{1}}));
-    REQUIRE_EQ(split_by_token(IntVector({0,9}), true, IntVector{0,9,1,0,9}), IntVectors({{},{1},{}}));
-    REQUIRE_EQ(split_by_token(IntVector({0,9}), true, IntVector{0,9,1}), IntVectors({{},{1}}));
-    REQUIRE_EQ(split_by_token(IntVector({0,9}), true, IntVector{1,0,9}), IntVectors({{1},{}}));
-    REQUIRE_EQ(split_by_token(IntVector({0,9}), true, IntVector{0,9}), IntVectors({{},{}}));
-    REQUIRE_EQ(split_by_token(IntVector({0,9}), true, IntVector{}), IntVectors{{}});
-
-    REQUIRE_EQ(split_by_token(IntVector({0,9}), false, IntVector{1,0,9,1}), IntVectors({{1},{1}}));
-    REQUIRE_EQ(split_by_token(IntVector({0,9}), false, IntVector{0,9,1,0,9}), IntVectors{{1}});
-    REQUIRE_EQ(split_by_token(IntVector({0,9}), false, IntVector{0,9,1}), IntVectors{{1}});
-    REQUIRE_EQ(split_by_token(IntVector({0,9}), false, IntVector{1,0,9}), IntVectors{{1}});
-    REQUIRE_EQ(split_by_token(IntVector({0,9}), false, IntVector{0,9}), IntVectors({}));
-    REQUIRE_EQ(split_by_token(IntVector({0,9}), false, IntVector{}), IntVectors({}));
-
-    REQUIRE_EQ(split_by_token(IntVector({}), true, IntVector{}), IntVectors({{},{}}));
-    REQUIRE_EQ(split_by_token(IntVector({}), true, IntVector{1}), IntVectors({{},{1},{}}));
-    REQUIRE_EQ(split_by_token(IntVector({}), true, IntVector{1,2}), IntVectors({{},{1},{2},{}}));
-
-    REQUIRE_EQ(split_by_token(IntVector({}), false, IntVector{}), IntVectors({}));
-    REQUIRE_EQ(split_by_token(IntVector({}), false, IntVector{1}), IntVectors{{1}});
-    REQUIRE_EQ(split_by_token(IntVector({}), false, IntVector{1,2}), IntVectors({{1},{2}}));
-
-    REQUIRE_EQ(split_one_of(IntVector({0,3}), true, IntVector{1,3,2,0,0,6,0,7,5}), IntVectors({{1},{2},{},{6},{7,5}}));
-    REQUIRE_EQ(split_one_of(std::string(" ,.?"), false, std::string("Hi, how are you?")), std::vector<std::string>({"Hi", "how", "are", "you"}));
-
-    REQUIRE_EQ(split_at_idx(2, xs), std::make_pair(IntVector({1,2}), IntVector({2,3,2})));
-    REQUIRE_EQ(partition(is_even_int, xs), std::make_pair(IntVector({2,2,2}), IntVector({1,3})));
-    REQUIRE_EQ(split_every(2, xs), IntVectors({{1,2}, {2, 3}, {2}}));
-    auto splittedAt1And3 = split_at_idxs(IdxVector({1,3}), xs);
-    IntVectors splittedAt1And3Dest = {IntVector({1}), IntVector({2,2}), IntVector({3,2})};
-    REQUIRE_EQ(splittedAt1And3, splittedAt1And3Dest);
-    auto splittedAt1And3And3 = split_at_idxs(IdxVector({1,3,3}), xs);
-    IntVectors splittedAt1And3And3Dest = {IntVector({1}), IntVector({2,2}), IntVector({}), IntVector({3,2})};
-    REQUIRE_EQ(splittedAt1And3And3, splittedAt1And3And3Dest);
-    REQUIRE_EQ(split(3, true, xs), IntVectors({IntVector({1, 2, 2}), IntVector({2})}));
-    REQUIRE_EQ(split(1, true, IntVector{0,1,2}), IntVectors({{0},{2}}));
-    REQUIRE_EQ(split(2, true, IntVector{5,2,0,3}), IntVectors({{5},{0,3}}));
-
-    REQUIRE_EQ(split(2, true, IntVector{1,2}), IntVectors({{1},{}}));
-    REQUIRE_EQ(split(2, true, IntVector{2}), IntVectors({{},{}}));
-    REQUIRE_EQ(split(2, true, IntVector{}), IntVectors{{}});
-
-    REQUIRE_EQ(split_by(is_even_int, true, IntList({1,3,2,2,5,5,3,6,7,9})), IntLists({{1,3},{},{5,5,3},{7,9}}));
-    REQUIRE_EQ(split_by_keep_separators(is_even_int, IntList({})), IntLists());
-    REQUIRE_EQ(split_by_keep_separators(is_even_int, IntList({2})), IntLists({IntList({2})}));
-    REQUIRE_EQ(split_by_keep_separators(is_even_int, IntList({2,2,3})), IntLists({{2},{2,3}}));
-    REQUIRE_EQ(split_by_keep_separators(is_even_int, IntList({1,3,2})), IntLists({{1,3},{2}}));
-    REQUIRE_EQ(split_by_keep_separators(is_even_int, IntList({1,3,2,2,5,5,3,6,7,9})), IntLists({{1,3},{2},{2,5,5,3},{6,7,9}}));
-    REQUIRE_EQ(split_keep_separators(2, IntList({1,3,2,2,5,5,3,2,7,9})), IntLists({{1,3},{2},{2,5,5,3},{2,7,9}}));
-}
-
 TEST_CASE("container_common_test, insert_at_idx")
 {
     using namespace fplus;
     REQUIRE_EQ(insert_at_idx(2, 0, IntVector({1,2,3,4})), IntVector({1,2,0,3,4}));
 }
 
-TEST_CASE("container_common_test, enumerate")
-{
-    using namespace fplus;
-    REQUIRE_EQ(enumerate(xs), (std::vector<std::pair<std::size_t, int>>({{0,1}, {1,2}, {2,2}, {3,3}, {4,2}})));
-}
 
 TEST_CASE("container_common_test, segment")
 {
@@ -855,89 +530,6 @@ TEST_CASE("container_common_test, find_all_idxs_of")
     REQUIRE_EQ(find_all_idxs_of(2, xs), IdxVector({ 1,2,4 }));
 }
 
-TEST_CASE("container_common_test, count")
-{
-    using namespace fplus;
-    REQUIRE_EQ(count(2, xs), 3);
-}
-
-TEST_CASE("container_common_test, infix")
-{
-    using namespace fplus;
-    REQUIRE_EQ(is_infix_of(IntVector({}), IntVector({})), true);
-    REQUIRE_EQ(is_infix_of(IntVector({}), IntVector({1,2})), true);
-    REQUIRE_EQ(is_infix_of(IntVector({2,3}), xs), true);
-    REQUIRE_EQ(is_infix_of(IntVector({2,3}), xs), true);
-    REQUIRE_EQ(is_infix_of(IntVector({2,1}), xs), false);
-    REQUIRE_EQ(is_prefix_of(IntVector({ 1,2 }), xs), true);
-    REQUIRE_EQ(is_prefix_of(IntVector({ 2,2 }), xs), false);
-    REQUIRE_EQ(is_suffix_of(IntVector({ 3,2 }), xs), true);
-    REQUIRE_EQ(is_suffix_of(IntVector({ 2,2 }), xs), false);
-}
-
-TEST_CASE("container_common_test, subsequence")
-{
-    using namespace fplus;
-    REQUIRE_EQ(is_subsequence_of(IntVector(), IntVector()), true);
-    REQUIRE_EQ(is_subsequence_of(IntVector(), xs), true);
-    REQUIRE_EQ(is_subsequence_of(IntVector({ 1,3 }), xs), true);
-    REQUIRE_EQ(is_subsequence_of(IntVector({ 3,1 }), xs), false);
-}
-
-TEST_CASE("container_common_test, interleave")
-{
-    using namespace fplus;
-    typedef std::vector<IntVector> IntVectors;
-    REQUIRE_EQ(interleave(IntVectors()), IntVector());
-    REQUIRE_EQ(interleave(IntVectors({})), IntVector());
-    REQUIRE_EQ(interleave(IntVectors({IntVector({})})), IntVector());
-    REQUIRE_EQ(interleave(IntVectors({{},{}})), IntVector());
-    REQUIRE_EQ(interleave(IntVectors({{1},{}})), IntVector({1}));
-    REQUIRE_EQ(interleave(IntVectors({{1,2,3},{4,5},{6,7,8}})), IntVector({1,4,6,2,5,7,3,8}));
-    REQUIRE_EQ(interleave(IntVectors({{1,2,3},{4,5},{6,7,8}})), IntVector({1,4,6,2,5,7,3,8}));
-}
-
-TEST_CASE("container_common_test, transpose")
-{
-    using namespace fplus;
-    typedef std::vector<IntVector> IntVectors;
-    REQUIRE_EQ(transpose(IntVectors()), IntVectors());
-    REQUIRE_EQ(transpose(IntVectors({})), IntVectors());
-    REQUIRE_EQ(transpose(IntVectors({},{})), IntVectors());
-    REQUIRE_EQ(transpose(IntVectors({ { 1 }, { 2 } })), IntVectors({ { 1, 2 } }));
-    REQUIRE_EQ(transpose(IntVectors({ { 1, 2 } })), IntVectors({ { 1 }, { 2 } }));
-    REQUIRE_EQ(transpose(IntVectors({ { 1, 2 }, { 3, 4 } })), IntVectors({ { 1, 3 }, { 2, 4 } }));
-    REQUIRE_EQ(transpose(IntVectors({ { 1, 2, 3 }, { 4, 5, 6 } })), IntVectors({ { 1, 4 }, { 2, 5 }, { 3, 6 } }));
-    REQUIRE_EQ(transpose(IntVectors({{1,2,3},{4,5,6},{7,8,9}})), IntVectors({{1,4,7},{2,5,8},{3,6,9}}));
-    REQUIRE_EQ(transpose(IntVectors({{1,2,3},{4,5},{7,8,9}})), IntVectors({{1,4,7},{2,5,8},{3,9}}));
-}
-
-TEST_CASE("container_common_test, shuffle")
-{
-    using namespace fplus;
-    const auto shuffled = shuffle(xs);
-    REQUIRE(is_permutation_of(shuffled, xs));
-}
-
-TEST_CASE("container_common_test, sample")
-{
-    using namespace fplus;
-    const auto elem = random_element(xs);
-    REQUIRE(contains(xs, elem));
-}
-
-TEST_CASE("container_common_test, sample")
-{
-    using namespace fplus;
-    const auto sampled = sample(3, xs);
-    const auto check_is_elem_of_xs = [&](int x)
-    {
-        return contains(xs, x);
-    };
-    REQUIRE_EQ(sampled.size(), 3);
-    REQUIRE(all_by(check_is_elem_of_xs, sampled));
-}
-
 TEST_CASE("container_common_test, generate")
 {
     using namespace fplus;
@@ -958,116 +550,6 @@ TEST_CASE("container_common_test, nub")
     auto bothEven = is_equal_by(is_even_int);
     REQUIRE_EQ(nub_by(bothEven, xs), IntVector({ 1,2 }));
     REQUIRE_EQ(nub_on(int_mod_10, IntVector({12,32,15})), IntVector({12,15}));
-}
-
-TEST_CASE("container_common_test, map")
-{
-    using namespace fplus;
-    typedef std::map<int, std::string> IntStringMap;
-    typedef std::map<std::string, int> StringIntMap;
-    IntStringMap intStringMap = {{1, "2"}, {4, "53"}, {7, "21"}};
-    StringIntMap stringIntMap = {{ "2", 1}, { "53", 4}, { "21", 7}};
-    REQUIRE_EQ(swap_keys_and_values(intStringMap), stringIntMap);
-
-    typedef std::vector<std::string> StringVector;
-    REQUIRE_EQ(get_map_keys(intStringMap), IntVector({1, 4, 7}));
-    REQUIRE_EQ(get_map_values(intStringMap), StringVector({"2", "53", "21"}));
-
-    typedef std::unordered_map<int, std::string> IntStringUnorderedMap;
-    typedef std::unordered_map<std::string, int> StringIntUnorderedMap;
-    IntStringUnorderedMap intStringUnorderedMap = { { 1, "2" },{ 4, "53" },{ 7, "21" } };
-    StringIntUnorderedMap stringIntUnorderedMapSwapped = { { "2", 1 },{ "53", 4 },{ "21", 7 } };
-    REQUIRE_EQ(swap_keys_and_values(intStringUnorderedMap), stringIntUnorderedMapSwapped);
-    REQUIRE_EQ(convert_container<IntStringUnorderedMap>(intStringMap), intStringUnorderedMap);
-    REQUIRE_EQ(convert_container<IntStringMap>(intStringUnorderedMap), intStringMap);
-
-    std::vector<int> mapInts = { 1, 4, 7 };
-    std::vector<std::string> mapStrings = { "2", "53", "21" };
-    REQUIRE_EQ(create_map(mapInts, mapStrings), intStringMap);
-    REQUIRE_EQ(create_unordered_map(mapInts, mapStrings), intStringUnorderedMap);
-
-    IntStringMap intsAsStringsMap = {{1, "1"}, {4, "4"}, {7, "7"}};
-    REQUIRE_EQ(create_map_with(show<int>, mapInts), intsAsStringsMap);
-    IntStringUnorderedMap intsAsStringsUnorderedMap = {{1, "1"}, {4, "4"}, {7, "7"}};
-    REQUIRE_EQ(create_unordered_map_with(show<int>, mapInts), intsAsStringsUnorderedMap);
-
-    const auto is_int_string_map_key_even =
-        [&](const IntStringMap::value_type& p) -> bool
-    {
-        return is_even_int(p.first);
-    };
-    REQUIRE_EQ(keep_if(is_int_string_map_key_even, IntStringMap({{4, "4"}, {7, "7"}})), IntStringMap({{4, "4"}}));
-
-    REQUIRE_EQ(get_from_map(intStringMap, 1), just<std::string>("2"));
-    REQUIRE_EQ(get_from_map(intStringMap, 9), nothing<std::string>());
-    REQUIRE_EQ(get_from_map_with_def(intStringMap, std::string("n/a"), 1), "2");
-    REQUIRE_EQ(get_from_map_with_def(intStringMap, std::string("n/a"), 9), "n/a");
-    REQUIRE_EQ(map_contains(intStringMap, 1), true);
-    REQUIRE_EQ(map_contains(intStringMap, 9), false);
-
-    IntStringMap union_map_1 = {{0, "a"}, {1, "b"}};
-    IntStringMap union_map_2 = {{0, "c"}, {2, "d"}};
-    IntStringMap union_map_res = {{0, "a"}, {1, "b"}, {2, "d"}};
-    IntStringMap union_map_with_res = {{0, "ac"}, {1, "b"}, {2, "d"}};
-    REQUIRE_EQ(map_union(union_map_1, union_map_2), union_map_res);
-    REQUIRE_EQ(map_union_with(append<std::string>, union_map_1, union_map_2), union_map_with_res);
-
-    typedef std::map<std::string::value_type, int> CharIntMap;
-    CharIntMap charIntMap = {{'a', 1}, {'b', 2}, {'A', 3}, {'C', 4}};
-    const auto is_upper = [](std::string::value_type c) -> bool
-    {
-        return std::isupper(c);
-    };
-    const auto is_lower = [](std::string::value_type c) -> bool
-    {
-        return std::islower(c);
-    };
-    REQUIRE_EQ(map_keep_if(is_upper, charIntMap), CharIntMap({{'A', 3}, {'C', 4}}));
-    REQUIRE_EQ(map_drop_if(is_lower, charIntMap), CharIntMap({{'A', 3}, {'C', 4}}));
-    typedef std::vector<std::string::value_type> CharVector;
-    REQUIRE_EQ(map_keep(CharVector({'b', 'F'}), charIntMap), CharIntMap({{'b', 2}}));
-    REQUIRE_EQ(map_drop(CharVector({'a', 'A', 'C', 'F'}), charIntMap), CharIntMap({{'b', 2}}));
-
-    typedef std::vector<CharIntMap> CharIntMaps;
-    typedef std::vector<maybe<int>> MaybeInts;
-    REQUIRE_EQ(
-        map_pluck('a', CharIntMaps({{{'a',1}, {'b',2}}, {{'a',3}}, {{'c',4}}})),
-        MaybeInts({1, 3, {}}));
-}
-
-TEST_CASE("container_common_test, set")
-{
-    using namespace fplus;
-    using IntSet = std::set<int>;
-    using setVector = std::vector<IntSet>;
-    using IntUnordSet = std::unordered_set<int>;
-    using unordSetVector = std::vector<IntUnordSet>;
-
-    //std::set tests
-    REQUIRE(set_includes(IntSet({0,1,2,3}), IntSet({0,2})));
-    REQUIRE_FALSE(set_includes(IntSet({0,2}), IntSet({0,1,2,3})));
-    REQUIRE_FALSE(set_includes(IntSet({0,1,2,3}), IntSet({2,3,4,5})));
-    REQUIRE_EQ(set_merge(IntSet({0,1,2,3}), IntSet({2,3,4,5})), IntSet({0,1,2,3,4,5}));
-    REQUIRE_EQ(set_merge(IntSet({0,1,2,3}), IntSet({0,2})), IntSet({0,1,2,3}));
-    REQUIRE_EQ(set_intersection(IntSet({0,1,2,3}), IntSet({2,3,4,5})), IntSet({2,3}));
-    REQUIRE_EQ(set_difference(IntSet({0,1,2,3}), IntSet({2,3,4,5})), IntSet({0,1}));
-    REQUIRE_EQ(set_symmetric_difference(IntSet({0,1,2,3}), IntSet({2,3,4,5})), IntSet({0,1,4,5}));
-    REQUIRE_EQ(set_intersection(IntSet({0,1,2,3}), IntSet({2,3,4,5})), IntSet({2,3}));
-    REQUIRE_EQ(sets_intersection(setVector({IntSet({0,1,2,3}), IntSet({2,3,4,5}), IntSet({0,2})})), IntSet({2}));
-
-    //set::unordered_set tests
-    REQUIRE(unordered_set_includes(IntUnordSet({0,1,2,3}), IntUnordSet({0,2})));
-    REQUIRE_FALSE(unordered_set_includes(IntUnordSet({0,2}), IntUnordSet({0,1,2,3})));
-    REQUIRE_FALSE(unordered_set_includes(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})));
-    REQUIRE_EQ(set_merge(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})), IntUnordSet({0,1,2,3,4,5}));
-    REQUIRE_EQ(set_merge(IntUnordSet({0,1,2,3}), IntUnordSet({0,2})), IntUnordSet({0,1,2,3}));
-    REQUIRE_EQ(unordered_set_intersection(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})), IntUnordSet({2,3}));
-    REQUIRE_EQ(unordered_set_difference(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})), IntUnordSet({0,1}));
-    REQUIRE_EQ(unordered_set_symmetric_difference(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})), IntUnordSet({0,1,4,5}));
-    REQUIRE_EQ(unordered_set_intersection(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})), IntUnordSet({2,3}));
-    REQUIRE_EQ(unordered_sets_intersection(unordSetVector({IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5}), IntUnordSet({0,2})})), IntUnordSet({2}));
-
-
 }
 
 TEST_CASE("container_common_test, count_occurrences_by")
@@ -1124,29 +606,6 @@ TEST_CASE("container_common_test, iterate")
     REQUIRE_EQ(iterate(times_two, 1, 3), IntVector({3}));
     REQUIRE_EQ(iterate(times_two, 2, 3), IntVector({3,6}));
     REQUIRE_EQ(iterate(times_two, 5, 3), IntVector({3,6,12,24,48}));
-}
-
-TEST_CASE("container_common_test, is_permutation_of")
-{
-    using namespace fplus;
-    REQUIRE(is_permutation_of(IntVector({2,3,1}), IntVector({1,2,3})));
-    REQUIRE_FALSE(is_permutation_of(IntVector({2,3,2}), IntVector({1,2,3})));
-    REQUIRE_FALSE(is_permutation_of(IntVector({2,3}), IntVector({1,2,3})));
-    REQUIRE_FALSE(is_permutation_of(IntVector({2,3,1}), IntVector({1,23})));
-}
-
-TEST_CASE("container_common_test, present_in_all")
-{
-    using namespace fplus;
-    const std::vector<std::vector<int>> xss = { {4,1,2}, {5,2,1}, {2,4,1} };
-    REQUIRE_EQ(present_in_all(xss), IntVector({1,2}));
-}
-
-TEST_CASE("container_common_test, is_unique_in")
-{
-    using namespace fplus;
-    REQUIRE_FALSE(is_unique_in(2, xs));
-    REQUIRE(is_unique_in(3, xs));
 }
 
 TEST_CASE("container_common_test, divvy")
