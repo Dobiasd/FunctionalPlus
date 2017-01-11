@@ -20,6 +20,21 @@ namespace {
     typedef std::deque<IntDeq> IntContCont;
     typedef IntDeq IntCont;
     typedef IntCont Row;
+
+    uint64_t fibo(uint64_t n)
+    {
+        if (n < 2)
+            return n;
+        else
+            return fibo(n-1) + fibo(n-2);
+    }
+    uint64_t fibo_cont(const std::function<uint64_t(uint64_t)>& cont, uint64_t n)
+    {
+        if (n < 2)
+            return n;
+        else
+            return cont(n-1) + cont(n-2);
+    }
 }
 
 class CompositionTestState {
@@ -139,4 +154,11 @@ TEST_CASE("composition_test, memoize")
     REQUIRE_EQ(add_memo(2, 3), 5);
     REQUIRE_EQ(add_memo(1, 2), 3);
     REQUIRE_EQ(add_memo(1, 2), 3);
+
+    const auto fibo_memo = memoize_recursive(fibo_cont);
+
+    for (uint64_t n = 0; n < 10; ++n)
+    {
+        REQUIRE_EQ(fibo_memo(n), fibo(n));
+    }
 }

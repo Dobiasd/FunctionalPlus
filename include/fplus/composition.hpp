@@ -10,6 +10,7 @@
 
 #include <functional>
 #include <map>
+#include <memory>
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
@@ -306,6 +307,52 @@ std::function<FOut(FIn)> memoize(F f)
             return it->second;
         }
     };
+}
+
+namespace internal
+{
+    template <typename F, typename Cache,
+        typename FIn1 = typename utils::function_traits<F>::template arg<0>::type,
+        typename FIn2 = typename utils::function_traits<F>::template arg<1>::type,
+        typename FOut = typename std::result_of<F(FIn1, FIn2)>::type,
+        typename ResultF = std::function<FOut(FIn2)>>
+    ResultF memoize_recursive_helper(const F f, std::shared_ptr<Cache> storage)
+    {
+        return [f, storage](uint x)
+        {
+            const auto it = storage->find(x);
+            if (it == storage->end())
+            {
+                const auto g = memoize_recursive_helper(f, storage);
+                (*storage)[x] = f(g, x);
+            }
+            return (*storage)[x];
+        };
+    }
+} // namespace internal
+
+// API search type: memoize_recursive : (a -> b) -> (a -> b)
+// Provides Memoization for a given (referentially transparent)
+// recursive binary function that takes a continuation as first argument.
+// e.g.
+// uint64_t fibo_cont(const std::function<uint64_t(uint64_t)>& cont, uint64_t n)
+// {
+//     if (n < 2) return n;
+//     else return cont(n-1) + cont(n-2);
+// }
+// Returns a closure mutating an internally held dictionary
+// mapping input values to output values.
+template <typename F,
+    typename FIn1 = typename utils::function_traits<F>::template arg<0>::type,
+    typename FIn2 = typename utils::function_traits<F>::template arg<1>::type,
+    typename FOut = typename std::result_of<F(FIn1, FIn2)>::type,
+    typename MemoMap = std::unordered_map<
+        typename std::remove_reference<typename std::remove_const<FIn2>::type>::type,
+        FOut>>
+std::function<FOut(FIn2)> memoize_recursive(F f)
+{
+    std::shared_ptr<MemoMap> storage = std::make_shared<MemoMap>();
+    return internal::memoize_recursive_helper(f, storage);
 }
 
 // API search type: memoize : ((a, b) -> c) -> ((a, b) -> c)
