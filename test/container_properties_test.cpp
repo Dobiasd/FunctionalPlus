@@ -150,14 +150,14 @@ TEST_CASE("container_properties_test, is_permutation_of")
 
 TEST_CASE("container_properties_test, fill_pigeonholes")
 {
-    const std::vector<unsigned int> xs = { 0, 1, 3, 1 };
-    REQUIRE_EQ(fplus::fill_pigeonholes_to(5, xs), std::vector<std::size_t>({1,2,0,1,0}));
-    REQUIRE_EQ(fplus::fill_pigeonholes_to(3, xs), std::vector<std::size_t>({1,2,0}));
-    REQUIRE_EQ(fplus::fill_pigeonholes(xs), std::vector<std::size_t>({1,2,0,1}));
+    const std::vector<unsigned int> ys = { 0, 1, 3, 1 };
+    REQUIRE_EQ(fplus::fill_pigeonholes_to(5, ys), std::vector<std::size_t>({1,2,0,1,0}));
+    REQUIRE_EQ(fplus::fill_pigeonholes_to(3, ys), std::vector<std::size_t>({1,2,0}));
+    REQUIRE_EQ(fplus::fill_pigeonholes(ys), std::vector<std::size_t>({1,2,0,1}));
 
-    REQUIRE_EQ(fplus::fill_pigeonholes_bool_to(3, xs), std::vector<unsigned char>({1,1,0}));
-    REQUIRE_EQ(fplus::fill_pigeonholes_bool_to(5, xs), std::vector<unsigned char>({1,1,0,1,0}));
-    REQUIRE_EQ(fplus::fill_pigeonholes_bool(xs), std::vector<unsigned char>({1,1,0,1}));
+    REQUIRE_EQ(fplus::fill_pigeonholes_bool_to(3, ys), std::vector<unsigned char>({1,1,0}));
+    REQUIRE_EQ(fplus::fill_pigeonholes_bool_to(5, ys), std::vector<unsigned char>({1,1,0,1,0}));
+    REQUIRE_EQ(fplus::fill_pigeonholes_bool(ys), std::vector<unsigned char>({1,1,0,1}));
 }
 
 TEST_CASE("container_properties_test, present_in_all")
