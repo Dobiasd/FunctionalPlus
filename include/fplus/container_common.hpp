@@ -98,6 +98,13 @@ namespace internal
         std::advance(it,
             static_cast<typename Iterator::difference_type>(distance));
     }
+
+    template <typename Iterator>
+    Iterator add_to_iterator(Iterator it, std::size_t distance = 1)
+    {
+        return std::next(it,
+            static_cast<typename Iterator::difference_type>(distance));
+    }
 } // namespace internal
 
 // API search type: is_empty : [a] -> Bool
@@ -558,7 +565,7 @@ Acc fold_left_1(F f, const Container& xs)
 }
 
 // API search type: reduce_1 : (((a, a) -> a), [a]) -> a
-// fwd bind count: 2
+// fwd bind count: 1
 // reduce_1((+), [1, 2, 3]) == (1+2+3) == 6
 // Joins all elements of the sequence using the given function.
 // The set of f and value_type should form a semigroup.

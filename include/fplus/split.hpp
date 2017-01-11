@@ -325,7 +325,7 @@ ContainerOut split_by
         {
             break;
         }
-        start = std::next(stop);
+        start = internal::add_to_iterator(stop);
         if (allow_empty && start == std::end(xs))
         {
             *itOut = {};
@@ -355,7 +355,8 @@ ContainerOut split_by_keep_separators
     auto start = std::begin(xs);
     while (start != std::end(xs))
     {
-        const auto stop = std::find_if(std::next(start), std::end(xs), pred);
+        const auto stop = std::find_if(
+            internal::add_to_iterator(start), std::end(xs), pred);
         *itOut = { start, stop };
         if (stop == std::end(xs))
         {

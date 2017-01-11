@@ -16,7 +16,6 @@ namespace {
     IntVector xs = {1,2,2,3,2};
 }
 
-
 TEST_CASE("pairs_test, zip_with")
 {
     using namespace fplus;
@@ -70,4 +69,17 @@ TEST_CASE("pairs_test, enumerate")
 {
     using namespace fplus;
     REQUIRE_EQ(enumerate(xs), (std::vector<std::pair<std::size_t, int>>({{0,1}, {1,2}, {2,2}, {3,3}, {4,2}})));
+}
+
+TEST_CASE("pairs_test, adjacent_pairs")
+{
+    using namespace fplus;
+    REQUIRE_EQ(adjacent_pairs(xs), IntPairs({{1,2},{2,3}}));
+    REQUIRE_EQ(adjacent_pairs(IntVector({1,2,2,3})), IntPairs({{1,2},{2,3}}));
+}
+
+TEST_CASE("pairs_test, overlapping_pairs")
+{
+    using namespace fplus;
+    REQUIRE_EQ(overlapping_pairs(xs), IntPairs({{1,2},{2,2},{2,3},{3,2}}));
 }

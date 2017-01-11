@@ -214,6 +214,42 @@ ContainerOut swap_pairs_elems(const ContainerIn& xs)
     return fplus::transform(swap_pair_elems<X, Y>, xs);
 }
 
+// API search type: adjacent_pairs : [a] -> [(a, a)]
+// fwd bind count: 0
+// adjacent_pairs([0,1,2,3,4]) == [(0,1),(2,3)]
+template <typename Container,
+    typename ContainerOut =
+        typename internal::same_cont_new_t<Container,
+            std::pair<
+                typename Container::value_type,
+                    typename Container::value_type>>::type>
+ContainerOut adjacent_pairs(const Container& xs)
+{
+    typedef typename Container::value_type T;
+    static_assert(std::is_convertible<
+            std::pair<T, T>,
+            typename ContainerOut::value_type>::value,
+        "ContainerOut can not store pairs of elements from ContainerIn.");
+    ContainerOut result;
+    if (size_of_cont(xs) < 2)
+        return result;
+    const std::size_t out_size = size_of_cont(xs) / 2;
+    internal::prepare_container(result, out_size);
+    auto itOut = internal::get_back_inserter(result);
+    auto it1 = std::begin(xs);
+    auto it2 = it1;
+    internal::advance_iterator(it2, 1);
+    const auto it_source_end =
+        internal::add_to_iterator(std::begin(xs), out_size + out_size);
+    for (; it1 != it_source_end;
+            internal::advance_iterator(it1, 2),
+            internal::advance_iterator(it2, 2))
+    {
+        *itOut = std::make_pair(*it1, *it2);
+    }
+    return result;
+}
+
 // API search type: overlapping_pairs : [a] -> [(a, a)]
 // fwd bind count: 0
 // overlapping_pairs([0,1,2,3]) == [(0,1),(1,2),(2,3)]

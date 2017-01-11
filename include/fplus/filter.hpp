@@ -371,11 +371,11 @@ Container adjacent_keep_snd_if(BinaryPredicate p, const Container& xs)
     auto it = internal::get_back_inserter<Container>(result);
     auto it_in = std::begin(xs);
     *it = *it_in;
-    while (std::next(it_in) != std::end(xs))
+    while (internal::add_to_iterator(it_in) != std::end(xs))
     {
-        if (p(*it_in, *std::next(it_in)))
+        if (p(*it_in, *internal::add_to_iterator(it_in)))
         {
-            *it = *std::next(it_in);
+            *it = *internal::add_to_iterator(it_in);
         }
         internal::advance_iterator(it_in, 1);
     }
@@ -402,9 +402,9 @@ Container adjacent_drop_fst_if(BinaryPredicate p, const Container& xs)
     Container result;
     auto it = internal::get_back_inserter<Container>(result);
     auto it_in = std::begin(xs);
-    while (std::next(it_in) != std::end(xs))
+    while (internal::add_to_iterator(it_in) != std::end(xs))
     {
-        if (!p(*it_in, *std::next(it_in)))
+        if (!p(*it_in, *internal::add_to_iterator(it_in)))
         {
             *it = *it_in;
         }
