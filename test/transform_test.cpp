@@ -130,7 +130,23 @@ TEST_CASE("transform_test, reduce")
 
 TEST_CASE("transform_test, keep_if_parellelly")
 {
-    const std::vector<int> v = { 1, 2, 3, 2, 4, 5 };
+    const std::vector<int> v = {1, 2, 3, 2, 4, 5};
     auto result = fplus::keep_if_parellelly(is_even, v);
     REQUIRE_EQ(result, std::vector<int>({2, 2, 4}));
+}
+
+TEST_CASE("transform_test, transform_reduce")
+{
+    const std::vector<int> v = {1, 2, 3, 4, 5};
+    auto result = fplus::transform_reduce(
+        fplus::square<int>, std::plus<int>(), 0, v);
+    REQUIRE_EQ(result, 55);
+}
+
+TEST_CASE("transform_test, transform_reduce_parallelly")
+{
+    const std::vector<int> v = {1, 2, 3, 4, 5};
+    auto result = fplus::transform_reduce_parallelly(
+        fplus::square<int>, std::plus<int>(), 0, v);
+    REQUIRE_EQ(result, 55);
 }

@@ -343,6 +343,32 @@ Container keep_if_parellelly(Pred pred, const Container& xs)
     return elems_at_idxs(idxs, xs);
 }
 
+// API search type: transform_reduce : ((a -> b), ((b, b) -> b), [b]) -> [b]
+// fwd bind count: 3
+// transform_reduce(square, add, 0, [1,2,3]) == 1+4+9 = 14
+// Also Known as map_reduce.
+template <typename UnaryF, typename BinaryF, typename Container>
+typename Container::value_type transform_reduce(
+    UnaryF unary_f, BinaryF binary_f,
+    const typename Container::value_type& init, const Container& xs)
+{
+    return reduce(binary_f, init,
+        transform(unary_f, xs));
+}
+
+// API search type: transform_reduce_parallelly : ((a -> b), ((b, b) -> b), [b]) -> [b]
+// fwd bind count: 3
+// transform_reduce_parallelly(square, add, 0, [1,2,3]) == 1+4+9 = 14
+// Also Known as map_reduce.
+template <typename UnaryF, typename BinaryF, typename Container>
+typename Container::value_type transform_reduce_parallelly(
+    UnaryF unary_f, BinaryF binary_f,
+    const typename Container::value_type& init, const Container& xs)
+{
+    return reduce_parallelly(binary_f, init,
+        transform_parallelly(unary_f, xs));
+}
+
 // API search type: transform_parallelly_n_threads : (Int, (a -> b), [a]) -> [b]
 // fwd bind count: 2
 // transform_parallelly_n_threads(4, (*2), [1, 3, 4]) == [2, 6, 8]
