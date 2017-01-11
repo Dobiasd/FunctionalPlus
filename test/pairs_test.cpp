@@ -10,7 +10,6 @@
 
 namespace {
     auto squareLambda = [](int x) -> int { return x*x; };
-    auto is_even_int = [](int x){ return x % 2 == 0; };
     typedef std::vector<int> IntVector;
     typedef std::pair<int, int> IntPair;
     typedef std::vector<IntPair> IntPairs;
