@@ -345,8 +345,8 @@ Container keep_if_parellelly(Pred pred, const Container& xs)
 
 // API search type: transform_reduce : ((a -> b), ((b, b) -> b), [b]) -> [b]
 // fwd bind count: 3
-// transform_reduce(square, add, 0, [1,2,3]) == 1+4+9 = 14
-// Also Known as map_reduce.
+// transform_reduce(square, add, 0, [1,2,3]) == 0+1+4+9 = 14
+// The set of binary_f, init and unary_f::output should form a monoid.
 template <typename UnaryF, typename BinaryF, typename Container>
 typename Container::value_type transform_reduce(
     UnaryF unary_f, BinaryF binary_f,
@@ -358,8 +358,10 @@ typename Container::value_type transform_reduce(
 
 // API search type: transform_reduce_parallelly : ((a -> b), ((b, b) -> b), [b]) -> [b]
 // fwd bind count: 3
-// transform_reduce_parallelly(square, add, 0, [1,2,3]) == 1+4+9 = 14
+// transform_reduce_parallelly(square, add, 0, [1,2,3]) == 0+1+4+9 = 14
 // Also Known as map_reduce.
+// The set of binary_f, init and unary_f::output
+// should form a commutative monoid.
 template <typename UnaryF, typename BinaryF, typename Container>
 typename Container::value_type transform_reduce_parallelly(
     UnaryF unary_f, BinaryF binary_f,
