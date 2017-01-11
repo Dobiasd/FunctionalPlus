@@ -8,11 +8,6 @@
 #include "doctest.h"
 #include <fplus/fplus.hpp>
 
-namespace {
-
-    auto is_even_int = [](int x){ return x % 2 == 0; };
-    typedef std::vector<int> IntVector;
-}
 
 TEST_CASE("set_test, set functions")
 {
