@@ -20,7 +20,7 @@ Table of contents
   * [Forward composition and application](#forward-composition-and-application)
   * [Finding the functions you need](#finding-the-functions-you-need)
   * [Performance](#performance)
-  * [Comparison with Range-v3](#comparison-with-range-v3)
+  * [Comparison with range-v3](#comparison-with-range-v3)
   * [Requirements and Installation](#requirements-and-installation)
 
 
@@ -308,7 +308,7 @@ The more complex functions though sometimes could be written in a more optimized
 Additionally keep in mind that FunctionalPlus always produces copies and never operates in place. [Even modern compilers often can not optimize these allocations away in chained calls.](http://stackoverflow.com/questions/39658768/loop-fusion-in-c-how-to-help-the-compiler). Thanks to working with a multi-paradigm language one easily can combine manually optimized imperative code with `fplus` functions. Luckily experience (aka. profiling) shows that in most cases the vast majority of code in an application is not relevant for overall performance and memory consumption. So initially focusing on developer productivity and readability of code is a good idea.
 
 
-Comparison with Range-v3
+Comparison with range-v3
 ------------------------
 
 [Range-v3](https://github.com/ericniebler/range-v3) and FunctionalPlus do have things in common, as the following code snippet shows.
@@ -327,7 +327,7 @@ const auto result_fplus = fwd::apply(
     , fwd::transform(as_string_length)
     , fwd::sum());
 
-// Range-v3
+// range-v3
 const auto result_range_v3 =
     accumulate(
         view::ints(0)
@@ -338,7 +338,7 @@ const auto result_range_v3 =
         , 0);
 ```
 
-There are some differences though. Range-v3 ranges are lazy, which means no intermediate copies of the containers are made during the single steps of a processing chain like above. Also Range-v3 will probably be [part of the C++ standard](https://ericniebler.github.io/std/wg21/D4128.html) at some point in the future.
+There are some differences though. Range-v3 ranges are lazy, which means no intermediate copies of the containers are made during the single steps of a processing chain like above. Also range-v3 will probably be [part of the C++ standard](https://ericniebler.github.io/std/wg21/D4128.html) at some point in the future.
 When using FunctionalPlus on the other hand you work with normal STL-containers. Also [implementing a new function](https://github.com/Dobiasd/FunctionalPlus/blob/a17fc716d40a4370eed13f16e7d9105c4cc75e26/include/fplus/generate.hpp#L19) is simpler compared to [writing a new range adaptor](https://github.com/ericniebler/range-v3/blob/4cfcb59c3db1c279d72c64ccf15de3c724a0362d/include/range/v3/algorithm/generate.hpp#L32). Additionally FunctionalPlus provides much more functions out of the box, has the [API search website](http://www.editgym.com/fplus-api-search/) and shorter compile times (2 s vs. 12 s in the example above). So the choice between the two libraries depends on your preferences and project's needs.
 
 
