@@ -523,6 +523,19 @@ Acc fold_left(F f, const Acc& init, const Container& xs)
     return acc;
 }
 
+// API search type: reduce : (((a, a) -> a), a, [a]) -> a
+// fwd bind count: 2
+// reduce((+), 0, [1, 2, 3]) == (0+1+2+3) == 6
+// Combines the initial value and all elements of the sequence
+// using the given function.
+// The set of f, init and value_type should form a monoid.
+template <typename F, typename Container>
+typename Container::value_type reduce(
+    F f, const typename Container::value_type& init, const Container& xs)
+{
+    return fold_left(f, init, xs);
+}
+
 // API search type: fold_left_1 : (((a, a) -> a), [a]) -> a
 // fwd bind count: 1
 // fold_left_1((+), [1, 2, 3]) == (1+2)+3 == 6
@@ -534,7 +547,26 @@ template <typename F, typename Container,
 Acc fold_left_1(F f, const Container& xs)
 {
     assert(!xs.empty());
-    return fold_left(f, xs.front(), drop(1, xs));
+    Acc acc = xs.front();
+    auto it = std::begin(xs);
+    ++it;
+    for (; it != std::end(xs); ++it)
+    {
+        acc = f(acc, *it);
+    }
+    return acc;
+}
+
+// API search type: reduce_1 : (((a, a) -> a), [a]) -> a
+// fwd bind count: 2
+// reduce_1((+), [1, 2, 3]) == (1+2+3) == 6
+// Joins all elements of the sequence using the given function.
+// The set of f and value_type should form a semigroup.
+template <typename F, typename Container>
+typename Container::value_type reduce_1(F f, const Container& xs)
+{
+    assert(!xs.empty());
+    return fold_left_1(f, xs);
 }
 
 // API search type: fold_right : (((a, b) -> b), b) -> [a] -> b
@@ -600,7 +632,21 @@ template <typename F, typename ContainerIn,
 ContainerOut scan_left_1(F f, const ContainerIn& xs)
 {
     assert(!xs.empty());
-    return scan_left(f, xs.front(), drop(1, xs));
+    ContainerOut result;
+    internal::prepare_container(result, size_of_cont(xs));
+    auto itOut = internal::get_back_inserter(result);
+
+    Acc acc = xs.front();
+    *itOut = acc;
+
+    auto it = std::begin(xs);
+    ++it;
+    for (; it != std::end(xs); ++it)
+    {
+        acc = f(acc, *it);
+        *itOut = acc;
+    }
+    return result;
 }
 
 // API search type: scan_right : (((a, b) -> b), b, [a]) -> [b]

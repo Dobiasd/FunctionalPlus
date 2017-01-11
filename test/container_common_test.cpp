@@ -304,6 +304,13 @@ TEST_CASE("container_common_test, fold")
     REQUIRE_EQ(fold_right(appendXToStrForFoldR, emptyString, xs), "23221");
 }
 
+TEST_CASE("container_common_test, reduce")
+{
+    using namespace fplus;
+    REQUIRE_EQ(reduce(std::plus<int>(), 100, xs), 110);
+    REQUIRE_EQ(reduce_1(std::plus<int>(), xs), 10);
+}
+
 TEST_CASE("container_common_test, scan")
 {
     using namespace fplus;
