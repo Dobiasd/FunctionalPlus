@@ -18,6 +18,7 @@
 
 #include <algorithm>
 #include <future>
+#include <iterator>
 #include <mutex>
 #include <random>
 
@@ -238,7 +239,6 @@ FOut apply_function_n_times(const F f, std::size_t n, const FIn& x)
 // Same as transform, but can utilize multiple CPUs by using std::async.
 // Only makes sense if one run of the provided function
 // takes enough time to justify the synchronization overhead.
-// Can be used for applying the MapReduce pattern.
 template <typename F, typename ContainerIn,
     typename ContainerOut = typename internal::same_cont_new_t_from_unary_f<
         ContainerIn, F>::type,
@@ -262,6 +262,74 @@ ContainerOut transform_parallelly(F f, const ContainerIn& xs)
         ys.push_back(handle.get());
     }
     return ys;
+}
+
+// API search type: reduce_parallelly : (((a, a) -> a), a, [a]) -> a
+// fwd bind count: 2
+// reduce_parallelly((+), 0, [1, 2, 3]) == (0+1+2+3) == 6
+// Same as reduce, but can utilize multiple CPUs by using std::async.
+// Combines the initial value and all elements of the sequence
+// using the given function in random order.
+// The set of f, init and value_type should form a commutative monoid.
+template <typename F, typename Container>
+typename Container::value_type reduce_parallelly(
+    F f, const typename Container::value_type& init, const Container& xs)
+{
+    if (is_empty(xs))
+    {
+        return init;
+    }
+    else if (size_of_cont(xs) == 1)
+    {
+        return f(init, xs.front());
+    }
+    else
+    {
+        typedef typename Container::value_type T;
+        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T
+        {
+            return f(p.first, p.second);
+        };
+        auto transform_result =
+            transform_parallelly(f_on_pair, adjacent_pairs(xs));
+        if (size_of_cont(xs) % 2 == 1)
+        {
+            transform_result.push_back(last(xs));
+        }
+        return reduce_parallelly(f, init, transform_result);;
+    }
+}
+
+// API search type: reduce_1_parallelly : (((a, a) -> a), [a]) -> a
+// fwd bind count: 1
+// reduce_1_parallelly((+), [1, 2, 3]) == (1+2+3) == 6
+// Same as reduce_1, but can utilize multiple CPUs by using std::async.
+// Joins all elements of the sequence using the given function
+// in random order.
+// The set of f and value_type should form a commutative semigroup.
+template <typename F, typename Container>
+typename Container::value_type reduce_1_parallelly(F f, const Container& xs)
+{
+    assert(is_not_empty(xs));
+    if (size_of_cont(xs) == 1)
+    {
+        return xs.front();
+    }
+    else
+    {
+        typedef typename Container::value_type T;
+        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T
+        {
+            return f(p.first, p.second);
+        };
+        auto transform_result =
+            transform_parallelly(f_on_pair, adjacent_pairs(xs));
+        if (size_of_cont(xs) % 2 == 1)
+        {
+            transform_result.push_back(last(xs));
+        }
+        return reduce_1_parallelly(f, transform_result);
+    }
 }
 
 // API search type: transform_parallelly_n_threads : (Int, (a -> b), [a]) -> [b]

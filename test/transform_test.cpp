@@ -116,3 +116,10 @@ TEST_CASE("transform_test, transform")
 
     REQUIRE_EQ(apply_function_n_times(squareLambda, 3, 2), 256);
 }
+
+TEST_CASE("transform_test, reduce")
+{
+    using namespace fplus;
+    REQUIRE_EQ(reduce_parallelly(std::plus<int>(), 100, xs), 110);
+    REQUIRE_EQ(reduce_1_parallelly(std::plus<int>(), xs), 10);
+}
