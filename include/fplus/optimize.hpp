@@ -15,7 +15,6 @@
 namespace fplus
 {
 
-// API search type: minimize_downhill : (([Float] -> Float), Float, [Float], Maybe Float, Float, Float, Float, Int, Int, ((Int, Float, [Float], [Float]) -> IO ())) -> [Float]
 // Optimizes the initial position to the nearest local minimum
 // in regards to the objective_function
 // using numerical gradient descent based on the epsilon neighborhood.
