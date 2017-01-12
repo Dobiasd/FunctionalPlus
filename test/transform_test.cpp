@@ -143,10 +143,26 @@ TEST_CASE("transform_test, transform_reduce")
     REQUIRE_EQ(result, 55);
 }
 
+TEST_CASE("transform_test, transform_reduce_1")
+{
+    const std::vector<int> v = {1, 2, 3, 4, 5};
+    auto result = fplus::transform_reduce_1(
+        fplus::square<int>, std::plus<int>(), v);
+    REQUIRE_EQ(result, 55);
+}
+
 TEST_CASE("transform_test, transform_reduce_parallelly")
 {
     const std::vector<int> v = {1, 2, 3, 4, 5};
     auto result = fplus::transform_reduce_parallelly(
         fplus::square<int>, std::plus<int>(), 0, v);
+    REQUIRE_EQ(result, 55);
+}
+
+TEST_CASE("transform_test, transform_reduce_1_parallelly")
+{
+    const std::vector<int> v = {1, 2, 3, 4, 5};
+    auto result = fplus::transform_reduce_1_parallelly(
+        fplus::square<int>, std::plus<int>(), v);
     REQUIRE_EQ(result, 55);
 }
