@@ -200,19 +200,19 @@ void problem_22()
 // P23 (**) Extract a given number of randomly selected elements from a list.
 void problem_23()
 {
-    print_result(sample(3, xs));
+    print_result(sample(std::random_device()(), 3, xs));
 }
 
 // P24 (*) Lotto: Draw N different random numbers from the set 1..M.
 void problem_24()
 {
-    print_result(sample(3, numbers<int>(1, 100)));
+    print_result(sample(std::random_device()(), 3, numbers<int>(1, 100)));
 }
 
 // P25 (*) Generate a random permutation of the elements of a list.
 void problem_25()
 {
-    print_result(shuffle(xs));
+    print_result(shuffle(std::random_device()(), xs));
 }
 
 // P26 (**) Generate the combinations of K distinct objects chosen from the N elements of a list
