@@ -150,41 +150,46 @@ Container transpose(const Container& rows)
         size_of_cont(rows), interleave(rows));
 }
 
-// API search type: shuffle : [a] -> [a]
-// fwd bind count: 0
+// API search type: shuffle : (Int, [a]) -> [a]
+// fwd bind count: 1
 // Returns a randomly shuffled version of xs.
+// Example call: shuffle(std::mt19937::default_seed, xs);
+// Example call: shuffle(std::random_device()(), xs);
 template <typename Container>
-Container shuffle(const Container& xs)
+Container shuffle(std::uint_fast32_t seed, const Container& xs)
 {
-    std::random_device rd;
-    std::mt19937 g(rd());
+    std::mt19937 g(seed);
     Container ys = xs;
     std::shuffle(std::begin(ys), std::end(ys), g);
     return ys;
 }
 
-// API search type: sample : (Int, [a]) -> [a]
-// fwd bind count: 1
+// API search type: sample : (Int, Int, [a]) -> [a]
+// fwd bind count: 2
 // Returns n random elements from xs.
 // n has to be smaller than or equal to the number of elements in xs.
 // Also known as rnd_select.
+// Example call: sample(std::mt19937::default_seed, 3, xs);
+// Example call: sample(std::random_device()(), 3, xs);
 template <typename Container>
-Container sample(std::size_t n, const Container& xs)
+Container sample(std::uint_fast32_t seed, std::size_t n, const Container& xs)
 {
     assert(n <= size_of_cont(xs));
-    return get_segment(0, n, shuffle(xs));
+    return get_segment(0, n, shuffle(seed, xs));
 }
 
-// API search type: random_element : [a] -> a
-// fwd bind count: 0
+// API search type: random_element : (Int, [a]) -> a
+// fwd bind count: 1
 // Returns one random element from xs.
 // xs must be non-empty.
+// Example call: random_element(std::mt19937::default_seed, xs)
+// Example call: random_element(std::random_device()(), xs)
 template <typename Container>
-typename Container::value_type random_element(const Container& xs)
+typename Container::value_type random_element(
+    std::uint_fast32_t seed, const Container& xs)
 {
     assert(is_not_empty(xs));
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::mt19937 gen(seed);
     std::uniform_int_distribution<std::size_t> dis(0, size_of_cont(xs) - 1);
     return elem_at_idx(dis(gen), xs);
 }

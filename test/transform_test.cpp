@@ -60,27 +60,38 @@ TEST_CASE("transform_test, transpose")
 TEST_CASE("transform_test, shuffle")
 {
     using namespace fplus;
-    const auto shuffled = shuffle(xs);
-    REQUIRE(is_permutation_of(shuffled, xs));
+
+    const auto shuffled1 = shuffle(std::mt19937::default_seed, xs);
+    REQUIRE(is_permutation_of(shuffled1, xs));
+
+    const auto shuffled2 = shuffle(std::random_device()(), xs);
+    REQUIRE(is_permutation_of(shuffled2, xs));
 }
 
 TEST_CASE("transform_test, sample")
 {
     using namespace fplus;
-    const auto elem = random_element(xs);
-    REQUIRE(contains(xs, elem));
+
+    const auto elem1 = random_element(std::mt19937::default_seed, xs);
+    REQUIRE(contains(xs, elem1));
+
+    const auto elem2 = random_element(std::random_device()(), xs);
+    REQUIRE(contains(xs, elem2));
 }
 
 TEST_CASE("transform_test, sample")
 {
     using namespace fplus;
-    const auto sampled = sample(3, xs);
-    const auto check_is_elem_of_xs = [&](int x)
-    {
-        return contains(xs, x);
-    };
-    REQUIRE_EQ(sampled.size(), 3);
-    REQUIRE(all_by(check_is_elem_of_xs, sampled));
+
+    const auto check_is_elem_of_xs = bind_1st_of_2(contains<IntVector>, xs);
+
+    const auto sampled1 = sample(std::mt19937::default_seed, 3, xs);
+    REQUIRE_EQ(sampled1.size(), 3);
+    REQUIRE(all_by(check_is_elem_of_xs, sampled1));
+
+    const auto sampled2 = sample(std::random_device()(), 3, xs);
+    REQUIRE_EQ(sampled2.size(), 3);
+    REQUIRE(all_by(check_is_elem_of_xs, sampled2));
 }
 
 TEST_CASE("transform_test, transform")
