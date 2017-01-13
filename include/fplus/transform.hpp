@@ -274,7 +274,7 @@ ContainerOut transform_parallelly(F f, const ContainerIn& xs)
 // reduce_parallelly((+), 0, [1, 2, 3]) == (0+1+2+3) == 6
 // Same as reduce, but can utilize multiple CPUs by using std::async.
 // Combines the initial value and all elements of the sequence
-// using the given function in random order.
+// using the given function in unspecified order.
 // The set of f, init and value_type should form a commutative monoid.
 template <typename F, typename Container>
 typename Container::value_type reduce_parallelly(
@@ -310,7 +310,7 @@ typename Container::value_type reduce_parallelly(
 // reduce_1_parallelly((+), [1, 2, 3]) == (1+2+3) == 6
 // Same as reduce_1, but can utilize multiple CPUs by using std::async.
 // Joins all elements of the sequence using the given function
-// in random order.
+// in unspecified order.
 // The set of f and value_type should form a commutative semigroup.
 template <typename F, typename Container>
 typename Container::value_type reduce_1_parallelly(F f, const Container& xs)
