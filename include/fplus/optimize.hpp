@@ -42,7 +42,11 @@ pos_t minimize_downhill(
         double min_step_factor = std::numeric_limits<double>::min(),
         std::size_t max_iterations = std::numeric_limits<std::size_t>::max(),
         long int max_milliseconds = std::numeric_limits<long int>::max(),
-        const std::function<void (std::size_t, double, const pos_t&, const pos_t&)>& callback = std::function<void (std::size_t, double, const pos_t&, const pos_t&)>())
+        const std::function<
+                void (std::size_t, double, const pos_t&, const pos_t&)>&
+            callback =
+            std::function<
+                void (std::size_t, double, const pos_t&, const pos_t&)>())
 {
     std::size_t iteration = 0;
     double step_factor = 1.0;
