@@ -62,14 +62,13 @@ TEST_CASE("maybe_test, lift")
     using namespace fplus;
     auto x = just<int>(2);
     maybe<int> y = nothing<int>();
-    auto squareMaybe = lift_maybe(square<int>);
-    REQUIRE_EQ(squareMaybe(x), just(4));
-    REQUIRE_EQ(squareMaybe(y), nothing<int>());
+    REQUIRE_EQ(lift_maybe(square<int>, x), just(4));
+    REQUIRE_EQ(lift_maybe(square<int>, y), nothing<int>());
     auto SquareAndSquare = compose(square<int>, square<int>);
-    REQUIRE_EQ(lift_maybe(SquareAndSquare)(x), just(16));
+    REQUIRE_EQ(lift_maybe(SquareAndSquare, x), just(16));
 
-    REQUIRE_EQ(lift_maybe_def(3, square<int>)(x), 4);
-    REQUIRE_EQ(lift_maybe_def(3, square<int>)(y), 3);
+    REQUIRE_EQ(lift_maybe_def(3, square<int>, x), 4);
+    REQUIRE_EQ(lift_maybe_def(3, square<int>, y), 3);
 }
 
 TEST_CASE("maybe_test, and_then")
@@ -88,7 +87,10 @@ TEST_CASE("maybe_test, compose")
     auto sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt = compose_maybe(sqrtToMaybeInt, sqrtToMaybeInt, sqrtToMaybeInt, sqrtToMaybeInt);
     REQUIRE_EQ(sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt(65536), just(2));
 
-    auto LiftedIntToFloat = lift_maybe(IntToFloat);
+    auto LiftedIntToFloat = [](const maybe<int>& m) -> maybe<float>
+    {
+        return lift_maybe(IntToFloat, m);
+    };
     auto JustInt = just<int>;
     auto IntToMaybeFloat = compose(JustInt, LiftedIntToFloat);
     auto IntToFloatAndSqrtAndSqrt = compose_maybe(IntToMaybeFloat, sqrtAndSqrt);

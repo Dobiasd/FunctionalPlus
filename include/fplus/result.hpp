@@ -201,7 +201,8 @@ bool operator != (const result<Ok, Error>& x, const result<Ok, Error>& y)
     return !(x == y);
 }
 
-// API search type: lift_result : (a -> b) -> (Result a c -> Result b c)
+// API search type: lift_result : ((a -> b), Result a c) -> Result b c
+// fwd bind count: 1
 // Lifts a function into the result functor.
 // A function that for example was able to convert and int into a string,
 // now can convert a result<int> into a result<string>.
@@ -212,18 +213,16 @@ template <typename Error,
         typename utils::function_traits<F>::template arg<0>::type>::type>::type,
     typename B = typename std::remove_const<typename std::remove_reference<
         typename std::result_of<F(A)>::type>::type>::type>
-std::function<result<B, Error>(const result<A, Error>&)> lift_result(F f)
+result<B, Error> lift_result(F f, const result<A, Error>& r)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return [f](const result<A, Error>& r) -> result<B, Error>
-    {
-        if (is_ok(r))
-            return ok<B, Error>(f(unsafe_get_ok(r)));
-        return error<B, Error>(unsafe_get_error(r));
-    };
+    if (is_ok(r))
+        return ok<B, Error>(f(unsafe_get_ok(r)));
+    return error<B, Error>(unsafe_get_error(r));
 }
 
-// API search type: lift_result_both : ((a -> c), (b -> d)) -> (Result a b -> Result c d)
+// API search type: lift_result_both : ((a -> c), (b -> d), Result a b) -> Result c d
+// fwd bind count: 2
 // Lifts two functions into the result functor.
 template <
     typename F,
@@ -236,15 +235,12 @@ template <
         typename utils::function_traits<G>::template arg<0>::type>::type>::type,
     typename D = typename std::remove_const<typename std::remove_reference<
         typename std::result_of<G(B)>::type>::type>::type>
-std::function<result<C, D>(const result<A, B>&)> lift_result_both(F f, G g)
+result<C, D> lift_result_both(F f, G g, const result<A, B>& r)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return [f, g](const result<A, B>& r) -> result<C, D>
-    {
-        if (is_ok(r))
-            return ok<C, D>(f(unsafe_get_ok(r)));
-        return error<C, D>(g(unsafe_get_error(r)));
-    };
+    if (is_ok(r))
+        return ok<C, D>(f(unsafe_get_ok(r)));
+    return error<C, D>(g(unsafe_get_error(r)));
 }
 
 // API search type: unify_result : ((a -> c), (b -> c), Result a b) -> c

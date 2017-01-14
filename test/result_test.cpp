@@ -68,17 +68,20 @@ TEST_CASE("result_test, compose_result")
     using namespace fplus;
     auto x = ok<int, std::string>(2);
     auto y = error<int, std::string>("an error");
-    auto squareResult = lift_result<std::string>(square<int>);
     auto sqrtAndSqrt = compose_result(sqrtToResult, sqrtToResult);
-    REQUIRE_EQ(squareResult(x), (ok<int, std::string>(4)));
-    REQUIRE_EQ(squareResult(y), (error<int>(std::string("an error"))));
+    REQUIRE_EQ(lift_result(square<int>, x), (ok<int, std::string>(4)));
+    REQUIRE_EQ(lift_result(square<int>, y), (error<int>(std::string("an error"))));
 
     auto sqrtIntAndSqrtIntAndSqrtInt = compose_result(sqrtToResultInt, sqrtToResultInt, sqrtToResultInt);
     REQUIRE_EQ(sqrtIntAndSqrtIntAndSqrtInt(256), (ok<int, std::string>(2)));
     auto sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt = compose_result(sqrtToResultInt, sqrtToResultInt, sqrtToResultInt, sqrtToResultInt);
     REQUIRE_EQ(sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt(65536), (ok<int, std::string>(2)));
 
-    auto LiftedIntToFloat = lift_result<std::string>(IntToFloat);
+    const auto LiftedIntToFloat =
+    [](const result<int, std::string>& r) -> result<float, std::string>
+    {
+        return lift_result(IntToFloat, r);
+    };
     auto OkInt = ok<int, std::string>;
     auto IntToResultFloat = compose(OkInt, LiftedIntToFloat);
     auto IntToFloatAndSqrtAndSqrt = compose_result(IntToResultFloat, sqrtAndSqrt);
@@ -92,7 +95,7 @@ TEST_CASE("result_test, lift")
     auto x = ok<int, std::string>(2);
     auto y = error<int, std::string>("an error");
     auto SquareAndSquare = compose(square<int>, square<int>);
-    REQUIRE_EQ((lift_result<std::string>(SquareAndSquare))(x), (ok<int, std::string>(16)));
+    REQUIRE_EQ((lift_result<std::string>(SquareAndSquare, x)), (ok<int, std::string>(16)));
 }
 
 TEST_CASE("result_test, lift_both")
@@ -100,8 +103,8 @@ TEST_CASE("result_test, lift_both")
     using namespace fplus;
     const auto x = ok<int, std::string>(2);
     const auto y = error<int, std::string>("an error");
-    REQUIRE_EQ(lift_result_both(square<int>, to_upper_case<std::string>)(x), (ok<int, std::string>(4)));
-    REQUIRE_EQ(lift_result_both(square<int>, to_upper_case<std::string>)(y), (error<int, std::string>("AN ERROR")));
+    REQUIRE_EQ(lift_result_both(square<int>, to_upper_case<std::string>, x), (ok<int, std::string>(4)));
+    REQUIRE_EQ(lift_result_both(square<int>, to_upper_case<std::string>, y), (error<int, std::string>("AN ERROR")));
 }
 
 TEST_CASE("result_test, unify_result")

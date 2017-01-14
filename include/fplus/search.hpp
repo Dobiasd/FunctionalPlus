@@ -71,8 +71,7 @@ maybe<std::size_t> find_last_idx_by
     {
         return size_of_cont(xs) - (idx + 1);
     };
-    return lift_maybe(calcRevIdx)
-            (find_first_idx_by(pred, reverse(xs)));
+    return lift_maybe(calcRevIdx, find_first_idx_by(pred, reverse(xs)));
 }
 
 // API search type: find_first_idx : (a, [a]) -> Maybe Int

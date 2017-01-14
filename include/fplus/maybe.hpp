@@ -125,7 +125,8 @@ bool operator != (const maybe<T>& x, const maybe<T>& y)
     return !(x == y);
 }
 
-// API search type: lift_maybe : (a -> b) -> (Maybe a -> Maybe b)
+// API search type: lift_maybe : ((a -> b), Maybe a) -> Maybe b
+// fwd bind count: 1
 // Lifts a function into the maybe functor.
 // A function that for example was able to convert and int into a string,
 // now can convert a Maybe<int> into a Maybe<string>.
@@ -136,18 +137,16 @@ template <typename F,
             F>::template arg<0>::type>::type>::type,
     typename B = typename std::remove_const<typename std::remove_reference<
         typename std::result_of<F(A)>::type>::type>::type>
-std::function<maybe<B>(const maybe<A>&)> lift_maybe(F f)
+maybe<B> lift_maybe(F f, const maybe<A>& m)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return [f](const maybe<A>& m) -> maybe<B>
-    {
-        if (is_just(m))
-            return just<B>(f(unsafe_get_just(m)));
-        return nothing<B>();
-    };
+    if (is_just(m))
+        return just<B>(f(unsafe_get_just(m)));
+    return nothing<B>();
 }
 
-// API search type: lift_maybe_def : (b, (a -> b)) -> (Maybe a -> b)
+// API search type: lift_maybe_def : (b, (a -> b), Maybe a) -> b
+// fwd bind count: 2
 // lift_maybe_def takes a default value and a function.
 // It returns a function taking a Maybe value.
 // This function returns the default value if the Maybe value is nothing.
@@ -159,15 +158,12 @@ template <typename F,
             F>::template arg<0>::type>::type>::type,
     typename B = typename std::remove_const<typename std::remove_reference<
         typename std::result_of<F(A)>::type>::type>::type>
-std::function<B(const maybe<A>&)> lift_maybe_def(const B& def, F f)
+B lift_maybe_def(const B& def, F f, const maybe<A>& m)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return [f, def](const maybe<A>& m) -> B
-    {
-        if (is_just(m))
-            return f(unsafe_get_just(m));
-        return def;
-    };
+    if (is_just(m))
+        return f(unsafe_get_just(m));
+    return def;
 }
 
 // API search type: and_then_maybe : ((a -> Maybe b), (Maybe a)) -> Maybe b
