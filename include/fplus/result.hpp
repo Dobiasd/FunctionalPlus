@@ -281,7 +281,7 @@ template <typename Ok, typename Error, typename F,
         typename std::result_of<F(FIn)>::type>::type>::type,
     typename FOutOk = typename FOut::ok_t,
     typename FOutError = typename FOut::error_t>
-result<FOutOk, FOutError> and_then_result(F f, const result<Ok, Error>& r)
+result<FOutOk, Error> and_then_result(F f, const result<Ok, Error>& r)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     static_assert(std::is_same<Error, FOutError>::value,
