@@ -290,7 +290,8 @@ result<FOutOk, FOutError> and_then_result(F f, const result<Ok, Error>& r)
         "Function parameter types do not match.");
     if (is_ok(r))
         return f(unsafe_get_ok(r));
-    return r;
+    else
+        return error<FOutOk, FOutError>(r.unsafe_get_error());
 }
 
 // API search type: compose_result : ((a -> Result b c), (b -> Result d c)) -> (a -> Result d c)

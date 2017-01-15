@@ -185,7 +185,8 @@ maybe<FOutJustT> and_then_maybe(F f, const maybe<T>& m)
         "Function parameter types do not match.");
     if (is_just(m))
         return f(unsafe_get_just(m));
-    return m;
+    else
+        return nothing<FOutJustT>();
 }
 
 // API search type: compose_maybe : ((a -> Maybe b), (b -> Maybe c)) -> (a -> Maybe c)

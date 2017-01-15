@@ -76,6 +76,14 @@ TEST_CASE("maybe_test, and_then")
     using namespace fplus;
     REQUIRE_EQ(and_then_maybe(sqrtToMaybeInt, just(4)), just(2));
     REQUIRE_EQ(and_then_maybe(sqrtToMaybeInt, nothing<int>()), nothing<int>());
+    const auto string_to_maybe_int = [](const std::string& str) -> maybe<int>
+    {
+        if (str == "42") return just<int>(42);
+        else return nothing<int>();
+    };
+    REQUIRE_EQ(and_then_maybe(string_to_maybe_int, just<std::string>("3")), nothing<int>());
+    REQUIRE_EQ(and_then_maybe(string_to_maybe_int, just<std::string>("42")), just<int>(42));
+    REQUIRE_EQ(and_then_maybe(string_to_maybe_int, nothing<std::string>()), nothing<int>());
 }
 
 TEST_CASE("maybe_test, compose")

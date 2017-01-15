@@ -53,7 +53,7 @@ TEST_CASE("result_test, ok_with_default")
     REQUIRE_EQ(Or42(y), 42);
 }
 
-TEST_CASE("result_test, and_theand_then_resultn")
+TEST_CASE("result_test, and_then_result")
 {
     using namespace fplus;
     auto ok_4 = ok<int, std::string>(4);
@@ -61,6 +61,16 @@ TEST_CASE("result_test, and_theand_then_resultn")
     auto an_error = error<int, std::string>("an error");
     REQUIRE_EQ(and_then_result(sqrtToResultInt, ok_4), ok_2);
     REQUIRE_EQ(and_then_result(sqrtToResultInt, an_error), an_error);
+
+    const auto string_to_result_int_string =
+        [](const std::string& str) -> result<int, std::string>
+    {
+        if (str == "42") return ok<int, std::string>(42);
+        else return error<int, std::string>("not 42");
+    };
+    REQUIRE_EQ(and_then_result(string_to_result_int_string, (ok<std::string, std::string>("3"))), (error<int, std::string>("not 42")));
+    REQUIRE_EQ(and_then_result(string_to_result_int_string, (ok<std::string, std::string>("42"))), (ok<int, std::string>(42)));
+    REQUIRE_EQ(and_then_result(string_to_result_int_string, (error<std::string, std::string>("error"))), (error<int, std::string>("error")));
 }
 
 TEST_CASE("result_test, compose_result")
