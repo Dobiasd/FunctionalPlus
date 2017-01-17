@@ -188,10 +188,9 @@ ContainerOut group_globally(const ContainerIn& xs)
 // cluster_by(\x y -> abs (y - x) <= 3), [2,3,6,4,12,11,20,23,8,4])
 // == [[2,3,6,4,12,11,8,4],[20,23]]
 // BinaryPredicate p is a connectivity check, being
-//  - commutative (p(x,y) = p(y,x))
-//  - reflexive (p(x,x) = true)
-//  - not neccessarily transitive, but can be
-//
+//  a) commutative (p(x,y) = p(y,x))
+//  b) reflexive (p(x,x) = true)
+//  c) not neccessarily transitive, but can be
 // O(n^2), memory complexity also O(n^2)
 template <typename BinaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
