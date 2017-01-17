@@ -10,6 +10,7 @@
 
 namespace {
     auto squareLambda = [](int x) -> int { return x*x; };
+    auto cubeLambda = [](int x) -> int { return x*x*x; };
     typedef std::vector<int> IntVector;
     typedef std::pair<int, int> IntPair;
     typedef std::vector<IntPair> IntPairs;
@@ -24,6 +25,13 @@ TEST_CASE("pairs_test, zip_with")
     const auto add = [](int x, int y){ return x + y; };
     REQUIRE_EQ(zip_with(add, IntVector({1,2,3}), IntVector({1,2})), IntVector({2,4}));
     REQUIRE_EQ(zip_with(add, IntVector({1,2}), IntVector({1,2,3})), IntVector({2,4}));
+}
+
+TEST_CASE("pairs_test, zip_with_3")
+{
+    using namespace fplus;
+    const auto multiply = [](int x, int y, int z){ return x * y * z; };
+    REQUIRE_EQ(zip_with_3(multiply, xs, xs, xs), transform(cubeLambda, xs));
 }
 
 TEST_CASE("pairs_test, zip_with_defaults")

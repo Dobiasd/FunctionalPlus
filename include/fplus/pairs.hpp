@@ -70,6 +70,61 @@ ContainerOut zip_with(F f,
     return result;
 }
 
+// API search type: zip_with_3 : (((a, b, c) -> d), [a], [b], [c]) -> [c]
+// fwd bind count: 3
+// zip_with_3((+), [1, 2, 3], [5, 6], [1, 1]) == [7, 9]
+template <typename ContainerIn1, typename ContainerIn2, typename ContainerIn3,
+    typename F,
+    typename X = typename ContainerIn1::value_type,
+    typename Y = typename ContainerIn2::value_type,
+    typename Z = typename ContainerIn3::value_type,
+    typename TOut = typename std::result_of<F(X, Y, Z)>::type,
+    typename ContainerOut = typename std::vector<TOut>>
+ContainerOut zip_with_3(F f,
+    const ContainerIn1& xs, const ContainerIn2& ys, const ContainerIn3& zs)
+{
+    static_assert(utils::function_traits<F>::arity == 3,
+        "Function must take two parameters.");
+    typedef typename std::result_of<F(X, Y, Z)>::type FOut;
+    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
+    typedef typename utils::function_traits<F>::template arg<2>::type FIn2;
+    typedef typename ContainerIn1::value_type T1;
+    typedef typename ContainerIn2::value_type T2;
+    typedef typename ContainerIn3::value_type T3;
+    static_assert(std::is_convertible<T1, FIn0>::value,
+        "Function does not take elements from first Container as first Parameter.");
+    static_assert(std::is_convertible<T2, FIn1>::value,
+        "Function does not take elements from second Container as second Parameter.");
+    static_assert(std::is_convertible<T3, FIn2>::value,
+        "Function does not take elements from third Container as third Parameter.");
+    static_assert(std::is_convertible<FOut, TOut>::value,
+        "Elements produced by this function can not be stored in ContainerOut.");
+    static_assert(std::is_same<
+        typename internal::same_cont_new_t<ContainerIn1, void>::type,
+        typename internal::same_cont_new_t<ContainerIn2, void>::type>::value,
+        "All three Containers must be of same outer type.");
+    static_assert(std::is_same<
+        typename internal::same_cont_new_t<ContainerIn2, void>::type,
+        typename internal::same_cont_new_t<ContainerIn3, void>::type>::value,
+        "All three Containers must be of same outer type.");
+    ContainerOut result;
+    std::size_t resultSize = std::min(size_of_cont(xs), size_of_cont(ys));
+    internal::prepare_container(result, resultSize);
+    auto itResult = internal::get_back_inserter(result);
+    auto itXs = std::begin(xs);
+    auto itYs = std::begin(ys);
+    auto itZs = std::begin(zs);
+    for (std::size_t i = 0; i < resultSize; ++i)
+    {
+        *itResult = f(*itXs, *itYs, *itZs);
+        ++itXs;
+        ++itYs;
+        ++itZs;
+    }
+    return result;
+}
+
 // API search type: zip_with_defaults : (((a, b) -> c), a, b, [a], [b]) -> [c]
 // fwd bind count: 4
 // zip_with_defaults((+), 6, 7, [1,2,3], [1,2]) == [2,4,10]
