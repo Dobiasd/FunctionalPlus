@@ -162,3 +162,19 @@ TEST_CASE("composition_test, memoize")
         REQUIRE_EQ(fibo_memo(n), fibo(n));
     }
 }
+
+TEST_CASE("composition_test, constructor_as_function")
+{
+    using namespace fplus;
+
+    struct foo
+    {
+        foo(int a, int b) : a_(a), b_(2*b) {}
+        int a_;
+        int b_;
+    };
+    const auto create_foo = constructor_as_function<foo, int, int>;
+    const auto my_foo = create_foo(1,2);
+    REQUIRE_EQ(my_foo.a_, 1);
+    REQUIRE_EQ(my_foo.b_, 4);
+}

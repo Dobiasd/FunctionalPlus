@@ -382,4 +382,19 @@ std::function<FOut(FIn1, FIn2)> memoize_binary(F f)
     };
 }
 
+// API search type: constructor_as_function : a -> b
+// struct foo
+// {
+//     foo(int a, int b) : a_(a), b_(2*b) {}
+//     int a_;
+//     int b_;
+// };
+// const auto create_foo = constructor_as_function<foo, int int>;
+// create_foo(1,2) == foo(1, 2);
+template<typename T, class ... Types>
+T constructor_as_function(Types ... args)
+{
+    return T{args...};
+}
+
 } // namespace fplus

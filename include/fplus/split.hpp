@@ -191,6 +191,7 @@ ContainerOut group_globally(const ContainerIn& xs)
 //  - commutative (p(x,y) = p(y,x))
 //  - reflexive (p(x,x) = true)
 //  - not neccessarily transitive, but can be
+//
 // O(n^2), memory complexity also O(n^2)
 template <typename BinaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
