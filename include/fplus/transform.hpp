@@ -166,7 +166,7 @@ Container shuffle(std::uint_fast32_t seed, const Container& xs)
 
 // API search type: sample : (Int, Int, [a]) -> [a]
 // fwd bind count: 2
-// Returns n random elements from xs.
+// Returns n random elements from xs without replacement.
 // n has to be smaller than or equal to the number of elements in xs.
 // Also known as rnd_select.
 // Example call: sample(std::mt19937::default_seed, 3, xs);
@@ -184,6 +184,7 @@ Container sample(std::uint_fast32_t seed, std::size_t n, const Container& xs)
 // xs must be non-empty.
 // Example call: random_element(std::mt19937::default_seed, xs)
 // Example call: random_element(std::random_device()(), xs)
+// Also known as choice.
 template <typename Container>
 typename Container::value_type random_element(
     std::uint_fast32_t seed, const Container& xs)
@@ -192,6 +193,26 @@ typename Container::value_type random_element(
     std::mt19937 gen(seed);
     std::uniform_int_distribution<std::size_t> dis(0, size_of_cont(xs) - 1);
     return elem_at_idx(dis(gen), xs);
+}
+
+// API search type: random_elements : (Int, Int, [a]) -> a
+// fwd bind count: 2
+// Returns random elements from xs with replacement.
+// xs must be non-empty.
+// Example call: random_elements(std::mt19937::default_seed, 10, xs)
+// Example call: random_elements(std::random_device()(), 10, xs)
+template <typename Container>
+Container random_elements(
+    std::uint_fast32_t seed, std::size_t n, const Container& xs)
+{
+    assert(is_not_empty(xs));
+    std::mt19937 gen(seed);
+    std::uniform_int_distribution<std::size_t> dis(0, size_of_cont(xs) - 1);
+    const auto draw = [&]() -> typename Container::value_type
+    {
+        return elem_at_idx(dis(gen), xs);
+    };
+    return generate<Container>(draw, n);
 }
 
 // API search type: apply_functions : ([(a -> b)], a) -> [b]
