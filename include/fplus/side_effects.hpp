@@ -354,8 +354,9 @@ std::function<bool()> write_binary_file(const std::string& filename,
 // Returns a function that (when called) writes lines into a text file,
 // replacing it if it already exists.
 inline
-std::function<bool()> write_text_file_lines(const std::string& filename,
-        bool trailing_newline, const std::vector<std::string>& lines)
+std::function<bool()> write_text_file_lines(bool trailing_newline,
+        const std::string& filename,
+        const std::vector<std::string>& lines)
 {
     std::string content = join(std::string("\n"), lines);
     if (trailing_newline)
