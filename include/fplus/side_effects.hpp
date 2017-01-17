@@ -215,22 +215,6 @@ std::function<void()> execute_fire_and_forget(Effect eff)
     };
 }
 
-// API search type: read_text_file : String -> Io String
-// Returns a function that reads the content of a text file when called.
-inline
-std::function<std::string()> read_text_file(const std::string& filename)
-{
-    return [filename]() -> std::string
-    {
-        std::ifstream input(filename);
-        if (!input.good())
-            return {};
-        return std::string(
-                std::istreambuf_iterator<std::string::value_type>(input),
-                std::istreambuf_iterator<std::string::value_type>());
-    };
-}
-
 // API search type: read_text_file_maybe : String -> Io (Maybe String)
 // Returns a function that reads the content of a text file when called.
 inline
@@ -248,13 +232,28 @@ std::function<maybe<std::string>()> read_text_file_maybe(
     };
 }
 
-// API search type: read_binary_file : String -> Io [Int]
+// API search type: read_text_file : String -> Io String
+// Returns a function that reads the content of a text file when called.
+// This function then returns an empty string if the file could not be read.
+inline
+std::function<std::string()> read_text_file(const std::string& filename)
+{
+    return [filename]() -> std::string
+    {
+        return just_with_default(
+            std::string(),
+
+            read_text_file_maybe(filename)());
+    };
+}
+
+// API search type: read_binary_file : String -> Io (Maybe [Int])
 // Returns a function that reads the content of a binary file when executed.
 inline
-std::function<std::vector<std::uint8_t>()> read_binary_file(
+std::function<maybe<std::vector<std::uint8_t>>()> read_binary_file_maybe(
     const std::string& filename)
 {
-    return [filename]() -> std::vector<std::uint8_t>
+    return [filename]() -> maybe<std::vector<std::uint8_t>>
     {
         std::ifstream file(filename, std::ios::binary);
         if (!file.good())
@@ -272,16 +271,51 @@ std::function<std::vector<std::uint8_t>()> read_binary_file(
     };
 }
 
-// API search type: read_text_file_lines : (String, Bool) -> Io [String]
+// API search type: read_binary_file : String -> Io [Int]
+// Returns a function that reads the content of a binary file when executed.
+// This function then returns an empty vector if the file could not be read.
+inline
+std::function<std::vector<std::uint8_t>()> read_binary_file(
+    const std::string& filename)
+{
+    return [filename]() -> std::vector<std::uint8_t>
+    {
+        return just_with_default(
+            std::vector<std::uint8_t>(),
+            read_binary_file_maybe(filename)());
+    };
+}
+
+// API search type: read_text_file_lines : (String, Bool) -> Io (Maybe [String])
 // Returns a function that (when called) reads the content of a text file
 // and returns it line by line.
 inline
+std::function<maybe<std::vector<std::string>>()> read_text_file_lines_maybe(
+        bool allow_empty, const std::string& filename)
+{
+    return [filename, allow_empty]() -> maybe<std::vector<std::string>>
+    {
+        const auto maybe_content = read_text_file_maybe(filename)();
+        if (maybe_content.is_nothing())
+            return {};
+        else
+            return split_lines(allow_empty, maybe_content.unsafe_get_just());
+    };
+}
+
+// API search type: read_text_file_lines : (String, Bool) -> Io [String]
+// Returns a function that (when called) reads the content of a text file
+// and returns it line by line.
+// This function then returns an empty vector if the file could not be read.
+inline
 std::function<std::vector<std::string>()> read_text_file_lines(
-        const std::string& filename, bool allow_empty)
+        bool allow_empty, const std::string& filename)
 {
     return [filename, allow_empty]() -> std::vector<std::string>
     {
-        return split_lines(allow_empty, read_text_file(filename)());
+        return just_with_default(
+            std::vector<std::string>(),
+            read_text_file_lines_maybe(allow_empty, filename)());
     };
 }
 
@@ -321,7 +355,7 @@ std::function<bool()> write_binary_file(const std::string& filename,
 // replacing it if it already exists.
 inline
 std::function<bool()> write_text_file_lines(const std::string& filename,
-        const std::vector<std::string>& lines, bool trailing_newline = true)
+        bool trailing_newline, const std::vector<std::string>& lines)
 {
     std::string content = join(std::string("\n"), lines);
     if (trailing_newline)
