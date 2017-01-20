@@ -369,7 +369,7 @@ Container keep_if_parellelly(Pred pred, const Container& xs)
     return elems_at_idxs(idxs, xs);
 }
 
-// API search type: transform_reduce : ((a -> b), ((b, b) -> b), b, [b]) -> b
+// API search type: transform_reduce : ((a -> b), ((b, b) -> b), b, [a]) -> b
 // fwd bind count: 3
 // transform_reduce(square, add, 0, [1,2,3]) == 0+1+4+9 = 14
 // The set of binary_f, init and unary_f::output should form a
@@ -386,7 +386,7 @@ Out transform_reduce(
         transform(unary_f, xs));
 }
 
-// API search type: transform_reduce_1 : ((a -> b), ((b, b) -> b), [b]) -> b
+// API search type: transform_reduce_1 : ((a -> b), ((b, b) -> b), [a]) -> b
 // fwd bind count: 2
 // transform_reduce_1(square, add, [1,2,3]) == 0+1+4+9 = 14
 // The set of binary_f, and unary_f::output should form
@@ -403,7 +403,7 @@ Out transform_reduce_1(
         transform(unary_f, xs));
 }
 
-// API search type: transform_reduce_parallelly : ((a -> b), ((b, b) -> b), b, [b]) -> b
+// API search type: transform_reduce_parallelly : ((a -> b), ((b, b) -> b), b, [a]) -> b
 // fwd bind count: 3
 // transform_reduce_parallelly(square, add, 0, [1,2,3]) == 0+1+4+9 = 14
 // Also Known as map_reduce.
@@ -421,7 +421,7 @@ Out transform_reduce_parallelly(
         transform_parallelly(unary_f, xs));
 }
 
-// API search type: transform_reduce_1_parallelly : ((a -> b), ((b, b) -> b), [b]) -> b
+// API search type: transform_reduce_1_parallelly : ((a -> b), ((b, b) -> b), [a]) -> b
 // fwd bind count: 2
 // transform_reduce_1_parallelly(square, add, [1,2,3]) == 0+1+4+9 = 14
 // Also Known as map_reduce.
