@@ -377,4 +377,67 @@ Z inner_product(const Z& value,
         std::begin(xs), std::end(xs), std::begin(ys), value);
 }
 
+// API search type: mismatch_by : ((a, b) -> Bool), [a], [b]) -> Maybe (a, b)
+// fwd bind count: 2
+// mismatch_by((==), [1, 2, 3], [1, 4, 3]) == Just (2, 4)
+// mismatch_by((==), [1, 2, 3], [1, 4]) == Just (2, 4)
+// mismatch_by((==), [1, 2, 3], [1, 2]) == Nothing
+// mismatch_by((==), [], [1, 2]) == Nothing
+template <typename ContainerIn1, typename ContainerIn2,
+    typename F,
+    typename X = typename ContainerIn1::value_type,
+    typename Y = typename ContainerIn2::value_type,
+    typename TOut = std::pair<X, Y>>
+maybe<TOut> mismatch_by(F f, const ContainerIn1& xs, const ContainerIn2& ys)
+{
+    auto itXs = std::begin(xs);
+    auto itYs = std::begin(ys);
+    std::size_t minSize = std::min(size_of_cont(xs), size_of_cont(ys));
+    for (std::size_t i = 0; i < minSize; ++i)
+    {
+        if (!f(*itXs, *itYs))
+        {
+            return just(std::make_pair(*itXs, *itYs));
+        }
+        ++itXs;
+        ++itYs;
+    }
+    return nothing<TOut>();
+}
+
+// API search type: mismatch_on : ((a -> Bool), [a], [a]) -> Maybe (a, a)
+// fwd bind count: 2
+// mismatch_on((mod 2), [1, 2, 3], [3, 5, 3]) == Just (2, 5)
+// mismatch_on((mod 2), [1, 2, 3], [1, 5]) == Just (2, 5)
+// mismatch_on((mod 2), [1, 2, 3], [1, 6]) == Nothing
+// mismatch_on((mod 2), [], [1, 2]) == Nothing
+template <typename ContainerIn1, typename ContainerIn2,
+    typename F,
+    typename X = typename ContainerIn1::value_type,
+    typename Y = typename ContainerIn2::value_type,
+    typename TOut = std::pair<X, Y>>
+maybe<TOut> mismatch_on(F f, const ContainerIn1& xs, const ContainerIn2& ys)
+{
+    static_assert(std::is_same<X, Y>::value,
+        "Both containers must have the same element type.");
+    return mismatch_by(is_equal_by(f), xs, ys);
+}
+
+// API search type: mismatch : ([a], [a]) -> Maybe (a, a)
+// fwd bind count: 2
+// mismatch((==), [1, 2, 3], [1, 4, 3]) == Just (2, 4)
+// mismatch((==), [1, 2, 3], [1, 4]) == Just (2, 4)
+// mismatch((==), [1, 2, 3], [1, 2]) == Nothing
+// mismatch((==), [], [1, 2]) == Nothing
+template <typename ContainerIn1, typename ContainerIn2,
+    typename X = typename ContainerIn1::value_type,
+    typename Y = typename ContainerIn2::value_type,
+    typename TOut = std::pair<X, Y>>
+maybe<TOut> mismatch(const ContainerIn1& xs, const ContainerIn2& ys)
+{
+    static_assert(std::is_same<X, Y>::value,
+        "Both containers must have the same element type.");
+    return mismatch_by(std::equal_to<X>(), xs, ys);
+}
+
 } // namespace fplus

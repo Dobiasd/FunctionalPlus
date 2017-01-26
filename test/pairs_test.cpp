@@ -91,3 +91,21 @@ TEST_CASE("pairs_test, overlapping_pairs")
     using namespace fplus;
     REQUIRE_EQ(overlapping_pairs(xs), IntPairs({{1,2},{2,2},{2,3},{3,2}}));
 }
+
+TEST_CASE("pairs_test, mismatch_on")
+{
+    using namespace fplus;
+    REQUIRE_EQ(mismatch_on(is_even<int>, IntVector({1,2,3}), IntVector({3,5,3})), just(IntPair(2,5)));
+    REQUIRE_EQ(mismatch_on(is_even<int>, IntVector({1,2,3}), IntVector({1,5})), just(IntPair(2,5)));
+    REQUIRE_EQ(mismatch_on(is_even<int>, IntVector({1,2,3}), IntVector({1,6})), nothing<IntPair>());
+    REQUIRE_EQ(mismatch_on(is_even<int>, IntVector(), IntVector({1,2})), nothing<IntPair>());
+}
+
+TEST_CASE("pairs_test, mismatch")
+{
+    using namespace fplus;
+    REQUIRE_EQ(mismatch(IntVector({1,2,3}), IntVector({1,4,3})), just(IntPair(2,4)));
+    REQUIRE_EQ(mismatch(IntVector({1,2,3}), IntVector({1,4})), just(IntPair(2,4)));
+    REQUIRE_EQ(mismatch(IntVector({1,2,3}), IntVector({1,2})), nothing<IntPair>());
+    REQUIRE_EQ(mismatch(IntVector(), IntVector({1,2})), nothing<IntPair>());
+}
