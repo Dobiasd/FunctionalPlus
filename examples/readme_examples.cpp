@@ -193,16 +193,16 @@ std::string gemstone_count(const std::string& input)
 {
     using namespace fplus;
 
-    typedef std::set<std::string::value_type> character_set;
+    typedef std::set<std::string::value_type> characters;
 
     const auto lines = split_lines(false, input);
 
     const auto sets = transform(
-        convert_container<character_set, std::string>,
+        convert_container<characters, std::string>,
         lines);
 
     const auto gem_elements = fold_left_1(
-        set_intersection<character_set>, sets);
+        set_intersection<characters>, sets);
 
     return show(size_of_cont(gem_elements));
 }
@@ -210,23 +210,23 @@ std::string gemstone_count(const std::string& input)
 std::string gemstone_count_fwd_apply(const std::string& input)
 {
     using namespace fplus;
-    typedef std::set<std::string::value_type> character_set;
+    typedef std::set<std::string::value_type> characters;
     return fwd::apply(
         input
         , fwd::split_lines(false)
-        , fwd::transform(convert_container<character_set, std::string>)
-        , fwd::fold_left_1(set_intersection<character_set>)
+        , fwd::transform(convert_container<characters, std::string>)
+        , fwd::fold_left_1(set_intersection<characters>)
         , fwd::size_of_cont()
         , fwd::show()
     );
 }
 
 using namespace fplus;
-typedef std::set<std::string::value_type> character_set;
+typedef std::set<std::string::value_type> characters;
 const auto gemstone_count_fwd_compose = fwd::compose(
     fwd::split_lines(false),
-    fwd::transform(convert_container<character_set, std::string>),
-    fwd::fold_left_1(set_intersection<character_set>),
+    fwd::transform(convert_container<characters, std::string>),
+    fwd::fold_left_1(set_intersection<characters>),
     fwd::size_of_cont(),
     fwd::show()
 );
