@@ -86,7 +86,7 @@ std::vector<function_help> parse_code_file(const std::string& code_file)
 {
     using namespace std;
     typedef vector<string> strings;
-    const auto lines = fplus::read_text_file_lines(code_file, true)();
+    const auto lines = fplus::read_text_file_lines(true, code_file)();
     const auto is_search_type = fplus::bind_1st_of_2(
             fplus::is_infix_of<string>, api_search_type_key);
     const auto functions_lines = fplus::split_by_keep_separators(
