@@ -92,6 +92,12 @@ TEST_CASE("pairs_test, overlapping_pairs")
     REQUIRE_EQ(overlapping_pairs(xs), IntPairs({{1,2},{2,2},{2,3},{3,2}}));
 }
 
+TEST_CASE("pairs_test, overlapping_pairs_cyclic")
+{
+    using namespace fplus;
+    REQUIRE_EQ(overlapping_pairs_cyclic(xs), IntPairs({{1,2},{2,2},{2,3},{3,2},{2,1}}));
+}
+
 TEST_CASE("pairs_test, first_mismatch_on")
 {
     using namespace fplus;

@@ -336,6 +336,38 @@ ContainerOut overlapping_pairs(const Container& xs)
     return result;
 }
 
+// API search type: overlapping_pairs_cyclic : [a] -> [(a, a)]
+// fwd bind count: 0
+// overlapping_pairs_cyclic([0,1,2,3]) == [(0,1),(1,2),(2,3),(3,0)]
+template <typename Container,
+    typename ContainerOut =
+        typename internal::same_cont_new_t<Container,
+            std::pair<
+                typename Container::value_type,
+                    typename Container::value_type>>::type>
+ContainerOut overlapping_pairs_cyclic(const Container& xs)
+{
+    typedef typename Container::value_type T;
+    static_assert(std::is_convertible<
+            std::pair<T, T>,
+            typename ContainerOut::value_type>::value,
+        "ContainerOut can not store pairs of elements from ContainerIn.");
+    ContainerOut result;
+    if (size_of_cont(xs) < 2)
+        return result;
+    internal::prepare_container(result, size_of_cont(xs));
+    auto itOut = internal::get_back_inserter(result);
+    auto it1 = std::begin(xs);
+    auto it2 = it1;
+    internal::advance_iterator(it2, 1);
+    for (; it2 != std::end(xs); ++it1, ++it2)
+    {
+        *itOut = std::make_pair(*it1, *it2);
+    }
+    *itOut = std::make_pair(*it1, xs.front());
+    return result;
+}
+
 // API search type: enumerate : [a] -> [(Int, a)]
 // fwd bind count: 0
 // enumerate([6,4,7,6]) == [(0, 6), (1, 4), (2, 7), (3, 6)]
