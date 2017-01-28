@@ -409,7 +409,7 @@ Z inner_product(const Z& value,
         std::begin(xs), std::end(xs), std::begin(ys), value);
 }
 
-// API search type: first_mismatch_by : ((a, b) -> Bool), [a], [b]) -> Maybe (a, b)
+// API search type: first_mismatch_by : (((a, b) -> Bool), [a], [b]) -> Maybe (a, b)
 // fwd bind count: 2
 // first_mismatch_by((==), [1, 2, 3], [1, 4, 3]) == Just (2, 4)
 // first_mismatch_by((==), [1, 2, 3], [1, 4]) == Just (2, 4)
@@ -472,7 +472,7 @@ maybe<TOut> first_mismatch(const ContainerIn1& xs, const ContainerIn2& ys)
     return first_mismatch_by(std::equal_to<X>(), xs, ys);
 }
 
-// API search type: first_match_by : ((a, b) -> Bool), [a], [b]) -> Maybe (a, b)
+// API search type: first_match_by : (((a, b) -> Bool), [a], [b]) -> Maybe (a, b)
 // fwd bind count: 2
 // first_match_by((==), [1, 2, 3], [3, 2, 3]) == Just (2, 2)
 // first_match_by((==), [], [1, 2]) == Nothing
