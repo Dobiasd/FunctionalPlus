@@ -409,18 +409,18 @@ Z inner_product(const Z& value,
         std::begin(xs), std::end(xs), std::begin(ys), value);
 }
 
-// API search type: first_mismatch_by : (((a, b) -> Bool), [a], [b]) -> Maybe (a, b)
+// API search type: first_mismatch_idx_by : (((a, b) -> Bool), [a], [b]) -> Maybe Int
 // fwd bind count: 2
-// first_mismatch_by((==), [1, 2, 3], [1, 4, 3]) == Just (2, 4)
-// first_mismatch_by((==), [1, 2, 3], [1, 4]) == Just (2, 4)
-// first_first_mismatch_by((==), [1, 2, 3], [1, 2]) == Nothing
-// first_mismatch_by((==), [], [1, 2]) == Nothing
+// first_mismatch_idx_by((==), [1, 2, 3], [1, 4, 3]) == Just 1
+// first_mismatch_idx_by((==), [1, 2, 3], [1, 4]) == Just 1
+// first_mismatch_idx_by((==), [1, 2, 3], [1, 2]) == Nothing
+// first_mismatch_idx_by((==), [], [1, 2]) == Nothing
 template <typename ContainerIn1, typename ContainerIn2,
     typename F,
     typename X = typename ContainerIn1::value_type,
-    typename Y = typename ContainerIn2::value_type,
-    typename TOut = std::pair<X, Y>>
-maybe<TOut> first_mismatch_by(F f, const ContainerIn1& xs, const ContainerIn2& ys)
+    typename Y = typename ContainerIn2::value_type>
+maybe<std::size_t> first_mismatch_idx_by(F f,
+    const ContainerIn1& xs, const ContainerIn2& ys)
 {
     auto itXs = std::begin(xs);
     auto itYs = std::begin(ys);
@@ -429,12 +429,59 @@ maybe<TOut> first_mismatch_by(F f, const ContainerIn1& xs, const ContainerIn2& y
     {
         if (!f(*itXs, *itYs))
         {
-            return just(std::make_pair(*itXs, *itYs));
+            return just(i);
         }
         ++itXs;
         ++itYs;
     }
-    return nothing<TOut>();
+    return nothing<std::size_t>();
+}
+
+// API search type: first_mismatch_by : (((a, b) -> Bool), [a], [b]) -> Maybe (a, b)
+// fwd bind count: 2
+// first_mismatch_by((==), [1, 2, 3], [1, 4, 3]) == Just (2, 4)
+// first_mismatch_by((==), [1, 2, 3], [1, 4]) == Just (2, 4)
+// first_mismatch_by((==), [1, 2, 3], [1, 2]) == Nothing
+// first_mismatch_by((==), [], [1, 2]) == Nothing
+template <typename ContainerIn1, typename ContainerIn2,
+    typename F,
+    typename X = typename ContainerIn1::value_type,
+    typename Y = typename ContainerIn2::value_type,
+    typename TOut = std::pair<X, Y>>
+maybe<TOut> first_mismatch_by(F f,
+    const ContainerIn1& xs, const ContainerIn2& ys)
+{
+    const auto maybe_idx = first_mismatch_idx_by(f, xs, ys);
+    if (is_nothing(maybe_idx))
+    {
+        return nothing<TOut>();
+    }
+    else
+    {
+        const auto idx = maybe_idx.unsafe_get_just();
+        return just(std::make_pair(
+            elem_at_idx(idx, xs),
+            elem_at_idx(idx, ys)));
+    }
+}
+
+// API search type: first_mismatch_idx_on : ((a -> Bool), [a], [a]) -> Maybe Int
+// fwd bind count: 2
+// first_mismatch_idx_on((mod 2), [1, 2, 3], [3, 5, 3]) == 1
+// first_mismatch_idx_on((mod 2), [1, 2, 3], [1, 5]) == 1
+// first_mismatch_idx_on((mod 2), [1, 2, 3], [1, 6]) == Nothing
+// first_mismatch_idx_on((mod 2), [], [1, 2]) == Nothing
+template <typename ContainerIn1, typename ContainerIn2,
+    typename F,
+    typename X = typename ContainerIn1::value_type,
+    typename Y = typename ContainerIn2::value_type,
+    typename TOut = std::pair<X, Y>>
+maybe<std::size_t> first_mismatch_idx_on(F f,
+    const ContainerIn1& xs, const ContainerIn2& ys)
+{
+    static_assert(std::is_same<X, Y>::value,
+        "Both containers must have the same element type.");
+    return first_mismatch_idx_by(is_equal_by(f), xs, ys);
 }
 
 // API search type: first_mismatch_on : ((a -> Bool), [a], [a]) -> Maybe (a, a)
@@ -448,11 +495,29 @@ template <typename ContainerIn1, typename ContainerIn2,
     typename X = typename ContainerIn1::value_type,
     typename Y = typename ContainerIn2::value_type,
     typename TOut = std::pair<X, Y>>
-maybe<TOut> first_mismatch_on(F f, const ContainerIn1& xs, const ContainerIn2& ys)
+maybe<TOut> first_mismatch_on(F f,
+    const ContainerIn1& xs, const ContainerIn2& ys)
 {
     static_assert(std::is_same<X, Y>::value,
         "Both containers must have the same element type.");
     return first_mismatch_by(is_equal_by(f), xs, ys);
+}
+
+// API search type: first_mismatch_idx : ([a], [a]) -> Maybe Int
+// fwd bind count: 2
+// first_mismatch_idx((==), [1, 2, 3], [1, 4, 3]) == 1
+// first_mismatch_idx((==), [1, 2, 3], [1, 4]) == 1
+// first_mismatch_idx((==), [1, 2, 3], [1, 2]) == Nothing
+// first_mismatch_idx((==), [], [1, 2]) == Nothing
+template <typename ContainerIn1, typename ContainerIn2,
+    typename X = typename ContainerIn1::value_type,
+    typename Y = typename ContainerIn2::value_type>
+maybe<std::size_t> first_mismatch_idx(
+    const ContainerIn1& xs, const ContainerIn2& ys)
+{
+    static_assert(std::is_same<X, Y>::value,
+        "Both containers must have the same element type.");
+    return first_mismatch_idx_by(std::equal_to<X>(), xs, ys);
 }
 
 // API search type: first_mismatch : ([a], [a]) -> Maybe (a, a)
@@ -472,6 +537,32 @@ maybe<TOut> first_mismatch(const ContainerIn1& xs, const ContainerIn2& ys)
     return first_mismatch_by(std::equal_to<X>(), xs, ys);
 }
 
+// API search type: first_match_idx_by : (((a, b) -> Bool), [a], [b]) -> Maybe Int
+// fwd bind count: 2
+// first_match_idx_by((==), [1, 2, 3], [3, 2, 3]) == Just 1
+// first_match_idx_by((==), [], [1, 2]) == Nothing
+template <typename ContainerIn1, typename ContainerIn2,
+    typename F,
+    typename X = typename ContainerIn1::value_type,
+    typename Y = typename ContainerIn2::value_type>
+maybe<std::size_t> first_match_idx_by(F f,
+    const ContainerIn1& xs, const ContainerIn2& ys)
+{
+    auto itXs = std::begin(xs);
+    auto itYs = std::begin(ys);
+    std::size_t minSize = std::min(size_of_cont(xs), size_of_cont(ys));
+    for (std::size_t i = 0; i < minSize; ++i)
+    {
+        if (f(*itXs, *itYs))
+        {
+            return just(i);
+        }
+        ++itXs;
+        ++itYs;
+    }
+    return nothing<std::size_t>();
+}
+
 // API search type: first_match_by : (((a, b) -> Bool), [a], [b]) -> Maybe (a, b)
 // fwd bind count: 2
 // first_match_by((==), [1, 2, 3], [3, 2, 3]) == Just (2, 2)
@@ -483,19 +574,34 @@ template <typename ContainerIn1, typename ContainerIn2,
     typename TOut = std::pair<X, Y>>
 maybe<TOut> first_match_by(F f, const ContainerIn1& xs, const ContainerIn2& ys)
 {
-    auto itXs = std::begin(xs);
-    auto itYs = std::begin(ys);
-    std::size_t minSize = std::min(size_of_cont(xs), size_of_cont(ys));
-    for (std::size_t i = 0; i < minSize; ++i)
+    const auto maybe_idx = first_match_idx_by(f, xs, ys);
+    if (is_nothing(maybe_idx))
     {
-        if (f(*itXs, *itYs))
-        {
-            return just(std::make_pair(*itXs, *itYs));
-        }
-        ++itXs;
-        ++itYs;
+        return nothing<TOut>();
     }
-    return nothing<TOut>();
+    else
+    {
+        const auto idx = maybe_idx.unsafe_get_just();
+        return just(std::make_pair(
+            elem_at_idx(idx, xs),
+            elem_at_idx(idx, ys)));
+    }
+}
+
+// API search type: first_match_idx_on : ((a -> Bool), [a], [a]) -> Maybe Int
+// fwd bind count: 2
+// first_match_idx_on((mod 2), [1, 2, 3], [2, 4, 3]) == 1
+// first_match_idx_on((mod 2), [], [1, 2]) == Nothing
+template <typename ContainerIn1, typename ContainerIn2,
+    typename F,
+    typename X = typename ContainerIn1::value_type,
+    typename Y = typename ContainerIn2::value_type>
+maybe<std::size_t> first_match_idx_on(F f,
+    const ContainerIn1& xs, const ContainerIn2& ys)
+{
+    static_assert(std::is_same<X, Y>::value,
+        "Both containers must have the same element type.");
+    return first_match_idx_by(is_equal_by(f), xs, ys);
 }
 
 // API search type: first_match_on : ((a -> Bool), [a], [a]) -> Maybe (a, a)
@@ -512,6 +618,21 @@ maybe<TOut> first_match_on(F f, const ContainerIn1& xs, const ContainerIn2& ys)
     static_assert(std::is_same<X, Y>::value,
         "Both containers must have the same element type.");
     return first_match_by(is_equal_by(f), xs, ys);
+}
+
+// API search type: first_match_idx : ([a], [a]) -> Maybe Int
+// fwd bind count: 2
+// first_match_idx((==), [1, 2, 3], [5, 2, 3]) == 1
+// first_match_idx((==), [], [1, 2]) == Nothing
+template <typename ContainerIn1, typename ContainerIn2,
+    typename X = typename ContainerIn1::value_type,
+    typename Y = typename ContainerIn2::value_type>
+maybe<std::size_t> first_match_idx(
+    const ContainerIn1& xs, const ContainerIn2& ys)
+{
+    static_assert(std::is_same<X, Y>::value,
+        "Both containers must have the same element type.");
+    return first_match_idx_by(std::equal_to<X>(), xs, ys);
 }
 
 // API search type: first_match : ([a], [a]) -> Maybe (a, a)

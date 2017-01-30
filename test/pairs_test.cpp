@@ -98,6 +98,15 @@ TEST_CASE("pairs_test, overlapping_pairs_cyclic")
     REQUIRE_EQ(overlapping_pairs_cyclic(xs), IntPairs({{1,2},{2,2},{2,3},{3,2},{2,1}}));
 }
 
+TEST_CASE("pairs_test, first_mismatch_idx_on")
+{
+    using namespace fplus;
+    REQUIRE_EQ(first_mismatch_idx_on(is_even<int>, IntVector({1,2,3}), IntVector({3,5,3})), just<std::size_t>(1));
+    REQUIRE_EQ(first_mismatch_idx_on(is_even<int>, IntVector({1,2,3}), IntVector({1,5})), just<std::size_t>(1));
+    REQUIRE_EQ(first_mismatch_idx_on(is_even<int>, IntVector({1,2,3}), IntVector({1,6})), nothing<std::size_t>());
+    REQUIRE_EQ(first_mismatch_idx_on(is_even<int>, IntVector(), IntVector({1,2})), nothing<std::size_t>());
+}
+
 TEST_CASE("pairs_test, first_mismatch_on")
 {
     using namespace fplus;
@@ -105,6 +114,15 @@ TEST_CASE("pairs_test, first_mismatch_on")
     REQUIRE_EQ(first_mismatch_on(is_even<int>, IntVector({1,2,3}), IntVector({1,5})), just(IntPair(2,5)));
     REQUIRE_EQ(first_mismatch_on(is_even<int>, IntVector({1,2,3}), IntVector({1,6})), nothing<IntPair>());
     REQUIRE_EQ(first_mismatch_on(is_even<int>, IntVector(), IntVector({1,2})), nothing<IntPair>());
+}
+
+TEST_CASE("pairs_test, first_mismatch_idx")
+{
+    using namespace fplus;
+    REQUIRE_EQ(first_mismatch_idx(IntVector({1,2,3}), IntVector({1,4,3})), just<std::size_t>(1));
+    REQUIRE_EQ(first_mismatch_idx(IntVector({1,2,3}), IntVector({1,4})), just<std::size_t>(1));
+    REQUIRE_EQ(first_mismatch_idx(IntVector({1,2,3}), IntVector({1,2})), nothing<std::size_t>());
+    REQUIRE_EQ(first_mismatch_idx(IntVector(), IntVector({1,2})), nothing<std::size_t>());
 }
 
 TEST_CASE("pairs_test, first_mismatch")
@@ -116,10 +134,16 @@ TEST_CASE("pairs_test, first_mismatch")
     REQUIRE_EQ(first_mismatch(IntVector(), IntVector({1,2})), nothing<IntPair>());
 }
 
+TEST_CASE("pairs_test, first_match_idx_on")
+{
+    using namespace fplus;
+    REQUIRE_EQ(first_match_idx_on(is_even<int>, IntVector({1,2,3}), IntVector({2,4,3})), just<std::size_t>(1));
+    REQUIRE_EQ(first_match_idx_on(is_even<int>, IntVector(), IntVector({1,2})), nothing<std::size_t>());
+}
+
 TEST_CASE("pairs_test, first_match")
 {
     using namespace fplus;
     REQUIRE_EQ(first_match(IntVector({1,2,3}), IntVector({5,2,3})), just(IntPair(2,2)));
     REQUIRE_EQ(first_match(IntVector(), IntVector({1,2})), nothing<IntPair>());
 }
-
