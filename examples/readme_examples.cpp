@@ -147,7 +147,9 @@ void Test_example_TheCutestCat()
         {"Muffin",   9, 4, 2, 8, 6},
         {"Garfield", 6, 5, 7, 9, 5}};
 
-    auto cutest_cat = fplus::maximum_on(std::mem_fn(&cat::cuteness), cats);
+    auto cutest_cat = fplus::maximum_on(
+        fplus::nullary_member_function<cat>(&cat::cuteness),
+        cats);
 
     std::cout << cutest_cat.name_ <<
         " is happy and sleepy. *purr* *purr* *purr*" << std::endl;

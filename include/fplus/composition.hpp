@@ -397,4 +397,22 @@ T constructor_as_function(Types ... args)
     return T{args...};
 }
 
+// API search type: nullary_member_function : (a -> b) -> (a -> b)
+// struct foo
+// {
+//     int get() const { return 42; }
+// };
+// foo my_foo;
+// const auto f = fplus::nullary_member_function<foo>(&foo::get);
+// f(my_foo) == 42;
+template<typename T, typename Ptr,
+    typename Res = typename std::result_of<Ptr(T)>::type>
+std::function<Res(const T& obj)> nullary_member_function(Ptr ptr)
+{
+    return [ptr](const T& obj) -> Res
+    {
+        return (obj.*ptr)();
+    };
+}
+
 } // namespace fplus
