@@ -122,7 +122,8 @@ typename std::size_t minimum_idx_on(F f, const Container& xs)
 {
     internal::check_arity<1, F>();
     typedef typename utils::function_traits<F>::template arg<0>::type FIn;
-    static_assert(std::is_constructible<typename Container::value_type,
+    static_assert(std::is_convertible<
+        typename Container::value_type,
         FIn>::value,
         "Elements not convertible to function input.");
     typedef typename std::result_of<F(typename Container::value_type)>::type Result;
@@ -139,7 +140,8 @@ typename std::size_t maximum_idx_on(F f, const Container& xs)
 {
     internal::check_arity<1, F>();
     typedef typename utils::function_traits<F>::template arg<0>::type FIn;
-    static_assert(std::is_constructible<typename Container::value_type,
+    static_assert(std::is_convertible<
+        typename Container::value_type,
         FIn>::value,
         "Elements not convertible to function input.");
     typedef typename std::result_of<F(typename Container::value_type)>::type Result;
