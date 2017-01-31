@@ -765,7 +765,7 @@ Container append(const Container& xs, const Container& ys)
 // API search type: concat : [[a]] -> [a]
 // fwd bind count: 0
 // concat([[1, 2], [], [3]]) == [1, 2, 3]
-// also known as flatten
+// Also known as flatten.
 template <typename ContainerIn,
     typename ContainerOut = typename ContainerIn::value_type>
 ContainerOut concat(const ContainerIn& xss)
