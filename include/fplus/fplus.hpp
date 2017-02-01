@@ -25,6 +25,7 @@
 #include <fplus/result.hpp>
 #include <fplus/search.hpp>
 #include <fplus/sets.hpp>
+#include <fplus/shared_ref.hpp>
 #include <fplus/show.hpp>
 #include <fplus/split.hpp>
 #include <fplus/string_tools.hpp>

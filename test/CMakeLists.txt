@@ -33,6 +33,7 @@ _add_test(result_test)
 _add_test(replace_test)
 _add_test(search_test)
 _add_test(sets_test)
+_add_test(shared_ref_test)
 _add_test(show_test)
 _add_test(side_effects_test)
 _add_test(split_test)
@@ -61,6 +62,7 @@ add_custom_target(unittest compare_test
                         COMMAND replace_test
                         COMMAND search_test
                         COMMAND sets_test
+                        COMMAND shared_ref_test
                         COMMAND show_test
                         COMMAND side_effects_test
                         COMMAND split_test
