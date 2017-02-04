@@ -39,6 +39,14 @@ code {
     margin: 4px;
 }
 
+@media only screen and (max-height: 740px)
+{
+    .logo
+    {
+        margin: -176px 0 0 0px;
+    }
+}
+
 .githublink
 {
     text-align: center;
