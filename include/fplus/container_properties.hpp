@@ -200,6 +200,7 @@ typename Container::value_type maximum(const Container& xs)
 template <typename F, typename Container>
 typename Container::value_type minimum_on(F f, const Container& xs)
 {
+    internal::check_arity<1, F>();
     return elem_at_idx(minimum_idx_on(f, xs), xs);
 }
 
@@ -209,6 +210,7 @@ typename Container::value_type minimum_on(F f, const Container& xs)
 template <typename F, typename Container>
 typename Container::value_type maximum_on(F f, const Container& xs)
 {
+    internal::check_arity<1, F>();
     return elem_at_idx(maximum_idx_on(f, xs), xs);
 }
 
