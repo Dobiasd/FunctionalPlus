@@ -13,6 +13,7 @@ TEST_CASE("read_test, read_value")
 {
     using namespace fplus;
     REQUIRE_EQ(read_value<std::size_t>("42"), just<std::size_t>(42));
+    REQUIRE_EQ(read_value<std::string>("foo"), just<std::string>("foo"));
     REQUIRE_EQ(read_value<unsigned long>("42"), just<unsigned long>(42));
     REQUIRE_EQ(read_value<unsigned long long>("42"), just<unsigned long long>(42));
     REQUIRE_EQ(read_value<int>("42"), just<int>(42));

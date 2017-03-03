@@ -110,6 +110,17 @@ namespace internal
             result = std::stold(str, &num_chars_used);
         }
     };
+
+    template <>
+    struct helper_read_value_struct <std::string>
+    {
+        static void read(const std::string& str,
+            std::string& result, std::size_t& num_chars_used)
+        {
+            num_chars_used = str.size();
+            result = str;
+        }
+    };
 }
 
 // API search type: read_value_result : String -> Result a
