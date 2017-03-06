@@ -101,6 +101,34 @@ maybe<T> just(const T& val)
     return val;
 }
 
+// API search type: maybe_to_seq : Maybe a -> [a]
+// fwd bind count: 0
+// Converts a maybe to a sequence.
+// singleton_seq(Just 3) == [3]
+// singleton_seq(Nothing) == []
+template <typename T, typename ContainerOut = std::vector<T>>
+ContainerOut maybe_to_seq(const maybe<T>& maybe)
+{
+    if (is_just(maybe))
+        return ContainerOut(1, unsafe_get_just(maybe));
+    return {};
+}
+
+// API search type: singleton_seq_as_maybe : [a] -> Maybe a
+// fwd bind count: 0
+// Converts a sequence to a maybe.
+// singleton_seq([]) == Nothing
+// singleton_seq([3]) == Just 3
+// singleton_seq([3,4]) == Nothing
+template <typename Container>
+maybe<typename Container::value_type>
+singleton_seq_as_maybe(const Container& xs)
+{
+    if (xs.size() == 1)
+        return xs.front();
+    return {};
+}
+
 // API search type: nothing : () -> Maybe a
 // Construct a nothing of a certain Maybe type.
 template <typename T>

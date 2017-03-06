@@ -47,6 +47,17 @@ TEST_CASE("maybe_test, ctor")
     REQUIRE_EQ(maybe<int>(4), just<int>(4));
 }
 
+TEST_CASE("maybe_test, sequence")
+{
+    using namespace fplus;
+    REQUIRE_EQ(maybe_to_seq(just(4)), std::vector<int>(1, 4));
+    REQUIRE_EQ(maybe_to_seq(nothing<int>()), std::vector<int>());
+
+    REQUIRE_EQ(singleton_seq_as_maybe(std::vector<int>()), nothing<int>());
+    REQUIRE_EQ(singleton_seq_as_maybe(std::vector<int>(1, 4)), just(4));
+    REQUIRE_EQ(singleton_seq_as_maybe(std::vector<int>(2, 4)), nothing<int>());
+}
+
 TEST_CASE("maybe_test, just_with_default")
 {
     using namespace fplus;
