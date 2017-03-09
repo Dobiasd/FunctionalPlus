@@ -123,6 +123,10 @@ TEST_CASE("numeric_test, cyclic_value")
     REQUIRE_EQ(cyclic_value(8)(-5), 3);
     REQUIRE_EQ(cyclic_value(8)(-13), 3);
 
+    REQUIRE_EQ(cyclic_value<unsigned int>(8)(3), 3);
+    REQUIRE_EQ(cyclic_value<unsigned int>(8)(11), 3);
+    REQUIRE_EQ(cyclic_value<unsigned int>(8)(19), 3);
+
     REQUIRE(is_in_interval(3.19, 3.21, cyclic_value(8.1)(3.2)));
 }
 
@@ -135,6 +139,11 @@ TEST_CASE("numeric_test, cyclic_difference")
     REQUIRE_EQ(cyclic_difference(100)(-2, 3), 95);
     REQUIRE_EQ(cyclic_difference(100)(90, 10), 80);
     REQUIRE_EQ(cyclic_difference(100)(10, 90), 20);
+
+    REQUIRE_EQ(cyclic_difference<unsigned int>(100)(5, 2), 3);
+    REQUIRE_EQ(cyclic_difference<unsigned int>(100)(2, 5), 97);
+    REQUIRE_EQ(cyclic_difference<unsigned int>(100)(90, 10), 80);
+    REQUIRE_EQ(cyclic_difference<unsigned int>(100)(10, 90), 20);
 }
 
 TEST_CASE("numeric_test, cyclic_shortest_difference")
@@ -157,6 +166,11 @@ TEST_CASE("numeric_test, cyclic_distance")
     REQUIRE_EQ(cyclic_distance(100)(3, -2), 5);
     REQUIRE_EQ(cyclic_distance(100)(10, 90), 20);
     REQUIRE_EQ(cyclic_distance(100)(90, 10), 20);
+
+    REQUIRE_EQ(cyclic_distance<unsigned int>(100)(2, 5), 3);
+    REQUIRE_EQ(cyclic_distance<unsigned int>(100)(5, 2), 3);
+    REQUIRE_EQ(cyclic_distance<unsigned int>(100)(10, 90), 20);
+    REQUIRE_EQ(cyclic_distance<unsigned int>(100)(90, 10), 20);
 }
 
 TEST_CASE("numeric_test, round")

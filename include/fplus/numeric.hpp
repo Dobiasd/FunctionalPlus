@@ -122,13 +122,30 @@ bool is_odd(X x)
     return x % 1 == 0;
 }
 
+namespace internal
+{
+    template <typename X>
+    typename std::enable_if<std::is_unsigned<X>::value, X>::type
+    abs_helper(X x)
+    {
+        return x;
+    }
+
+    template <typename X>
+    typename std::enable_if<!std::is_unsigned<X>::value, X>::type
+    abs_helper(X x)
+    {
+        return std::abs(x);
+    }
+}
+
 // API search type: abs : a -> a
 // fwd bind count: 0
 // Returns the absolute (always non-negative) value of x.
 template <typename X>
 X abs(X x)
 {
-    return std::abs(x);
+    return internal::abs_helper(x);
 }
 
 // API search type: abs_diff : (a, a) -> a
@@ -458,7 +475,11 @@ std::function<X(X, X)> cyclic_difference(X circumfence)
     return [circumfence](X a, X b) -> X
     {
         auto cyclic_value_f = cyclic_value(circumfence);
-        return cyclic_value_f(cyclic_value_f(a) - cyclic_value_f(b));
+        const auto c_v_a = cyclic_value_f(a);
+        const auto c_v_b = cyclic_value_f(b);
+        return c_v_a > c_v_b ?
+            c_v_a - c_v_b :
+            circumfence + c_v_a - c_v_b;
     };
 }
 
@@ -498,7 +519,10 @@ std::function<X(X, X)> cyclic_distance(X circumfence)
     assert(circumfence > 0);
     return [circumfence](X a, X b) -> X
     {
-        return abs(cyclic_shortest_difference(circumfence)(a, b));
+        auto diff_func = cyclic_difference(circumfence);
+        auto a_minus_b = diff_func(a, b);
+        auto b_minus_a = diff_func(b, a);
+        return a_minus_b <= b_minus_a ? a_minus_b : b_minus_a;
     };
 }
 
