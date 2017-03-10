@@ -180,9 +180,9 @@ T read_value_with_default(const T& def, const std::string& str)
 // String to Int
 // String to Float
 // String to Double
-// read_value_with_default<unsigned int>(3, "42") == 42
-// read_value_with_default<unsigned int>(3, "") == crash
-// read_value_with_default<unsigned int>(3, "foo") == crash
+// read_value_unsafe<unsigned int>("42") == 42
+// read_value_unsafe<unsigned int>("") == crash
+// read_value_unsafe<unsigned int>("foo") == crash
 // See read_value and read_value_with_default for safe versions.
 // etc.
 template <typename T>
