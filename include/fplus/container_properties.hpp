@@ -217,7 +217,8 @@ typename Container::value_type maximum_on(F f, const Container& xs)
 // API search type: mean : [a] -> a
 // mean([1, 4, 4]) == 3
 // Also known as average.
-// unsafe! Make sure sum(xs) does not overflow. see mean_using_doubles
+// xs must have at least one element.
+// Use mean_using_doubles if overflow errors for sum(xs) can occur.
 template <typename Result, typename Container>
 Result mean(const Container& xs)
 {
