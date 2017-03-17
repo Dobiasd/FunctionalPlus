@@ -16,11 +16,10 @@ matrix:
           sources: &sources
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise
+            - llvm-toolchain-precise-3.9
             - llvm-toolchain-precise-3.8
             - llvm-toolchain-precise-3.7
             - llvm-toolchain-precise-3.6
-            - sourceline: 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-3.9 main'
-              key_url: 'http://apt.llvm.org/llvm-snapshot.gpg.key'
     - env: CXX=g++-5 CC=gcc-5
       addons:
         apt:
