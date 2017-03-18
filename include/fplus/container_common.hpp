@@ -983,7 +983,10 @@ Container partial_sort(std::size_t count, const Container& xs)
 
 // API search type: unique_by : (((a, a) -> Bool), [a]) -> [a]
 // fwd bind count: 1
-// Like unique but with user supplied equality predicate.
+// Like unique, eliminates all but the first element
+// from every consecutive group of equivalent elements from the sequence;
+// but with a user supplied equality predicate.
+// See nub_by for making elements globally unique in a sequence.
 // O(n)
 template <typename Container, typename BinaryPredicate>
 Container unique_by(BinaryPredicate p, const Container& xs)
@@ -997,7 +1000,10 @@ Container unique_by(BinaryPredicate p, const Container& xs)
 
 // API search type: unique_on : ((a -> b), [a]) -> [a]
 // fwd bind count: 1
-// Like unique but with user supplied transformation (e.g. getter).
+// Like unique, eliminates all but the first element
+// from every consecutive group of equivalent elements from the sequence;
+// but with a user supplied transformation (e.g. getter).
+// See nub_on for making elements globally unique in a sequence.
 // O(n)
 // Also known as drop_repeats.
 template <typename Container, typename F>
@@ -1008,7 +1014,10 @@ Container unique_on(F f, const Container& xs)
 
 // API search type: unique : [a] -> [a]
 // fwd bind count: 0
+// Eliminates all but the first element
+// from every consecutive group of equivalent elements from the sequence.
 // unique([1,2,2,3,2]) == [1,2,3,2]
+// See nub for making elements globally unique in a sequence.
 // O(n)
 template <typename Container>
 Container unique(const Container& xs)
