@@ -47,6 +47,13 @@ TEST_CASE("maybe_test, ctor")
     REQUIRE_EQ(maybe<int>(4), just<int>(4));
 }
 
+TEST_CASE("maybe_test, as_just_if")
+{
+    using namespace fplus;
+    REQUIRE_EQ(as_just_if(is_even<int>, 4), just<int>(4));
+    REQUIRE_EQ(as_just_if(is_even<int>, 5), nothing<int>());
+}
+
 TEST_CASE("maybe_test, sequence")
 {
     using namespace fplus;

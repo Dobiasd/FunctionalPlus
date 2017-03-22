@@ -101,6 +101,20 @@ maybe<T> just(const T& val)
     return val;
 }
 
+// API search type: as_just_if : ((a -> bool), a) -> Maybe a
+// fwd bind count: 1
+// Wrap a value in a Maybe as a Just if the given predicate is fulfilled.
+// Otherwise a nothing is returned.
+template <typename Pred, typename T>
+maybe<T> as_just_if(Pred pred, const T& val)
+{
+    internal::check_unary_predicate_for_type<Pred, T>();
+    if (pred(val))
+        return val;
+    else
+        return {};
+}
+
 // API search type: maybe_to_seq : Maybe a -> [a]
 // fwd bind count: 0
 // Converts a maybe to a sequence.
