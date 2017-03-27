@@ -31,6 +31,7 @@
 #include <fplus/string_tools.hpp>
 #include <fplus/transform.hpp>
 #include <fplus/side_effects.hpp>
+#include <fplus/variant.hpp>
 
 #if __cplusplus >= 201402L || _MSC_VER >= 1900
     #include <fplus/fwd.hpp>
