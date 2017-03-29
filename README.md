@@ -315,7 +315,7 @@ Comparison with range-v3
 
 ```c++
 const auto times_3 = [](int i){return 3 * i;};
-const auto is_odd = [](int i){return i % 2 == 0;};
+const auto is_odd_int = [](int i){return i % 2 == 0;};
 const auto as_string_length = [](int i){return std::to_string(i).size();};
 
 // FunctionalPlus
@@ -323,7 +323,7 @@ using namespace fplus;
 const auto result_fplus = fwd::apply(
     numbers(0, 15000000)
     , fwd::transform(times_3)
-    , fwd::drop_if(is_odd)
+    , fwd::drop_if(is_odd_int)
     , fwd::transform(as_string_length)
     , fwd::sum());
 
@@ -333,7 +333,7 @@ const auto result_range_v3 =
         view::ints(0)
         | view::take(15000000)
         | view::transform(times_3)
-        | view::remove_if(is_odd)
+        | view::remove_if(is_odd_int)
         | view::transform(as_string_length)
         , 0);
 ```
