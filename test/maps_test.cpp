@@ -26,6 +26,15 @@ TEST_CASE("maps_test, transform_map_values")
     REQUIRE_EQ(groupNameToMedianMap, StringIntMap({{"a", 2}, {"b", 6}}));
 }
 
+TEST_CASE("maps_test, choose")
+{
+    using namespace fplus;
+    REQUIRE_EQ((choose<int, char>({{1, 'a'}, {2, 'b'}}, 2)), just('b'));
+    REQUIRE_EQ((choose<int, char>({{1, 'a'}, {1, 'b'}}, 1)), nothing<char>());
+    REQUIRE_EQ((choose<int, char>({{1, 'a'}, {2, 'b'}}, 3)), nothing<char>());
+    REQUIRE_EQ((choose<int, char>({}, 2)), nothing<char>());
+}
+
 TEST_CASE("maps_test, map functions")
 {
     using namespace fplus;

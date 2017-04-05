@@ -360,4 +360,17 @@ ContainerOut map_pluck(const Key& key, const MapContainer& maps)
         bind_2nd_of_2(get_from_map<MapType>, key), maps);
 }
 
+// API search type: choose : ([(a, b)], a) -> Maybe b
+// Selects a value assigned to a key if the key exists exactly once.
+// choose([(1,a), (2,b)], 2) == Just b;
+// choose([(1,a), (1,b)], 2) == Nothing;
+// choose([(1,a), (2,b)], 3) == Nothing;
+template<typename Key, typename Val>
+maybe<Val> choose(const std::vector<std::pair<Key, Val>>& pairs, const Key& x)
+{
+    if (count(x, transform(fst<Key, Val>, pairs)) != 1)
+        return {};
+    return get_from_map(pairs_to_map<std::unordered_map<Key, Val>>(pairs), x);
+}
+
 } // namespace fplus
