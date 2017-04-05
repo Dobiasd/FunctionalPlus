@@ -355,7 +355,7 @@ std::function<FOut(FIn2)> memoize_recursive(F f)
     return internal::memoize_recursive_helper(f, storage);
 }
 
-// API search type: memoize : ((a, b) -> c) -> ((a, b) -> c)
+// API search type: memoize_binary : ((a, b) -> c) -> ((a, b) -> c)
 // Provides Memoization for a given (referentially transparent)
 // binary function.
 // Returns a closure mutating an internally held dictionary
