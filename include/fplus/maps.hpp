@@ -361,6 +361,7 @@ ContainerOut map_pluck(const Key& key, const MapContainer& maps)
 }
 
 // API search type: choose : ([(a, b)], a) -> Maybe b
+// fwd bind count: 1
 // Selects a value assigned to a key if the key exists exactly once.
 // choose([(1,a), (2,b)], 2) == Just b;
 // choose([(1,a), (1,b)], 2) == Nothing;
