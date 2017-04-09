@@ -203,6 +203,7 @@ typename Container::value_type maximum_on(F f, const Container& xs)
 }
 
 // API search type: mean : [a] -> a
+// fwd bind count: 0
 // mean([1, 4, 4]) == 3
 // Also known as average.
 // xs must have at least one element.
@@ -242,6 +243,7 @@ T mean_obj_div_double(const Container& xs)
 }
 
 // API search type: mean_using_doubles : [a] -> a
+// fwd bind count: 0
 // mean_using_doubles([1, 4, 4]) == 3
 // Converts elements to double before calculating the sum to prevent overflows.
 template <typename Result, typename Container>
