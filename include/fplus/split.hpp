@@ -148,7 +148,7 @@ ContainerOut group_globally_on(F f, const ContainerIn& xs)
 // fwd bind count: 1
 // group_globally_on_labeled((mod 10), [12,34,22]) == [(2,[12,22]),(4, [34])]
 // O(n^2)
-// If you need O(n*log(n)), sort and then use group_on
+// If you need O(n*log(n)), sort and then use group_on_labeled
 template <typename F, typename ContainerIn,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename FOut = typename std::result_of<F(FIn)>::type,
