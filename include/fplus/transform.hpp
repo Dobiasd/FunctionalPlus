@@ -27,6 +27,7 @@ namespace fplus
 
 // API search type: transform_with_idx : (((Int, a) -> b), [a]) -> [b]
 // fwd bind count: 1
+// Apply a function to every index and corresponding element of a sequence.
 // transform_with_idx(f, [6, 4, 7]) == [f(0, 6), f(1, 4), f(2, 7)]
 template <typename F, typename ContainerIn,
     typename ContainerOut = typename internal::same_cont_new_t_from_binary_f<
@@ -91,6 +92,7 @@ ContainerOut transform_and_concat(F f, const ContainerIn& xs)
 
 // API search type: replicate_elems : (Int, [a]) -> [a]
 // fwd bind count: 1
+// Replicate every element n times, concatenate the result.
 // replicate_elems(3, [1,2]) == [1, 1, 1, 2, 2, 2]
 template <typename Container>
 Container replicate_elems(std::size_t n, const Container& xs)
@@ -101,6 +103,9 @@ Container replicate_elems(std::size_t n, const Container& xs)
 
 // API search type: interleave : [[a]] -> [a]
 // fwd bind count: 0
+// Return a sequence that contains elements from the provided sequences
+// in alternating order. If one list runs out of items,
+// appends the items from the remaining list.
 // interleave([[1,2,3],[4,5],[6,7,8]]) == [1,4,6,2,5,7,3,8]
 template <typename ContainerIn,
     typename ContainerOut = typename ContainerIn::value_type>
@@ -137,6 +142,7 @@ ContainerOut interleave(const ContainerIn& xss)
 
 // API search type: transpose : [[a]] -> [[a]]
 // fwd bind count: 0
+// Transpose a nested sequence aka. table aka. two-dimensional matrix.
 // transpose([[1,2,3],[4,5,6],[7,8,9]]) == [[1,4,7],[2,5,8],[3,6,9]]
 // transpose([[1,2,3],[4,5],[7,8,9]]) == [[1,4,7],[2,5,8],[3,9]]
 template <typename Container>
@@ -358,11 +364,13 @@ typename Container::value_type reduce_1_parallelly(F f, const Container& xs)
     }
 }
 
-// API search type: keep_if_parellelly : ((a -> Bool), [a]) -> [a]
+// API search type: keep_if_parallelly : ((a -> Bool), [a]) -> [a]
 // fwd bind count: 1
-// keep_if_parellelly(is_even, [1, 2, 3, 2, 4, 5]) == [2, 2, 4]
+// Same as keep_if but using multiple threads.
+// Can be useful if calling the predicate takes some time.
+// keep_if_parallelly(is_even, [1, 2, 3, 2, 4, 5]) == [2, 2, 4]
 template <typename Pred, typename Container>
-Container keep_if_parellelly(Pred pred, const Container& xs)
+Container keep_if_parallelly(Pred pred, const Container& xs)
 {
     const auto idxs = find_all_idxs_by(
         identity<bool>, transform_parallelly(pred, xs));

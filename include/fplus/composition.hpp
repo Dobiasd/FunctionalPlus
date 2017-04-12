@@ -100,6 +100,7 @@ std::function<C(B, A)> flip(F f)
 
 // API search type: forward_apply : (a, (a -> b)) -> b
 // Forward application.
+// Returns the result of applying the function f to the value x.
 template <typename X, typename F,
     typename FOut = typename std::result_of<F(X)>::type>
 FOut forward_apply(const X& x, F f)
@@ -109,7 +110,8 @@ FOut forward_apply(const X& x, F f)
 }
 
 // API search type: compose : ((a -> b), (b -> c)) -> (a -> c)
-// Forward composition: compose(f, g)(x) = g(f(x))
+// Forward function composition.
+// compose(f, g)(x) = g(f(x))
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename FOut = typename std::result_of<F(FIn)>::type,
@@ -125,7 +127,8 @@ std::function<GOut(FIn)> compose(F f, G g)
 }
 
 // API search type: compose : ((a -> b), (b -> c), (c -> d)) -> (a -> d)
-// Forward composition: compose(f, g, h)(x) = h(g(f(x)))
+// Forward function composition.
+// compose(f, g, h)(x) = h(g(f(x)))
 template <typename F, typename G, typename H,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename FOut = typename std::result_of<F(FIn)>::type,
@@ -146,7 +149,8 @@ std::function<HOut(FIn)> compose(F f, G g, H h)
 }
 
 // API search type: compose : ((a -> b), (b -> c), (c -> d), (d -> e)) -> (a -> e)
-// Forward composition: compose(f, g, h, i)(x) = i(h(g(f(x))))
+// Forward function composition.
+// compose(f, g, h, i)(x) = i(h(g(f(x))))
 template <typename F, typename G, typename H, typename I,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename FOut = typename std::result_of<F(FIn)>::type,
@@ -172,7 +176,8 @@ std::function<IOut(FIn)> compose(F f, G g, H h, I i)
 }
 
 // API search type: compose : ((a -> b), (b -> c), (c -> d), (d -> e), (e -> f)) -> (a -> f)
-// Forward composition: compose(f, g, h, i, j)(x) = j(i(h(g(f(x)))))
+// Forward function composition.
+// compose(f, g, h, i, j)(x) = j(i(h(g(f(x)))))
 template <typename F, typename G, typename H, typename I, typename J,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename FOut = typename std::result_of<F(FIn)>::type,
@@ -203,6 +208,8 @@ std::function<JOut(FIn)> compose(F f, G g, H h, I i, J j)
 }
 
 // API search type: logical_not : (a -> Bool) -> (a -> Bool)
+// Converts a unary predicate p
+// into a new one, always returning the exact opposite of p.
 // logical_not(f) = \x -> !x
 template <typename UnaryPredicate,
     typename X = typename utils::function_traits<UnaryPredicate>::template arg<0>::type>
@@ -217,6 +224,8 @@ std::function<bool(X)> logical_not(UnaryPredicate f)
 
 // API search type: logical_or : ((a -> Bool), (a -> Bool)) -> (a -> Bool)
 // logical_or(f, g) = \x -> f(x) or g(x)
+// Combines to unary predicates into a single one
+// that holds true if at least one of the original predicated is true.
 template <typename UnaryPredicateF, typename UnaryPredicateG,
     typename X = typename utils::function_traits<UnaryPredicateF>::template arg<0>::type,
     typename Y = typename utils::function_traits<UnaryPredicateG>::template arg<0>::type>
@@ -237,6 +246,8 @@ std::function<bool(X)> logical_or(UnaryPredicateF f, UnaryPredicateG g)
 
 // API search type: logical_and : ((a -> Bool), (a -> Bool)) -> (a -> Bool)
 // logical_and(f, g) = \x -> f(x) and g(x)
+// Combines to unary predicates into a single one
+// that holds true if both original predicated are true.
 template <typename UnaryPredicateF, typename UnaryPredicateG,
     typename X = typename utils::function_traits<UnaryPredicateF>::template arg<0>::type,
     typename Y = typename utils::function_traits<UnaryPredicateG>::template arg<0>::type>
@@ -257,6 +268,8 @@ std::function<bool(X)> logical_and(UnaryPredicateF f, UnaryPredicateG g)
 
 // API search type: logical_xor : ((a -> Bool), (a -> Bool)) -> (a -> Bool)
 // logical_xor(f, g) = \x -> f(x) xor g(x)
+// Combines to unary predicates into a single one
+// that holds true if exactly one of the original predicated is true.
 template <typename UnaryPredicateF, typename UnaryPredicateG,
     typename X = typename utils::function_traits<UnaryPredicateF>::template arg<0>::type,
     typename Y = typename utils::function_traits<UnaryPredicateG>::template arg<0>::type>

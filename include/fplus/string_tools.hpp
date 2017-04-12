@@ -119,6 +119,7 @@ String trim_whitespace_left(const String& str)
 
 // API search type: trim_whitespace_right : String -> String
 // fwd bind count: 0
+// Remove whitespace characters from the end of a string.
 // trim_whitespace_right("    text  ") == "    text"
 template <typename String>
 String trim_whitespace_right(const String& str)
@@ -128,6 +129,7 @@ String trim_whitespace_right(const String& str)
 
 // API search type: trim_whitespace : String -> String
 // fwd bind count: 0
+// Remove whitespace characters from the beginning and the end of a string.
 // trim_whitespace("    text  ") == "text"
 template <typename String>
 String trim_whitespace(const String& str)
@@ -137,6 +139,7 @@ String trim_whitespace(const String& str)
 
 // API search type: to_lower_case : String -> String
 // fwd bind count: 0
+// Convert a string to lowercase characters.
 // to_lower_case("ChaRacTer&WorDs23") == "character&words23"
 template <typename String>
 String to_lower_case(const String& str)
@@ -151,6 +154,7 @@ String to_lower_case(const String& str)
 
 // API search type: to_upper_case : String -> String
 // fwd bind count: 0
+// Convert a string to uppercase characters.
 // to_upper_case("ChaRacTer&WorDs34") == "CHARACTER&WORDS34"
 template <typename String>
 String to_upper_case(const String& str)
@@ -165,6 +169,7 @@ String to_upper_case(const String& str)
 
 // API search type: to_string_fill_left : (Char, Int, a) -> String
 // fwd bind count: 2
+// Convert a type right-aligned string using a fill character.
 // to_string_fill_left('0', 5, 42) == "00042"
 // to_string_fill_left(' ', 5, 42) == "   42"
 template <typename T>
@@ -176,6 +181,7 @@ std::string to_string_fill_left(const std::string::value_type& filler,
 
 // API search type: to_string_fill_right : (Char, Int, a) -> String
 // fwd bind count: 2
+// Convert a type left-aligned string using a fill character.
 // to_string_fill_right(' ', 5, 42) == "42   "
 template <typename T>
 std::string to_string_fill_right(const std::string::value_type& filler,

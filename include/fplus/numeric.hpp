@@ -461,6 +461,8 @@ std::function<X(X)> cyclic_value(X circumfence)
 }
 
 // API search type: cyclic_difference : a -> ((a, a) -> a)
+// Returns the distance the first value has to advance forward on a circle
+// to reach the second value.
 // circumfence must be > 0
 // cyclic_difference(100)(5, 2) == 3
 // cyclic_difference(100)(2, 5) == 97
@@ -484,6 +486,8 @@ std::function<X(X, X)> cyclic_difference(X circumfence)
 }
 
 // API search type: cyclic_shortest_difference : a -> ((a, a) -> a)
+// Returns displacement (shortest way) the first value has to move on a circle
+// to reach the second value.
 // circumfence must be > 0
 // cyclic_shortest_difference(100)(5, 2) == 3
 // cyclic_shortest_difference(100)(2, 5) == -3
@@ -505,6 +509,8 @@ std::function<X(X, X)> cyclic_shortest_difference(X circumfence)
 }
 
 // API search type: cyclic_distance : a -> ((a, a) -> a)
+// Returns distance (shortest way) the first value has to move on a circle
+// to reach the second value.
 // circumfence must be > 0
 // cyclic_distance(100)(2, 5) == 3
 // cyclic_distance(100)(5, 2) == 3
@@ -609,6 +615,7 @@ Container standardize(const Container& xs)
 }
 
 // API search type: add_to : a -> (a -> a)
+// Provide a function adding to a given constant.
 // add_to(3)(2) == 5
 template <typename X>
 std::function<X(X)> add_to(const X& x)
@@ -620,6 +627,7 @@ std::function<X(X)> add_to(const X& x)
 }
 
 // API search type: subtract_from : a -> (a -> a)
+// Provide a function subtracting from a given constant.
 // add_to(3)(2) == 1
 template <typename X>
 std::function<X(X)> subtract_from(const X& x)
@@ -631,6 +639,7 @@ std::function<X(X)> subtract_from(const X& x)
 }
 
 // API search type: multiply_with : a -> (a -> a)
+// Provide a function multiplying with a given constant.
 // multiply_with(3)(2) == 6
 template <typename X>
 std::function<X(X)> multiply_with(const X& x)
@@ -642,6 +651,7 @@ std::function<X(X)> multiply_with(const X& x)
 }
 
 // API search type: divide_by : a -> (a -> a)
+// Provide a function dividing by a given constant.
 // divide_by(2)(6) == 3
 template <typename X>
 std::function<X(X)> divide_by(const X& x)
@@ -654,6 +664,7 @@ std::function<X(X)> divide_by(const X& x)
 
 // API search type: histogram_using_intervals : ([(a, a)], [a]) -> [((a, a), Int)]
 // fwd bind count: 1
+// Generate a histogram of a sequence with given bins.
 // histogram_using_intervals([(0,4), (4,5), (6,8)], [0,1,4,5,6,7,8,9]) ==
 //     [((0, 4), 2), ((4, 5), 1), ((6, 8), 2)]
 template <typename ContainerIn,
@@ -689,6 +700,7 @@ ContainerOut histogram_using_intervals(
 
 // API search type: generate_consecutive_intervals : (a, a, a) -> [(a, a)]
 // fwd bind count: 2
+// Return intervals of a given size adjacent to each other
 // generate_consecutive_intervals(0, 2, 4) == [(0,2), (2,4), (4,6), (6,8)]
 template <typename T>
 std::vector<std::pair<T, T>> generate_consecutive_intervals(
@@ -708,6 +720,7 @@ std::vector<std::pair<T, T>> generate_consecutive_intervals(
 
 // API search type: histogram : (a, a, a, [a]) -> [((a, a), Int)]
 // fwd bind count: 3
+// Calculate the histogram of a sequence using a given bin width.
 // histogram(1, 2, 4, [0,1,4,5,7,8,9]) == [(1, 2), (3, 0), (5, 2), (7, 1)]
 template <typename ContainerIn,
         typename ContainerOut =

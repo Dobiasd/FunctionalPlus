@@ -14,6 +14,7 @@ namespace fplus
 
 // API search type: elem_at_idx_or_nothing : (Int, [a]) -> Maybe a
 // fwd bind count: 1
+// Return nth element of a sequence.
 // Returns nothing if index is outside of xs.
 template <typename Container,
     typename T = typename Container::value_type>
@@ -30,6 +31,8 @@ maybe<T> elem_at_idx_or_nothing(signed int idx, const Container& xs)
 
 // API search type: elem_at_idx_or_constant : (a, Int, [a]) -> a
 // fwd bind count: 2
+// Return nth element of a sequence.
+// Interpolate outside of sequence with a constant value.
 // iiiiii|abcdefgh|iiiiiii
 template <typename Container,
     typename T = typename Container::value_type>
@@ -46,6 +49,8 @@ T elem_at_idx_or_constant(const T& c, signed int idx, const Container& xs)
 
 // API search type: elem_at_idx_or_replicate : (Int, [a]) -> a
 // fwd bind count: 1
+// Return nth element of a sequence.
+// Interpolate outside of sequence by replicating the nearest inside value.
 // aaaaaa|abcdefgh|hhhhhhh
 // xs must be non-empty.
 template <typename Container,
@@ -68,7 +73,9 @@ T elem_at_idx_or_replicate(signed int idx, const Container& xs)
 
 // API search type: elem_at_idx_or_wrap : (Int, [a]) -> a
 // fwd bind count: 1
-// For cyclic element access
+// Return nth element of a sequence.
+// Interpolate outside of sequence by replicating the sequence.
+// For cyclic element access.
 // cdefgh|abcdefgh|abcdefg
 // xs must be non-empty.
 template <typename Container,
@@ -88,6 +95,9 @@ T elem_at_idx_or_wrap(signed int idx, const Container& xs)
 
 // API search type: extrapolate_replicate : (Int, Int, [a]) -> [a]
 // fwd bind count: 2
+// Extrapolate a sequence by replicating the border values.
+// count_begin determines the number of elements to be prepended.
+// count_end determines the number of elements to be appended.
 // aaaaaa|abcdefgh|hhhhhhh
 // xs must be non-empty.
 template <typename Container,
@@ -111,6 +121,9 @@ Container extrapolate_replicate(std::size_t count_begin, std::size_t count_end,
 
 // API search type: extrapolate_wrap : (Int, Int, [a]) -> [a]
 // fwd bind count: 2
+// Extrapolate a sequence by accessing the elements in cyclic fashion.
+// count_begin determines the number of elements to be prepended.
+// count_end determines the number of elements to be appended.
 // cdefgh|abcdefgh|abcdefg
 // xs must be non-empty.
 template <typename Container,

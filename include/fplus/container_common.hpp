@@ -109,7 +109,9 @@ namespace internal
 
 // API search type: is_empty : [a] -> Bool
 // fwd bind count: 0
+// Returns true if the container holds no elements.
 // is_empty([1, 2]) == false
+// is_empty([]) == true
 template <typename Container>
 bool is_empty(const Container& xs)
 {
@@ -118,6 +120,7 @@ bool is_empty(const Container& xs)
 
 // API search type: is_not_empty : [a] -> Bool
 // fwd bind count: 0
+// Returns true if the container holds at least one element.
 // is_not_empty([1, 2]) == true
 template <typename Container>
 bool is_not_empty(const Container& xs)
@@ -127,6 +130,7 @@ bool is_not_empty(const Container& xs)
 
 // API search type: size_of_cont : [a] -> Int
 // fwd bind count: 0
+// Returns the number of elements in the given container.
 // size_of_cont([3, 4]) == 2
 template <typename Container>
 std::size_t size_of_cont(const Container& xs)
@@ -136,7 +140,7 @@ std::size_t size_of_cont(const Container& xs)
 
 // API search type: convert : a -> b
 // fwd bind count: 0
-// Converts one type of element to another.
+// Converts one type of element into another.
 template <typename Dest, typename Source>
 Dest convert(const Source& x)
 {
@@ -145,6 +149,7 @@ Dest convert(const Source& x)
 
 // API search type: convert_elems : [a] -> [b]
 // fwd bind count: 0
+// Converts all elements in a sequence to a different type.
 // convert_elems<NewT>([1, 2, 3]) == [NewT(1), NewT(2), NewT(3)]
 template <typename NewT, typename ContainerIn,
     typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, NewT>::type>
@@ -168,6 +173,8 @@ ContainerOut convert_elems(const ContainerIn& xs)
 
 // API search type: convert_container : [a] -> [a]
 // fwd bind count: 0
+// Change the type of the container
+// while keeping the elements in the sequence the same.
 // convert_container([1, 2, 3]) == [1, 2, 3]
 // Useful for example if you want to convert an std::list to an std::vector.
 template <typename ContainerOut, typename ContainerIn>
@@ -208,6 +215,7 @@ ContainerOut convert_container_and_elems(const ContainerIn& xs)
 
 // API search type: get_segment : (Int, Int, [a]) -> [a]
 // fwd bind count: 2
+// Return a defined segment from the sequence.
 // get_segment(2, 5, [0,1,2,3,4,5,6,7,8]) == [2,3,4]
 // Also known as slice.
 // crashes on invalid indices
@@ -228,6 +236,7 @@ Container get_segment
 
 // API search type: set_segment : (Int, [a], [a]) -> [a]
 // fwd bind count: 2
+// Return a defined segment from the sequence with the given token.
 // set_segment(2, [9,9,9], [0,1,2,3,4,5,6,7,8]) == [0,1,9,9,9,5,6,7,8]
 // crashes on invalid indices
 template <typename Container>
@@ -244,6 +253,7 @@ Container set_segment
 
 // API search type: remove_segment : (Int, Int, [a]) -> [a]
 // fwd bind count: 2
+// Cuts our a  defined segment from the sequence.
 // remove_segment(2, 5, [0,1,2,3,4,5,6,7]) == [0,1,5,6,7]
 // crashes on invalid indices
 template <typename Container>
@@ -270,6 +280,7 @@ Container remove_segment
 
 // API search type: insert_at : (Int, [a], [a]) -> [a]
 // fwd bind count: 2
+// Inserts a token into a sequence at a specific position.
 // insert_at(2, [8,9], [0,1,2,3,4]) == [0,1,8,9,2,3,4]
 // crashes on invalid index
 template <typename Container>
@@ -292,6 +303,7 @@ Container insert_at(std::size_t idx_begin,
 
 // API search type: replace_segment : (Int, [a], [a]) -> [a]
 // fwd bind count: 2
+// Replace part of a sequence with a token.
 // replace_segment(2, [8,9], [0,1,2,3,4]) == [0,1,8,9,4]
 // crashes on invalid index
 template <typename Container>
@@ -304,6 +316,7 @@ Container replace_segment(std::size_t idx_begin,
 
 // API search type: elem_at_idx : (Int, [a]) -> a
 // fwd bind count: 1
+// Return the nth element of a sequence.
 // elem_at_idx(2, [7,6,5,4,3]) == 5
 // Unsafe!
 template <typename Container,
@@ -318,6 +331,7 @@ T elem_at_idx(std::size_t idx, const Container& xs)
 
 // API search type: elem_at_idx_flipped : ([a], Int) -> a
 // fwd bind count: 1
+// Returns from a sequence the nth element.
 // elem_at_idx_flipped([7,6,5,4,3], 2) == 5
 // Unsafe!
 template <typename Container,
@@ -329,6 +343,7 @@ T elem_at_idx_flipped(const Container& xs, std::size_t idx)
 
 // API search type: elem_at_idx_maybe : (Int, [a]) -> Maybe a
 // fwd bind count: 1
+// Return the nth element of a sequence if existing.
 // elem_at_idx_maybe(2, [7,6,5,4,3]) == Just 5
 // elem_at_idx_maybe(9, [7,6,5,4,3]) == Nothing
 // Use elem_at_idx_or_nothing if you want to provide a signed index type.
@@ -347,6 +362,7 @@ maybe<T> elem_at_idx_maybe(std::size_t idx, const Container& xs)
 
 // API search type: elems_at_idxs : ([Int], [a]) -> [a]
 // fwd bind count: 1
+// Construct a subsequence from the elements with the given indices.
 // elem_at_idxs([1, 3], [7,6,5,4,3]) == [6, 4]
 template <typename Container,
     typename ContainerIdxs,
@@ -368,8 +384,9 @@ std::vector<T> elems_at_idxs(const ContainerIdxs& idxs, const Container& xs)
 
 // API search type: transform : ((a -> b), [a]) -> [b]
 // fwd bind count: 1
+// Apply a function to every element in a sequence.
 // transform((*2), [1, 3, 4]) == [2, 6, 8]
-// Also known as map.
+// Also known as map or fmap.
 template <typename F, typename ContainerIn,
     typename ContainerOut = typename internal::same_cont_new_t_from_unary_f<
         ContainerIn, F>::type>
@@ -401,6 +418,8 @@ ContainerOut transform_convert(F f, const ContainerIn& xs)
 
 // API search type: transform_inner : ((a -> b), [a]) -> [b]
 // fwd bind count: 1
+// Applies a function to the elements of the inner containers
+// of a nested sequence.
 // transform_inner((*2), [[1, 3, 4], [1, 2]]) == [[2, 6, 8], [2, 4]]
 // Also known as transform_nested, map_nested or map_inner.
 template <typename F, typename ContainerIn,
@@ -422,6 +441,7 @@ ContainerOut transform_inner(F f, const ContainerIn& xs)
 
 // API search type: reverse : [a] -> [a]
 // fwd bind count: 0
+// Reverse a sequence.
 // reverse([0,4,2,6]) == [6,2,4,0]
 template <typename Container>
 Container reverse(const Container& xs)
@@ -435,6 +455,8 @@ Container reverse(const Container& xs)
 
 // API search type: take : (Int, [a]) -> [a]
 // fwd bind count: 1
+// Return the first n elements of a sequence xs.
+// In case n >= length(xs), xs is returned.
 // take(3, [0,1,2,3,4,5,6,7]) == [0,1,2]
 // take(10, [0,1,2]) == [0,1,2]
 template <typename Container>
@@ -447,7 +469,8 @@ Container take(std::size_t amount, const Container& xs)
 
 // API search type: take_exact : (Int, [a]) -> [a]
 // fwd bind count: 1
-// Unsafe!
+// Return exactly the first n elements of a sequence xs.
+// Unsafe! Crashes then sequence is too short.
 // take_exact(3, [0,1,2,3,4,5,6,7]) == [0,1,2]
 // take_exact(10, [0,1,2]) == crash
 template <typename Container>
@@ -458,6 +481,7 @@ Container take_exact(std::size_t amount, const Container& xs)
 
 // API search type: take_cyclic : (Int, [a]) -> [a]
 // fwd bind count: 1
+// Takes n elements from a sequence considering it as cyclic.
 // take_cyclic(5, [0,1,2,3]) == [0,1,2,3,0]
 // take_cyclic(7, [0,1,2,3]) == [0,1,2,3,0,1,2]
 // take_cyclic(7, [0,1]) == [0,1,0,1,0,1,0]
@@ -491,6 +515,8 @@ Container take_cyclic(std::size_t amount, const Container& xs)
 
 // API search type: drop : (Int, [a]) -> [a]
 // fwd bind count: 1
+// Skip the first n elements of a sequence xs.
+// If n > length(xs) an empty sequence is returned.
 // drop(3, [0,1,2,3,4,5,6,7]) == [3,4,5,6,7]
 // Also known as skip.
 template <typename Container>
@@ -503,7 +529,8 @@ Container drop(std::size_t amount, const Container& xs)
 
 // API search type: drop_exact : (Int, [a]) -> [a]
 // fwd bind count: 1
-// Unsafe!
+// Skip exactly the first n elements of a sequence xs.
+// Unsafe! Crashes when xs is too short.
 // drop_exact(3, [0,1,2,3,4,5,6,7]) == [3,4,5,6,7]
 // drop_exact(10, [0,1,2,3,4,5,6,7]) == crash
 template <typename Container>
@@ -687,6 +714,7 @@ ContainerOut scan_right_1(F f, const ContainerIn& xs)
 
 // API search type: sum : [a] -> a
 // fwd bind count: 0
+// Adds up all values in a sequence.
 // sum([0,3,1]) == 4
 // sum([]) == 0
 template <typename Container,
@@ -703,6 +731,7 @@ T sum(const Container& xs)
 
 // API search type: product : [a] -> a
 // fwd bind count: 0
+// Returns the product of all values in a sequence.
 // product([3,1,2]) == 6
 // product([]) == 1
 template <typename Container,
@@ -719,6 +748,7 @@ T product(const Container& xs)
 
 // API search type: append_elem : ([a], a) -> [a]
 // fwd bind count: 1
+// Extends a sequence with one element at the back.
 // append_elem([1, 2], 3) == [1, 2, 3]
 template <typename Container,
     typename T = typename Container::value_type>
@@ -734,6 +764,7 @@ Container append_elem(const Container& xs, const T& y)
 
 // API search type: prepend_elem : ([a], a) -> [a]
 // fwd bind count: 1
+// Extends a sequence with one element in the front.
 // prepend_elem([2, 3], 1) == [1, 2, 3]
 template <typename Container,
     typename T = typename Container::value_type>
@@ -749,6 +780,7 @@ Container prepend_elem(const Container& xs, const T& y)
 
 // API search type: append : ([a], [a]) -> [a]
 // fwd bind count: 1
+// Concatenaes two sequences.
 // append([1, 2], [3, 4, 5]) == [1, 2, 3, 4, 5]
 template <typename Container>
 Container append(const Container& xs, const Container& ys)
@@ -764,6 +796,7 @@ Container append(const Container& xs, const Container& ys)
 
 // API search type: concat : [[a]] -> [a]
 // fwd bind count: 0
+// Concatenaes multiple sequences.
 // concat([[1, 2], [], [3]]) == [1, 2, 3]
 // Also known as flatten.
 template <typename ContainerIn,
@@ -783,11 +816,12 @@ ContainerOut concat(const ContainerIn& xss)
 
 // API search type: interweave : ([a], [a]) -> [a]
 // fwd bind count: 1
-// Return a list that contains elements from the two provided,
-// in alternate order. If one list runs out of items,
-// append the items from the remaining list.
+// Return a sequence that contains elements from the two provided sequences
+// in alternating order. If one list runs out of items,
+// appends the items from the remaining list.
 // interweave([1,3], [2,4]) == [1,2,3,4]
 // interweave([1,3,5,7], [2,4]) == [1,2,3,4,5,7]
+// See interleave for interweaving more than two sequences.
 template <typename Container>
 Container interweave(const Container& xs, const Container& ys)
 {
@@ -835,7 +869,6 @@ std::pair<Container, Container> unweave(const Container& xs)
     return result;
 }
 
-// sort by given less comparator
 template <typename Compare, typename T>
 std::list<T> sort_by(Compare comp, const std::list<T>& xs)
 {
@@ -846,7 +879,7 @@ std::list<T> sort_by(Compare comp, const std::list<T>& xs)
 
 // API search type: sort_by : (((a, a) -> Bool), [a]) -> [a]
 // fwd bind count: 1
-// sort by given less comparator
+// Sort a sequence by given less comparator.
 template <typename Compare, typename Container>
 Container sort_by(Compare comp, const Container& xs)
 {
@@ -888,7 +921,7 @@ namespace internal
 
 // API search type: sort_on : ((a -> b), [a]) -> [a]
 // fwd bind count: 1
-// sort by given transformer
+// Sort a sequence by a given transformer.
 template <typename F, typename Container>
 Container sort_on(F f, const Container& xs)
 {
@@ -897,7 +930,7 @@ Container sort_on(F f, const Container& xs)
 
 // API search type: sort : [a] -> [a]
 // fwd bind count: 0
-// sort by std::less
+// Sort a sequence to ascending order using std::less.
 template <typename Container>
 Container sort(const Container& xs)
 {
@@ -905,7 +938,6 @@ Container sort(const Container& xs)
     return sort_by(std::less<T>(), xs);
 }
 
-// sort stably by given less comparator
 template <typename Compare, typename T>
 std::list<T> stable_sort_by(Compare comp, const std::list<T>& xs)
 {
@@ -916,7 +948,7 @@ std::list<T> stable_sort_by(Compare comp, const std::list<T>& xs)
 
 // API search type: stable_sort_by : (((a, a) -> Bool), [a]) -> [a]
 // fwd bind count: 1
-// sort stably by given less comparator
+// Sort a sequence stably by given less comparator.
 template <typename Compare, typename Container>
 Container stable_sort_by(Compare comp, const Container& xs)
 {
@@ -927,7 +959,7 @@ Container stable_sort_by(Compare comp, const Container& xs)
 
 // API search type: stable_sort_on : ((a -> b), [a]) -> [a]
 // fwd bind count: 1
-// sort stably by given transformer
+// Sort a sequence stably by given transformer.
 template <typename F, typename Container>
 Container stable_sort_on(F f, const Container& xs)
 {
@@ -936,7 +968,7 @@ Container stable_sort_on(F f, const Container& xs)
 
 // API search type: stable_sort : [a] -> [a]
 // fwd bind count: 0
-// sort stably by std::less
+// Sort a sequence stably to ascending order using std::less.
 template <typename Container>
 Container stable_sort(const Container& xs)
 {
@@ -946,7 +978,8 @@ Container stable_sort(const Container& xs)
 
 // API search type: partial_sort_by : (((a, a) -> Bool), Int, [a]) -> [a]
 // fwd bind count: 2
-// partially sort by given less comparator
+// Partially sort a sequence by a given less comparator.
+// Returns only the sorted segment.
 template <typename Compare, typename Container>
 Container partial_sort_by(Compare comp, std::size_t count, const Container& xs)
 {
@@ -963,7 +996,8 @@ Container partial_sort_by(Compare comp, std::size_t count, const Container& xs)
 
 // API search type: partial_sort_on : ((a -> b), Int, [a]) -> [a]
 // fwd bind count: 2
-// partially sort by given transformer
+// Partially sort a sequence by a given transformer.
+// Returns only the sorted segment.
 template <typename F, typename Container>
 Container partial_sort_on(F f, std::size_t count, const Container& xs)
 {
@@ -973,7 +1007,8 @@ Container partial_sort_on(F f, std::size_t count, const Container& xs)
 
 // API search type: partial_sort : (Int, [a]) -> [a]
 // fwd bind count: 1
-// partially sort by std::less
+// Partially sort a sequence in ascending order using std::less.
+// Returns only the sorted segment.
 template <typename Container>
 Container partial_sort(std::size_t count, const Container& xs)
 {
@@ -1030,6 +1065,7 @@ Container unique(const Container& xs)
 
 // API search type: intersperse : (a, [a]) -> [a]
 // fwd bind count: 1
+// Insert a value between all adjacent values in a sequence.
 // intersperse(0, [1, 2, 3]) == [1, 0, 2, 0, 3]
 template <typename Container,
     typename X = typename Container::value_type>
@@ -1053,6 +1089,8 @@ Container intersperse(const X& value, const Container& xs)
 
 // API search type: join : ([a], [[a]]) -> [a]
 // fwd bind count: 1
+// Inserts a separator sequence into a sequence of sequences
+// and concatenates the result.
 // Also known as intercalate.
 // join(";", "["a", "b", "c"]) == "a;b;c"
 // join([0, 0], [[1], [2], [3, 4]]) == [1, 0, 0, 2, 0, 0, 3, 4]
@@ -1118,7 +1156,8 @@ Container nub_by(BinaryPredicate p, const Container& xs)
 
 // API search type: nub_on : ((a -> b), [a]) -> [a]
 // fwd bind count: 1
-// Makes the elements in a container unique with respect to their function value
+// Makes the elements in a container unique
+// with respect to their function value.
 // nub_on((mod 10), [12,32,15]) == [12,15]
 // O(n^2)
 template <typename Container, typename F>
@@ -1129,7 +1168,7 @@ Container nub_on(F f, const Container& xs)
 
 // API search type: nub : [a] -> [a]
 // fwd bind count: 0
-// Makes the elements in a container unique
+// Makes the elements in a container unique.
 // nub([1,2,2,3,2]) == [1,2,3]
 // O(n^2)
 // Also known as distinct.
@@ -1142,7 +1181,8 @@ Container nub(const Container& xs)
 
 // API search type: all_unique_by_eq : (((a, a) -> Bool), [a]) -> Bool
 // fwd bind count: 1
-// Checks if all elements in a container are unique with respect to a predicate
+// Checks if all elements in a container are unique
+// with respect to a predicate.
 // Returns true for empty containers.
 // O(n^2)
 template <typename Container, typename BinaryPredicate>
@@ -1154,7 +1194,8 @@ bool all_unique_by_eq(BinaryPredicate p, const Container& xs)
 
 // API search type: all_unique_on : ((a -> b), [a]) -> Bool
 // fwd bind count: 1
-// Checks if all elements in a container are unique with respect to their function value
+// Checks if all elements in a container are unique
+// with respect to their function values.
 // Returns true for empty containers.
 // O(n^2)
 template <typename Container, typename F>
@@ -1165,7 +1206,7 @@ bool all_unique_on(F f, const Container& xs)
 
 // API search type: all_unique : [a] -> Bool
 // fwd bind count: 0
-// Checks if all elements in a container are unique
+// Checks if all elements in a container are unique.
 // Returns true for empty containers.
 // O(n^2)
 template <typename Container>
@@ -1178,6 +1219,7 @@ bool all_unique(const Container& xs)
 
 // API search type: is_strictly_sorted_by : (((a, a) -> Bool), [a]) -> Bool
 // fwd bind count: 1
+// Checks if a container already is strictly sorted using a predicate.
 // comp(a, b) must return true only if a < b.
 // O(n)
 template <typename Container, typename Compare>
@@ -1195,6 +1237,7 @@ bool is_strictly_sorted_by(Compare comp, const Container& xs)
 
 // API search type: is_strictly_sorted_on : ((a -> b), [a]) -> Bool
 // fwd bind count: 1
+// Checks if a container already is strictly sorted using a transformer.
 // O(n)
 template <typename Container, typename F>
 bool is_strictly_sorted_on(F f, const Container& xs)
@@ -1204,6 +1247,8 @@ bool is_strictly_sorted_on(F f, const Container& xs)
 
 // API search type: is_strictly_sorted : [a] -> Bool
 // fwd bind count: 0
+// Checks if a container already is strictly sorted
+// in ascending order using std::less.
 // O(n)
 template <typename Container>
 bool is_strictly_sorted(const Container& xs)
@@ -1215,6 +1260,7 @@ bool is_strictly_sorted(const Container& xs)
 
 // API search type: is_sorted_by : (((a, a) -> Bool), [a]) -> Bool
 // fwd bind count: 1
+// Checks if a container already is sorted using a predicate.
 // comp(a, b) must return true only if a < b.
 // O(n)
 template <typename Container, typename Compare>
@@ -1232,6 +1278,7 @@ bool is_sorted_by(Compare comp, const Container& xs)
 
 // API search type: is_sorted_on : ((a -> b), [a]) -> Bool
 // fwd bind count: 1
+// Checks if a container already is strictly sorted using a transformer.
 // O(n)
 template <typename Container, typename F>
 bool is_sorted_on(F f, const Container& xs)
@@ -1241,6 +1288,8 @@ bool is_sorted_on(F f, const Container& xs)
 
 // API search type: is_sorted : [a] -> Bool
 // fwd bind count: 0
+// Checks if a container already is sorted
+// in ascending order using std::less.
 // O(n)
 template <typename Container>
 bool is_sorted(const Container& xs)
@@ -1252,6 +1301,7 @@ bool is_sorted(const Container& xs)
 
 // API search type: is_prefix_of : ([a], [a]) -> Bool
 // fwd bind count: 1
+// Checks if a containers starts with a token.
 // is_prefix_of("Fun", "FunctionalPlus") == true
 template <typename Container>
 bool is_prefix_of(const Container& token, const Container& xs)
@@ -1263,6 +1313,7 @@ bool is_prefix_of(const Container& token, const Container& xs)
 
 // API search type: is_suffix_of : ([a], [a]) -> Bool
 // fwd bind count: 1
+// Checks if a containers contains a token as a segment.
 // is_suffix_of("us", "FunctionalPlus") == true
 template <typename Container>
 bool is_suffix_of(const Container& token, const Container& xs)
@@ -1275,6 +1326,7 @@ bool is_suffix_of(const Container& token, const Container& xs)
 
 // API search type: all_by : ((a -> Bool), [a]) -> Bool
 // fwd bind count: 1
+// Checks if a containers contains a token as a segment.
 // all_by(is_even, [2, 4, 6]) == true
 // Returns true for empty containers.
 template <typename UnaryPredicate, typename Container>
@@ -1286,6 +1338,7 @@ bool all_by(UnaryPredicate p, const Container& xs)
 
 // API search type: all : [Bool] -> Bool
 // fwd bind count: 0
+// Checks if all values in a container evaluate to true.
 // all([true, false, true]) == false
 // Returns true for empty containers.
 template <typename Container>
@@ -1297,6 +1350,7 @@ bool all(const Container& xs)
 
 // API search type: all_the_same_by : (((a, a) -> Bool), [a]) -> Bool
 // fwd bind count: 1
+// Checks if all values in a container are equal using a binary predicate.
 // Returns true for empty containers.
 template <typename Container, typename BinaryPredicate>
 bool all_the_same_by(BinaryPredicate p, const Container& xs)
@@ -1310,6 +1364,7 @@ bool all_the_same_by(BinaryPredicate p, const Container& xs)
 
 // API search type: all_the_same_on : ((a -> Bool), [a]) -> Bool
 // fwd bind count: 1
+// Checks if all values in a container are equal using a transformer.
 // Returns true for empty containers.
 template <typename Container, typename F>
 bool all_the_same_on(F f, const Container& xs)
@@ -1322,6 +1377,7 @@ bool all_the_same_on(F f, const Container& xs)
 
 // API search type: all_the_same : [a] -> Bool
 // fwd bind count: 0
+// Checks if all values in a container are equal.
 // Returns true for empty containers.
 template <typename Container>
 bool all_the_same(const Container& xs)
@@ -1333,6 +1389,7 @@ bool all_the_same(const Container& xs)
 
 // API search type: numbers_step : (a, a, a) -> [a]
 // fwd bind count: 2
+// Return a sequence of numbers using a specific step.
 // numbers_step(2, 9, 2) == [2, 4, 6, 8]
 template <typename T,
         typename ContainerOut = std::vector<T>>
@@ -1356,6 +1413,8 @@ ContainerOut numbers_step
 
 // API search type: numbers : (a, a) -> [a]
 // fwd bind count: 1
+// Return an ascending sequence of numbers..
+// Also known as range.
 // numbers(2, 9) == [2, 3, 4, 5, 6, 7, 8]
 template <typename T,
         typename ContainerOut = std::vector<T>>
@@ -1366,6 +1425,7 @@ ContainerOut numbers(const T start, const T end)
 
 // API search type: singleton_seq : a -> [a]
 // fwd bind count: 0
+// Construct a sequence containing a single value.
 // singleton_seq(3) == [3].
 template <typename T, typename ContainerOut = std::vector<T>>
 ContainerOut singleton_seq(const T& x)
@@ -1375,6 +1435,7 @@ ContainerOut singleton_seq(const T& x)
 
 // API search type: all_idxs : [a] -> [Int]
 // fwd bind count: 0
+// Returns a vector containing all valid indices of sequence xs.
 // all_idxs([6,4,7,6]) == [0,1,2,3]
 template <typename Container>
 std::vector<std::size_t> all_idxs(const Container& xs)
@@ -1431,7 +1492,7 @@ typename Container::value_type last(const Container& xs)
 
 // API search type: mean_stddev : [a] -> (a, a)
 // fwd bind count: 0
-// calculates the mean and the population standard deviation
+// Calculates the mean and the population standard deviation.
 // mean_stddev([4, 8]) == (6, 2)
 // mean_stddev([1, 3, 7, 4]) == (3.75, 2.5)
 // xs must be non-empty.
@@ -1460,6 +1521,8 @@ std::pair<Result, Result> mean_stddev(const Container& xs)
 
 // API search type: count_occurrences_by : ((a -> b), [a]) -> Map b Int
 // fwd bind count: 1
+// Returns a discrete frequency distribution of the elements in a container
+// applying a specific transformer.
 // count_occurrences_by(floor, [1.1, 2.3, 2.7, 3.6, 2.4]) == [(1, 1), (2, 3), (3, 1)]
 // O(n)
 template <typename F, typename ContainerIn,
@@ -1478,6 +1541,9 @@ MapOut count_occurrences_by(F f, const ContainerIn& xs)
 
 // API search type: count_occurrences : [a] -> Map a Int
 // fwd bind count: 0
+// Returns a discrete frequency distribution of the elements in a container
+// applying a specific transformer.
+// Can be used to create a histogram.
 // count_occurrences([1,2,2,3,2]) == [(1, 1), (2, 3), (3, 1)]
 // O(n)
 template <typename ContainerIn,
@@ -1490,6 +1556,7 @@ MapOut count_occurrences(const ContainerIn& xs)
 
 // API search type: lexicographical_less_by : (((a, a) -> Bool), [a], [a]) -> Bool
 // fwd bind count: 2
+// Lexicographical less-than comparison using a specific predicate.
 // lexicographical_less_by((<), [0,1,2,2,4,5], [0,1,2,3,4,5]) == true
 // lexicographical_less_by((<), "012245", "012345") == true
 // lexicographical_less_by((<), "01234", "012345") == true
@@ -1524,6 +1591,7 @@ bool lexicographical_less_by(BinaryPredicate p,
 
 // API search type: lexicographical_less : ([a], [a]) -> Bool
 // fwd bind count: 1
+// Lexicographical less-than comparison.
 // lexicographical_less([0,1,2,2,4,5], [0,1,2,3,4,5]) == true
 // lexicographical_less("012245", "012345") == true
 // lexicographical_less("01234", "012345") == true
@@ -1548,6 +1616,7 @@ Container lexicographical_sort(const Container& xs)
 
 // API search type: replicate : (Int, a) -> [a]
 // fwd bind count: 1
+// Create a sequence containing x n times.
 // replicate(3, 1) == [1, 1, 1]
 template <typename T,
         typename ContainerOut = std::vector<T>>

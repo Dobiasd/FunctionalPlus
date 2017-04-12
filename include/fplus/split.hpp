@@ -18,16 +18,19 @@ namespace fplus
 
 // API search type: group_by : (((a, a) -> Bool), [a]) -> [[a]]
 // fwd bind count: 1
+// Arrange the elements into groups using a given predicate.
+// Only groups of consecutive elements are formed.
+// For a version scanning the whole container see group_globally_by.
 // group_by((==), [1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2],[3],[2,2],[4],[5,5]]
-// ContainerOut is not deduced to
-// SameContNewType(ContainerIn, ContainerIn)
-// here, since ContainerIn could be a std::string.
 // BinaryPredicate p is a (not neccessarily transitive) connectivity check.
 // O(n)
 template <typename BinaryPredicate, typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
 {
+    // ContainerOut is not deduced to
+    // SameContNewType(ContainerIn, ContainerIn)
+    // here, since ContainerIn could be a std::string.
     internal::check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
     static_assert(std::is_same<ContainerIn,
         typename ContainerOut::value_type>::value,
@@ -49,6 +52,9 @@ ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
 
 // API search type: group_on : ((a -> b), [a]) -> [[a]]
 // fwd bind count: 1
+// Arrange elements equal after applying a transformer into groups.
+// Only groups of consecutive elements are formed.
+// For a version scanning the whole container see group_globally_on.
 // group_on((mod 10), [12,22,34]) == [[12,22],[34]]
 // O(n)
 template <typename F, typename ContainerIn,
@@ -60,6 +66,10 @@ ContainerOut group_on(F f, const ContainerIn& xs)
 
 // API search type: group_on_labeled : ((a -> b), [a]) -> [(b, [a])]
 // fwd bind count: 1
+// Arrange elements equal after applying a transformer into groups,
+// adding the transformation result as a label to the group.
+// Only groups of consecutive elements are formed.
+// For a version scanning the whole container see group_globally_on_labeled.
 // group_on_labeled((mod 10), [12,22,34]) == [(2,[12,22]), (4,[34])]
 // O(n)
 template <typename F, typename ContainerIn,
@@ -80,6 +90,9 @@ ContainerOut group_on_labeled(F f, const ContainerIn& xs)
 
 // API search type: group : [a] -> [[a]]
 // fwd bind count: 0
+// Arrange equal elements into groups.
+// Only groups of consecutive elements are formed.
+// For a version scanning the whole container see group_globally.
 // group([1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2],[3],[2,2],[4],[5,5]]
 // O(n)
 template <typename ContainerIn,
@@ -96,6 +109,7 @@ ContainerOut group(const ContainerIn& xs)
 
 // API search type: group_globally_by : (((a, a) -> Bool), [a]) -> [[a]]
 // fwd bind count: 1
+// Arrange equal elements into groups.
 // group_globally_by((==), [1,2,2,2,3,2,2,4,5,5])
 // == [[1],[2,2,2,2,2],[3],[4],[5,5]]
 // BinaryPredicate p is a
@@ -134,6 +148,7 @@ ContainerOut group_globally_by(BinaryPredicate p, const ContainerIn& xs)
 
 // API search type: group_globally_on : ((a -> b), [a]) -> [[a]]
 // fwd bind count: 1
+// Arrange elements equal after applying a transfomer into groups.
 // group_globally_on((mod 10), [12,34,22]) == [[12,34],[22]]
 // O(n^2)
 // If you need O(n*log(n)), sort and then use group_on
@@ -146,6 +161,8 @@ ContainerOut group_globally_on(F f, const ContainerIn& xs)
 
 // API search type: group_globally_on_labeled : ((a -> b), [a]) -> [(b, [a])]
 // fwd bind count: 1
+// Arrange elements equal after applying a transfomer into groups,
+// adding the transformation result as a label to the group.
 // group_globally_on_labeled((mod 10), [12,34,22]) == [(2,[12,22]),(4, [34])]
 // O(n^2)
 // If you need O(n*log(n)), sort and then use group_on_labeled
@@ -167,6 +184,7 @@ ContainerOut group_globally_on_labeled(F f, const ContainerIn& xs)
 
 // API search type: group_globally : [a] -> [[a]]
 // fwd bind count: 0
+// Arrange equal elements into groups.
 // group_globally([1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2,2,2],[3],[4],[5,5]]
 // O(n^2)
 // If you need O(n*log(n)), sort and then use group
@@ -292,6 +310,8 @@ ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
 
 // API search type: split_by : ((a -> Bool), Bool, [a]) -> [[a]]
 // fwd bind count: 2
+// Split a sequence at every element fulfilling a predicate.
+// The splitting elements are discarded.
 // split_by(is_even, true, [1,3,2,2,5,5,3,6,7,9]) == [[1,3],[],[5,5,3],[7,9]]
 // also known as split_when
 // O(n)
@@ -336,6 +356,8 @@ ContainerOut split_by
 
 // API search type: split_by_keep_separators : ((a -> Bool), [a]) -> [[a]]
 // fwd bind count: 1
+// Split a sequence at every element fulfilling a predicate.
+// The splitting elements are kept.
 // split_by_keep_separators(is_even, true, [1,3,2,2,5,5,3,6,7,9])
 // == [[1,3],[2],[2,5,5,3],[6,7,9]]
 // O(n)
@@ -369,6 +391,8 @@ ContainerOut split_by_keep_separators
 
 // API search type: split : (a, Bool, [a]) -> [[a]]
 // fwd bind count: 2
+// Split a sequence at every element equal to x.
+// The splitting elements are discarded.
 // split(0, true, [1,3,2,0,0,6,0,7,5]) == [[1,3,2],[],[6],[7,5]]
 // O(n)
 template <typename ContainerIn,
@@ -381,6 +405,8 @@ ContainerOut split(const T& x, bool allow_empty, const ContainerIn& xs)
 
 // API search type: split_one_of : ([a], [a]) -> [[a]]
 // fwd bind count: 2
+// Split a sequence at every element present in delimiters.
+// The splitting elements are discarded.
 // split_one_of([0,3], true [1,3,2,0,0,6,0,7,5]) == [[1],[2],[],[6],[7,5]]
 // O(n)
 template <typename ContainerIn,
@@ -398,6 +424,8 @@ ContainerOut split_one_of(
 
 // API search type: split_keep_separators : ((a -> Bool), [a]) -> [[a]]
 // fwd bind count: 1
+// Split a sequence at every element equal to x.
+// The splitting elements are kept.
 // split_keep_separators(2, true, [1,3,2,2,5,5,3,2,7,9])
 // == [[1,3],[2],[2,5,5,3],[6,7,9]]
 // O(n)
@@ -411,6 +439,7 @@ ContainerOut split_keep_separators(const T& x, const ContainerIn& xs)
 
 // API search type: split_at_idx : (Int, [a]) -> ([a], [a])
 // fwd bind count: 1
+// Split a sequence at a specific position.
 // split_at_idx(2, [0,1,2,3,4]) == ([0,1],[2,3,4])
 template <typename Container>
 std::pair<Container, Container> split_at_idx
@@ -422,7 +451,8 @@ std::pair<Container, Container> split_at_idx
 }
 
 // API search type: insert_at_idx : (Int, a, [a]) -> [a]
-// fwd bind count: 3
+// fwd bind count: 2
+// Insert an element into a sequence at a specific position.
 // insert_at_idx(2, 0, [1,2,3,4]) == [1,2,0,3,4].
 template <typename Container,
         typename T = typename Container::value_type>
@@ -439,6 +469,9 @@ Container insert_at_idx(std::size_t idx, const T& x, const Container& xs)
 
 // API search type: partition : ((a -> Bool), [a]) -> ([a], [a])
 // fwd bind count: 1
+// Split a sequence into two groups.
+// The first group contains all elements fulfilling the predicate.
+// The second group contains the remaining elements.
 // partition(is_even, [0,1,1,3,7,2,3,4]) == ([0,2,4],[1,1,3,7,3])
 template <typename UnaryPredicate, typename Container>
 std::pair<Container, Container> partition
@@ -461,6 +494,7 @@ std::pair<Container, Container> partition
 
 // API search type: split_at_idxs : ([Int], [a]) -> [[a]]
 // fwd bind count: 1
+// Split a sequence at specific indices.
 // split_at_idxs([2,5], [0,1,2,3,4,5,6,7]) == [[0,1],[2,3,4],[5,6,7]]
 // split_at_idxs([2,5,5], [0,1,2,3,4,5,6,7]) == [[0,1],[2,3,4],[],[5,6,7]]
 template <typename ContainerIdxs, typename ContainerIn,
@@ -490,6 +524,7 @@ ContainerOut split_at_idxs(const ContainerIdxs& idxsIn, const ContainerIn& xs)
 
 // API search type: split_every : (Int, [a]) -> [[a]]
 // fwd bind count: 1
+// Split a sequence every n elements.
 // split_every(3, [0,1,2,3,4,5,6,7]) == [[0,1,2],[3,4,5],[6,7]]
 // Also known as chunk.
 template <typename ContainerIn,
@@ -507,6 +542,7 @@ ContainerOut split_every(std::size_t n, const ContainerIn& xs)
 
 // API search type: split_by_token : ([a], Bool, [a]) -> [[a]]
 // fwd bind count: 2
+// Split a sequence at every segment matching a token.
 // split_by_token(", ", true, "foo, bar, baz") == ["foo", "bar", "baz"]
 template <typename ContainerIn,
         typename ContainerOut = typename std::vector<ContainerIn>>
@@ -539,6 +575,7 @@ ContainerOut split_by_token(const ContainerIn& token,
 
 // API search type: run_length_encode_by : (((a, a) -> Bool), [a]) -> [(Int, a)]
 // fwd bind count: 1
+// RLE using a specific binary predicate as equality check.
 // run_length_encode_by((==),[1,2,2,2,2,3,3,2)) == [(1,1),(4,2),(2,3),(1,2)]
 template <typename BinaryPredicate,
         typename ContainerIn,
@@ -559,6 +596,7 @@ ContainerOut run_length_encode_by(BinaryPredicate pred, const ContainerIn& xs)
 
 // API search type: run_length_encode : [a] -> [(Int, a)]
 // fwd bind count: 0
+// RLE.
 // run_length_encode([1,2,2,2,2,3,3,2)) == [(1,1),(4,2),(2,3),(1,2)]
 template <typename ContainerIn,
         typename T = typename ContainerIn::value_type,
@@ -571,6 +609,7 @@ ContainerOut run_length_encode(const ContainerIn& xs)
 
 // API search type: run_length_decode : [(Int, a)] -> [a]
 // fwd bind count: 0
+// Inverse operation to run_length_encode.
 // run_length_decode([(1,1),(4,2),(2,3),(1,2)]) == [1,2,2,2,2,3,3,2)
 template <typename ContainerIn,
         typename Pair = typename ContainerIn::value_type,
@@ -591,6 +630,8 @@ ContainerOut run_length_decode(const ContainerIn& pairs)
 
 // API search type: take_while : ((a -> Bool), [a]) -> [a]
 // fwd bind count: 1
+// Take elements from the beginning of a sequence
+// as long as they are fulfilling a predicate.
 // take_while(is_even, [0,2,4,5,6,7,8]) == [0,2,4]
 template <typename Container, typename UnaryPredicate>
 Container take_while(UnaryPredicate pred, const Container& xs)
@@ -602,6 +643,8 @@ Container take_while(UnaryPredicate pred, const Container& xs)
 
 // API search type: drop_while : ((a -> Bool), [a]) -> [a]
 // fwd bind count: 1
+// Remove elements from the beginning of a sequence
+// as long as they are fulfilling a predicate.
 // drop_while(is_even, [0,2,4,5,6,7,8]) == [5,6,7,8]
 template <typename Container, typename UnaryPredicate>
 Container drop_while(UnaryPredicate pred, const Container& xs)
@@ -705,6 +748,7 @@ Container stride(std::size_t step, const Container& xs)
 
 // API search type: winsorize : (Float, [Float]) -> [Float]
 // fwd bind count: 1
+// Winsorizing
 // winsorize(0.1, [1,3,4,4,4,4,4,4,6,8]) == [3,3,4,4,4,4,4,4,6,6]
 template <typename Container>
 Container winsorize(double trim_ratio, const Container& xs)

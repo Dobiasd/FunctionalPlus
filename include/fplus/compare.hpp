@@ -231,6 +231,7 @@ T identity(const T& x)
 // API search type: is_equal : (a, a) -> Bool
 // fwd bind count: 1
 // x == y
+// Equality check.
 template <typename T>
 bool is_equal(const T& x, const T& y)
 {
@@ -247,6 +248,8 @@ std::function<X(const Y&)> always(const X& x)
 
 // API search type: is_equal_by_and_by : ((a -> b), (c -> b)) -> ((a, c) -> Bool)
 // f(x) == g(y)
+// Provides an equality check of two values
+// after applying a transformation function each.
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename GIn = typename utils::function_traits<G>::template arg<0>::type,
@@ -264,6 +267,8 @@ std::function<bool(const FIn& x, const GIn& y)>
 
 // API search type: is_equal_by : (a -> b) -> (a -> Bool)
 // f(x) == f(y)
+// Provides an equality check of two values
+// after applying the same transformation function to both.
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename FOut = typename std::result_of<F(FIn)>::type>
@@ -275,6 +280,8 @@ std::function<bool(const FIn& x, const FIn& y)>
 
 // API search type: is_equal_by_to : ((b -> a), a) -> (b -> Bool)
 // f(y) == x
+// Provides an equality check to a fixed value
+// after applying a transformation function.
 template <typename F, typename X,
     typename Y = typename utils::function_traits<F>::template arg<0>::type>
 std::function<bool(const Y&)> is_equal_by_to(F f, const X& x)
@@ -288,6 +295,7 @@ std::function<bool(const Y&)> is_equal_by_to(F f, const X& x)
 // API search type: is_equal_to : a -> (a -> Bool)
 // x == y
 // curried version of is_equal
+// Provides an equality check with a fixed value.
 template <typename X>
 std::function<bool(const X&)> is_equal_to(const X& x)
 {
@@ -297,6 +305,7 @@ std::function<bool(const X&)> is_equal_to(const X& x)
 // API search type: is_not_equal : (a, a) -> Bool
 // fwd bind count: 1
 // x != y
+// Unequally check.
 template <typename T>
 bool is_not_equal(const T& x, const T& y)
 {
@@ -305,6 +314,8 @@ bool is_not_equal(const T& x, const T& y)
 
 // API search type: is_not_equal_by_and_by : ((a -> c), (b -> c)) -> ((a, b) -> Bool)
 // f(x) != g(y)
+// Provides an unequality check of two values
+// after applying a transformation function eac
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename GIn = typename utils::function_traits<G>::template arg<0>::type,
@@ -322,6 +333,8 @@ std::function<bool(const FIn& x, const GIn& y)>
 
 // API search type: is_not_equal_by : (a -> b) -> ((a, a) -> Bool)
 // f(x) != f(y)
+// Provides an unequality check of two values
+// after applying the same transformation function to both.
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename FOut = typename std::result_of<F(FIn)>::type>
@@ -333,6 +346,8 @@ std::function<bool(const FIn& x, const FIn& y)>
 
 // API search type: is_not_equal_by_to : ((a -> b), b) -> (a -> Bool)
 // f(y) != x
+// Provides an unequality check to a fixed value
+// after applying a transformation function.
 template <typename F, typename X,
     typename Y = typename utils::function_traits<F>::template arg<0>::type>
 std::function<bool(const Y&)> is_not_equal_by_to(F f, const X& x)
@@ -345,6 +360,8 @@ std::function<bool(const Y&)> is_not_equal_by_to(F f, const X& x)
 
 // API search type: is_not_equal_to : a -> (a -> Bool)
 // y != x
+// curried version of is_not_equal
+// Provides an unequality check with a fixed value.
 template <typename X>
 std::function<bool(const X&)> is_not_equal_to(const X& x)
 {
@@ -354,6 +371,7 @@ std::function<bool(const X&)> is_not_equal_to(const X& x)
 // API search type: is_less : (a, a) -> Bool
 // fwd bind count: 1
 // x < y
+// Less check.
 template <typename T>
 bool is_less(const T& x, const T& y)
 {
@@ -362,6 +380,8 @@ bool is_less(const T& x, const T& y)
 
 // API search type: is_less_by_and_by : ((a -> c), (b -> c)) -> ((a, b) -> Bool)
 // f(x) < g(y)
+// Provides a less check of two values
+// after applying a transformation function each.
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename GIn = typename utils::function_traits<G>::template arg<0>::type,
@@ -379,6 +399,8 @@ std::function<bool(const FIn& x, const GIn& y)>
 
 // API search type: is_less_by : (a -> b) -> ((a, a) -> Bool)
 // f(x) < f(y)
+// Provides a less check of two values
+// after applying the same transformation function to both.
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename FOut = typename std::result_of<F(FIn)>::type>
@@ -390,6 +412,8 @@ std::function<bool(const FIn& x, const FIn& y)>
 
 // API search type: is_less_by_than : ((a -> b), b) -> (a -> Bool)
 // f(y) < x
+// Provides a less check to a fixed value
+// after applying a transformation function.
 template <typename F, typename X,
     typename Y = typename utils::function_traits<F>::template arg<0>::type>
 std::function<bool(const Y&)> is_less_by_than(F f, const X& x)
@@ -402,6 +426,8 @@ std::function<bool(const Y&)> is_less_by_than(F f, const X& x)
 
 // API search type: is_less_than : a -> (a -> Bool)
 // y < x
+// curried version of is_less
+// Provides a less check with a fixed value.
 template <typename X>
 std::function<bool(const X&)> is_less_than(const X& x)
 {
@@ -411,6 +437,7 @@ std::function<bool(const X&)> is_less_than(const X& x)
 // API search type: is_less_or_equal : (a, a) -> Bool
 // fwd bind count: 1
 // x <= y
+// Less-or-equal check.
 template <typename T>
 bool is_less_or_equal(const T& x, const T& y)
 {
@@ -419,6 +446,8 @@ bool is_less_or_equal(const T& x, const T& y)
 
 // API search type: is_less_or_equal_by_and_by : ((a -> c), (b -> c)) -> ((a, b) -> Bool)
 // f(x) <= g(y)
+// Provides a less-or-equal check of two values
+// after applying a transformation function each.
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename GIn = typename utils::function_traits<G>::template arg<0>::type,
@@ -436,6 +465,8 @@ std::function<bool(const FIn& x, const GIn& y)>
 
 // API search type: is_less_or_equal_by : (a -> b) -> ((a, a) -> Bool)
 // f(x) <= f(y)
+// Provides a less-or-equal check of two values
+// after applying the same transformation function to both.
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename FOut = typename std::result_of<F(FIn)>::type>
@@ -447,6 +478,8 @@ std::function<bool(const FIn& x, const FIn& y)>
 
 // API search type: is_less_or_equal_by_than : ((a -> b), b) -> (a -> Bool)
 // f(y) <= x
+// Provides a less-or-equal check to a fixed value
+// after applying a transformation function.
 template <typename F, typename X,
     typename Y = typename utils::function_traits<F>::template arg<0>::type>
 std::function<bool(const Y&)> is_less_or_equal_by_than(F f, const X& x)
@@ -459,6 +492,8 @@ std::function<bool(const Y&)> is_less_or_equal_by_than(F f, const X& x)
 
 // API search type: is_less_or_equal_than : a -> (a -> Bool)
 // y <= x
+// curried version of is_less_or_equal
+// Provides a less-or-equal check with a fixed value
 template <typename X>
 std::function<bool(const X&)> is_less_or_equal_than(const X& x)
 {
@@ -468,6 +503,7 @@ std::function<bool(const X&)> is_less_or_equal_than(const X& x)
 // API search type: is_greater : a -> a -> Bool
 // fwd bind count: 1
 // x > y
+// Greater check.
 template <typename T>
 bool is_greater(const T& x, const T& y)
 {
@@ -476,6 +512,8 @@ bool is_greater(const T& x, const T& y)
 
 // API search type: is_greater_by_and_by : ((a -> c), (b -> c)) -> ((a, b) -> Bool)
 // f(x) > g(y)
+// Provides a greater check of two values
+// after applying a transformation function each.
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename GIn = typename utils::function_traits<G>::template arg<0>::type,
@@ -493,6 +531,8 @@ std::function<bool(const FIn& x, const GIn& y)>
 
 // API search type: is_greater_by : (a -> b) -> ((a, a) -> Bool)
 // f(x) > f(y)
+// Provides a greater check of two values
+// after applying the same transformation function to both.
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename FOut = typename std::result_of<F(FIn)>::type>
@@ -504,6 +544,8 @@ std::function<bool(const FIn& x, const FIn& y)>
 
 // API search type: is_greater_by_than : ((a -> b), b) -> (a -> Bool)
 // f(y) > x
+// Provides a greater check to a fixed value
+// after applying a transformation function.
 template <typename F, typename X,
     typename Y = typename utils::function_traits<F>::template arg<0>::type>
 std::function<bool(const Y&)> is_greater_by_than(F f, const X& x)
@@ -516,6 +558,8 @@ std::function<bool(const Y&)> is_greater_by_than(F f, const X& x)
 
 // API search type: is_greater_than : a -> (a -> Bool)
 // y > x
+// curried version of is_greater
+// Provides a greater check with a fixed value.
 template <typename X>
 std::function<bool(const X&)> is_greater_than(const X& x)
 {
@@ -525,6 +569,7 @@ std::function<bool(const X&)> is_greater_than(const X& x)
 // API search type: is_greater_or_equal : (a, a) -> Bool
 // fwd bind count: 1
 // x >= y
+// Greater-or-equal check.
 template <typename T>
 bool is_greater_or_equal(const T& x, const T& y)
 {
@@ -533,6 +578,8 @@ bool is_greater_or_equal(const T& x, const T& y)
 
 // API search type: is_greater_or_equal_by_and_by : ((a -> c), (b -> c)) -> ((a, b) -> Bool)
 // f(x) >= g(y)
+// Provides a greater-or-equal check of two values
+// after applying a transformation function each.
 template <typename F, typename G,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename GIn = typename utils::function_traits<G>::template arg<0>::type,
@@ -550,6 +597,8 @@ std::function<bool(const FIn& x, const GIn& y)>
 
 // API search type: is_greater_or_equal_by : (a -> b) -> ((a, a) -> Bool)
 // f(x) >= f(y)
+// Provides a greater-or-equal check of two values
+// after applying the same transformation function to both.
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename FOut = typename std::result_of<F(FIn)>::type>
@@ -561,6 +610,8 @@ std::function<bool(const FIn& x, const FIn& y)>
 
 // API search type: is_greater_or_equal_by_than : ((a -> b), b) -> (a -> Bool)
 // f(y) >= x
+// Provides a greater-or-equal check to a fixed value
+// after applying a transformation function.
 template <typename F, typename X,
     typename Y = typename utils::function_traits<F>::template arg<0>::type>
 std::function<bool(const Y&)> is_greater_or_equal_by_than(F f, const X& x)
@@ -573,6 +624,8 @@ std::function<bool(const Y&)> is_greater_or_equal_by_than(F f, const X& x)
 
 // API search type: is_greater_or_equal_than : a -> (a -> Bool)
 // y >= x
+// curried version of is_less_or_equal
+// Provides a greater-or-equal check with a fixed valu
 template <typename X>
 std::function<bool(const X&)> is_greater_or_equal_than(const X& x)
 {
@@ -592,6 +645,9 @@ bool xor_bools(const T& x, const T& y)
 
 // API search type: ord_to_eq : ((a, a) -> Bool) -> ((a, a) -> Bool)
 // ord_to_eq((<)) == (==)
+// Takes a less-than function and converts it
+// into an equality check function
+// which considers to values as equal if none is less than the other one.
 template <typename Compare,
     typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<Compare>::template arg<1>::type,
@@ -609,6 +665,9 @@ std::function<FOut(FIn0, FIn1)> ord_to_eq(Compare comp)
 
 // API search type: ord_to_not_eq : ((a, a) -> Bool) -> ((a, a) -> Bool)
 // ord_to_not_eq((<)) == (!=)
+// Takes a less-than function and converts it
+// into an inequality check function
+// which considers to values as unequal if one is less than the other one.
 template <typename Compare,
     typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<Compare>::template arg<1>::type,
@@ -626,6 +685,10 @@ std::function<FOut(FIn0, FIn1)> ord_to_not_eq(Compare comp)
 
 // API search type: ord_eq_to_eq : ((a, a) -> Bool) -> ((a, a) -> Bool)
 // ord_eq_to_eq((<=)) == (==)
+// ord_to_eq((<)) == (==)
+// Takes a less-or-equal-than function and converts it
+// into an equality check function
+// which considers to values as equal if a <= b and b <= a.
 template <typename Compare,
     typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<Compare>::template arg<1>::type,
@@ -643,6 +706,9 @@ std::function<FOut(FIn0, FIn1)> ord_eq_to_eq(Compare comp)
 
 // API search type: ord_eq_to_not_eq : ((a, a) -> Bool) -> ((a, a) -> Bool)
 // ord_eq_to_not_eq((<=)) == (!=)
+// Takes a less-or-equal-than function and converts it
+// into an inequality check function
+// which considers to values as equal if not a <= b and not b <= a.
 template <typename Compare,
     typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<Compare>::template arg<1>::type,

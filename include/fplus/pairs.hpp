@@ -29,7 +29,8 @@ FOut apply_to_pair(F f, const std::pair<FIn0, FIn1>& p)
 
 // API search type: zip_with : (((a, b) -> c), [a], [b]) -> [c]
 // fwd bind count: 2
-// zip_with((+), [1, 2, 3], [5, 6]) == [6, 8]
+// Zip two sequences using a binary function.
+// zip_with((+), [1, 2, 3], [5, 6]) == [1+5, 2+6] == [6, 8]
 template <typename ContainerIn1, typename ContainerIn2, typename F,
     typename X = typename ContainerIn1::value_type,
     typename Y = typename ContainerIn2::value_type,
@@ -72,6 +73,7 @@ ContainerOut zip_with(F f,
 
 // API search type: zip_with_3 : (((a, b, c) -> d), [a], [b], [c]) -> [c]
 // fwd bind count: 3
+// Zip three sequences using a ternary function.
 // zip_with_3((+), [1, 2, 3], [5, 6], [1, 1]) == [7, 9]
 template <typename ContainerIn1, typename ContainerIn2, typename ContainerIn3,
     typename F,
@@ -127,6 +129,8 @@ ContainerOut zip_with_3(F f,
 
 // API search type: zip_with_defaults : (((a, b) -> c), a, b, [a], [b]) -> [c]
 // fwd bind count: 4
+// Zip two sequences and using a binary function
+// and extrapolate the shorter sequence with a default value.
 // zip_with_defaults((+), 6, 7, [1,2,3], [1,2]) == [2,4,10]
 // zip_with_defaults((+), 6, 7, [1,2], [1,2,3]) == [2,4,9]
 template <typename ContainerIn1, typename ContainerIn2, typename F,
@@ -159,6 +163,7 @@ ContainerOut zip_with_defaults(F f,
 
 // API search type: zip : ([a], [b]) -> [(a, b)]
 // fwd bind count: 1
+// Combine two sequences to one sequence of pairs.
 // zip([1, 2, 3], [5, 6]) == [(1, 5), (2, 6)]
 template <typename ContainerIn1, typename ContainerIn2,
     typename X = typename ContainerIn1::value_type,
@@ -174,6 +179,7 @@ ContainerOut zip(const ContainerIn1& xs, const ContainerIn2& ys)
 
 // API search type: unzip : [(a, b)] -> ([a], [b])
 // fwd bind count: 0
+// Split a sequence of pairs into two sequences.
 // unzip([(1, 5), (2, 6)]) == ([1, 2], [5, 6])
 template <typename ContainerIn,
     typename TIn = typename ContainerIn::value_type,
@@ -199,6 +205,7 @@ std::pair<ContainerOutX, ContainerOutY> unzip(const ContainerIn& pairs)
 
 // API search type: fst : ((a, b)) -> a
 // fwd bind count: 0
+// Return the first element of a pair.
 // fst((0, 1)) == 0
 template <typename X, typename Y>
 X fst(const std::pair<X, Y>& pair)
@@ -208,6 +215,7 @@ X fst(const std::pair<X, Y>& pair)
 
 // API search type: snd : ((a, b)) -> b
 // fwd bind count: 0
+// Return the second element of a pair.
 // snd((0, 1)) == 1
 template <typename X, typename Y>
 Y snd(const std::pair<X, Y>& pair)
@@ -217,6 +225,7 @@ Y snd(const std::pair<X, Y>& pair)
 
 // API search type: transform_fst : ((a -> c), (a, b)) -> (c, b)
 // fwd bind count: 1
+// Apply a function to the first element of a pair.
 // transform_fst(square, (4, 5)) == (16, 5)
 template <typename X, typename Y, typename F,
     typename ResultFirst = typename std::result_of<F(X)>::type>
@@ -227,6 +236,7 @@ std::pair<ResultFirst, Y> transform_fst(F f, const std::pair<X, Y>& pair)
 
 // API search type: transform_snd : ((b -> c), (a, b)) -> (a, c)
 // fwd bind count: 1
+// Apply a function to the second element of a pair.
 // transform_snd(square, (4, 5)) == (4, 25)
 template <typename X, typename Y, typename F,
     typename ResultSecond = typename std::result_of<F(Y)>::type>
@@ -237,6 +247,7 @@ std::pair<X, ResultSecond> transform_snd(F f, const std::pair<X, Y>& pair)
 
 // API search type: transform_pair : ((a -> c), (b -> d), (a, b)) -> (c, d)
 // fwd bind count: 2
+// Apply functions the both parts of a pair.
 // transform_pair(square, square, (4, 5)) == (16, 25)
 template <typename X, typename Y, typename F, typename G,
     typename ResultFirst = typename std::result_of<F(X)>::type,
@@ -249,6 +260,7 @@ std::pair<ResultFirst, ResultSecond> transform_pair(
 
 // API search type: swap_pair_elems : (a, b) -> (b, a)
 // fwd bind count: 0
+// Swap the first and the second element of a pair.
 // swap_pair_elems((3,4)) == (4,3)
 template <typename X, typename Y>
 std::pair<Y, X> swap_pair_elems(const std::pair<X, Y>& pair)
@@ -258,6 +270,7 @@ std::pair<Y, X> swap_pair_elems(const std::pair<X, Y>& pair)
 
 // API search type: swap_pairs_elems : [(a, b)] -> [(b, a)]
 // fwd bind count: 0
+// Swap the first and the second element of every pair in a sequence.
 // swap_pairs_elems([(1,2), (3,4)]) == [(2,1), (4,3)]
 template <typename ContainerIn,
     typename X = typename ContainerIn::value_type::first_type,
@@ -271,6 +284,7 @@ ContainerOut swap_pairs_elems(const ContainerIn& xs)
 
 // API search type: adjacent_pairs : [a] -> [(a, a)]
 // fwd bind count: 0
+// Split a sequence into pairs of elements.
 // adjacent_pairs([0,1,2,3,4]) == [(0,1),(2,3)]
 template <typename Container,
     typename ContainerOut =
@@ -307,6 +321,7 @@ ContainerOut adjacent_pairs(const Container& xs)
 
 // API search type: overlapping_pairs : [a] -> [(a, a)]
 // fwd bind count: 0
+// Zip a sequence with itself shifted one element.
 // overlapping_pairs([0,1,2,3]) == [(0,1),(1,2),(2,3)]
 template <typename Container,
     typename ContainerOut =
@@ -338,6 +353,8 @@ ContainerOut overlapping_pairs(const Container& xs)
 
 // API search type: overlapping_pairs_cyclic : [a] -> [(a, a)]
 // fwd bind count: 0
+// Zip a sequence with itself shifted one element,
+// finally zipping the last element with the first one.
 // overlapping_pairs_cyclic([0,1,2,3]) == [(0,1),(1,2),(2,3),(3,0)]
 template <typename Container,
     typename ContainerOut =
@@ -370,6 +387,7 @@ ContainerOut overlapping_pairs_cyclic(const Container& xs)
 
 // API search type: enumerate : [a] -> [(Int, a)]
 // fwd bind count: 0
+// Attach its index to every element of a sequence.
 // enumerate([6,4,7,6]) == [(0, 6), (1, 4), (2, 7), (3, 6)]
 template <typename Container,
     typename T = typename Container::value_type>
@@ -380,6 +398,7 @@ std::vector<std::pair<std::size_t, T>> enumerate(const Container& xs)
 
 // API search type: inner_product_with : (((a, a) -> b), ((b, b) -> b), b, [a], [a]) -> b
 // fwd bind count: 4
+// Calculate the inner product of two sequences using custom operations.
 // inner_product_with((+), (*), [1, 2, 3], [4, 5, 6]) == [32]
 template <typename ContainerIn1, typename ContainerIn2,
     typename OP1, typename OP2,
@@ -397,6 +416,7 @@ TOut inner_product_with(OP1 op1, OP2 op2, const Z& value,
 
 // API search type: inner_product : (a, [a], [a]) -> a
 // fwd bind count: 2
+// Calculate the inner product of two sequences.
 // inner_product([1, 2, 3], [4, 5, 6]) == [32]
 template <typename ContainerIn1, typename ContainerIn2,
     typename Z>
@@ -411,15 +431,17 @@ Z inner_product(const Z& value,
 
 // API search type: first_mismatch_idx_by : (((a, b) -> Bool), [a], [b]) -> Maybe Int
 // fwd bind count: 2
+// Find the first index at which the two sequences differ
+// using a binary predicate.
 // first_mismatch_idx_by((==), [1, 2, 3], [1, 4, 3]) == Just 1
 // first_mismatch_idx_by((==), [1, 2, 3], [1, 4]) == Just 1
 // first_mismatch_idx_by((==), [1, 2, 3], [1, 2]) == Nothing
 // first_mismatch_idx_by((==), [], [1, 2]) == Nothing
 template <typename ContainerIn1, typename ContainerIn2,
-    typename F,
+    typename BinaryPredicate,
     typename X = typename ContainerIn1::value_type,
     typename Y = typename ContainerIn2::value_type>
-maybe<std::size_t> first_mismatch_idx_by(F f,
+maybe<std::size_t> first_mismatch_idx_by(BinaryPredicate p,
     const ContainerIn1& xs, const ContainerIn2& ys)
 {
     auto itXs = std::begin(xs);
@@ -427,7 +449,7 @@ maybe<std::size_t> first_mismatch_idx_by(F f,
     std::size_t minSize = std::min(size_of_cont(xs), size_of_cont(ys));
     for (std::size_t i = 0; i < minSize; ++i)
     {
-        if (!f(*itXs, *itYs))
+        if (!p(*itXs, *itYs))
         {
             return just(i);
         }
@@ -439,19 +461,21 @@ maybe<std::size_t> first_mismatch_idx_by(F f,
 
 // API search type: first_mismatch_by : (((a, b) -> Bool), [a], [b]) -> Maybe (a, b)
 // fwd bind count: 2
+// Find the first pair of elements differing in the two sequences
+// using a binary predicate.
 // first_mismatch_by((==), [1, 2, 3], [1, 4, 3]) == Just (2, 4)
 // first_mismatch_by((==), [1, 2, 3], [1, 4]) == Just (2, 4)
 // first_mismatch_by((==), [1, 2, 3], [1, 2]) == Nothing
 // first_mismatch_by((==), [], [1, 2]) == Nothing
 template <typename ContainerIn1, typename ContainerIn2,
-    typename F,
+    typename BinaryPredicate,
     typename X = typename ContainerIn1::value_type,
     typename Y = typename ContainerIn2::value_type,
     typename TOut = std::pair<X, Y>>
-maybe<TOut> first_mismatch_by(F f,
+maybe<TOut> first_mismatch_by(BinaryPredicate p,
     const ContainerIn1& xs, const ContainerIn2& ys)
 {
-    const auto maybe_idx = first_mismatch_idx_by(f, xs, ys);
+    const auto maybe_idx = first_mismatch_idx_by(p, xs, ys);
     if (is_nothing(maybe_idx))
     {
         return nothing<TOut>();
@@ -467,6 +491,8 @@ maybe<TOut> first_mismatch_by(F f,
 
 // API search type: first_mismatch_idx_on : ((a -> Bool), [a], [a]) -> Maybe Int
 // fwd bind count: 2
+// Find the first index of elements differing in the two sequences
+// using a transformer.
 // first_mismatch_idx_on((mod 2), [1, 2, 3], [3, 5, 3]) == 1
 // first_mismatch_idx_on((mod 2), [1, 2, 3], [1, 5]) == 1
 // first_mismatch_idx_on((mod 2), [1, 2, 3], [1, 6]) == Nothing
@@ -486,6 +512,8 @@ maybe<std::size_t> first_mismatch_idx_on(F f,
 
 // API search type: first_mismatch_on : ((a -> Bool), [a], [a]) -> Maybe (a, a)
 // fwd bind count: 2
+// Find the first pair of elements differing in the two sequences
+// using a transformer.
 // first_mismatch_on((mod 2), [1, 2, 3], [3, 5, 3]) == Just (2, 5)
 // first_mismatch_on((mod 2), [1, 2, 3], [1, 5]) == Just (2, 5)
 // first_mismatch_on((mod 2), [1, 2, 3], [1, 6]) == Nothing
@@ -505,6 +533,7 @@ maybe<TOut> first_mismatch_on(F f,
 
 // API search type: first_mismatch_idx : ([a], [a]) -> Maybe Int
 // fwd bind count: 2
+// Find the first index of elements differing in the two sequences.
 // first_mismatch_idx((==), [1, 2, 3], [1, 4, 3]) == 1
 // first_mismatch_idx((==), [1, 2, 3], [1, 4]) == 1
 // first_mismatch_idx((==), [1, 2, 3], [1, 2]) == Nothing
@@ -522,6 +551,7 @@ maybe<std::size_t> first_mismatch_idx(
 
 // API search type: first_mismatch : ([a], [a]) -> Maybe (a, a)
 // fwd bind count: 2
+// Find the first pair of elements differing in the two sequences
 // first_mismatch((==), [1, 2, 3], [1, 4, 3]) == Just (2, 4)
 // first_mismatch((==), [1, 2, 3], [1, 4]) == Just (2, 4)
 // first_mismatch((==), [1, 2, 3], [1, 2]) == Nothing
@@ -539,6 +569,8 @@ maybe<TOut> first_mismatch(const ContainerIn1& xs, const ContainerIn2& ys)
 
 // API search type: first_match_idx_by : (((a, b) -> Bool), [a], [b]) -> Maybe Int
 // fwd bind count: 2
+// Find the first index at which the two sequences equal
+// using a binary predicate.
 // first_match_idx_by((==), [1, 2, 3], [3, 2, 3]) == Just 1
 // first_match_idx_by((==), [], [1, 2]) == Nothing
 template <typename ContainerIn1, typename ContainerIn2,
@@ -565,6 +597,8 @@ maybe<std::size_t> first_match_idx_by(F f,
 
 // API search type: first_match_by : (((a, b) -> Bool), [a], [b]) -> Maybe (a, b)
 // fwd bind count: 2
+// Find the first pair of equal elements in the two sequences
+// using a binary predicate.
 // first_match_by((==), [1, 2, 3], [3, 2, 3]) == Just (2, 2)
 // first_match_by((==), [], [1, 2]) == Nothing
 template <typename ContainerIn1, typename ContainerIn2,
@@ -590,6 +624,8 @@ maybe<TOut> first_match_by(F f, const ContainerIn1& xs, const ContainerIn2& ys)
 
 // API search type: first_match_idx_on : ((a -> Bool), [a], [a]) -> Maybe Int
 // fwd bind count: 2
+// Find the first index of equal elements in the two sequences
+// using a transformer.
 // first_match_idx_on((mod 2), [1, 2, 3], [2, 4, 3]) == 1
 // first_match_idx_on((mod 2), [], [1, 2]) == Nothing
 template <typename ContainerIn1, typename ContainerIn2,
@@ -606,6 +642,8 @@ maybe<std::size_t> first_match_idx_on(F f,
 
 // API search type: first_match_on : ((a -> Bool), [a], [a]) -> Maybe (a, a)
 // fwd bind count: 2
+// Find the first pair of equal elements in the two sequences
+// using a transformer.
 // first_match_on((mod 2), [1, 2, 3], [2, 4, 3]) == Just (2, 4)
 // first_match_on((mod 2), [], [1, 2]) == Nothing
 template <typename ContainerIn1, typename ContainerIn2,
@@ -622,6 +660,7 @@ maybe<TOut> first_match_on(F f, const ContainerIn1& xs, const ContainerIn2& ys)
 
 // API search type: first_match_idx : ([a], [a]) -> Maybe Int
 // fwd bind count: 2
+// Find the first index of equal elements in the two sequences.
 // first_match_idx((==), [1, 2, 3], [5, 2, 3]) == 1
 // first_match_idx((==), [], [1, 2]) == Nothing
 template <typename ContainerIn1, typename ContainerIn2,
@@ -637,6 +676,7 @@ maybe<std::size_t> first_match_idx(
 
 // API search type: first_match : ([a], [a]) -> Maybe (a, a)
 // fwd bind count: 2
+// Find the first pair of equal elements in the two sequences.
 // first_match((==), [1, 2, 3], [5, 2, 3]) == Just (2, 2)
 // first_match((==), [], [1, 2]) == Nothing
 template <typename ContainerIn1, typename ContainerIn2,

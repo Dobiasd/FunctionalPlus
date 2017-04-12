@@ -27,6 +27,8 @@ MapOut pairs_to_map(const ContainerIn& pairs)
 
 // API search type: pairs_to_map_grouped : [(key, val)] -> Map key [val]
 // fwd bind count: 0
+// Convert a list of key-value pairs to a dictionary
+// while pushing values having the same key into a vector.
 // pairs_to_map_grouped([("a", 1), ("a", 2), ("b", 6), ("a", 4)])
 //     -> {"a": [1, 2, 4], "b": [6]}
 template <typename ContainerIn,
@@ -59,6 +61,7 @@ ContainerOut map_to_pairs(const MapType& dict)
 
 // API search type: transform_map_values : ((old_val -> new_val), Map key old_val) -> Map key new_val
 // fwd bind count: 1
+// Manipulate the values in a dictionary, keeping the key-value relationship.
 // transform_map_values((*2), {0: 2, 1: 3}) == {0: 4, 1: 6}
 template <typename F, typename MapIn,
     typename MapInPair = typename MapIn::value_type,
@@ -77,6 +80,7 @@ MapOut transform_map_values(F f, const MapIn& map)
 
 // API search type: map_union_with : (((val, val) -> val), Map key val, Map key val) -> Map key val
 // fwd bind count: 2
+// Combine two dictionaries using a binary function for the values.
 // map_union_with((++), {0: a, 1: b}, {0: c, 2: d}) == {0: ac, 1: b, 2: d}
 template <typename F, typename MapIn,
     typename MapInPair = typename MapIn::value_type,
@@ -98,6 +102,8 @@ MapOut map_union_with(F f, const MapIn& dict1, const MapIn& dict2)
 
 // API search type: map_union : (Map key val, Map key val) -> Map key val
 // fwd bind count: 1
+// Combine two dictionaries keeping the value of the first map
+// in case of key collissions.
 // map_union({0: a, 1: b}, {0: c, 2: d}) == {0: a, 1: b, 2: d}
 template <typename MapType,
     typename MapInPair = typename MapType::value_type,
@@ -162,6 +168,7 @@ MapOut swap_keys_and_values(const MapIn& dict)
 
 // API search type: create_map : ([key], [val]) -> Map key val
 // fwd bind count: 1
+// Zip a sequence of keys with a sequence of values to obtain a dictionary.
 // create_map([1,2,3], ["one", "two"]) == {1: "one", 2: "two"}
 template <typename ContainerIn1, typename ContainerIn2,
     typename Key = typename std::remove_const<typename ContainerIn1::value_type>::type,
@@ -175,6 +182,8 @@ MapOut create_map(const ContainerIn1& keys, const ContainerIn2& values)
 
 // API search type: create_map_with : ((key -> val), [key]) -> Map key val
 // fwd bind count: 1
+// Take a list of keys and create a dictionary
+// generating the values by applying f to each key.
 // create_map_with(show, [1,2]) == {1: "1", 2: "2"}
 template <typename ContainerIn,
     typename F,
@@ -188,6 +197,7 @@ MapOut create_map_with(F f, const ContainerIn& keys)
 
 // API search type: create_unordered_map : ([key], [val]) -> Map key val
 // fwd bind count: 1
+// Zip a sequence of keys with a sequence of values to obtain a dictionary.
 // create_unordered_map([1,2,3], ["one", "two"]) == {1: "one", 2: "two"}
 template <typename ContainerIn1, typename ContainerIn2,
     typename Key = typename std::remove_const<typename ContainerIn1::value_type>::type,
@@ -203,6 +213,8 @@ MapOut create_unordered_map(
 
 // API search type: create_unordered_map_with : ((key -> val), [key]) -> Map key val
 // fwd bind count: 1
+// Take a list of keys and create a dictionary
+// generating the values by applying f to each key.
 // create_unordered_map_with(show, [1,2]) == {1: "1", 2: "2"}
 template <typename ContainerIn,
     typename F,

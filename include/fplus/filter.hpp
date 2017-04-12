@@ -17,6 +17,7 @@ namespace fplus
 
 // API search type: keep_if : ((a -> Bool), [a]) -> [a]
 // fwd bind count: 1
+// Keep the elements of a sequence fulfilling a predicate.
 // keep_if(is_even, [1, 2, 3, 2, 4, 5]) == [2, 2, 4]
 // Also known as filter.
 template <typename Pred, typename Container>
@@ -31,6 +32,7 @@ Container keep_if(Pred pred, const Container& xs)
 
 // API search type: drop_if : ((a -> Bool), [a]) -> [a]
 // fwd bind count: 1
+// Drop the elements of a sequence fulfilling a predicate.
 // drop_if(is_even, [1, 2, 3, 2, 4, 5]) == [1, 3, 5]
 // Also known as reject.
 template <typename Pred, typename Container>
@@ -42,6 +44,7 @@ Container drop_if(Pred pred, const Container& xs)
 
 // API search type: without : (a, [a]) -> [a]
 // fwd bind count: 1
+// Keep all elements a sequence not equal to elem.
 // without(0, [1, 0, 0, 5, 3, 0, 1]) == [1, 5, 3, 1]
 template <typename Container,
     typename T = typename Container::value_type>
@@ -52,6 +55,7 @@ Container without(T elem, const Container& xs)
 
 // API search type: without_any : (a, [a]) -> [a]
 // fwd bind count: 1
+// Keep all elements a sequence not present in elems.
 // without([0, 1], [1, 0, 0, 5, 3, 0, 1]) == [5, 3]
 template <typename Container, typename ContainerElems>
 Container without_any(const ContainerElems& elems, const Container& xs)
@@ -65,6 +69,7 @@ Container without_any(const ContainerElems& elems, const Container& xs)
 
 // API search type: keep_if_with_idx : (((Int, a) -> Bool), [a]) -> [a]
 // fwd bind count: 1
+// Keep the elements of a sequence fulfilling a predicate.
 // Predicate takes index and value.
 // All elements fulfilling the predicate are kept.
 template <typename Pred, typename Container>
@@ -84,6 +89,7 @@ Container keep_if_with_idx(Pred pred, const Container& xs)
 
 // API search type: drop_if_with_idx : (((Int, a) -> Bool), [a]) -> [a]
 // fwd bind count: 1
+// Drop the elements of a sequence fulfilling a predicate.
 // Predicate takes index and value.
 // All elements fulfilling the predicate are skipped.
 template <typename Pred, typename Container>
@@ -101,6 +107,7 @@ Container drop_if_with_idx(Pred pred, const Container& xs)
 
 // API search type: keep_by_idx : ((Int -> Bool), [a]) -> [a]
 // fwd bind count: 1
+// Keep the elements of a sequence with an index fulfilling a predicate.
 // Predicate takes an index and decides if an element is kept.
 template <typename UnaryPredicate, typename Container>
 Container keep_by_idx(UnaryPredicate pred, const Container& xs)
@@ -119,6 +126,7 @@ Container keep_by_idx(UnaryPredicate pred, const Container& xs)
 
 // API search type: drop_by_idx : ((Int -> Bool), [a]) -> [a]
 // fwd bind count: 1
+// Drop the elements of a sequence with an index fulfilling a predicate.
 // Predicate takes an index and decides if an element is dropped.
 template <typename UnaryPredicate, typename Container>
 Container drop_by_idx(UnaryPredicate pred, const Container& xs)
@@ -129,6 +137,7 @@ Container drop_by_idx(UnaryPredicate pred, const Container& xs)
 
 // API search type: keep_idxs : ([Int], [a]) -> [a]
 // fwd bind count: 1
+// Keep the elements of a sequence with an index present in idxs_to_keep.
 // keep_idxs([2,5], [1,2,3,4,5,6,7]) == [3,6]
 template <typename ContainerIdxs, typename Container>
 Container keep_idxs(const ContainerIdxs& idxs_to_keep, const Container& xs)
@@ -154,6 +163,7 @@ Container keep_idxs(const ContainerIdxs& idxs_to_keep, const Container& xs)
 
 // API search type: drop_idxs : ([Int], [a]) -> [a]
 // fwd bind count: 1
+// Drop the elements of a sequence with an index present in idxs_to_keep.
 // drop_idxs([2,5], [1,2,3,4,5,6,7]) == [1,2,4,5,7]
 template <typename ContainerIdxs, typename Container>
 Container drop_idxs(const ContainerIdxs& idxs_to_drop, const Container& xs)
@@ -183,6 +193,7 @@ Container drop_idxs(const ContainerIdxs& idxs_to_drop, const Container& xs)
 
 // API search type: drop_idx : (Int, [a]) -> [a]
 // fwd bind count: 1
+// Remove the element at a specific index from a sequence.
 // drop_idx(2, [1,2,3,4,5,6,7]) == [1,2,4,5,6,7]
 template <typename Container>
 Container drop_idx(std::size_t idx, const Container& xs)
@@ -254,6 +265,7 @@ ContainerOut errors(const ContainerIn& xs)
 
 // API search type: trim_left_by : ((a -> Bool), [a]) -> [a]
 // fwd bind count: 1
+// Remove elements from the left as long as p is fulfilled.
 // trim_left_by(is_even, [0,2,4,5,6,7,8,6,4]) == [5,6,7,8,6,4]
 template <typename Container, typename UnaryPredicate>
 Container trim_left_by(UnaryPredicate p, const Container& xs)
@@ -267,6 +279,7 @@ Container trim_left_by(UnaryPredicate p, const Container& xs)
 
 // API search type: trim_left : (a, [a]) -> [a]
 // fwd bind count: 1
+// Remove elements from the left as long as they equal x.
 // trim_left('_', "___abc__") == "abc__"
 // trim_left(0, [0,0,0,5,6,7,8,6,4]) == [5,6,7,8,6,4]
 template <typename Container,
@@ -278,6 +291,7 @@ Container trim_left(const T& x, const Container& xs)
 
 // API search type: trim_token_left : ([a], [a]) -> [a]
 // fwd bind count: 1
+// Remove elements from the left as long as they match token.
 // trim_token_left([0,1,2], [0,1,2,0,1,2,7,5,9]) == [7,5,9]
 template <typename Container>
 Container trim_token_left(const Container& token, const Container& xs)
@@ -292,6 +306,7 @@ Container trim_token_left(const Container& token, const Container& xs)
 
 // API search type: trim_right_by : ((a -> Bool), [a]) -> [a]
 // fwd bind count: 1
+// Remove elements from the left as long as p is fulfilled.
 // trim_right_by(is_even, [0,2,4,5,6,7,8,6,4]) == [0,2,4,5,6,7]
 template <typename Container, typename UnaryPredicate>
 Container trim_right_by(UnaryPredicate p, const Container& xs)
@@ -302,6 +317,7 @@ Container trim_right_by(UnaryPredicate p, const Container& xs)
 
 // API search type: trim_right : (a, [a]) -> [a]
 // fwd bind count: 1
+// Remove elements from the left as long as they equal x.
 // trim_right('_', "___abc__") == "___abc"
 // trim_right(4, [0,2,4,5,6,7,8,4,4]) == [0,2,4,5,6,7,8]
 template <typename Container,
@@ -313,6 +329,7 @@ Container trim_right(const T& x, const Container& xs)
 
 // API search type: trim_token_right : ([a], [a]) -> [a]
 // fwd bind count: 1
+// Remove elements from the right as long as they match token.
 // trim_token_right([0,1,2], [7,5,9,0,1,2,0,1,2]) == [7,5,9]
 template <typename Container>
 Container trim_token_right(const Container& token, const Container& xs)
@@ -322,6 +339,7 @@ Container trim_token_right(const Container& token, const Container& xs)
 
 // API search type: trim_by : ((a -> Bool), [a]) -> [a]
 // fwd bind count: 1
+// Remove elements from the left and right as long as p is fulfilled.
 // trim_by(is_even, [0,2,4,5,6,7,8,6,4]) == [5,6,7]
 template <typename Container, typename UnaryPredicate>
 Container trim_by(UnaryPredicate p, const Container& xs)
@@ -332,6 +350,7 @@ Container trim_by(UnaryPredicate p, const Container& xs)
 
 // API search type: trim : (a, [a]) -> [a]
 // fwd bind count: 1
+// Remove elements from the left and right as long as they equal x.
 // trim('_', "___abc__") == "abc"
 // trim(0, [0,2,4,5,6,7,8,0,0]) == [2,4,5,6,7,8]
 template <typename Container,
@@ -343,6 +362,7 @@ Container trim(const T& x, const Container& xs)
 
 // API search type: trim_token : ([a], [a]) -> [a]
 // fwd bind count: 1
+// Remove elements from the left and right as long as they match token.
 // trim_token([0,1], [0,1,7,8,9,0,1]) == [7,8,9]
 template <typename Container>
 Container trim_token(const Container& token, const Container& xs)
