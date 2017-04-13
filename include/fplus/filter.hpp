@@ -263,20 +263,6 @@ ContainerOut errors(const ContainerIn& xs)
     return ys;
 }
 
-// API search type: trim_left_by : ((a -> Bool), [a]) -> [a]
-// fwd bind count: 1
-// Remove elements from the left as long as p is fulfilled.
-// trim_left_by(is_even, [0,2,4,5,6,7,8,6,4]) == [5,6,7,8,6,4]
-template <typename Container, typename UnaryPredicate>
-Container trim_left_by(UnaryPredicate p, const Container& xs)
-{
-    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
-    auto itFirstNot = std::find_if_not(std::begin(xs), std::end(xs), p);
-    if (itFirstNot == std::end(xs))
-        return Container();
-    return Container(itFirstNot, std::end(xs));
-}
-
 // API search type: trim_left : (a, [a]) -> [a]
 // fwd bind count: 1
 // Remove elements from the left as long as they equal x.
@@ -286,7 +272,7 @@ template <typename Container,
         typename T = typename Container::value_type>
 Container trim_left(const T& x, const Container& xs)
 {
-    return trim_left_by(is_equal_to(x), xs);
+    return drop_while(is_equal_to(x), xs);
 }
 
 // API search type: trim_token_left : ([a], [a]) -> [a]
@@ -312,7 +298,7 @@ template <typename Container, typename UnaryPredicate>
 Container trim_right_by(UnaryPredicate p, const Container& xs)
 {
     internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
-    return reverse(trim_left_by(p, reverse(xs)));
+    return reverse(drop_while(p, reverse(xs)));
 }
 
 // API search type: trim_right : (a, [a]) -> [a]
@@ -345,7 +331,7 @@ template <typename Container, typename UnaryPredicate>
 Container trim_by(UnaryPredicate p, const Container& xs)
 {
     internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
-    return trim_right_by(p, trim_left_by(p, xs));
+    return trim_right_by(p, drop_while(p, xs));
 }
 
 // API search type: trim : (a, [a]) -> [a]

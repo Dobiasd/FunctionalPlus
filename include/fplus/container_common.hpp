@@ -539,6 +539,37 @@ Container drop_exact(std::size_t amount, const Container& xs)
     return get_segment(amount, size_of_cont(xs), xs);
 }
 
+// API search type: take_while : ((a -> Bool), [a]) -> [a]
+// fwd bind count: 1
+// Take elements from the beginning of a sequence
+// as long as they are fulfilling a predicate.
+// take_while(is_even, [0,2,4,5,6,7,8]) == [0,2,4]
+template <typename Container, typename UnaryPredicate>
+Container take_while(UnaryPredicate pred, const Container& xs)
+{
+    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
+    auto itFirst = std::find_if(
+        std::begin(xs), std::end(xs), logical_not(pred));
+    if (itFirst == std::end(xs))
+        return xs;
+    return Container(std::begin(xs), itFirst);
+}
+
+// API search type: drop_while : ((a -> Bool), [a]) -> [a]
+// fwd bind count: 1
+// Remove elements from the beginning of a sequence
+// as long as they are fulfilling a predicate.
+// drop_while(is_even, [0,2,4,5,6,7,8]) == [5,6,7,8]
+template <typename Container, typename UnaryPredicate>
+Container drop_while(UnaryPredicate pred, const Container& xs)
+{
+    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
+    auto itFirstNot = std::find_if_not(std::begin(xs), std::end(xs), pred);
+    if (itFirstNot == std::end(xs))
+        return Container();
+    return Container(itFirstNot, std::end(xs));
+}
+
 // API search type: fold_left : (((a, b) -> a), a, [b]) -> a
 // fwd bind count: 2
 // fold_left((+), 0, [1, 2, 3]) == ((0+1)+2)+3 == 6

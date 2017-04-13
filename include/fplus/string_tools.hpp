@@ -114,7 +114,7 @@ ContainerOut split_lines(bool allowEmpty, const String& str)
 template <typename String>
 String trim_whitespace_left(const String& str)
 {
-    return trim_left_by(is_whitespace<String>, str);
+    return drop_while(is_whitespace<String>, str);
 }
 
 // API search type: trim_whitespace_right : String -> String

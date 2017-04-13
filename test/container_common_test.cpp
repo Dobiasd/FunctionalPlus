@@ -197,6 +197,9 @@ TEST_CASE("container_common_test, interweave")
 TEST_CASE("container_common_test, concat")
 {
     using namespace fplus;
+    std::vector<std::vector<int>> emptyIntVecs;
+    std::vector<int> emptyIntVec;
+    REQUIRE_EQ(concat(emptyIntVecs), emptyIntVec);
     REQUIRE_EQ(concat(intLists), intList);
     REQUIRE_EQ(concat(IntVectors(2, xs)), xs2Times);
 }
@@ -512,6 +515,8 @@ TEST_CASE("container_common_test, segment")
     REQUIRE_EQ(take(999, xs), xs);
     REQUIRE_EQ(drop(999, xs), IntVector());
     REQUIRE_EQ(take_while(is_odd_int, xs), IntVector({ 1 }));
+    REQUIRE_EQ(take_while(always<int>(true), xs), xs);
+    REQUIRE_EQ(drop_while(always<int>(false), xs), xs);
     REQUIRE_EQ(drop_while(is_odd_int, xs), IntVector({ 2,2,3,2 }));
     REQUIRE_EQ(span(is_odd_int, xs), std::make_pair(IntVector({ 1 }), IntVector({ 2,2,3,2 })));
     REQUIRE_EQ(replace_segment(2, IntVector({8,9}), xs), IntVector({1,2,8,9,2}));
@@ -520,6 +525,8 @@ TEST_CASE("container_common_test, segment")
     REQUIRE_EQ(take_cyclic(7, IntVector({0,1})), IntVector({0,1,0,1,0,1,0}));
     REQUIRE_EQ(take_cyclic(2, IntVector({0,1,2,3})), IntVector({0,1}));
     REQUIRE_EQ(take_cyclic(3, IntVector({0})), IntVector({0,0,0}));
+    REQUIRE_EQ(take_while(is_even<int>, IntVector({ 4, 3 })), IntVector({4}));
+    REQUIRE_EQ(drop_while(is_even<int>, IntVector({ 4, 8 })), IntVector());
 }
 
 TEST_CASE("container_common_test, keep_if")

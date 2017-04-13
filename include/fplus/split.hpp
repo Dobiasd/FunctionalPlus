@@ -628,32 +628,6 @@ ContainerOut run_length_decode(const ContainerIn& pairs)
     return concat(transform(pair_to_vec, pairs));
 }
 
-// API search type: take_while : ((a -> Bool), [a]) -> [a]
-// fwd bind count: 1
-// Take elements from the beginning of a sequence
-// as long as they are fulfilling a predicate.
-// take_while(is_even, [0,2,4,5,6,7,8]) == [0,2,4]
-template <typename Container, typename UnaryPredicate>
-Container take_while(UnaryPredicate pred, const Container& xs)
-{
-    auto maybeIdx = find_first_idx_by(logical_not(pred), xs);
-    return take(just_with_default<std::size_t>(
-        size_of_cont(xs), maybeIdx), xs);
-}
-
-// API search type: drop_while : ((a -> Bool), [a]) -> [a]
-// fwd bind count: 1
-// Remove elements from the beginning of a sequence
-// as long as they are fulfilling a predicate.
-// drop_while(is_even, [0,2,4,5,6,7,8]) == [5,6,7,8]
-template <typename Container, typename UnaryPredicate>
-Container drop_while(UnaryPredicate pred, const Container& xs)
-{
-    auto maybeIdx = find_first_idx_by(logical_not(pred), xs);
-    return drop(just_with_default<std::size_t>(
-        size_of_cont(xs), maybeIdx), xs);
-}
-
 // API search type: span : ((a -> Bool), [a]) -> ([a], [a])
 // fwd bind count: 1
 // span, applied to a predicate p and a list xs,
