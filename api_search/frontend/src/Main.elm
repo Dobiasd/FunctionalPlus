@@ -6,7 +6,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Markdown
-import Random
 import Regex
 import String
 
@@ -27,7 +26,7 @@ maxVisibleFunctions =
 
 initModelAndCommands : ( Model, Cmd Msg )
 initModelAndCommands =
-    ( defaultModel, cmdGetRandomNumbers )
+    ( defaultModel, Cmd.none )
 
 
 type alias WithParsedSignature a =
@@ -111,12 +110,6 @@ functionCnt =
     List.length functions
 
 
-cmdGetRandomNumbers : Cmd Msg
-cmdGetRandomNumbers =
-    Random.list maxVisibleFunctions (Random.int 0 (functionCnt - 1))
-        |> Random.generate RandomNumbers
-
-
 type alias Model =
     { query : String
     , querySigStr : String
@@ -134,7 +127,6 @@ defaultModel =
 
 type Msg
     = NoOp
-    | RandomNumbers (List Int)
     | UpdateQuery String
 
 
@@ -151,7 +143,7 @@ update action model =
                     , querySigStr = ""
                     , searchResult = []
                   }
-                , cmdGetRandomNumbers
+                , Cmd.none
                 )
             else
                 let
@@ -199,17 +191,6 @@ update action model =
                     , Cmd.none
                     )
 
-        RandomNumbers nums ->
-            ( { model
-                | searchResult =
-                    if String.isEmpty model.query then
-                        getRandomSearchResult nums
-                    else
-                        model.searchResult
-              }
-            , Cmd.none
-            )
-
 
 showMaybeSig : Maybe TypeSignature.Signature -> String
 showMaybeSig maybeSig =
@@ -224,13 +205,6 @@ showMaybeSig maybeSig =
 nthElement : List a -> Int -> Maybe a
 nthElement xs idx =
     List.drop idx xs |> List.head
-
-
-getRandomSearchResult : List Int -> List ( Function, Float )
-getRandomSearchResult chosenIdxs =
-    chosenIdxs
-        |> List.filterMap (nthElement functions)
-        |> List.map (\x -> ( x, 0 ))
 
 
 view : Model -> Html Msg
