@@ -237,9 +237,9 @@ struct variant
     }
 
     template <typename ...Fs>
-    auto visit(Fs ... fs) ->
+    auto visit(Fs ... fs) const ->
         typename internal::unary_function_result_type<
-            typename internal::parameter_pack_head<Fs...>::type>::type const
+            typename internal::parameter_pack_head<Fs...>::type>::type
     {
         typedef typename internal::unary_function_result_type<
             typename internal::parameter_pack_head<Fs...>::type>::type
@@ -283,7 +283,7 @@ struct variant
     }
 
     template <typename ...Fs>
-    variant<Types...> transform(Fs ... fs)
+    variant<Types...> transform(Fs ... fs) const
     {
         static_assert(
             sizeof...(Fs) >= std::tuple_size<shared_ptr_pack>::value,
