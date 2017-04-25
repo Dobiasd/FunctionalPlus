@@ -386,4 +386,21 @@ maybe<Val> choose(const std::vector<std::pair<Key, Val>>& pairs, const Key& x)
     return get_from_map(pairs_to_map<std::unordered_map<Key, Val>>(pairs), x);
 }
 
+// API search type: choose_def : (b, [(a, b)], a) -> b
+// fwd bind count: 1
+// Selects a value assigned to a key if the key exists exactly once,
+// otherwise returns the given default value.
+// choose_def(c, [(1,a), (2,b)], 2) == b;
+// choose_def(c, [(1,a), (1,b)], 2) == c;
+// choose_def(c, [(1,a), (2,b)], 3) == c;
+template<typename Key, typename Val>
+Val choose_def(const Val& def,
+    const std::vector<std::pair<Key, Val>>& pairs, const Key& x)
+{
+    if (count(x, transform(fst<Key, Val>, pairs)) != 1)
+        return def;
+    return get_from_map_with_def(
+        pairs_to_map<std::unordered_map<Key, Val>>(pairs), def, x);
+}
+
 } // namespace fplus

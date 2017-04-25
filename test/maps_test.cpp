@@ -35,6 +35,15 @@ TEST_CASE("maps_test, choose")
     REQUIRE_EQ((choose<int, char>({}, 2)), nothing<char>());
 }
 
+TEST_CASE("maps_test, choose_def")
+{
+    using namespace fplus;
+    REQUIRE_EQ((choose_def<int, char>('c', {{1, 'a'}, {2, 'b'}}, 2)), 'b');
+    REQUIRE_EQ((choose_def<int, char>('c', {{1, 'a'}, {1, 'b'}}, 1)), 'c');
+    REQUIRE_EQ((choose_def<int, char>('c', {{1, 'a'}, {2, 'b'}}, 3)), 'c');
+    REQUIRE_EQ((choose_def<int, char>('c', {}, 2)), 'c');
+}
+
 TEST_CASE("maps_test, map functions")
 {
     using namespace fplus;
