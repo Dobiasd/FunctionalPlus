@@ -195,7 +195,7 @@ bool operator != (const maybe<T>& x, const maybe<T>& y)
 // Lifts a function into the maybe functor.
 // A function that for example was able to convert and int into a string,
 // now can convert a Maybe<int> into a Maybe<string>.
-// A nothing stays a nothing, regardless of the conversion.
+// A nothing remains a nothing, regardless of the conversion.
 template <typename F,
     typename A = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<
@@ -259,7 +259,7 @@ maybe<FOutJustT> and_then_maybe(F f, const maybe<T>& m)
 // Composes two functions taking a value and returning Maybe.
 // If the first function returns a just, the value from the just
 // is extracted and shoved into the second function.
-// If the first functions returns a nothing, it stays a nothing.
+// If the first functions returns a nothing, it remains a nothing.
 template <typename F, typename G,
     typename FIn = typename std::remove_const<typename std::remove_reference<
         typename utils::function_traits<
