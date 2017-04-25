@@ -29,7 +29,10 @@ public:
         return *reinterpret_cast<const T*>(&mem_[0]);
     }
     typedef T type;
-
+#ifdef __GNUC__ // workaround for bug in GCC 4.9
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
     maybe() : is_present_(false), mem_({}) {};
     ~maybe()
     {
@@ -48,6 +51,9 @@ public:
         if (other.is_just())
             new (&mem_[0]) T(other.unsafe_get_just());
     }
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
     maybe<T>& operator = (const maybe<T>& other)
     {
         is_present_ = other.is_just();
