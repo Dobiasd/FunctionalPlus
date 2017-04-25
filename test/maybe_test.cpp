@@ -32,19 +32,29 @@ namespace {
     typedef std::vector<int> Ints;
 }
 
-class maybeTestState {
-public:
-    explicit maybeTestState(int x) : x_(x) {}
-    void Add(int y) { x_ += y; }
-    int Get() const { return x_; }
-private:
-    int x_;
+struct foo {
+    explicit foo(int) { msgs_.push_back("ctor"); }
+    foo(const foo&) { msgs_.push_back("copyctor"); }
+    ~foo() { msgs_.push_back("dtor"); }
+    static std::vector<std::string> msgs_;
 };
+std::vector<std::string> foo::msgs_;
 
 TEST_CASE("maybe_test, ctor")
 {
     using namespace fplus;
     REQUIRE_EQ(maybe<int>(4), just<int>(4));
+
+    typedef std::vector<std::string> Strings;
+    REQUIRE_EQ(foo::msgs_, Strings({}));
+    maybe<foo> no_foo;
+    REQUIRE_EQ(foo::msgs_, Strings({}));
+    {
+        maybe<foo> a_foo(foo(1));
+        REQUIRE_EQ(foo::msgs_, Strings({"ctor", "copyctor", "dtor"}));
+    }
+    REQUIRE_EQ(foo::msgs_, Strings({"ctor", "copyctor", "dtor", "dtor"}));
+    foo::msgs_.clear();
 }
 
 TEST_CASE("maybe_test, as_just_if")

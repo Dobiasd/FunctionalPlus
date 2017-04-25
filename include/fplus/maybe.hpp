@@ -21,26 +21,43 @@ template <typename T>
 class maybe
 {
 public:
-    bool is_just() const { return static_cast<bool>(ptr_); }
+    bool is_just() const { return is_present_; }
     bool is_nothing() const { return !is_just(); }
-    const T& unsafe_get_just() const { assert(is_just()); return *ptr_; }
+    const T& unsafe_get_just() const
+    {
+        assert(is_just());
+        return *reinterpret_cast<const T*>(&mem_[0]);
+    }
     typedef T type;
 
-    maybe() : ptr_(ptr_t()) {};
-    maybe(const T& val_just) :
-        ptr_(new T(val_just))
-    {}
-    maybe(const maybe<T>& other) :
-        ptr_(other.is_just() ? ptr_t(new T(other.unsafe_get_just())) : ptr_t())
-    {}
+    maybe() : is_present_(false), mem_({}) {};
+    ~maybe()
+    {
+        if (is_present_)
+        {
+            T* ptr = reinterpret_cast<T*>(&mem_[0]);
+            ptr->~T();
+        }
+    }
+    maybe(const T& val_just) : is_present_(true), mem_({})
+    {
+        new (&mem_[0]) T(val_just);
+    }
+    maybe(const maybe<T>& other) : is_present_(other.is_just()), mem_({})
+    {
+        if (other.is_just())
+            new (&mem_[0]) T(other.unsafe_get_just());
+    }
     maybe<T>& operator = (const maybe<T>& other)
     {
-        ptr_ = other.is_just() ? ptr_t(new T(other.unsafe_get_just())) : ptr_t();
+        is_present_ = other.is_just();
+        if (other.is_just())
+            new (&mem_[0]) T(other.unsafe_get_just());
         return *this;
     }
 private:
-    typedef std::unique_ptr<T> ptr_t;
-    ptr_t ptr_;
+    bool is_present_;
+    std::array<unsigned char, sizeof(T)> mem_;
 };
 
 // API search type: is_just : Maybe a -> Bool
