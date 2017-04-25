@@ -443,3 +443,19 @@ TEST_CASE("numeric_test, histogram_intervals")
 
     REQUIRE_EQ(histogram(1, 2, 4, xs), result1);
 }
+
+TEST_CASE("numeric_test, modulo_chain")
+{
+    using namespace fplus;
+    typedef std::vector<int> ints;
+    REQUIRE_EQ(modulo_chain(ints({24, 60, 60}), 23), ints({0, 0, 0, 23}));
+    REQUIRE_EQ(modulo_chain(ints({24, 60, 60}), 7223), ints({0, 2, 0, 23}));
+    REQUIRE_EQ(
+        modulo_chain(ints({24, 60, 60, 1000}),
+            3 * 24 * 60 * 60 * 1000 +
+            17 * 60 * 60 * 1000 +
+            4 * 60 * 1000 +
+            31 * 1000 +
+            256),
+        ints({3, 17, 4, 31, 256}));
+}

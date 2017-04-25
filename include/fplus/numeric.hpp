@@ -753,4 +753,26 @@ ContainerOut histogram(
     return histo;
 }
 
+// API search type: modulo_chain : ([Int], Int) -> [Int]
+// fwd bind count: 1
+// For every factor (value % factor) is pushed into the result,
+// and value is divided by this factor for the next iteration.
+// Can be useful to convert a time in seconds
+// into hours, minutes and seconds and similar calculations.
+// modulo_chain([24, 60, 60], 7223) == [0, 2, 0, 23]
+template <typename T>
+std::vector<T> modulo_chain(const std::vector<T>& factors, T val)
+{
+    std::vector<T> result;
+    result.reserve(factors.size());
+    const auto factors_reversed = reverse(factors);
+    for (const auto& factor : factors_reversed)
+    {
+        result.push_back(val % factor);
+        val /= factor;
+    }
+    result.push_back(val);
+    return reverse(result);
+}
+
 } // namespace fplus
