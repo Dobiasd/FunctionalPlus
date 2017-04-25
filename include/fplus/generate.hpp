@@ -379,6 +379,28 @@ ContainerOut iterate(F f, std::size_t size, const T& x)
     return result;
 }
 
+// API search type: iterate_maybe : ((a -> Maybe a), a) -> [a]
+// fwd bind count: 1
+// Repeatedly apply a function to a value (starting with x)
+// and recording the outputs on its way.
+// Stops when the function returns nothing.
+// iterate_maybe(next_collats_val, 5) = [5, 16, 8, 4, 2, 1]
+template <typename F,
+    typename T,
+    typename ContainerOut = std::vector<T>>
+ContainerOut iterate_maybe(F f, const T& x)
+{
+    ContainerOut result;
+    auto it_out = internal::get_back_inserter(result);
+    maybe<T> current(x);
+    while (current.is_just())
+    {
+        *it_out = current.unsafe_get_just();
+        current = f(current.unsafe_get_just());
+    }
+    return result;
+}
+
 // API search type: adjacent_difference_by : [a] -> [a]
 // fwd bind count: 1
 // Computes the differences between the second

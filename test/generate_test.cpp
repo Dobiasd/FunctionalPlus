@@ -216,6 +216,21 @@ TEST_CASE("generate_test, iterate_with_size_0")
     REQUIRE(result.empty());
 }
 
+TEST_CASE("generate_test, iterate_maybe")
+{
+    const auto next_collatz_value = [](int x) -> fplus::maybe<int>
+    {
+        if (x <= 1)
+            return {};
+        if (x % 2 == 0)
+            return x / 2;
+        else
+            return 3 * x + 1;
+    };
+    const auto result = fplus::iterate_maybe(next_collatz_value, 5);
+    REQUIRE_EQ(result, std::vector<int>({5, 16, 8, 4, 2, 1}));
+}
+
 TEST_CASE("generate_test, adjecent_difference")
 {
     const std::vector<int> v = { 0, 4, 1, 2, 5 };
