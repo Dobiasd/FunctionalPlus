@@ -1120,16 +1120,31 @@ Container intersperse(const X& value, const Container& xs)
 
 // API search type: join : ([a], [[a]]) -> [a]
 // fwd bind count: 1
-// Inserts a separator sequence into a sequence of sequences
-// and concatenates the result.
+// Inserts a separator sequence in between the elements
+// of a sequence of sequences and concatenates the result.
 // Also known as intercalate.
-// join(";", "["a", "b", "c"]) == "a;b;c"
+// join(", ", "["a", "bee", "cee"]) == "a, bee, cee"
 // join([0, 0], [[1], [2], [3, 4]]) == [1, 0, 0, 2, 0, 0, 3, 4]
 template <typename Container,
     typename X = typename Container::value_type>
 X join(const X& separator, const Container& xs)
 {
     return concat(intersperse(separator, xs));
+}
+
+// API search type: join_elem : (a, [[a]]) -> [a]
+// fwd bind count: 1
+// Inserts a separator in between the elements
+// of a sequence of sequences and concatenates the result.
+// Also known as intercalate_elem.
+// join_elem(';', "["a", "bee", "cee"]) == "a;bee;cee"
+// join_elem(0, [[1], [2], [3, 4]]) == [1, 0, 2, 0, 3, 4]]
+template <typename Container,
+    typename Inner = typename Container::value_type,
+    typename X = typename Inner::value_type>
+Inner join_elem(const X& separator, const Container& xs)
+{
+    return join(Inner(1, separator), xs);
 }
 
 // API search type: is_elem_of_by : ((a -> Bool), [a]) -> Bool

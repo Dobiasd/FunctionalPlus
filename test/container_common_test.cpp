@@ -330,6 +330,13 @@ TEST_CASE("container_common_test, join")
     REQUIRE_EQ(join(IntList({0}), intLists), IntList({1,0,2,2,0,3,0,2}));
 }
 
+TEST_CASE("container_common_test, join_elem")
+{
+    using namespace fplus;
+    REQUIRE_EQ(join_elem(',', std::vector<std::string>({"a", "b", "sea"})), std::string("a,b,sea"));
+    REQUIRE_EQ(join_elem(0, intLists), IntList({1,0,2,2,0,3,0,2}));
+}
+
 TEST_CASE("container_common_test, all")
 {
     using namespace fplus;
