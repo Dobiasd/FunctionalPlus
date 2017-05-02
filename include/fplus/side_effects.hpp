@@ -22,6 +22,49 @@
 
 namespace fplus
 {
+    class ticker
+    {
+    public:
+        typedef std::function<void(std::int64_t)> function;
+        ticker(const function& f, std::int64_t interval_us) :
+            f_(f),
+            interval_us_(interval_us),
+            stop_flag_(false),
+            thread_(std::bind(&ticker::thread_function, this))
+        {}
+        ~ticker() {
+            stop_flag_ = true;
+            if (thread_.joinable())
+            {
+                thread_.join();
+            }
+        }
+    private:
+        void thread_function() const
+        {
+            auto last_time = std::chrono::high_resolution_clock::now();
+            while (!stop_flag_)
+            {
+                const auto current_time =
+                    std::chrono::high_resolution_clock::now();
+                const auto sleep_time =
+                    std::chrono::microseconds{ interval_us_ } -
+                        (current_time - last_time);
+                std::this_thread::sleep_for(sleep_time);
+                const auto elapsed = current_time - last_time;
+                last_time = current_time;
+                const auto elapsed_us =
+                    std::chrono::duration_cast<std::chrono::microseconds>(
+                        elapsed).count();
+                f_(elapsed_us);
+            }
+        }
+        function f_;
+        std::int64_t interval_us_;
+        std::atomic<bool> stop_flag_;
+        std::thread thread_;
+    };
+
 
 // API search type: sleep_for_n_seconds : Int -> Io ()
 // Returns a function that suspends
