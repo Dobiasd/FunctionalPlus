@@ -446,7 +446,7 @@ std::function<void()> interact(F f)
 // a maybe holding a matching type
 // and runs the sideeffect if the Maybe holds a just.
 template <typename Effect, typename X>
-std::function<void()> execute_maybe(Effect eff, const maybe<X>& m)
+std::function<void()> execute_with_maybe(Effect eff, const maybe<X>& m)
 {
     return [eff, m]() -> void
     {
