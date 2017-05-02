@@ -6,7 +6,9 @@
 
 #pragma once
 
-#include <memory>
+#include <condition_variable>
+#include <deque>
+#include <mutex>
 
 namespace fplus
 {
