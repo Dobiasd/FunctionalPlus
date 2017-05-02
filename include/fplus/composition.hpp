@@ -18,6 +18,19 @@
 namespace fplus
 {
 
+// API search type: bind_unary : (((a -> b), a) -> (() -> b)
+// Bind parameter of unary function for later executation.
+template <typename F, typename T,
+    typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
+    typename FOut = typename std::result_of<F(FIn0)>::type>
+std::function<FOut()> bind_unary(F f, T x)
+{
+    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    static_assert(std::is_convertible<T, FIn0>::value,
+        "Function can not take bound parameter type.");
+    return [f, x] () { return f(x); };
+}
+
 // API search type: bind_1st_of_2 : (((a, b) -> c), a) -> (b -> c)
 // Bind first parameter of binary function.
 template <typename F, typename T,
@@ -425,6 +438,25 @@ std::function<Res(const T& obj)> nullary_member_function(Ptr ptr)
     return [ptr](const T& obj) -> Res
     {
         return (obj.*ptr)();
+    };
+}
+
+// API search type: unary_member_function : (a -> b) -> (a -> b)
+// struct foo
+// {
+//     int plus_x(int x) const { return x + val; }
+//     int val = 3;
+// };
+// foo my_foo;
+// const auto f = fplus::unary_member_function<foo>(&foo::plus_x);
+// f(my_foo, 2) == 5;
+template<typename T, typename X, typename Ptr,
+    typename Res = typename std::result_of<Ptr(T, X)>::type>
+std::function<Res(const T& obj, const X& x)> unary_member_function(Ptr ptr)
+{
+    return [ptr](const T& obj, const X& x) -> Res
+    {
+        return (obj.*ptr)(x);
     };
 }
 
