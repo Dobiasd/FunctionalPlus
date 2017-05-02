@@ -11,13 +11,16 @@
 #include <fplus/generate.hpp>
 #include <fplus/string_tools.hpp>
 
+#include <atomic>
 #include <chrono>
 #include <fstream>
+#include <functional>
 #include <future>
 #include <iostream>
 #include <iterator>
 #include <streambuf>
 #include <string>
+#include <thread>
 #include <vector>
 
 namespace fplus
