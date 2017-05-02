@@ -423,43 +423,4 @@ T constructor_as_function(Types ... args)
     return T{args...};
 }
 
-// API search type: nullary_member_function : (a -> b) -> (a -> b)
-// struct foo
-// {
-//     int get() const { return 42; }
-// };
-// foo my_foo;
-// const auto f = fplus::nullary_member_function<foo>(&foo::get);
-// f(my_foo) == 42;
-template<typename T, typename Ptr,
-    typename Res = typename std::result_of<Ptr(T*)>::type>
-std::function<Res(const T& obj)> nullary_member_function(
-    const Ptr& ptr)
-{
-    return [ptr](const T& obj) -> Res
-    {
-        return (obj.*ptr)();
-    };
-}
-
-// API search type: unary_member_function : (a -> b) -> (a -> b)
-// struct foo
-// {
-//     int plus_x(int x) const { return x + val; }
-//     int val = 3;
-// };
-// foo my_foo;
-// const auto f = fplus::unary_member_function<foo>(&foo::plus_x);
-// f(my_foo, 2) == 5;
-template<typename T, typename X, typename Ptr,
-    typename Res = typename std::result_of<Ptr(T*, X)>::type>
-std::function<Res(const T& obj, const X& x)>unary_member_function(
-    const Ptr& ptr)
-{
-    return [ptr](const T& obj, const X& x) -> Res
-    {
-        return (obj.*ptr)(x);
-    };
-}
-
 } // namespace fplus

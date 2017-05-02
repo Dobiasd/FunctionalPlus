@@ -73,33 +73,6 @@ TEST_CASE("composition_test, parameter_binding")
     REQUIRE_EQ(bind_1st_and_2nd_of_3(add3, 3, 5)(7), 15);
 }
 
-TEST_CASE("composition_test, nullary_member_function")
-{
-    using namespace fplus;
-
-    struct foo
-    {
-        int get() const { return 42; }
-    };
-    foo my_foo;
-    const auto f = fplus::nullary_member_function<foo>(&foo::get);
-    REQUIRE_EQ(f(my_foo), 42);
-}
-
-TEST_CASE("composition_test, unary_member_function")
-{
-    using namespace fplus;
-
-    struct foo
-    {
-        int plus_x(int x) const { return x + val; }
-        int val = 3;
-    };
-    foo my_foo;
-    const auto f = fplus::unary_member_function<foo, int>(&foo::plus_x);
-    REQUIRE_EQ(f(my_foo, 2), 5);
-}
-
 TEST_CASE("composition_test, compose")
 {
     using namespace fplus;
