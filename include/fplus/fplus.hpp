@@ -21,6 +21,7 @@
 #include <fplus/optimize.hpp>
 #include <fplus/pairs.hpp>
 #include <fplus/queue.hpp>
+#include <fplus/raii.hpp>
 #include <fplus/read.hpp>
 #include <fplus/replace.hpp>
 #include <fplus/result.hpp>
