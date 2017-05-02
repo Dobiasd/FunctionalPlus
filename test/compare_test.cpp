@@ -76,13 +76,20 @@ TEST_CASE("compare_test, is_greater_or_equal")
 TEST_CASE("compare_test, is_equal_by")
 {
     using namespace fplus;
-    REQUIRE_EQ(identity(2), 2);
-    REQUIRE_EQ(always<int>(2)(5), 2);
     auto square = [](int x){ return x*x; };
     REQUIRE(is_equal_by_and_by(square, square)(2, -2));
     REQUIRE(is_equal_by(square)(2, -2));
     REQUIRE(is_not_equal_by_and_by(square, square)(2, 3));
     REQUIRE(is_not_equal_by(square)(2, 3));
+}
+
+TEST_CASE("compare_test, always")
+{
+    using namespace fplus;
+    REQUIRE_EQ(identity(2), 2);
+    REQUIRE_EQ(always<int>(2)(5), 2);
+    REQUIRE_EQ(always_arg_1_of_2(2, 5), 2);
+    REQUIRE_EQ(always_arg_2_of_2(2, 5), 5);
 }
 
 TEST_CASE("compare_test, xor_bools")

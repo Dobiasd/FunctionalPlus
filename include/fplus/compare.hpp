@@ -246,6 +246,22 @@ std::function<X(const Y&)> always(const X& x)
     return [x](const Y&) { return x; };
 }
 
+// API search type: always_arg_1_of_2 : (a, b) -> a
+// always_arg_1_of_2(x, y) == x
+template <typename X, typename Y>
+X always_arg_1_of_2(const X& x, const Y&)
+{
+    return x;
+}
+
+// API search type: always_arg_2_of_2 : (a, b) -> a
+// always_arg_2_of_2(x, y) == x
+template <typename X, typename Y>
+Y always_arg_2_of_2(const X&, const Y& y)
+{
+    return y;
+}
+
 // API search type: is_equal_by_and_by : ((a -> b), (c -> b)) -> ((a, c) -> Bool)
 // f(x) == g(y)
 // Provides an equality check of two values
