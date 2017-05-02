@@ -97,6 +97,16 @@ TEST_CASE("maybe_test, lift")
 
     REQUIRE_EQ(lift_maybe_def(3, square<int>, x), 4);
     REQUIRE_EQ(lift_maybe_def(3, square<int>, y), 3);
+
+    REQUIRE_EQ(lift_maybe_2(std::plus<int>(), x, x), just(4));
+    REQUIRE_EQ(lift_maybe_2(std::plus<int>(), x, y), y);
+    REQUIRE_EQ(lift_maybe_2(std::plus<int>(), y, x), y);
+    REQUIRE_EQ(lift_maybe_2(std::plus<int>(), y, y), y);
+
+    REQUIRE_EQ(lift_maybe_2_def(3, std::plus<int>(), x, x), 4);
+    REQUIRE_EQ(lift_maybe_2_def(3, std::plus<int>(), x, y), 3);
+    REQUIRE_EQ(lift_maybe_2_def(3, std::plus<int>(), y, x), 3);
+    REQUIRE_EQ(lift_maybe_2_def(3, std::plus<int>(), y, y), 3);
 }
 
 TEST_CASE("maybe_test, and_then")

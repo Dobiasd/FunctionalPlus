@@ -231,6 +231,54 @@ B lift_maybe_def(const B& def, F f, const maybe<A>& m)
     return def;
 }
 
+// API search type: lift_maybe_2 : (((a, b) -> c), Maybe a, Maybe b) -> Maybe c
+// fwd bind count: 2
+// Lifts a binary function into the maybe functor.
+// Applies the function only if both arguments are justs.
+// Otherwise returns a nothing.
+template <typename F,
+    typename A = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<
+            F>::template arg<0>::type>::type>::type,
+    typename B = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<
+            F>::template arg<1>::type>::type>::type,
+    typename C = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<F(A, B)>::type>::type>::type>
+maybe<C> lift_maybe_2(F f, const maybe<A>& m_a, const maybe<B>& m_b)
+{
+    static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
+    if (is_just(m_a) && is_just(m_b))
+        return just<C>(f(unsafe_get_just(m_a), unsafe_get_just(m_b)));
+    return nothing<C>();
+}
+
+// API search type: lift_maybe_2_def : (c, ((a, b) -> c), Maybe a, Maybe b) -> c
+// fwd bind count: 3
+// lift_maybe_2_def takes a default value and a binary function.
+// It returns a function taking a two Maybe values.
+// This function returns the default value at least one of the
+// Maybe values is nothing.
+// Otherwise it applies the function to the two values inside the Justs
+// and returns the result of this application.
+template <typename F,
+    typename A = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<
+            F>::template arg<0>::type>::type>::type,
+    typename B = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<
+            F>::template arg<1>::type>::type>::type,
+    typename C = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<F(A, B)>::type>::type>::type>
+C lift_maybe_2_def(const C& def, F f,
+    const maybe<A>& m_a, const maybe<B>& m_b)
+{
+    static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
+    if (is_just(m_a) && is_just(m_b))
+        return f(unsafe_get_just(m_a), unsafe_get_just(m_b));
+    return def;
+}
+
 // API search type: and_then_maybe : ((a -> Maybe b), (Maybe a)) -> Maybe b
 // fwd bind count: 1
 // Monadic bind.
