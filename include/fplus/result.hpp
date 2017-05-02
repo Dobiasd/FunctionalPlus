@@ -205,7 +205,7 @@ bool operator != (const result<Ok, Error>& x, const result<Ok, Error>& y)
 // fwd bind count: 1
 // Lifts a function into the result functor.
 // A function that for example was able to convert and int into a string,
-// now can convert a result<int> into a result<string>.
+// now can convert a result<int, Err> into a result<string, Err>.
 // An error stays the same error, regardless of the conversion.
 template <typename Error,
     typename F,
