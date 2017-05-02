@@ -208,6 +208,19 @@ struct variant
             std::make_shared<T>(val);
     }
 
+    template <typename T>
+    bool is() const
+    {
+        static_assert(
+            internal::is_one_of<T, Types...>::value
+            , "Type must match one possible variant type.");
+
+        const auto ptr =
+            std::get<internal::get_index<T, Types...>::value>(shared_ptrs_);
+
+        return static_cast<bool>(ptr);
+    }
+
     template <typename F,
         typename T = typename internal::function_first_input_type<F>::type,
         typename Res = typename std::result_of<F(T)>::type>

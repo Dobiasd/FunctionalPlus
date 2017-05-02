@@ -89,6 +89,9 @@ TEST_CASE("variant_test, visit")
 
     fplus::variant<int, std::string> int_or_string(3);
 
+    REQUIRE(int_or_string.is<int>());
+    REQUIRE_FALSE(int_or_string.is<std::string>());
+
     int_or_string.visit(print_int, print_string);
     REQUIRE_EQ(print_output, "int 3");
     print_output.clear();
