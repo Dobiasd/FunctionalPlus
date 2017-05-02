@@ -33,7 +33,7 @@ namespace fplus
             f_(f),
             interval_us_(interval_us),
             stop_flag_(false),
-            thread_(std::bind(&ticker::thread_function, this))
+            thread_([this]() { thread_function(); })
         {}
         ~ticker() {
             stop_flag_ = true;
@@ -62,8 +62,8 @@ namespace fplus
                 f_(elapsed_us);
             }
         }
-        function f_;
-        std::int64_t interval_us_;
+        const function f_;
+        const std::int64_t interval_us_;
         std::atomic<bool> stop_flag_;
         std::thread thread_;
     };
