@@ -432,8 +432,9 @@ T constructor_as_function(Types ... args)
 // const auto f = fplus::nullary_member_function<foo>(&foo::get);
 // f(my_foo) == 42;
 template<typename T, typename Ptr,
-    typename Res = typename std::result_of<Ptr(T)>::type>
-std::function<Res(const T& obj)> nullary_member_function(Ptr ptr)
+    typename Res = typename std::result_of<Ptr(T*)>::type>
+std::function<Res(const T& obj)> nullary_member_function(
+    const Ptr& ptr)
 {
     return [ptr](const T& obj) -> Res
     {
@@ -451,8 +452,9 @@ std::function<Res(const T& obj)> nullary_member_function(Ptr ptr)
 // const auto f = fplus::unary_member_function<foo>(&foo::plus_x);
 // f(my_foo, 2) == 5;
 template<typename T, typename X, typename Ptr,
-    typename Res = typename std::result_of<Ptr(T, X)>::type>
-std::function<Res(const T& obj, const X& x)> unary_member_function(Ptr ptr)
+    typename Res = typename std::result_of<Ptr(T*, X)>::type>
+std::function<Res(const T& obj, const X& x)>unary_member_function(
+    const Ptr& ptr)
 {
     return [ptr](const T& obj, const X& x) -> Res
     {
