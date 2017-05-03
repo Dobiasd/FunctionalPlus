@@ -398,13 +398,9 @@ maybe<Val> choose_lazy(const std::vector<std::pair<Key, ValStub>>& pairs,
 {
     const auto res = choose(pairs, x);
     if (res.is_nothing())
-    {
         return {};
-    }
     else
-    {
         return res.unsafe_get_just()();
-    }
 }
 
 // API search type: choose_def : (b, [(a, b)], a) -> b
