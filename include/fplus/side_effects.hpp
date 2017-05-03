@@ -54,6 +54,7 @@ namespace fplus
             if (thread_.joinable())
             {
                 thread_.join();
+                thread_ = std::thread();
             }
         }
         ~ticker()
