@@ -122,6 +122,31 @@ FOut forward_apply(const X& x, F f)
     return f(x);
 }
 
+// API search type: lazy : ((a -> b), a) -> (() -> b)
+// Lazy evaluation.
+// Returns a function evaluating f with the given arguments when called.
+template<typename F, typename... Args,
+    typename FOut = typename std::result_of<F(Args ...)>::type>
+std::function<FOut()> lazy(F f, Args ... args)
+{
+    return [f, args...]() -> FOut
+    {
+        return f(args...);
+    };
+}
+
+// API search type: lazy_identity : a -> (() -> a)
+// Lazy identity.
+// Returns a function returning x when called.
+template<typename T>
+std::function<T()> lazy_identity(T x)
+{
+    return [x]() -> T
+    {
+        return x;
+    };
+}
+
 // API search type: compose : ((a -> b), (b -> c)) -> (a -> c)
 // Forward function composition.
 // compose(f, g)(x) = g(f(x))

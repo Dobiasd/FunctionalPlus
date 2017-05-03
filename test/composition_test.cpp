@@ -52,6 +52,20 @@ TEST_CASE("composition_test, forward_apply")
     REQUIRE_EQ(forward_apply(3, square<int>), 9);
 }
 
+TEST_CASE("composition_test, lazy")
+{
+    using namespace fplus;
+    const auto square_3_stub = lazy(square<int>, 3);
+    REQUIRE_EQ(square_3_stub(), 9);
+}
+
+TEST_CASE("composition_test, lazy_identity")
+{
+    using namespace fplus;
+    const auto lazy_3 = lazy_identity(3);
+    REQUIRE_EQ(lazy_3(), 3);
+}
+
 TEST_CASE("composition_test, parameter_binding")
 {
     using namespace fplus;

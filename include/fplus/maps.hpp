@@ -403,4 +403,19 @@ Val choose_def(const Val& def,
         pairs_to_map<std::unordered_map<Key, Val>>(pairs), def, x);
 }
 
+// API search type: choose_def_lazy : ((() -> b), [(a, (() -> b))], a) -> b
+// fwd bind count: 1
+// Evaluates a lazy value assigned to a key if the key exists exactly once,
+// otherwise evaluates the given default lazy value.
+// choose_def_lazy(c, [(1,a), (2,b)], 2) == b();
+// choose_def_lazy(c, [(1,a), (1,b)], 2) == c();
+// choose_def_lazy(c, [(1,a), (2,b)], 3) == c();
+template<typename Key, typename ValStub,
+    typename Val = typename std::result_of<ValStub()>::type>
+Val choose_def_lazy(const ValStub& def,
+    const std::vector<std::pair<Key, ValStub>>& pairs, const Key& x)
+{
+    return choose_def(def, pairs, x)();
+}
+
 } // namespace fplus

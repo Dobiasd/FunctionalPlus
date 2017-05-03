@@ -38,10 +38,23 @@ TEST_CASE("maps_test, choose")
 TEST_CASE("maps_test, choose_def")
 {
     using namespace fplus;
-    REQUIRE_EQ((choose_def<int, char>('c', {{1, 'a'}, {2, 'b'}}, 2)), 'b');
-    REQUIRE_EQ((choose_def<int, char>('c', {{1, 'a'}, {1, 'b'}}, 1)), 'c');
-    REQUIRE_EQ((choose_def<int, char>('c', {{1, 'a'}, {2, 'b'}}, 3)), 'c');
-    REQUIRE_EQ((choose_def<int, char>('c', {}, 2)), 'c');
+    REQUIRE_EQ((choose_def<int>('c', {{1, 'a'}, {2, 'b'}}, 2)), 'b');
+    REQUIRE_EQ((choose_def<int>('c', {{1, 'a'}, {1, 'b'}}, 1)), 'c');
+    REQUIRE_EQ((choose_def<int>('c', {{1, 'a'}, {2, 'b'}}, 3)), 'c');
+    REQUIRE_EQ((choose_def<int>('c', {}, 2)), 'c');
+}
+
+TEST_CASE("maps_test, choose_def_lazy")
+{
+    using namespace fplus;
+    typedef std::function<char()> char_stub;
+    const char_stub a_stub = []() -> char { return 'a'; };
+    const char_stub b_stub = []() -> char { return 'b'; };
+    const char_stub c_stub = []() -> char { return 'c'; };
+    REQUIRE_EQ((choose_def_lazy<int>(c_stub, {{1, a_stub}, {2, b_stub}}, 2)), 'b');
+    REQUIRE_EQ((choose_def_lazy<int>(c_stub, {{1, a_stub}, {1, b_stub}}, 1)), 'c');
+    REQUIRE_EQ((choose_def_lazy<int>(c_stub, {{1, a_stub}, {2, b_stub}}, 3)), 'c');
+    REQUIRE_EQ((choose_def_lazy<int>(c_stub, {}, 2)), 'c');
 }
 
 TEST_CASE("maps_test, map functions")
