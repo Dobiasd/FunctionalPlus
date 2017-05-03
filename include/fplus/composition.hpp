@@ -18,7 +18,7 @@
 namespace fplus
 {
 
-// API search type: bind_unary : (((a -> b), a) -> (() -> b)
+// API search type: bind_unary : ((a -> b), a) -> (() -> b)
 // Bind parameter of unary function for later executation.
 template <typename F, typename T,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
