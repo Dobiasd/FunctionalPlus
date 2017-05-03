@@ -35,6 +35,18 @@ TEST_CASE("maps_test, choose")
     REQUIRE_EQ((choose<int, char>({}, 2)), nothing<char>());
 }
 
+TEST_CASE("maps_test, choose_lazy")
+{
+    using namespace fplus;
+    typedef std::function<char()> char_stub;
+    const char_stub a_stub = []() -> char { return 'a'; };
+    const char_stub b_stub = []() -> char { return 'b'; };
+    REQUIRE_EQ((choose_lazy<int, char_stub>({{1, a_stub}, {2, b_stub}}, 2)), just('b'));
+    REQUIRE_EQ((choose_lazy<int, char_stub>({{1, a_stub}, {1, b_stub}}, 1)), nothing<char>());
+    REQUIRE_EQ((choose_lazy<int, char_stub>({{1, a_stub}, {2, b_stub}}, 3)), nothing<char>());
+    REQUIRE_EQ((choose_lazy<int, char_stub>({}, 2)), nothing<char>());
+}
+
 TEST_CASE("maps_test, choose_def")
 {
     using namespace fplus;
