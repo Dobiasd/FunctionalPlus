@@ -29,24 +29,42 @@ namespace fplus
     {
     public:
         typedef std::function<void(std::int64_t)> function;
+        void start()
+        {
+            if (running_flag_)
+            {
+                return;
+            }
+            running_flag_ = true;
+            thread_ = std::thread([this]() { thread_function(); });
+        }
         ticker(const function& f, std::int64_t interval_us) :
             f_(f),
             interval_us_(interval_us),
-            stop_flag_(false),
-            thread_([this]() { thread_function(); })
+            running_flag_(false),
+            thread_()
         {}
-        ~ticker() {
-            stop_flag_ = true;
+        void stop()
+        {
+            if (!running_flag_)
+            {
+                return;
+            }
+            running_flag_ = false;
             if (thread_.joinable())
             {
                 thread_.join();
             }
         }
+        ~ticker()
+        {
+            stop();
+        }
     private:
         void thread_function() const
         {
             auto last_time = std::chrono::high_resolution_clock::now();
-            while (!stop_flag_)
+            while (running_flag_)
             {
                 const auto current_time =
                     std::chrono::high_resolution_clock::now();
@@ -64,7 +82,7 @@ namespace fplus
         }
         const function f_;
         const std::int64_t interval_us_;
-        std::atomic<bool> stop_flag_;
+        std::atomic<bool> running_flag_;
         std::thread thread_;
     };
 
