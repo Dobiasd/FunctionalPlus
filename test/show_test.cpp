@@ -12,6 +12,18 @@ namespace {
     typedef std::vector<int> IntVector;
     IntVector xs = {1,2,2,3,2};
     std::string xsShown("[1, 2, 2, 3, 2]");
+
+    typedef std::vector<std::string> StringVector;
+    StringVector stringVec = {"foo", "bar"};
+    std::string stringVecShown("[""foo"", ""bar""]");
+
+    typedef std::vector<int> IntSet;
+    IntSet xsSet = {1,2,3};
+    std::string xsSetShown("[1, 2, 3]");
+
+    typedef std::vector<std::string> StringSet;
+    StringSet stringSet = {"foo", "bar"};
+    std::string stringSetShown("[""foo"", ""bar""]");
 }
 
 TEST_CASE("show_test, show")
@@ -19,7 +31,19 @@ TEST_CASE("show_test, show")
     using namespace fplus;
     std::map<int, std::string> mapToShow = {{1, "one"}, {2, "two"}};
     REQUIRE_EQ(show_cont(mapToShow), "[(1, one), (2, two)]");
+
     REQUIRE_EQ(show_cont(xs), xsShown);
+    REQUIRE_EQ(show(xs), xsShown);
+
+    REQUIRE_EQ(show_cont(xsSet), xsSetShown);
+    REQUIRE_EQ(show(xsSet), xsSetShown);
+
+    REQUIRE_EQ(show_cont(stringVec), stringVecShown);
+    REQUIRE_EQ(show(stringVec), stringVecShown);
+
+    REQUIRE_EQ(show_cont(stringSet), stringSetShown);
+    REQUIRE_EQ(show(stringSet), stringSetShown);
+
     REQUIRE_EQ(show_cont_with(", ", xs), xsShown);
     std::string xsShownNLs = "(1,2,\n"
                              " 2,3,\n"
