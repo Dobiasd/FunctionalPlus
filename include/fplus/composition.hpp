@@ -135,11 +135,12 @@ std::function<FOut()> lazy(F f, Args ... args)
     };
 }
 
-// API search type: lazy_identity : a -> (() -> a)
-// Lazy identity.
+// API search type: fixed : a -> (() -> a)
+// Identity as a nullary function.
 // Returns a function returning x when called.
+// Like lazy with identity as f.
 template<typename T>
-std::function<T()> lazy_identity(T x)
+std::function<T()> fixed(T x)
 {
     return [x]() -> T
     {

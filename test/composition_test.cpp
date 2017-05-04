@@ -59,10 +59,10 @@ TEST_CASE("composition_test, lazy")
     REQUIRE_EQ(square_3_stub(), 9);
 }
 
-TEST_CASE("composition_test, lazy_identity")
+TEST_CASE("composition_test, fixed")
 {
     using namespace fplus;
-    const auto lazy_3 = lazy_identity(3);
+    const auto lazy_3 = fixed(3);
     REQUIRE_EQ(lazy_3(), 3);
 }
 
