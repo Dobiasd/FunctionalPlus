@@ -16,6 +16,7 @@ TEST_CASE("set_test, set functions")
     using setVector = std::vector<IntSet>;
     using IntUnordSet = std::unordered_set<int>;
     using unordSetVector = std::vector<IntUnordSet>;
+    using StringUnordSet = std::unordered_set<std::string>;
 
     //std::set tests
     REQUIRE(set_includes(IntSet({0,1,2,3}), IntSet({0,2})));
@@ -40,4 +41,12 @@ TEST_CASE("set_test, set functions")
     REQUIRE_EQ(unordered_set_symmetric_difference(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})), IntUnordSet({0,1,4,5}));
     REQUIRE_EQ(unordered_set_intersection(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})), IntUnordSet({2,3}));
     REQUIRE_EQ(unordered_sets_intersection(unordSetVector({IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5}), IntUnordSet({0,2})})), IntUnordSet({2}));
+
+    REQUIRE_EQ(set_merge(StringUnordSet({"yes", "no", "hello"}), StringUnordSet({"hello", "what"})), StringUnordSet({"yes", "no", "what", "hello"}));
+
+    REQUIRE(set_is_disjoint(IntSet({0,1,3}), IntSet({2,4})));
+    REQUIRE_FALSE(set_is_disjoint(IntSet({0,1,3}), IntSet({2,1})));
+
+    REQUIRE(unordered_set_is_disjoint(IntUnordSet({0,1,3}), IntUnordSet({2,4})));
+    REQUIRE_FALSE(unordered_set_is_disjoint(IntUnordSet({0,1,3}), IntUnordSet({2,1})));
 }

@@ -69,7 +69,6 @@ SetType set_intersection(const SetType& set1, const SetType& set2)
     return result;
 }
 
-
 // API search type: unordered_set_intersection : (Unordered_Set a, Unordered_Set a) -> Unordered_Set a
 // fwd bind count: 1
 // Returns the intersection of both unordered_sets.
@@ -85,7 +84,24 @@ UnorderSetType unordered_set_intersection(
     return result;
 }
 
+// API search type: set_is_disjoint : (Set a, Set a) -> Bool
+// fwd bind count: 1
+// Checks if two sets are disjoint.
+template <typename SetType>
+bool set_is_disjoint(const SetType& set1, const SetType& set2)
+{
+    return set_intersection(set1, set2).empty();
+}
 
+// API search type: unordered_set_is_disjoint : (Unordered_Set a, Unordered_Set a) -> Bool
+// fwd bind count: 1
+// Checks if two unordered_sets are disjoint.
+template <typename UnorderSetType>
+bool unordered_set_is_disjoint(
+    const UnorderSetType& set1, const UnorderSetType& set2)
+{
+    return unordered_set_intersection(set1, set2).empty();
+}
 
 // API search type: set_difference : (Set a, Set a) -> Set a
 // fwd bind count: 1
@@ -100,6 +116,7 @@ SetType set_difference(const SetType& set1, const SetType& set2)
         itOut);
     return result;
 }
+
 // API search type: unordered_set_difference : (Unordered_Set a, Unordered_Set a) -> Unordered_Set a
 // fwd bind count: 1
 // Returns the elements in unordered_set1
