@@ -15,7 +15,7 @@ namespace {
 
     typedef std::vector<std::string> StringVector;
     StringVector stringVec = {"foo", "bar"};
-    std::string stringVecShown("[""foo"", ""bar""]");
+    std::string stringVecShown("[foo, bar]");
 
     typedef std::set<int> IntSet;
     IntSet xsSet = {1,2,3};
@@ -23,7 +23,7 @@ namespace {
 
     typedef std::set<std::string> StringSet;
     StringSet stringSet = {"foo", "bar"};
-    std::string stringSetShown("[""foo"", ""bar""]");
+    std::string stringSetShown("[bar, foo]");
 }
 
 TEST_CASE("show_test, show")
