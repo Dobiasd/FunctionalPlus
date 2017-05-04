@@ -17,11 +17,11 @@ namespace {
     StringVector stringVec = {"foo", "bar"};
     std::string stringVecShown("[""foo"", ""bar""]");
 
-    typedef std::vector<int> IntSet;
+    typedef std::set<int> IntSet;
     IntSet xsSet = {1,2,3};
     std::string xsSetShown("[1, 2, 3]");
 
-    typedef std::vector<std::string> StringSet;
+    typedef std::set<std::string> StringSet;
     StringSet stringSet = {"foo", "bar"};
     std::string stringSetShown("[""foo"", ""bar""]");
 }

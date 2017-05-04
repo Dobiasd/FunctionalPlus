@@ -72,6 +72,18 @@ std::string show(const std::list<T, A>& xs)
     return show_cont(xs);
 }
 
+template <typename T, typename A>
+std::string show(const std::set<T, A>& xs)
+{
+    return show_cont(xs);
+}
+
+template <typename T, typename A>
+std::string show(const std::deque<T, A>& xs)
+{
+    return show_cont(xs);
+}
+
 // API search type: show_cont_with_frame_and_newlines : (String, String, String, [a], Int) -> String
 // fwd bind count: 3
 // show_cont_with_frame_and_newlines (",", "(", ")", [1, 2, 3, 4, 5], 2)
