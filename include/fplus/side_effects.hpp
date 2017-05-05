@@ -459,20 +459,23 @@ std::function<void()> interact(F f)
     };
 }
 
-// API search type: execute_with_maybe : ((a -> void), Maybe a) -> Io ()
+// API search type: execute_with_maybe : ((a -> void), Maybe a) -> Io Bool
 // Returns a function that
 // akes a unary side-effect function with
 // a maybe holding a matching type
 // and runs the sideeffect if the Maybe holds a just.
+// The returned function returns false if the maybe was a nothing.
 template <typename Effect, typename X>
-std::function<void()> execute_with_maybe(Effect eff, const maybe<X>& m)
+std::function<bool()> execute_with_maybe(Effect eff, const maybe<X>& m)
 {
-    return [eff, m]() -> void
+    return [eff, m]() -> bool
     {
-        if (m.is_just())
+        if (m.is_nothing())
         {
-            eff(m.unsafe_get_just());
+            return false;
         }
+        eff(m.unsafe_get_just());
+        return true;
     };
 }
 
