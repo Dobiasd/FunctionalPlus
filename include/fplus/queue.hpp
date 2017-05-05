@@ -35,14 +35,6 @@ public:
         return item;
     }
 
-    void wait_for_non_empty()
-    {
-        while (queue_.empty())
-        {
-            cond_.wait(mlock);
-        }
-    }
-
     void push(const T& item)
     {
         {
@@ -55,8 +47,16 @@ public:
     std::vector<T> pop_all()
     {
         std::unique_lock<std::mutex> mlock(mutex_);
-        const auto result =
-            fplus::convert_container<std::vector<T>>(queue_);
+        const auto result = fplus::convert_container<std::vector<T>>(queue_);
+        queue_.clear();
+        return result;
+    }
+
+    std::vector<T> wait_and_pop_all()
+    {
+        std::unique_lock<std::mutex> mlock(mutex_);
+        cond_.wait(mlock, [&]() -> bool { return !queue_.empty(); });
+        const auto result = fplus::convert_container<std::vector<T>>(queue_);
         queue_.clear();
         return result;
     }
