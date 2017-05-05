@@ -35,6 +35,14 @@ public:
         return item;
     }
 
+    void wait_for_non_empty()
+    {
+        while (queue_.empty())
+        {
+            cond_.wait(mlock);
+        }
+    }
+
     void push(const T& item)
     {
         {
