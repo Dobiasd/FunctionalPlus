@@ -176,7 +176,7 @@ std::string functions_to_elm_code(const std::vector<function_help> functions)
     };
 
     result += fplus::join(
-        std::string(" ++ "),
+        std::string("\n    ++\n"),
         fplus::transform(show_chunk, chunks));
     return result;
 }
