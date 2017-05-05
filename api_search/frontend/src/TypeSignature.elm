@@ -369,8 +369,6 @@ signatureParser =
         |> trimSpaces
 
 
-
-
 parseSignature : String -> Maybe Signature
 parseSignature inputData =
     case C.parse signatureParser inputData of

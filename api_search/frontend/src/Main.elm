@@ -105,11 +105,6 @@ functions =
     List.map addParsedSignatureToFunction Database.functions
 
 
-functionCnt : Int
-functionCnt =
-    List.length functions
-
-
 type alias Model =
     { query : String
     , querySigStr : String
@@ -358,9 +353,9 @@ searchFunctions query querySig querySigLower =
                 |> List.map (\f -> ( f, functionRating query querySig querySigLower f ))
     in
         ratedFunctions
+            |> List.filter (\( _, rating ) -> rating > 0)
             |> List.sortBy (\( _, rating ) -> 0 - rating)
             |> List.take maxVisibleFunctions
-            |> List.filter (\( _, rating ) -> rating > 0)
 
 
 boolToNum : Float -> Bool -> Float
