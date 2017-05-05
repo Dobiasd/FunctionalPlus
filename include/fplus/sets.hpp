@@ -55,6 +55,19 @@ SetType set_merge(const SetType& set1, const SetType& set2)
     return result;
 }
 
+// API search type: unordered_set_merge : (Unordered_Set a, Unordered_Set a) -> Unordered_Set a
+// fwd bind count: 1
+// Returns the union of two given sets.
+template <typename UnorderSetType>
+UnorderSetType unordered_set_merge(const UnorderSetType& set1, const UnorderSetType& set2)
+{
+    UnorderSetType result;
+    auto itOut = internal::get_back_inserter(result);
+    std::copy(std::begin(set1), std::end(set1), itOut);
+    std::copy(std::begin(set2), std::end(set2), itOut);
+    return result;
+}
+
 // API search type: set_intersection : (Set a, Set a) -> Set a
 // fwd bind count: 1
 // Returns the intersection of both sets.

@@ -34,15 +34,15 @@ TEST_CASE("set_test, set functions")
     REQUIRE(unordered_set_includes(IntUnordSet({0,1,2,3}), IntUnordSet({0,2})));
     REQUIRE_FALSE(unordered_set_includes(IntUnordSet({0,2}), IntUnordSet({0,1,2,3})));
     REQUIRE_FALSE(unordered_set_includes(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})));
-    REQUIRE_EQ(set_merge(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})), IntUnordSet({0,1,2,3,4,5}));
-    REQUIRE_EQ(set_merge(IntUnordSet({0,1,2,3}), IntUnordSet({0,2})), IntUnordSet({0,1,2,3}));
+    REQUIRE_EQ(unordered_set_merge(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})), IntUnordSet({0,1,2,3,4,5}));
+    REQUIRE_EQ(unordered_set_merge(IntUnordSet({0,1,2,3}), IntUnordSet({0,2})), IntUnordSet({0,1,2,3}));
     REQUIRE_EQ(unordered_set_intersection(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})), IntUnordSet({2,3}));
     REQUIRE_EQ(unordered_set_difference(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})), IntUnordSet({0,1}));
     REQUIRE_EQ(unordered_set_symmetric_difference(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})), IntUnordSet({0,1,4,5}));
     REQUIRE_EQ(unordered_set_intersection(IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5})), IntUnordSet({2,3}));
     REQUIRE_EQ(unordered_sets_intersection(unordSetVector({IntUnordSet({0,1,2,3}), IntUnordSet({2,3,4,5}), IntUnordSet({0,2})})), IntUnordSet({2}));
 
-    REQUIRE_EQ(set_merge(StringUnordSet({"yes", "no", "hello"}), StringUnordSet({"hello", "what"})), StringUnordSet({"yes", "no", "what", "hello"}));
+    REQUIRE_EQ(unordered_set_merge(StringUnordSet({"yes", "no", "hello"}), StringUnordSet({"hello", "what"})), StringUnordSet({"yes", "no", "what", "hello"}));
 
     REQUIRE(set_is_disjoint(IntSet({0,1,3}), IntSet({2,4})));
     REQUIRE_FALSE(set_is_disjoint(IntSet({0,1,3}), IntSet({2,1})));
