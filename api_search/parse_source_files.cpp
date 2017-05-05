@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+typedef std::vector<std::string> string_vec;
+
 const std::string api_search_type_key = "API search type: ";
 const std::string comment_token = "// ";
 
@@ -52,14 +54,14 @@ std::ostream & operator<<(std::ostream &os, const function_help& f)
         "Decl: " << f.declaration;
 }
 
-function_help lines_to_function_help(const std::vector<std::string>& lines)
+function_help lines_to_function_help(const string_vec& lines)
 {
     const auto trim_line = fplus::bind_1st_of_2(
             fplus::trim_token_left<std::string>, comment_token);
     const auto trim_type_line = fplus::bind_1st_of_2(
             fplus::trim_token_left<std::string>, api_search_type_key);
     const auto trim_lines = fplus::bind_1st_of_2(
-            fplus::transform<decltype(trim_line), std::vector<std::string>>,
+            fplus::transform<decltype(trim_line), string_vec>,
             trim_line);
     const auto search_type = trim_type_line(trim_line(lines[0]));
     const auto doc_and_decl = fplus::span(is_comment, fplus::tail(lines));
@@ -151,6 +153,8 @@ std::string functions_to_elm_code(const std::vector<function_help> functions)
 
     auto function_strings = fplus::transform(show_function, functions);
 
+    const auto chunks = fplus::split_every(64, function_strings);
+
     std::string result;
     result += "module Database exposing (..)\n\n\n";
     result += "type alias Function =\n";
@@ -161,17 +165,27 @@ std::string functions_to_elm_code(const std::vector<function_help> functions)
     result += "    }\n\n\n";
     result += "functions : List Function\n";
     result += "functions =\n";
-    result += "    [ ";
-    result += fplus::join(std::string("\n    , "), function_strings);
-    result += "\n    ]";
+
+    const auto show_chunk = [](const string_vec& strs) -> std::string
+    {
+        std::string res;
+        res += "    [ ";
+        res += fplus::join(std::string("\n    , "), strs);
+        res += "\n    ]";
+        return res;
+    };
+
+    result += fplus::join(
+        std::string(" ++ "),
+        fplus::transform(show_chunk, chunks));
     return result;
 }
 
-void print_duplicates(const std::vector<std::string>& strs)
+void print_duplicates(const string_vec& strs)
 {
     const auto occurences = fplus::count_occurrences(strs);
     typedef decltype(occurences)::value_type pair;
-    const std::vector<std::string> allowed_dups =
+    const string_vec allowed_dups =
             {"and_then_maybe", "and_then_result", "compose", "show"};
     const auto dups = fplus::keep_if([&](const pair& p) -> bool
         {
