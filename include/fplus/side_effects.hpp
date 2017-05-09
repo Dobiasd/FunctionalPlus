@@ -43,7 +43,8 @@ namespace fplus
             f_(f),
             interval_us_(interval_us),
             running_flag_(false),
-            thread_()
+            thread_(),
+            stop_cv_()
         {}
         void stop()
         {
