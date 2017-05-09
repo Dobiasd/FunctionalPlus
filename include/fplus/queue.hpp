@@ -7,6 +7,7 @@
 #pragma once
 
 #include <condition_variable>
+#include <cstdint>
 #include <deque>
 #include <mutex>
 
@@ -56,6 +57,16 @@ public:
     {
         std::unique_lock<std::mutex> mlock(mutex_);
         cond_.wait(mlock, [&]() -> bool { return !queue_.empty(); });
+        const auto result = fplus::convert_container<std::vector<T>>(queue_);
+        queue_.clear();
+        return result;
+    }
+
+    std::vector<T> wait_for_and_pop_all(std::int64_t max_wait_time_us)
+    {
+        std::unique_lock<std::mutex> mlock(mutex_);
+        const auto t = std::chrono::microseconds{ max_wait_time_us };
+        cond_.wait_for(mlock, t, [&]() -> bool { return !queue_.empty(); });
         const auto result = fplus::convert_container<std::vector<T>>(queue_);
         queue_.clear();
         return result;
