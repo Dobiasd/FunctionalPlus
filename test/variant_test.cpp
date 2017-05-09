@@ -80,6 +80,24 @@ TEST_CASE("variant_test, visit_one")
     print_output.clear();
 }
 
+TEST_CASE("variant_test, equality_test")
+{
+    using namespace fplus;
+    fplus::variant<int, std::string> int_or_string_i(3);
+    fplus::variant<int, std::string> int_or_string_s(std::string("hi"));
+    REQUIRE(int_or_string_i == int_or_string_i);
+    REQUIRE_FALSE(int_or_string_i == int_or_string_s);
+}
+
+TEST_CASE("variant_test, inequality_test")
+{
+    using namespace fplus;
+    fplus::variant<int, std::string> int_or_string_i(3);
+    fplus::variant<int, std::string> int_or_string_s(std::string("hi"));
+    REQUIRE_FALSE(int_or_string_i != int_or_string_i);
+    REQUIRE(int_or_string_i != int_or_string_s);
+}
+
 TEST_CASE("variant_test, visit")
 {
     using namespace fplus;

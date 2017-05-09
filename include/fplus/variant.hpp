@@ -221,6 +221,18 @@ struct variant
         return static_cast<bool>(ptr);
     }
 
+    friend bool operator== (
+        const variant<Types...>& a, const variant<Types...>& b)
+    {
+        return a.shared_ptrs_ == b.shared_ptrs_;
+    }
+
+    friend bool operator!= (
+        const variant<Types...>& a, const variant<Types...>& b)
+    {
+        return a.shared_ptrs_ != b.shared_ptrs_;
+    }
+
     template <typename F,
         typename T = typename internal::function_first_input_type<F>::type,
         typename Res = typename std::result_of<F(T)>::type>
