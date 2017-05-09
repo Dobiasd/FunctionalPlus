@@ -44,6 +44,7 @@ namespace fplus
             interval_us_(interval_us),
             running_flag_(false),
             thread_(),
+            stop_mutex_(),
             stop_cv_()
         {}
         void stop()
