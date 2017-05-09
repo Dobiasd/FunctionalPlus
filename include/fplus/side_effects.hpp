@@ -13,6 +13,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <condition_variable>
 #include <fstream>
 #include <functional>
 #include <future>
@@ -51,6 +52,10 @@ namespace fplus
                 return;
             }
             running_flag_ = false;
+            {
+                std::lock_guard<std::mutex> lock(stop_mutex_);
+                stop_cv_.notify_all();
+            }
             if (thread_.joinable())
             {
                 thread_.join();
@@ -62,17 +67,25 @@ namespace fplus
             stop();
         }
     private:
-        void thread_function() const
+        void thread_function()
         {
             auto last_time = std::chrono::high_resolution_clock::now();
             while (running_flag_)
             {
-                const auto current_time =
-                    std::chrono::high_resolution_clock::now();
-                const auto sleep_time =
-                    std::chrono::microseconds{ interval_us_ } -
-                        (current_time - last_time);
-                std::this_thread::sleep_for(sleep_time);
+                auto current_time = std::chrono::high_resolution_clock::now();
+                const auto wake_up_time =
+                    last_time + std::chrono::microseconds{ interval_us_ };
+                while (current_time < wake_up_time)
+                {
+                    const auto sleep_time = wake_up_time - current_time;
+                    std::unique_lock<std::mutex> lock(stop_mutex_);
+                    stop_cv_.wait_for(lock, sleep_time);
+                    current_time = std::chrono::high_resolution_clock::now();
+                    if (!running_flag_)
+                    {
+                        return;
+                    }
+                }
                 const auto elapsed = current_time - last_time;
                 last_time = current_time;
                 const auto elapsed_us =
@@ -85,6 +98,8 @@ namespace fplus
         const std::int64_t interval_us_;
         std::atomic<bool> running_flag_;
         std::thread thread_;
+        std::mutex stop_mutex_;
+        std::condition_variable stop_cv_;
     };
 
 
