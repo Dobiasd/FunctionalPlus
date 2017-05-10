@@ -39,6 +39,7 @@ namespace fplus
 // Call ticker::start() to run.
 // The ticker stops when ticker::stop() is called
 // or the instance runs out of scope.
+// A ticker shall not be used concurrently.
 //
 // Example usage:
 //
@@ -56,26 +57,39 @@ class ticker
 {
 public:
     typedef std::function<void(std::int64_t)> function;
-    void start()
-    {
-        stop_mutex_.lock();
-        thread_ = std::thread([this]() { thread_function(); });
-    }
     ticker(const function& f, std::int64_t interval_us) :
         f_(f),
         interval_us_(interval_us),
+        is_running_(false),
         thread_(),
         stop_mutex_()
     {
     }
-    void stop()
+    bool is_running() const
     {
+        return is_running_;
+    }
+    bool start()
+    {
+        if (is_running_)
+            return false;
+        stop_mutex_.lock();
+        thread_ = std::thread([this]() { thread_function(); });
+        is_running_ = true;
+        return true;
+    }
+    bool stop()
+    {
+        if (!is_running_)
+            return false;
         stop_mutex_.unlock();
         if (thread_.joinable())
         {
             thread_.join();
             thread_ = std::thread();
         }
+        is_running_ = false;
+        return true;
     }
     ~ticker()
     {
@@ -105,11 +119,18 @@ private:
             const auto elapsed_us =
                 std::chrono::duration_cast<std::chrono::microseconds>(
                     elapsed).count();
-            f_(elapsed_us);
+            try
+            {
+                f_(elapsed_us);
+            }
+            catch (...)
+            {
+            }
         }
     }
     const function f_;
     const std::int64_t interval_us_;
+    bool is_running_;
     std::thread thread_;
     std::timed_mutex stop_mutex_;
 };
