@@ -39,7 +39,6 @@ namespace fplus
 // Call ticker::start() to run.
 // The ticker stops when ticker::stop() is called
 // or the instance runs out of scope.
-// A ticker shall not be used concurrently.
 //
 // Example usage:
 //
@@ -60,17 +59,20 @@ public:
     ticker(const function& f, std::int64_t interval_us) :
         f_(f),
         interval_us_(interval_us),
+        control_mutex_(),
         is_running_(false),
         thread_(),
         stop_mutex_()
     {
     }
-    bool is_running() const
+    bool is_running()
     {
+        std::lock_guard<std::mutex> lock(control_mutex_);
         return is_running_;
     }
     bool start()
     {
+        std::lock_guard<std::mutex> lock(control_mutex_);
         if (is_running_)
             return false;
         stop_mutex_.lock();
@@ -80,6 +82,7 @@ public:
     }
     bool stop()
     {
+        std::lock_guard<std::mutex> lock(control_mutex_);
         if (!is_running_)
             return false;
         stop_mutex_.unlock();
@@ -130,6 +133,7 @@ private:
     }
     const function f_;
     const std::int64_t interval_us_;
+    std::mutex control_mutex_;
     bool is_running_;
     std::thread thread_;
     std::timed_mutex stop_mutex_;
