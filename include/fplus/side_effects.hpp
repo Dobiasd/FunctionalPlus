@@ -95,12 +95,13 @@ public:
 private:
     void thread_function()
     {
+        auto last_wake_up_time = std::chrono::high_resolution_clock::now();
         auto last_time = std::chrono::high_resolution_clock::now();
         while (running_flag_)
         {
             auto current_time = std::chrono::high_resolution_clock::now();
             const auto wake_up_time =
-                last_time + std::chrono::microseconds{ interval_us_ };
+                last_wake_up_time + std::chrono::microseconds{ interval_us_ };
             while (current_time < wake_up_time)
             {
                 const auto sleep_time = wake_up_time - current_time;
@@ -113,6 +114,7 @@ private:
                 }
             }
             const auto elapsed = current_time - last_time;
+            last_wake_up_time = wake_up_time;
             last_time = current_time;
             const auto elapsed_us =
                 std::chrono::duration_cast<std::chrono::microseconds>(
