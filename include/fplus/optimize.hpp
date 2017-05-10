@@ -53,12 +53,12 @@ pos_t minimize_downhill(
     pos_t position = init_pos;
     double value = objective_function(position);
 
-    const auto start_time = std::chrono::high_resolution_clock::now();
+    const auto start_time = std::chrono::steady_clock::now();
     const auto is_done = [&]() -> bool
     {
         if (max_milliseconds != std::numeric_limits<long int>::max())
         {
-            const auto current_time = std::chrono::high_resolution_clock::now();
+            const auto current_time = std::chrono::steady_clock::now();
             const auto elapsed = current_time - start_time;
             const auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
             if (elapsed_ms >= max_milliseconds)

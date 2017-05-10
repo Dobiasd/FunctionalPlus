@@ -29,11 +29,13 @@ namespace fplus
 {
 
 // Executes a function f in a fixed interval,
-// i.e. a minimum timespan between two calls consecutive calls of f,
+// i.e. an average timespan between two consecutive calls of f,
 // given in microseconds.
 // f is a unary function, taking the time delta (in microseconds)
-// between the last and current call as its argument.
-// In case of a delay, outdated calls are be executed immediately.
+// between the last and the current call as its argument.
+// In case of a delay outdated calls are be executed immediately.
+// So the average executation time of f should be way shorter
+// than the requested interval.
 // Call ticker::start() to run.
 // The ticker stops when ticker::stop() is called
 // or the instance runs out of scope.
@@ -82,7 +84,7 @@ public:
 private:
     void thread_function()
     {
-        auto last_wake_up_time = std::chrono::high_resolution_clock::now();
+        auto last_wake_up_time = std::chrono::steady_clock::now();
         auto last_time = last_wake_up_time;
         bool quit = false;
         while (!quit)
@@ -90,13 +92,13 @@ private:
             const auto wake_up_time =
                 last_wake_up_time + std::chrono::microseconds{ interval_us_ };
             const auto sleep_time =
-                wake_up_time - std::chrono::high_resolution_clock::now();
+                wake_up_time - std::chrono::steady_clock::now();
             if (stop_mutex_.try_lock_for(sleep_time))
             {
                 stop_mutex_.unlock();
                 quit = true;
             }
-            const auto current_time = std::chrono::high_resolution_clock::now();
+            const auto current_time = std::chrono::steady_clock::now();
             const auto elapsed = current_time - last_time;
             last_wake_up_time = wake_up_time;
             last_time = current_time;
