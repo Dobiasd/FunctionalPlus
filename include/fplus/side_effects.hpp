@@ -27,83 +27,106 @@
 
 namespace fplus
 {
-    class ticker
+
+// Executes a function f in a fixed interval,
+// i.e. a minimum timespan between two calls consecutive calls of f,
+// given in microseconds.
+// f is a unary function, taking the time delta (in microseconds)
+// between the last and current call as its argument.
+// In case of a delay, outdated calls are be executed immediately.
+// Call ticker::start() to run.
+// The ticker stops when ticker::stop() is called
+// or the instance runs out of scope.
+//
+// Example usage:
+//
+// void say_hi(std::int64_t)
+// {
+//     std::cout << "hi " << std::endl;
+// }
+// int main()
+// {
+//     ticker hi_ticker(say_hi, 2 * 1000 * 1000);
+//     hi_ticker.start();
+//     std::this_thread::sleep_for(std::chrono::milliseconds(4500));
+// }
+class ticker
+{
+public:
+    typedef std::function<void(std::int64_t)> function;
+    void start()
     {
-    public:
-        typedef std::function<void(std::int64_t)> function;
-        void start()
+        if (running_flag_)
         {
-            if (running_flag_)
-            {
-                return;
-            }
-            running_flag_ = true;
-            thread_ = std::thread([this]() { thread_function(); });
+            return;
         }
-        ticker(const function& f, std::int64_t interval_us) :
-            f_(f),
-            interval_us_(interval_us),
-            running_flag_(false),
-            thread_(),
-            stop_mutex_(),
-            stop_cv_()
-        {}
-        void stop()
+        running_flag_ = true;
+        thread_ = std::thread([this]() { thread_function(); });
+    }
+    ticker(const function& f, std::int64_t interval_us) :
+        f_(f),
+        interval_us_(interval_us),
+        running_flag_(false),
+        thread_(),
+        stop_mutex_(),
+        stop_cv_()
+    {}
+    void stop()
+    {
+        if (!running_flag_)
         {
-            if (!running_flag_)
-            {
-                return;
-            }
-            running_flag_ = false;
-            {
-                std::lock_guard<std::mutex> lock(stop_mutex_);
-                stop_cv_.notify_all();
-            }
-            if (thread_.joinable())
-            {
-                thread_.join();
-                thread_ = std::thread();
-            }
+            return;
         }
-        ~ticker()
+        running_flag_ = false;
         {
-            stop();
+            std::lock_guard<std::mutex> lock(stop_mutex_);
+            stop_cv_.notify_all();
         }
-    private:
-        void thread_function()
+        if (thread_.joinable())
         {
-            auto last_time = std::chrono::high_resolution_clock::now();
-            while (running_flag_)
+            thread_.join();
+            thread_ = std::thread();
+        }
+    }
+    ~ticker()
+    {
+        stop();
+    }
+private:
+    void thread_function()
+    {
+        auto last_time = std::chrono::high_resolution_clock::now();
+        while (running_flag_)
+        {
+            auto current_time = std::chrono::high_resolution_clock::now();
+            const auto wake_up_time =
+                last_time + std::chrono::microseconds{ interval_us_ };
+            while (current_time < wake_up_time)
             {
-                auto current_time = std::chrono::high_resolution_clock::now();
-                const auto wake_up_time =
-                    last_time + std::chrono::microseconds{ interval_us_ };
-                while (current_time < wake_up_time)
+                const auto sleep_time = wake_up_time - current_time;
+                std::unique_lock<std::mutex> lock(stop_mutex_);
+                stop_cv_.wait_for(lock, sleep_time);
+                current_time = std::chrono::high_resolution_clock::now();
+                if (!running_flag_)
                 {
-                    const auto sleep_time = wake_up_time - current_time;
-                    std::unique_lock<std::mutex> lock(stop_mutex_);
-                    stop_cv_.wait_for(lock, sleep_time);
-                    current_time = std::chrono::high_resolution_clock::now();
-                    if (!running_flag_)
-                    {
-                        return;
-                    }
+                    return;
                 }
-                const auto elapsed = current_time - last_time;
-                last_time = current_time;
-                const auto elapsed_us =
-                    std::chrono::duration_cast<std::chrono::microseconds>(
-                        elapsed).count();
-                f_(elapsed_us);
             }
+            const auto elapsed = current_time - last_time;
+            last_time = current_time;
+            const auto elapsed_us =
+                std::chrono::duration_cast<std::chrono::microseconds>(
+                    elapsed).count();
+            f_(elapsed_us);
         }
-        const function f_;
-        const std::int64_t interval_us_;
-        std::atomic<bool> running_flag_;
-        std::thread thread_;
-        std::mutex stop_mutex_;
-        std::condition_variable stop_cv_;
-    };
+    }
+    const function f_;
+    const std::int64_t interval_us_;
+    std::atomic<bool> running_flag_;
+    std::thread thread_;
+    std::mutex stop_mutex_;
+    std::condition_variable stop_cv_;
+};
 
 
 // API search type: sleep_for_n_seconds : Int -> Io ()
