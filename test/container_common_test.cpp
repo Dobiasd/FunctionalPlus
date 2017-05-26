@@ -516,8 +516,10 @@ TEST_CASE("container_common_test, segment")
     REQUIRE_EQ(replace_elems(2, 5, xs), IntVector({1,5,5,3,5}));
     REQUIRE_EQ(replace_tokens(std::string("123"), std::string("_"), std::string("--123----123123")), std::string("--_----__"));
     REQUIRE_EQ(take(2, xs), IntVector({ 1,2 }));
+    REQUIRE_EQ(take_last(2, xs), IntVector({ 3,2 }));
     REQUIRE_EQ(take_exact(2, xs), IntVector({ 1,2 }));
     REQUIRE_EQ(drop(2, xs), IntVector({ 2,3,2 }));
+    REQUIRE_EQ(drop_last(2, xs), IntVector({ 1,2,2 }));
     REQUIRE_EQ(drop_exact(2, xs), IntVector({ 2,3,2 }));
     REQUIRE_EQ(take(999, xs), xs);
     REQUIRE_EQ(drop(999, xs), IntVector());

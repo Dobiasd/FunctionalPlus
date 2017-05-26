@@ -527,6 +527,33 @@ Container drop(std::size_t amount, const Container& xs)
     return get_segment(amount, size_of_cont(xs), xs);
 }
 
+// API search type: take_last : (Int, [a]) -> [a]
+// fwd bind count: 1
+// Return the last n elements of a sequence xs.
+// In case n >= length(xs), xs is returned.
+// take_last(3, [0,1,2,3,4,5,6,7]) == [5,6,7]
+// take_last(10, [0,1,2]) == [0,1,2]
+template <typename Container>
+Container take_last(std::size_t amount, const Container& xs)
+{
+    if (amount >= size_of_cont(xs))
+        return xs;
+    return drop(size_of_cont(xs) - amount, xs);
+}
+
+// API search type: drop_last : (Int, [a]) -> [a]
+// fwd bind count: 1
+// Skip the last n elements of a sequence xs.
+// If n > length(xs) an empty sequence is returned.
+// drop_last(3, [0,1,2,3,4,5,6,7]) == [0,1,2,3,4]
+template <typename Container>
+Container drop_last(std::size_t amount, const Container& xs)
+{
+    if (amount >= size_of_cont(xs))
+        return Container();
+    return take(size_of_cont(xs) - amount, xs);
+}
+
 // API search type: drop_exact : (Int, [a]) -> [a]
 // fwd bind count: 1
 // Skip exactly the first n elements of a sequence xs.
