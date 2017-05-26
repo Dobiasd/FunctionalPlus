@@ -201,6 +201,46 @@ TEST_CASE("numeric_test, floor")
     REQUIRE_EQ(floor(-1.4), -2);
 }
 
+TEST_CASE("numeric_test, floor_to_int_mult")
+{
+    using namespace fplus;
+    REQUIRE_EQ(floor_to_int_mult(2, -3), -4);
+    REQUIRE_EQ(floor_to_int_mult(2, -2), -2);
+    REQUIRE_EQ(floor_to_int_mult(2, -1), -2);
+    REQUIRE_EQ(floor_to_int_mult(2, 0), 0);
+    REQUIRE_EQ(floor_to_int_mult(2, 1), 0);
+    REQUIRE_EQ(floor_to_int_mult(2, 2), 2);
+    REQUIRE_EQ(floor_to_int_mult(2, 3), 2);
+    REQUIRE_EQ(floor_to_int_mult<unsigned char>(2, 0), 0);
+    REQUIRE_EQ(floor_to_int_mult<unsigned char>(2, 1), 0);
+    REQUIRE_EQ(floor_to_int_mult<unsigned char>(2, 2), 2);
+    REQUIRE_EQ(floor_to_int_mult<unsigned char>(2, 3), 2);
+
+    REQUIRE_EQ(floor_to_int_mult(1, -1), -1);
+    REQUIRE_EQ(floor_to_int_mult(1, 0), 0);
+    REQUIRE_EQ(floor_to_int_mult(1, 1), 1);
+}
+
+TEST_CASE("numeric_test, ceil_to_int_mult")
+{
+    using namespace fplus;
+    REQUIRE_EQ(ceil_to_int_mult(2, -3), -2);
+    REQUIRE_EQ(ceil_to_int_mult(2, -2), -2);
+    REQUIRE_EQ(ceil_to_int_mult(2, -1), -0);
+    REQUIRE_EQ(ceil_to_int_mult(2, 0), 0);
+    REQUIRE_EQ(ceil_to_int_mult(2, 1), 2);
+    REQUIRE_EQ(ceil_to_int_mult(2, 2), 2);
+    REQUIRE_EQ(ceil_to_int_mult(2, 3), 4);
+    REQUIRE_EQ(ceil_to_int_mult<unsigned char>(2, 0), 0);
+    REQUIRE_EQ(ceil_to_int_mult<unsigned char>(2, 1), 2);
+    REQUIRE_EQ(ceil_to_int_mult<unsigned char>(2, 2), 2);
+    REQUIRE_EQ(ceil_to_int_mult<unsigned char>(2, 3), 4);
+
+    REQUIRE_EQ(ceil_to_int_mult(1, -1), -1);
+    REQUIRE_EQ(ceil_to_int_mult(1, 0), 0);
+    REQUIRE_EQ(ceil_to_int_mult(1, 1), 1);
+}
+
 TEST_CASE("numeric_test, clamp")
 {
     using namespace fplus;

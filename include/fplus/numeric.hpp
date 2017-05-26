@@ -229,6 +229,32 @@ Out floor(X x)
     return static_cast<Out>(x);
 }
 
+// API search type: floor_to_int_mult : (Int, Int) -> Int
+// fwd bind count: 1
+// Rounds an integer down to the nearest smaller or equal multiple of n.
+// n may not be zero.
+template <typename X>
+X floor_to_int_mult(X n, X x)
+{
+    static_assert(std::is_integral<X>::value, "type must be integral");
+    assert(n != 0);
+    if (is_negative(n))
+        n = abs(n);
+    if (is_negative(x) && n != 1)
+        x = static_cast<X>(x - 1);
+    return static_cast<X>((x / n) * n);
+}
+
+// API search type: ceil_to_int_mult : (Int, Int) -> Int
+// fwd bind count: 1
+// Rounds an integer up to the nearest greater or equal multiple of n.
+// n may not be zero.
+template <typename X>
+X ceil_to_int_mult(X n, X x)
+{
+    return floor_to_int_mult(n, static_cast<X>(x + abs(n) - 1));
+}
+
 // API search type: ceil : a -> b
 // fwd bind count: 0
 // Converts a value to the nearest greater integer.
