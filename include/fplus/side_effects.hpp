@@ -364,7 +364,7 @@ std::function<std::string()> read_text_file(const std::string& filename)
     };
 }
 
-// API search type: read_binary_file : String -> Io (Maybe [Int])
+// API search type: read_binary_file_maybe : String -> Io (Maybe [Int])
 // Returns a function that reads the content of a binary file when executed.
 inline
 std::function<maybe<std::vector<std::uint8_t>>()> read_binary_file_maybe(
@@ -403,7 +403,7 @@ std::function<std::vector<std::uint8_t>()> read_binary_file(
     };
 }
 
-// API search type: read_text_file_lines : (String, Bool) -> Io (Maybe [String])
+// API search type: read_text_file_lines_maybe : (String, Bool) -> Io (Maybe [String])
 // Returns a function that (when called) reads the content of a text file
 // and returns it line by line.
 inline
