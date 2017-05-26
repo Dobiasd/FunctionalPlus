@@ -489,7 +489,7 @@ maybe<TOut> first_mismatch_by(BinaryPredicate p,
     }
 }
 
-// API search type: first_mismatch_idx_on : ((a -> Bool), [a], [a]) -> Maybe Int
+// API search type: first_mismatch_idx_on : ((a -> b), [a], [a]) -> Maybe Int
 // fwd bind count: 2
 // Find the first index of elements differing in the two sequences
 // using a transformer.
@@ -510,7 +510,7 @@ maybe<std::size_t> first_mismatch_idx_on(F f,
     return first_mismatch_idx_by(is_equal_by(f), xs, ys);
 }
 
-// API search type: first_mismatch_on : ((a -> Bool), [a], [a]) -> Maybe (a, a)
+// API search type: first_mismatch_on : ((a -> b), [a], [a]) -> Maybe (a, a)
 // fwd bind count: 2
 // Find the first pair of elements differing in the two sequences
 // using a transformer.
@@ -622,7 +622,7 @@ maybe<TOut> first_match_by(F f, const ContainerIn1& xs, const ContainerIn2& ys)
     }
 }
 
-// API search type: first_match_idx_on : ((a -> Bool), [a], [a]) -> Maybe Int
+// API search type: first_match_idx_on : ((a -> b), [a], [a]) -> Maybe Int
 // fwd bind count: 2
 // Find the first index of equal elements in the two sequences
 // using a transformer.
@@ -640,7 +640,7 @@ maybe<std::size_t> first_match_idx_on(F f,
     return first_match_idx_by(is_equal_by(f), xs, ys);
 }
 
-// API search type: first_match_on : ((a -> Bool), [a], [a]) -> Maybe (a, a)
+// API search type: first_match_on : ((a -> b), [a], [a]) -> Maybe (a, a)
 // fwd bind count: 2
 // Find the first pair of equal elements in the two sequences
 // using a transformer.
