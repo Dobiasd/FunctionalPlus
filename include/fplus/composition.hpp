@@ -125,6 +125,7 @@ FOut forward_apply(const X& x, F f)
 // API search type: lazy : ((a -> b), a) -> (() -> b)
 // Lazy evaluation.
 // Returns a function evaluating f with the given arguments when called.
+// Also known as defer.
 template<typename F, typename... Args,
     typename FOut = typename std::result_of<F(Args ...)>::type>
 std::function<FOut()> lazy(F f, Args ... args)
