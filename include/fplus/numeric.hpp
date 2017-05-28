@@ -284,6 +284,13 @@ X int_power(X base, X exp)
 
 namespace internal
 {
+    // Marks a variable as unused. Prevents the compiler warning
+    // for set but unused variables.
+    template<class T>
+    inline void unused(T&&) { }
+
+
+
     // minimum of x values after transformation
     // (has an overload for non-POD types)
     // min_on(mod2, 4, 3) == 4
@@ -298,6 +305,9 @@ namespace internal
       rettype result = first;
       f_rettype result_trans = f(first);
       f_rettype v_trans;
+      unused(result_trans);
+      unused(v_trans);
+
       (void)std::initializer_list<int>{
           ((v_trans = f(v), v_trans < result_trans)
                ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
@@ -341,6 +351,7 @@ T min_2_on(F f, const T& x, const T& y)
 
 namespace internal
 {
+
     // maximum of x values after transformation
     // (has an overload for non-POD types)
     // max_on(mod2, 4, 3) == 3
@@ -355,6 +366,9 @@ namespace internal
       rettype result = first;
       f_rettype result_trans = f(first);
       f_rettype v_trans;
+      unused(result_trans);
+      unused(v_trans);
+
       (void)std::initializer_list<int>{
           ((v_trans = f(v), v_trans > result_trans)
                ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
