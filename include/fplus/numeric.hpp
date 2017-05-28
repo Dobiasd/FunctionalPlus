@@ -293,7 +293,7 @@ namespace internal
         typename std::common_type<FirstT, FIn...>::type
     {
       using rettype = typename std::common_type<FirstT, FIn...>::type;
-      using f_rettype = decltype(f(first));
+      using f_rettype = typename std::result_of<F(decltype(first))>::type;
 
       rettype result = first;
       f_rettype result_trans = f(first);
