@@ -284,10 +284,6 @@ X int_power(X base, X exp)
 
 namespace internal
 {
-#ifdef __GNUC__
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
-#endif
     // minimum of x values after transformation
     // (has an overload for non-POD types)
     // min_on(mod2, 4, 3) == 4
@@ -296,42 +292,18 @@ namespace internal
     auto helper_min_on(F f, const FirstT& first, const FIn&... v) ->
         typename std::common_type<FirstT, FIn...>::type
     {
+      using rettype = typename std::common_type<FirstT, FIn...>::type;
+      using f_rettype = decltype(f(first));
 
-        using rettype = typename std::common_type<FirstT, FIn...>::type;
-        using f_rettype = decltype(f(first));
-        rettype result = first;
-        f_rettype result_trans = f(first); // GCC 6: unused-but-set-variable
-        f_rettype v_trans;
-        (void)std::initializer_list<int>{
+      rettype result = first;
+      f_rettype result_trans = f(first);
+      f_rettype v_trans;
+      (void)std::initializer_list<int>{
           ((v_trans = f(v), v_trans < result_trans)
-            ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
-            : 0)...};
-        return result;
+               ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
+               : 0)...};
+      return result;
     }
-
-    // maximum of x values after transformation
-    // (has an overload for non-POD types)
-    // max_on(mod2, 4, 3) == 3
-    // max_on(mod7, 3, 5, 7, 3) == 5
-    template <typename F, typename FirstT, typename... FIn>
-    auto helper_max_on(F f, const FirstT& first, const FIn&... v) ->
-        typename std::common_type<FirstT, FIn...>::type
-    {
-        using rettype = typename std::common_type<FirstT, FIn...>::type;
-        using f_rettype = decltype(f(first));
-
-        rettype result = first;
-        f_rettype result_trans = f(first); // GCC 6: unused-but-set-variable
-        f_rettype v_trans;
-        (void)std::initializer_list<int>{
-          ((v_trans = f(v), v_trans > result_trans)
-            ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
-            : 0)...};
-        return result;
-    }
-#ifdef __GNUC__
-    #pragma GCC diagnostic pop
-#endif
 
     template <typename F>
     struct helper_min_on_t
@@ -341,19 +313,6 @@ namespace internal
         auto operator()(T&& x, Ts&&... xs) -> typename std::common_type<T, Ts...>::type
         {
             return helper_min_on(std::forward<F>(f), std::forward<T>(x), std::forward<Ts>(xs)...);
-        }
-    private:
-        F f;
-    };
-
-    template <typename F>
-    struct helper_max_on_t
-    {
-        helper_max_on_t(F _f) : f(_f) {}
-        template <typename T, typename... Ts>
-        auto operator()(T&& x, Ts&&... xs) -> typename std::common_type<T, Ts...>::type
-        {
-            return helper_max_on(std::forward<F>(f), std::forward<T>(x), std::forward<Ts>(xs)...);
         }
     private:
         F f;
@@ -378,6 +337,43 @@ template <typename F, typename T>
 T min_2_on(F f, const T& x, const T& y)
 {
     return f(y) < f(x) ? y : x;
+}
+
+namespace internal
+{
+    // maximum of x values after transformation
+    // (has an overload for non-POD types)
+    // max_on(mod2, 4, 3) == 3
+    // max_on(mod7, 3, 5, 7, 3) == 5
+    template <typename F, typename FirstT, typename... FIn>
+    auto helper_max_on(F f, const FirstT& first, const FIn&... v) ->
+        typename std::common_type<FirstT, FIn...>::type
+    {
+      using rettype = typename std::common_type<FirstT, FIn...>::type;
+      using f_rettype = decltype(f(first));
+
+      rettype result = first;
+      f_rettype result_trans = f(first);
+      f_rettype v_trans;
+      (void)std::initializer_list<int>{
+          ((v_trans = f(v), v_trans > result_trans)
+               ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
+               : 0)...};
+      return result;
+    }
+
+    template <typename F>
+    struct helper_max_on_t
+    {
+        helper_max_on_t(F _f) : f(_f) {}
+        template <typename T, typename... Ts>
+        auto operator()(T&& x, Ts&&... xs) -> typename std::common_type<T, Ts...>::type
+        {
+            return helper_max_on(std::forward<F>(f), std::forward<T>(x), std::forward<Ts>(xs)...);
+        }
+    private:
+        F f;
+    };
 }
 
 // API search type: max_on : (a -> b) -> ((a, a) -> a)
