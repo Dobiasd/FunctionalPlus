@@ -500,14 +500,14 @@ TEST_CASE("numeric_test, modulo_chain")
         ints({3, 17, 4, 31, 256}));
 }
 
-TEST_CASE("numeric_test, linear_equation")
+TEST_CASE("numeric_test, line_equation")
 {
     using namespace fplus;
 
-    REQUIRE(is_in_interval_around(0.001, 2.0, linear_equation(
+    REQUIRE(is_in_interval_around(0.001, 2.0, line_equation(
         std::make_pair(0.0, 0.0),
         std::make_pair(2.0, 1.0), 4.0)));
-    REQUIRE(is_in_interval_around(0.001, -2.0, linear_equation(
+    REQUIRE(is_in_interval_around(0.001, -2.0, line_equation(
         std::make_pair(-1.0, 1.0),
         std::make_pair(-2.0, 4.0), 0.0)));
 }

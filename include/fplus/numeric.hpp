@@ -815,14 +815,14 @@ std::vector<T> modulo_chain(const std::vector<T>& factors, T val)
     return reverse(result);
 }
 
-// API search type: linear_equation : ((Float, Float), (Float, Float), Float) -> Float
+// API search type: line_equation : ((Float, Float), (Float, Float), Float) -> Float
 // fwd bind count: 2
 // Can be used to interpolate and to extrapolate
 // based on two given two-dimensional points.
-// linear_equation((0, 0), (2, 1), 3) == 2
-// linear_equation((-1, 1), (-2, 4), 0) == -2
+// line_equation((0, 0), (2, 1), 3) == 2
+// line_equation((-1, 1), (-2, 4), 0) == -2
 template <typename T>
-T linear_equation(const std::pair<T, T>& a, const std::pair<T, T>& b, T x)
+T line_equation(const std::pair<T, T>& a, const std::pair<T, T>& b, T x)
 {
     const double m = (b.second - a.second) / (b.first - a.first);
     return m * x + a.second - m * a.first;
