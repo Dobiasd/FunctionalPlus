@@ -374,7 +374,7 @@ ContainerOut map_pluck(const Key& key, const MapContainer& maps)
 
 // API search type: choose : ([(a, b)], a) -> Maybe b
 // fwd bind count: 1
-// Selects a value assigned to a key if the key exists exactly once.
+// Selects a value assigned to a key iff the key exists exactly once.
 // choose([(1,a), (2,b)], 2) == Just b;
 // choose([(1,a), (1,b)], 2) == Nothing;
 // choose([(1,a), (2,b)], 3) == Nothing;
@@ -386,8 +386,37 @@ maybe<Val> choose(const std::vector<std::pair<Key, Val>>& pairs, const Key& x)
     return get_from_map(pairs_to_map<std::unordered_map<Key, Val>>(pairs), x);
 }
 
+// API search type: choose_by : ([((a -> Bool), b)], a) -> Maybe b
+// fwd bind count: 2
+// Iff exactly one predicate is fulfilled
+// the value assigned to this predicate is selected.
+// choose_by([(is_even,a), (is_bigger_than_3,b)], 2) == Just a;
+// choose_by([(is_even,a), (is_bigger_than_3,b)], 5) == Just b;
+// choose_by([(is_even,a), (is_bigger_than_3,b)], 1) == Nothing;
+// choose_by([(is_even,a), (is_bigger_than_3,b)], 4) == Nothing;
+template<typename Key, typename Val>
+maybe<Val> choose_by(
+    const std::vector<std::pair<std::function<bool(const Key&)>, Val>>& pairs,
+    const Key& x)
+{
+    maybe<Val> result;
+    for (const auto& p : pairs)
+    {
+        if (p.first(x))
+        {
+            if (is_just(result))
+            {
+                return nothing<Val>();
+            }
+            result = p.second;
+        }
+    }
+    return result;
+}
+
 // API search type: choose_lazy : ([(a, (() -> b))], a) -> Maybe b
-// Evaluates a lazy value assigned to a key if the key exists exactly once.
+// fwd bind count: 1
+// Evaluates a lazy value assigned to a key iff the key exists exactly once.
 // choose_lazy([(1,a), (2,b)], 2) == Just b();
 // choose_lazy([(1,a), (1,b)], 2) == Nothing;
 // choose_lazy([(1,a), (2,b)], 3) == Nothing;
@@ -403,9 +432,30 @@ maybe<Val> choose_lazy(const std::vector<std::pair<Key, ValStub>>& pairs,
         return res.unsafe_get_just()();
 }
 
+// API search type: choose_by_lazy : ([((a -> Bool), (() -> b))], a) -> Maybe b
+// fwd bind count: 2
+// Iff exactly one predicate is fulfilled
+// the lazy value assigned to this predicate is evaluated.
+// choose_by_lazy([(is_even,a), (is_bigger_than_3,b)], 2) == Just a();
+// choose_by_lazy([(is_even,a), (is_bigger_than_3,b)], 5) == Just b();
+// choose_by_lazy([(is_even,a), (is_bigger_than_3,b)], 1) == Nothing;
+// choose_by_lazy([(is_even,a), (is_bigger_than_3,b)], 4) == Nothing;
+template<typename Key, typename ValStub,
+    typename Val = typename std::result_of<ValStub()>::type>
+maybe<Val> choose_by_lazy(
+    const std::vector<std::pair<std::function<bool(const Key&)>, ValStub>>& pairs,
+    const Key& x)
+{
+    const auto res = choose_by(pairs, x);
+    if (res.is_nothing())
+        return {};
+    else
+        return res.unsafe_get_just()();
+}
+
 // API search type: choose_def : (b, [(a, b)], a) -> b
 // fwd bind count: 1
-// Selects a value assigned to a key if the key exists exactly once,
+// Selects a value assigned to a key iff the key exists exactly once,
 // otherwise returns the given default value.
 // choose_def(c, [(1,a), (2,b)], 2) == b;
 // choose_def(c, [(1,a), (1,b)], 2) == c;
@@ -420,9 +470,26 @@ Val choose_def(const Val& def,
         pairs_to_map<std::unordered_map<Key, Val>>(pairs), def, x);
 }
 
+// API search type: choose_by_def : (b, [((a -> Bool), b)], a) -> b
+// fwd bind count: 2
+// Iff exactly one predicate is fulfilled
+// the value assigned to this predicate is selected.
+// Otherwise the given default value is returned.
+// choose_by_def(c, [(is_even,a), (is_bigger_than_3,b)], 2) == Just a;
+// choose_by_def(c, [(is_even,a), (is_bigger_than_3,b)], 5) == Just b;
+// choose_by_def(c, [(is_even,a), (is_bigger_than_3,b)], 1) == c;
+// choose_by_def(c, [(is_even,a), (is_bigger_than_3,b)], 4) == c;
+template<typename Key, typename Val>
+Val choose_by_def(const Val& def,
+    const std::vector<std::pair<std::function<bool(const Key&)>, Val>>& pairs,
+    const Key& x)
+{
+    return just_with_default(def, choose_by(pairs, x));
+}
+
 // API search type: choose_def_lazy : ((() -> b), [(a, (() -> b))], a) -> b
 // fwd bind count: 1
-// Evaluates a lazy value assigned to a key if the key exists exactly once,
+// Evaluates a lazy value assigned to a key iff the key exists exactly once,
 // otherwise evaluates the given default lazy value.
 // choose_def_lazy(c, [(1,a), (2,b)], 2) == b();
 // choose_def_lazy(c, [(1,a), (1,b)], 2) == c();
@@ -433,6 +500,23 @@ Val choose_def_lazy(const ValStub& def,
     const std::vector<std::pair<Key, ValStub>>& pairs, const Key& x)
 {
     return choose_def(def, pairs, x)();
+}
+
+// API search type: choose_by_def_lazy : ((() -> b), [((a -> Bool), (() -> b))], a) -> b
+// fwd bind count: 2
+// Iff exactly one predicate is fulfilled
+// the value assigned to this predicate is evaluated.
+// Otherwise the given default value is evaluated and returned.
+// choose_by_def_lazy(c, [(is_even,a), (is_bigger_than_3,b)], 2) == Just a();
+// choose_by_def_lazy(c, [(is_even,a), (is_bigger_than_3,b)], 5) == Just b();
+// choose_by_def_lazy(c, [(is_even,a), (is_bigger_than_3,b)], 1) == c();
+// choose_by_def_lazy(c, [(is_even,a), (is_bigger_than_3,b)], 4) == c();
+template<typename Key, typename ValStub,
+    typename Val = typename std::result_of<ValStub()>::type>
+Val choose_by_def_lazy(const ValStub& def,
+    const std::vector<std::pair<std::function<bool(const Key&)>, ValStub>>& pairs, const Key& x)
+{
+    return choose_by_def(def, pairs, x)();
 }
 
 } // namespace fplus

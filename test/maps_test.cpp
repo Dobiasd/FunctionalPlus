@@ -12,6 +12,7 @@
 namespace {
 
     auto is_even_int = [](int x){ return x % 2 == 0; };
+    auto is_bigger_than_3_int = [](int x){ return x > 3; };
     typedef std::vector<int> IntVector;
 }
 
@@ -35,6 +36,16 @@ TEST_CASE("maps_test, choose")
     REQUIRE_EQ((choose<int, char>({}, 2)), nothing<char>());
 }
 
+TEST_CASE("maps_test, choose_by")
+{
+    using namespace fplus;
+    REQUIRE_EQ((choose_by<int, char>({{is_even_int, 'a'}, {is_bigger_than_3_int, 'b'}}, 2)), just('a'));
+    REQUIRE_EQ((choose_by<int, char>({{is_even_int, 'a'}, {is_bigger_than_3_int, 'b'}}, 5)), just('b'));
+    REQUIRE_EQ((choose_by<int, char>({{is_even_int, 'a'}, {is_bigger_than_3_int, 'b'}}, 1)), nothing<char>());
+    REQUIRE_EQ((choose_by<int, char>({{is_even_int, 'a'}, {is_bigger_than_3_int, 'b'}}, 4)), nothing<char>());
+    REQUIRE_EQ((choose_by<int, char>({}, 2)), nothing<char>());
+}
+
 TEST_CASE("maps_test, choose_lazy")
 {
     using namespace fplus;
@@ -47,6 +58,19 @@ TEST_CASE("maps_test, choose_lazy")
     REQUIRE_EQ((choose_lazy<int, char_stub>({}, 2)), nothing<char>());
 }
 
+TEST_CASE("maps_test, choose_by_lazy")
+{
+    using namespace fplus;
+    typedef std::function<char()> char_stub;
+    const char_stub a_stub = []() -> char { return 'a'; };
+    const char_stub b_stub = []() -> char { return 'b'; };
+    REQUIRE_EQ((choose_by_lazy<int, char_stub>({{is_even_int, a_stub}, {is_bigger_than_3_int, b_stub}}, 2)), just('a'));
+    REQUIRE_EQ((choose_by_lazy<int, char_stub>({{is_even_int, a_stub}, {is_bigger_than_3_int, b_stub}}, 5)), just('b'));
+    REQUIRE_EQ((choose_by_lazy<int, char_stub>({{is_even_int, a_stub}, {is_bigger_than_3_int, b_stub}}, 1)), nothing<char>());
+    REQUIRE_EQ((choose_by_lazy<int, char_stub>({{is_even_int, a_stub}, {is_bigger_than_3_int, b_stub}}, 4)), nothing<char>());
+    REQUIRE_EQ((choose_by_lazy<int, char_stub>({}, 2)), nothing<char>());
+}
+
 TEST_CASE("maps_test, choose_def")
 {
     using namespace fplus;
@@ -54,6 +78,16 @@ TEST_CASE("maps_test, choose_def")
     REQUIRE_EQ((choose_def<int>('c', {{1, 'a'}, {1, 'b'}}, 1)), 'c');
     REQUIRE_EQ((choose_def<int>('c', {{1, 'a'}, {2, 'b'}}, 3)), 'c');
     REQUIRE_EQ((choose_def<int>('c', {}, 2)), 'c');
+}
+
+TEST_CASE("maps_test, choose_by_def")
+{
+    using namespace fplus;
+    REQUIRE_EQ((choose_by_def<int, char>('c', {{is_even_int, 'a'}, {is_bigger_than_3_int, 'b'}}, 2)), 'a');
+    REQUIRE_EQ((choose_by_def<int, char>('c', {{is_even_int, 'a'}, {is_bigger_than_3_int, 'b'}}, 5)), 'b');
+    REQUIRE_EQ((choose_by_def<int, char>('c', {{is_even_int, 'a'}, {is_bigger_than_3_int, 'b'}}, 1)), 'c');
+    REQUIRE_EQ((choose_by_def<int, char>('c', {{is_even_int, 'a'}, {is_bigger_than_3_int, 'b'}}, 4)), 'c');
+    REQUIRE_EQ((choose_by_def<int, char>('c', {}, 2)), 'c');
 }
 
 TEST_CASE("maps_test, choose_def_lazy")
@@ -67,6 +101,20 @@ TEST_CASE("maps_test, choose_def_lazy")
     REQUIRE_EQ((choose_def_lazy<int>(c_stub, {{1, a_stub}, {1, b_stub}}, 1)), 'c');
     REQUIRE_EQ((choose_def_lazy<int>(c_stub, {{1, a_stub}, {2, b_stub}}, 3)), 'c');
     REQUIRE_EQ((choose_def_lazy<int>(c_stub, {}, 2)), 'c');
+}
+
+TEST_CASE("maps_test, choose_by_def_lazy")
+{
+    using namespace fplus;
+    typedef std::function<char()> char_stub;
+    const char_stub a_stub = []() -> char { return 'a'; };
+    const char_stub b_stub = []() -> char { return 'b'; };
+    const char_stub c_stub = []() -> char { return 'c'; };
+    REQUIRE_EQ((choose_by_def_lazy<int, char_stub>(c_stub, {{is_even_int, a_stub}, {is_bigger_than_3_int, b_stub}}, 2)), 'a');
+    REQUIRE_EQ((choose_by_def_lazy<int, char_stub>(c_stub, {{is_even_int, a_stub}, {is_bigger_than_3_int, b_stub}}, 5)), 'b');
+    REQUIRE_EQ((choose_by_def_lazy<int, char_stub>(c_stub, {{is_even_int, a_stub}, {is_bigger_than_3_int, b_stub}}, 1)), 'c');
+    REQUIRE_EQ((choose_by_def_lazy<int, char_stub>(c_stub, {{is_even_int, a_stub}, {is_bigger_than_3_int, b_stub}}, 4)), 'c');
+    REQUIRE_EQ((choose_by_def_lazy<int, char_stub>(c_stub, {}, 2)), 'c');
 }
 
 TEST_CASE("maps_test, map functions")
