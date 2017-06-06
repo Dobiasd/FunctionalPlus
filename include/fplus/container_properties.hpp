@@ -24,6 +24,7 @@ namespace fplus
 
 // API search type: any_by : ((a -> Bool), [a]) -> Bool
 // fwd bind count: 1
+// Check if all elements in a container fulfill a predicate.
 // any_by(is_odd, [2, 4, 6]) == false
 template <typename UnaryPredicate, typename Container>
 bool any_by(UnaryPredicate p, const Container& xs)
@@ -34,6 +35,7 @@ bool any_by(UnaryPredicate p, const Container& xs)
 
 // API search type: any : [Bool] -> Bool
 // fwd bind count: 0
+// Checks if all elements in a container are true.
 // any([false, true, false]) == true
 template <typename Container>
 bool any(const Container& xs)
@@ -44,6 +46,7 @@ bool any(const Container& xs)
 
 // API search type: none_by : ((a -> Bool), [a]) -> Bool
 // fwd bind count: 1
+// Check no element in a container fulfills a predicate.
 // none_by(is_even, [3, 4, 5]) == false
 template <typename UnaryPredicate, typename Container>
 bool none_by(UnaryPredicate p, const Container& xs)
@@ -54,6 +57,7 @@ bool none_by(UnaryPredicate p, const Container& xs)
 
 // API search type: none : [Bool] -> Bool
 // fwd bind count: 0
+// Checks if all elements in a container are false.
 // none([false, true, false]) == false
 template <typename Container>
 bool none(const Container& xs)
@@ -65,8 +69,8 @@ bool none(const Container& xs)
 
 // API search type: minimum_idx_by : (((a, a) -> Bool), [a]) -> Int
 // fwd bind count: 1
+// Return the index of the first minimum element using a less comparator.
 // minimum_idx_by(lessLength, ["123", "12", "1234", "123"]) -> "1"
-// return index of first minimum element
 template <typename Compare, typename Container>
 typename std::size_t minimum_idx_by(Compare comp,
         const Container& xs)
@@ -79,8 +83,8 @@ typename std::size_t minimum_idx_by(Compare comp,
 
 // API search type: maximum_idx_by : (((a, a) -> Bool), [a]) -> Int
 // fwd bind count: 1
+// Return the index of the first maximum element using a less comparator.
 // maximum_idx_by(lessLength, ["123", "12", "1234", "123"]) == "2"
-// return index of first maximum element
 template <typename Compare, typename Container>
 typename std::size_t maximum_idx_by(Compare comp,
         const Container& xs)
@@ -94,8 +98,8 @@ typename std::size_t maximum_idx_by(Compare comp,
 
 // API search type: minimum_idx : [a] -> Int
 // fwd bind count: 0
+// Return the index of the first minimum element.
 // minimum_idx([3, 1, 4, 2]) == 1
-// return index of first minimum element
 template <typename Container>
 typename std::size_t minimum_idx(const Container& xs)
 {
@@ -104,8 +108,8 @@ typename std::size_t minimum_idx(const Container& xs)
 
 // API search type: maximum_idx : [a] -> Int
 // fwd bind count: 0
+// Return the index of the first maximum element.
 // maximum_idx([3, 1, 4, 2]) == 2
-// return index of first maximum element
 template <typename Container>
 typename std::size_t maximum_idx(const Container& xs)
 {
@@ -115,8 +119,8 @@ typename std::size_t maximum_idx(const Container& xs)
 
 // API search type: minimum_idx_on : ((a -> b), [a]) -> Int
 // fwd bind count: 1
+// Return the index of the first minimum element using a transformer.
 // minimum_idx_on(length, ["123", "12", "1234", "123"]) -> "1"
-// return index of first minimum element
 template <typename F, typename Container>
 typename std::size_t minimum_idx_on(F f, const Container& xs)
 {
@@ -127,8 +131,8 @@ typename std::size_t minimum_idx_on(F f, const Container& xs)
 
 // API search type: maximum_idx_on : ((a -> b), [a]) -> Int
 // fwd bind count: 1
+// Return the index of the first maximum element using a transformer.
 // maximum_idx_on(length, ["123", "12", "1234", "123"]) == "2"
-// return index of first maximum element
 template <typename F, typename Container>
 typename std::size_t maximum_idx_on(F f, const Container& xs)
 {
@@ -140,6 +144,7 @@ typename std::size_t maximum_idx_on(F f, const Container& xs)
 
 // API search type: minimum_by : (((a, a) -> Bool), [a]) -> a
 // fwd bind count: 1
+// Return the first minimum element using a less comparator.
 // minimum_by(lessLength, ["123", "12", "1234", "123"]) -> "12"
 template <typename Compare, typename Container>
 typename Container::value_type minimum_by(Compare comp,
@@ -152,6 +157,7 @@ typename Container::value_type minimum_by(Compare comp,
 
 // API search type: maximum_by : (((a, a) -> Bool), [a]) -> a
 // fwd bind count: 1
+// Return the first maximum element using a less comparator.
 // maximum_by(lessLength, ["123", "12", "1234", "123"]) == "1234"
 template <typename Compare, typename Container>
 typename Container::value_type maximum_by(Compare comp,
@@ -165,6 +171,7 @@ typename Container::value_type maximum_by(Compare comp,
 
 // API search type: minimum : [a] -> a
 // fwd bind count: 0
+// Return the first minimum element.
 // minimum([3, 1, 4, 2]) == 1
 template <typename Container>
 typename Container::value_type minimum(const Container& xs)
@@ -174,6 +181,7 @@ typename Container::value_type minimum(const Container& xs)
 
 // API search type: maximum : [a] -> a
 // fwd bind count: 0
+// Return the first maximum element.
 // maximum([3, 1, 4, 2]) == 4
 template <typename Container>
 typename Container::value_type maximum(const Container& xs)
@@ -184,6 +192,7 @@ typename Container::value_type maximum(const Container& xs)
 
 // API search type: minimum_on : ((a -> b), [a]) -> a
 // fwd bind count: 1
+// Return the first minimum element using a transformer.
 // minimum_on(length, ["123", "12", "1234", "123"]) -> "12"
 template <typename F, typename Container>
 typename Container::value_type minimum_on(F f, const Container& xs)
@@ -194,6 +203,7 @@ typename Container::value_type minimum_on(F f, const Container& xs)
 
 // API search type: maximum_on : ((a -> b), [a]) -> a
 // fwd bind count: 1
+// Return the first maximum element using a transformer.
 // maximum_on(length, ["123", "12", "1234", "123"]) == "1234"
 template <typename F, typename Container>
 typename Container::value_type maximum_on(F f, const Container& xs)
