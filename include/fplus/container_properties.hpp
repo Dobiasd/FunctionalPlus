@@ -376,17 +376,7 @@ std::size_t count
     return size_of_cont(find_all_idxs_of(x, xs));
 }
 
-// API search type: count_true : ([Bool]) -> Int
-// fwd bind count: 0
-// The number of true elements in a sequence.
-// count_true([true, false, true]) == 2
-template <typename Container>
-std::size_t count_true(const Container& xs)
-{
-    return size_of_cont(find_all_idxs_of(true, xs));
-}
-
-// API search type: is_unique_in_by : ((a -> bool), [a]) -> Int
+// API search type: is_unique_in_by : ((a -> bool), [a]) -> Bool
 // fwd bind count: 1
 // is_unique_in_by((==2), [1, 2, 3, 5, 7, 2, 2]) == false
 // is_unique_in_by((==5), [1, 2, 3, 5, 7, 2, 2]) == true
@@ -409,7 +399,7 @@ bool is_unique_in_by
     return true;
 }
 
-// API search type: is_unique_in : (a, [a]) -> Int
+// API search type: is_unique_in : (a, [a]) -> Bool
 // fwd bind count: 1
 // is_unique_in(2, [1, 2, 3, 5, 7, 2, 2]) == false
 // is_unique_in(5, [1, 2, 3, 5, 7, 2, 2]) == true

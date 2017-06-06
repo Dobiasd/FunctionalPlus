@@ -132,13 +132,6 @@ TEST_CASE("container_properties_test, count")
     REQUIRE_EQ(count(2, xs), 3);
 }
 
-TEST_CASE("container_properties_test, count_true")
-{
-    using namespace fplus;
-    const std::list<bool> bools = {true, false, true};
-    REQUIRE_EQ(count_true(bools), 2);
-}
-
 TEST_CASE("container_properties_test, is_unique_in")
 {
     using namespace fplus;
