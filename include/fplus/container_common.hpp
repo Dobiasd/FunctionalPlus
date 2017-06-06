@@ -1435,7 +1435,7 @@ bool all_the_same_by(BinaryPredicate p, const Container& xs)
     return all_by(unaryPredicate, xs);
 }
 
-// API search type: all_the_same_on : ((a -> Bool), [a]) -> Bool
+// API search type: all_the_same_on : ((a -> b), [a]) -> Bool
 // fwd bind count: 1
 // Checks if all values in a container are equal using a transformer.
 // Returns true for empty containers.
