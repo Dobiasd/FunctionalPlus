@@ -37,4 +37,5 @@
 
 #if __cplusplus >= 201402L || _MSC_VER >= 1900
     #include <fplus/fwd.hpp>
+    #include <fplus/curry.hpp>
 #endif

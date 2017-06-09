@@ -17,6 +17,7 @@ _add_test(composition_test)
 _add_test(container_common_test)
 _add_test(container_properties_test)
 _add_test(container_traits_test)
+_add_test(curry_test)
 _add_test(extrapolate_test)
 _add_test(filter_test)
 _add_test(function_traits_test)
@@ -49,6 +50,7 @@ add_custom_target(unittest compare_test
                         COMMAND container_common_test
                         COMMAND container_properties_test
                         COMMAND container_traits_test
+                        COMMAND curry_test
                         COMMAND extrapolate_test
                         COMMAND filter_test
                         COMMAND function_traits_test
