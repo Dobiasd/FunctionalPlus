@@ -404,7 +404,7 @@ ContainerOut transform_convert(F f, const ContainerIn& xs)
     return ys;
 }
 
-// API search type: transform_inner : ((a -> b), [a]) -> [b]
+// API search type: transform_inner : ((a -> b), [[a]]) -> [[b]]
 // fwd bind count: 1
 // Applies a function to the elements of the inner containers
 // of a nested sequence.
