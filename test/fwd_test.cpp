@@ -189,4 +189,14 @@ TEST_CASE("fwd_test, collatz")
         );
 }
 
+TEST_CASE("fwd_test, fwd_flip")
+{
+    using namespace fplus;
+    std::vector<std::vector<std::size_t>> idxs = {{0,1,2}, {2,0}};
+    const std::vector<int> xs = {0,10,20};
+    const std::vector<int> ys = fwd::transform_and_concat(fwd::flip::elems_at_idxs(xs))(idxs);
+    const std::vector<int> result = {0,10,20,20,0};
+    REQUIRE_EQ(ys, result);
+}
+
 #endif // __cplusplus >= 201402L

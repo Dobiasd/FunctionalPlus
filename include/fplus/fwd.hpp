@@ -67,6 +67,21 @@ auto fplus_fwd_define_fn_4_name(P1 p1, P2 p2, P3 p3, P4 p4) \
     }; \
 }
 
+
+#define fplus_fwd_flip_define_fn_1(fplus_fwd_flip_define_fn_1_name) \
+namespace flip \
+{ \
+    template <typename P2> \
+    auto fplus_fwd_flip_define_fn_1_name(P2 p2) \
+    { \
+        return [p2](const auto& fplus_fwd_flip_x) \
+        { \
+            return fplus::fplus_fwd_flip_define_fn_1_name(fplus_fwd_flip_x, p2); \
+        }; \
+    } \
+} // namespace flip
+
+
 namespace internal
 {
     template<typename F, typename G>

@@ -329,18 +329,6 @@ T elem_at_idx(std::size_t idx, const Container& xs)
     return *it;
 }
 
-// API search type: elem_at_idx_flipped : ([a], Int) -> a
-// fwd bind count: 1
-// Returns from a sequence the nth element.
-// elem_at_idx_flipped([7,6,5,4,3], 2) == 5
-// Unsafe!
-template <typename Container,
-    typename T = typename Container::value_type>
-T elem_at_idx_flipped(const Container& xs, std::size_t idx)
-{
-    return elem_at_idx(idx, xs);
-}
-
 // API search type: elem_at_idx_maybe : (Int, [a]) -> Maybe a
 // fwd bind count: 1
 // Return the nth element of a sequence if existing.
@@ -1188,22 +1176,11 @@ bool is_elem_of_by(UnaryPredicate pred, const Container& xs)
 // fwd bind count: 1
 // Checks if an element is a member of a container.
 // is_elem_of(2, [1,2,3]) == true
-// Equals flip(contains).
+// Also known as flip(contains).
 template <typename Container>
 bool is_elem_of(const typename Container::value_type& x, const Container& xs)
 {
     return is_elem_of_by(is_equal_to(x), xs);
-}
-
-// API search type: contains : ([a], a) -> Bool
-// fwd bind count: 1
-// Checks if an element is a member of a container.
-// contains([1,2,3], 2) == true
-// Equals flip(is_elem_of).
-template <typename Container>
-bool contains(const Container& xs, const typename Container::value_type& x)
-{
-    return is_elem_of(x, xs);
 }
 
 // API search type: nub_by : (((a, a) -> Bool), [a]) -> [a]

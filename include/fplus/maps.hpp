@@ -335,7 +335,7 @@ MapType map_keep(const KeyContainer& keys, const MapType& map)
         typename KeyContainer::value_type,
         typename MapType::key_type>::value,
         "Key types do not match.");
-    return map_keep_if(bind_1st_of_2(contains<KeyContainer>, keys), map);
+    return map_keep_if(bind_2nd_of_2(is_elem_of<KeyContainer>, keys), map);
 }
 
 // API search type: map_drop : ([key], Map key val) -> Map key val
@@ -353,7 +353,7 @@ MapType map_drop(const KeyContainer& keys, const MapType& map)
         typename KeyContainer::value_type,
         typename MapType::key_type>::value,
         "Key types do not match.");
-    return map_drop_if(bind_1st_of_2(contains<KeyContainer>, keys), map);
+    return map_drop_if(bind_2nd_of_2(is_elem_of<KeyContainer>, keys), map);
 }
 
 // API search type: map_pluck : (key, [Map key val]) -> [val]

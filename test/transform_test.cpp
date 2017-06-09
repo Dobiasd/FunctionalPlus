@@ -73,17 +73,17 @@ TEST_CASE("transform_test, random_element")
     using namespace fplus;
 
     const auto elem1 = random_element(std::mt19937::default_seed, xs);
-    REQUIRE(contains(xs, elem1));
+    REQUIRE(is_elem_of(elem1, xs));
 
     const auto elem2 = random_element(std::random_device()(), xs);
-    REQUIRE(contains(xs, elem2));
+    REQUIRE(is_elem_of(elem2, xs));
 }
 
 TEST_CASE("transform_test, random_elements")
 {
     using namespace fplus;
 
-    const auto check_is_elem_of_xs = bind_1st_of_2(contains<IntVector>, xs);
+    const auto check_is_elem_of_xs = bind_2nd_of_2(is_elem_of<IntVector>, xs);
 
     const auto sampled1 = random_elements(std::mt19937::default_seed, 23, xs);
     REQUIRE_EQ(sampled1.size(), 23);
@@ -98,7 +98,7 @@ TEST_CASE("transform_test, sample")
 {
     using namespace fplus;
 
-    const auto check_is_elem_of_xs = bind_1st_of_2(contains<IntVector>, xs);
+    const auto check_is_elem_of_xs = bind_2nd_of_2(is_elem_of<IntVector>, xs);
 
     const auto sampled1 = sample(std::mt19937::default_seed, 3, xs);
     REQUIRE_EQ(sampled1.size(), 3);

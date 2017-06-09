@@ -64,7 +64,7 @@ Container without_any(const ContainerElems& elems, const Container& xs)
         typename ContainerElems::value_type,
         typename Container::value_type>::value,
         "Container values must be of the same type.");
-    return drop_if(bind_1st_of_2(contains<ContainerElems>, elems), xs);
+    return drop_if(bind_2nd_of_2(is_elem_of<ContainerElems>, elems), xs);
 }
 
 // API search type: keep_if_with_idx : (((Int, a) -> Bool), [a]) -> [a]
