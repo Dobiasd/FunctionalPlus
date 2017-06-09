@@ -1047,8 +1047,7 @@ Container partial_sort_by(Compare comp, std::size_t count, const Container& xs)
 template <typename F, typename Container>
 Container partial_sort_on(F f, std::size_t count, const Container& xs)
 {
-    return partial_sort_by(internal::is_less_by_struct<F>(f),
-        count, xs);
+    return partial_sort_by(internal::is_less_by_struct<F>(f), count, xs);
 }
 
 // API search type: partial_sort : (Int, [a]) -> [a]
@@ -1060,6 +1059,41 @@ Container partial_sort(std::size_t count, const Container& xs)
 {
     typedef typename Container::value_type T;
     return partial_sort_by(std::less<T>(), count, xs);
+}
+
+// API search type: nth_element_by : (((a, a) -> Bool), Int, [a]) -> a
+// fwd bind count: 2
+// Return the nth largest element of a sequence by a given less comparator.
+template <typename Compare, typename Container,
+    typename T = typename Container::value_type>
+T nth_element_by(Compare comp, std::size_t n, const Container& xs)
+{
+    assert(n < xs.size());
+    auto result = xs;
+    auto middle = std::begin(result);
+    internal::advance_iterator(middle, n);
+    std::nth_element(std::begin(result), middle, std::end(result), comp);
+    return *middle;
+}
+
+// API search type: nth_element_on : ((a -> b), Int, [a]) -> a
+// fwd bind count: 2
+// Return the nth largest element of a sequence by a given transformer.
+template <typename F, typename Container,
+    typename T = typename Container::value_type>
+T nth_element_on(F f, std::size_t n, const Container& xs)
+{
+    return nth_element_by(internal::is_less_by_struct<F>(f), n, xs);
+}
+
+// API search type: nth_element : (Int, [a]) -> a
+// fwd bind count: 1
+// Return the nth largest element of a sequence using std::less.
+template <typename Container,
+    typename T = typename Container::value_type>
+T nth_element(std::size_t n, const Container& xs)
+{
+    return nth_element_by(std::less<T>(), n, xs);
 }
 
 // API search type: unique_by : (((a, a) -> Bool), [a]) -> [a]

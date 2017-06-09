@@ -370,8 +370,22 @@ TEST_CASE("container_common_test, sort")
 
     REQUIRE_EQ(sort_on(int_mod_10, IntVector({26,3,14})), IntVector({3,14,26}));
     REQUIRE_EQ(sort_on(size_of_cont<IntVector>, IntVectors({{1,2,3},{4,5}})), IntVectors({{4,5},{1,2,3}}));
+}
 
+TEST_CASE("container_common_test, partial_sort")
+{
+    using namespace fplus;
     REQUIRE_EQ(partial_sort(2, reverse(xs)), IntVector({1,2}));
+}
+
+TEST_CASE("container_common_test, nth_element")
+{
+    using namespace fplus;
+    REQUIRE_EQ(nth_element(0, xs), 1);
+    REQUIRE_EQ(nth_element(1, xs), 2);
+    REQUIRE_EQ(nth_element(2, xs), 2);
+    REQUIRE_EQ(nth_element(3, xs), 2);
+    REQUIRE_EQ(nth_element(4, xs), 3);
 }
 
 TEST_CASE("container_common_test, unique")
