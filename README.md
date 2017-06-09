@@ -282,6 +282,8 @@ const auto gemstone_count_fwd_compose = fwd::compose(
 );
 ```
 
+By the way, in case you need the parameters of a binary function in different order, `namespace fplus::fwd::flip` also exists. `fplus::bar : (a, b) -> c` does not only have its analogue in `fplus::fwd::bar : a -> b -> c` but also in `fplus::fwd::flip::bar : b -> a -> c`.
+
 
 Finding the functions you need
 ------------------------------
