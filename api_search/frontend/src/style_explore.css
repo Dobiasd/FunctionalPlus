@@ -1,0 +1,67 @@
+body
+{
+    font-family: monospace;
+}
+
+pre {
+    padding: 0px;
+    border: 0px;
+    margin: 0px;
+}
+
+code {
+    white-space: pre;
+    padding: 0px;
+    border: 0px;
+    margin: 0px;
+}
+
+.mainwrapper
+{
+}
+
+.main
+{
+    margin: 0 auto;
+    width: 800px;
+}
+
+.logo
+{
+    margin: 4px;
+}
+
+@media only screen and (max-height: 740px)
+{
+    .logo
+    {
+        margin: -176px 0 0 0px;
+    }
+}
+
+.githublink
+{
+    text-align: center;
+}
+
+.functionnameandsig
+{
+}
+
+.functionnameandsig
+{
+}
+
+.functiondoc
+{
+}
+
+.function
+{
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.footer
+{
+}

@@ -17,4 +17,5 @@ then
   cp ./src/index.html ./build/index.html
 fi
 
+./ExploreCompile.sh
 ./TypeSignatureTestCompile.sh
