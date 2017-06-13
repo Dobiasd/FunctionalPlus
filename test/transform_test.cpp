@@ -134,8 +134,8 @@ TEST_CASE("transform_test, transform")
 
     typedef std::array<int, 2> IntArray2;
     typedef std::array<IntArray2, 3> IntArrays2_3;
-    IntArrays2_3 int_arrays = {IntArray2({1,2}),IntArray2({2,3}),IntArray2({3,4})};
-    IntArrays2_3 int_arrays_times_2 = {IntArray2({2,4}),IntArray2({4,6}),IntArray2({6,8})};
+    IntArrays2_3 int_arrays = {{IntArray2({{1,2}}),IntArray2({{2,3}}),IntArray2({{3,4}})}};
+    IntArrays2_3 int_arrays_times_2 = {{IntArray2({{2,4}}),IntArray2({{4,6}}),IntArray2({{6,8}})}};
     REQUIRE_EQ(transform_inner(intTimes2, int_arrays), int_arrays_times_2);
 
     auto add_size_t_and_int = [](std::size_t a, int b) -> int
