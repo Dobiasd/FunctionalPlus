@@ -153,7 +153,7 @@ TEST_CASE("transform_test, transform")
 
     REQUIRE_EQ(apply_function_n_times(squareLambda, 3, 2), 256);
 
-    REQUIRE_EQ(transform(squareLambda, xs_array), IntArray5({1,4,4,9,4}));
+    REQUIRE_EQ(transform(squareLambda, xs_array), IntArray5({{1,4,4,9,4}}));
 }
 
 TEST_CASE("transform_test, reduce")
