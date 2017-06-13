@@ -289,9 +289,10 @@ ContainerOut transform_parallelly(F f, const ContainerIn& xs)
 
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
+    auto it = internal::get_back_inserter<ContainerOut>(ys);
     for (std::future<Y>& handle : handles)
     {
-        ys.push_back(handle.get());
+        *it = handle.get();
     }
     return ys;
 }
