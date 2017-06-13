@@ -69,6 +69,12 @@ namespace internal
         ys.reserve(size);
     }
 
+    template <typename T, std::size_t N>
+    void prepare_container(std::array<T, N>&, std::size_t size)
+    {
+        assert(size == N);
+    }
+
     template <typename Container>
     void prepare_container(Container&, std::size_t)
     {
@@ -84,6 +90,60 @@ namespace internal
     std::back_insert_iterator<Container> get_back_inserter(std::vector<Y>& ys)
     {
         return std::back_inserter(ys);
+    }
+
+    template <typename T, std::size_t N>
+    struct array_back_insert_iterator : public std::back_insert_iterator<std::array<T, N>>
+    {
+        typedef std::back_insert_iterator<std::array<T, N>> base_type;
+        explicit array_back_insert_iterator(std::array<T, N>& arr) :
+            base_type(arr), arr_ptr_(&arr), pos_(0) {}
+        array_back_insert_iterator<T, N>(const array_back_insert_iterator<T, N>& other) :
+            base_type(*other.arr_ptr_), arr_ptr_(other.arr_ptr_), pos_(other.pos_) {}
+        array_back_insert_iterator<T, N>& operator=(const array_back_insert_iterator<T, N>& other)
+        {
+            arr_ptr_ = other.arr_ptr_;
+            pos_ = other.pos_;
+            return *this;
+        }
+        ~array_back_insert_iterator()
+        {
+            assert(pos_ == 0 || pos_ == N);
+        }
+        array_back_insert_iterator<T, N>& operator=(const T& x)
+        {
+            assert(pos_ < N);
+            (*arr_ptr_)[pos_] = x;
+            ++pos_;
+            return *this;
+        }
+        array_back_insert_iterator<T, N>& operator=(T&& x)
+        {
+            assert(pos_ < N);
+            (*arr_ptr_)[pos_] = std::move(x);
+            ++pos_;
+            return *this;
+        }
+        array_back_insert_iterator<T, N>& operator*() { return *this; }
+        array_back_insert_iterator<T, N>& operator++() { return *this; }
+        array_back_insert_iterator<T, N> operator++(int) { return *this; }
+    private:
+        std::array<T, N>* arr_ptr_;
+        std::size_t pos_;
+    };
+
+#if _MSC_VER >= 1900
+    template <typename T, std::size_t N>
+    struct std::_Is_checked_helper<array_back_insert_iterator<T, N>>
+        : public true_type
+    { // mark array_back_insert_iterator as checked
+    };
+#endif
+
+    template <typename Container, typename Y, std::size_t N>
+    array_back_insert_iterator<Y, N> get_back_inserter(std::array<Y, N>& ys)
+    {
+        return array_back_insert_iterator<Y, N>(ys);
     }
 
     template <typename Container>
@@ -152,7 +212,7 @@ Dest convert(const Source& x)
 // Converts all elements in a sequence to a different type.
 // convert_elems<NewT>([1, 2, 3]) == [NewT(1), NewT(2), NewT(3)]
 template <typename NewT, typename ContainerIn,
-    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, NewT>::type>
+    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, NewT, 0>::type>
 ContainerOut convert_elems(const ContainerIn& xs)
 {
     static_assert(std::is_constructible<NewT,
@@ -377,7 +437,7 @@ std::vector<T> elems_at_idxs(const ContainerIdxs& idxs, const Container& xs)
 // Also known as map or fmap.
 template <typename F, typename ContainerIn,
     typename ContainerOut = typename internal::same_cont_new_t_from_unary_f<
-        ContainerIn, F>::type>
+        ContainerIn, F, 0>::type>
 ContainerOut transform(F f, const ContainerIn& xs)
 {
     internal::check_arity<1, F>();
@@ -415,8 +475,8 @@ template <typename F, typename ContainerIn,
         typename internal::same_cont_new_t<
             ContainerIn,
             typename internal::same_cont_new_t_from_unary_f<
-                typename ContainerIn::value_type, F
-            >::type
+                typename ContainerIn::value_type, F, 0
+            >::type, 0
         >::type>
 ContainerOut transform_inner(F f, const ContainerIn& xs)
 {
@@ -683,11 +743,11 @@ Acc fold_right_1(F f, const Container& xs)
 // It returns the list of intermediate and final results.
 template <typename F, typename ContainerIn,
     typename Acc = typename utils::function_traits<F>::template arg<0>::type,
-    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, Acc>::type>
+    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, Acc, 1>::type>
 ContainerOut scan_left(F f, const Acc& init, const ContainerIn& xs)
 {
     ContainerOut result;
-    internal::prepare_container(result, size_of_cont(xs));
+    internal::prepare_container(result, size_of_cont(xs) + 1);
     auto itOut = internal::get_back_inserter(result);
     Acc acc = init;
     *itOut = acc;
@@ -708,7 +768,7 @@ ContainerOut scan_left(F f, const Acc& init, const ContainerIn& xs)
 // xs must be non-empty.
 template <typename F, typename ContainerIn,
     typename Acc = typename ContainerIn::value_type,
-    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, Acc>::type>
+    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, Acc, 0>::type>
 ContainerOut scan_left_1(F f, const ContainerIn& xs)
 {
     assert(!xs.empty());
@@ -738,7 +798,7 @@ ContainerOut scan_left_1(F f, const ContainerIn& xs)
 // It returns the list of intermediate and final results.
 template <typename F, typename ContainerIn,
     typename Acc = typename utils::function_traits<F>::template arg<1>::type,
-    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, Acc>::type>
+    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, Acc, 1>::type>
 ContainerOut scan_right(F f, const Acc& init, const ContainerIn& xs)
 {
     return reverse(scan_left(flip(f), init, reverse(xs)));
@@ -752,7 +812,7 @@ ContainerOut scan_right(F f, const Acc& init, const ContainerIn& xs)
 // It returns the list of inntermediate and final results.
 template <typename F, typename ContainerIn,
     typename Acc = typename ContainerIn::value_type,
-    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, Acc>::type>
+    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, Acc, 0>::type>
 ContainerOut scan_right_1(F f, const ContainerIn& xs)
 {
     return reverse(scan_left_1(flip(f), reverse(xs)));

@@ -31,7 +31,7 @@ namespace fplus
 // transform_with_idx(f, [6, 4, 7]) == [f(0, 6), f(1, 4), f(2, 7)]
 template <typename F, typename ContainerIn,
     typename ContainerOut = typename internal::same_cont_new_t_from_binary_f<
-        ContainerIn, F, std::size_t, typename ContainerIn::value_type>::type>
+        ContainerIn, F, std::size_t, typename ContainerIn::value_type, 0>::type>
 ContainerOut transform_with_idx(F f, const ContainerIn& xs)
 {
     internal::check_arity<2, F>();
@@ -228,7 +228,7 @@ template <typename FunctionContainer,
     typename F = typename FunctionContainer::value_type,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
     typename FOut = typename std::result_of<F(FIn)>::type,
-    typename ContainerOut = typename internal::same_cont_new_t<FunctionContainer, FOut>::type>
+    typename ContainerOut = typename internal::same_cont_new_t<FunctionContainer, FOut, 0>::type>
 ContainerOut apply_functions(const FunctionContainer& functions, const FIn& x)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
@@ -273,7 +273,7 @@ FOut apply_function_n_times(const F f, std::size_t n, const FIn& x)
 // takes enough time to justify the synchronization overhead.
 template <typename F, typename ContainerIn,
     typename ContainerOut = typename internal::same_cont_new_t_from_unary_f<
-        ContainerIn, F>::type,
+        ContainerIn, F, 0>::type,
     typename X = typename ContainerIn::value_type,
     typename Y = typename std::result_of<F(X)>::type>
 ContainerOut transform_parallelly(F f, const ContainerIn& xs)
@@ -457,7 +457,7 @@ Out transform_reduce_1_parallelly(
 // Can be used for applying the MapReduce pattern.
 template <typename F, typename ContainerIn,
     typename ContainerOut = typename internal::same_cont_new_t_from_unary_f<
-        ContainerIn, F>::type,
+        ContainerIn, F, 0>::type,
     typename X = typename ContainerIn::value_type,
     typename Y = typename std::result_of<F(X)>::type>
 ContainerOut transform_parallelly_n_threads(

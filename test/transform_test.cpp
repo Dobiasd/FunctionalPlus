@@ -13,7 +13,8 @@ namespace {
     typedef std::vector<IntVector> IntVectors;
     IntVector xs = {1,2,2,3,2};
     auto squareLambda = [](int x) -> int { return x*x; };
-    std::array<int, 5> xs_array = {{1,2,2,3,2}};
+    typedef std::array<int, 5> IntArray5;
+    IntArray5 xs_array = {{1,2,2,3,2}};
     typedef std::list<int> IntList;
     IntList intList = { 1,2,2,3,2 };
     bool is_even(int value)
@@ -131,6 +132,12 @@ TEST_CASE("transform_test, transform")
     REQUIRE_EQ(transform(squareLambda, std::set<int>({1,2,3,-3})), std::set<int>({1,4,9}));
     REQUIRE_EQ(transform_inner(intTimes2, IntVectors({{1,3,4},{1,2}})), IntVectors({{2,6,8},{2,4}}));
 
+    typedef std::array<int, 2> IntArray2;
+    typedef std::array<IntArray2, 3> IntArrays2_3;
+    IntArrays2_3 int_arrays = {IntArray2({1,2}),IntArray2({2,3}),IntArray2({3,4})};
+    IntArrays2_3 int_arrays_times_2 = {IntArray2({2,4}),IntArray2({4,6}),IntArray2({6,8})};
+    REQUIRE_EQ(transform_inner(intTimes2, int_arrays), int_arrays_times_2);
+
     auto add_size_t_and_int = [](std::size_t a, int b) -> int
     {
         return static_cast<int>(a) + b;
@@ -145,6 +152,8 @@ TEST_CASE("transform_test, transform")
     REQUIRE_EQ(apply_functions(showIntFuncs, 4), std::vector<std::string>({"4", "4"}));
 
     REQUIRE_EQ(apply_function_n_times(squareLambda, 3, 2), 256);
+
+    REQUIRE_EQ(transform(squareLambda, xs_array), IntArray5({1,4,4,9,4}));
 }
 
 TEST_CASE("transform_test, reduce")

@@ -276,7 +276,7 @@ template <typename ContainerIn,
     typename X = typename ContainerIn::value_type::first_type,
     typename Y = typename ContainerIn::value_type::second_type,
     typename ContainerOut =
-        typename internal::same_cont_new_t<ContainerIn, std::pair<Y, X>>::type>
+        typename internal::same_cont_new_t<ContainerIn, std::pair<Y, X>, 0>::type>
 ContainerOut swap_pairs_elems(const ContainerIn& xs)
 {
     return fplus::transform(swap_pair_elems<X, Y>, xs);
@@ -328,7 +328,7 @@ template <typename Container,
         typename internal::same_cont_new_t<Container,
             std::pair<
                 typename Container::value_type,
-                    typename Container::value_type>>::type>
+                    typename Container::value_type>, -1>::type>
 ContainerOut overlapping_pairs(const Container& xs)
 {
     typedef typename Container::value_type T;
@@ -361,7 +361,7 @@ template <typename Container,
         typename internal::same_cont_new_t<Container,
             std::pair<
                 typename Container::value_type,
-                    typename Container::value_type>>::type>
+                    typename Container::value_type>, 0>::type>
 ContainerOut overlapping_pairs_cyclic(const Container& xs)
 {
     typedef typename Container::value_type T;
