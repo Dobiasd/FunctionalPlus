@@ -75,6 +75,30 @@ namespace internal
         assert(size == N);
     }
 
+    template <typename Y>
+    void prepare_container(std::unordered_set<Y>& ys, std::size_t size)
+    {
+        ys.reserve(size);
+    }
+
+    template <typename Key, typename T>
+    void prepare_container(std::unordered_map<Key, T>& ys, std::size_t size)
+    {
+        ys.reserve(size);
+    }
+
+    template <typename Y>
+    void prepare_container(std::unordered_multiset<Y>& ys, std::size_t size)
+    {
+        ys.reserve(size);
+    }
+
+    template <typename Key, typename T>
+    void prepare_container(std::unordered_multimap<Key, T>& ys, std::size_t size)
+    {
+        ys.reserve(size);
+    }
+
     template <typename Container>
     void prepare_container(Container&, std::size_t)
     {
