@@ -197,11 +197,6 @@ showMaybeSig maybeSig =
             ""
 
 
-nthElement : List a -> Int -> Maybe a
-nthElement xs idx =
-    List.drop idx xs |> List.head
-
-
 view : Model -> Html Msg
 view model =
     div [ class "mainwrapper" ]
