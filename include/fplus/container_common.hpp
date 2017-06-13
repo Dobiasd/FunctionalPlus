@@ -362,7 +362,7 @@ std::vector<T> elems_at_idxs(const ContainerIdxs& idxs, const Container& xs)
         "Indices must be std::size_t");
     ContainerOut result;
     internal::prepare_container(result, size_of_cont(idxs));
-    auto itOut = back_inserter(result);
+    auto itOut = internal::get_back_inserter(result);
     for (std::size_t idx : idxs)
     {
         *itOut = elem_at_idx(idx, xs);
