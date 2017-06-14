@@ -34,6 +34,12 @@ TEST_CASE("filter_test, keep_if")
     REQUIRE_EQ(result, std::vector<int>({2, 2, 4}));
 }
 
+TEST_CASE("filter_test, keep_if_r_value")
+{
+    auto result = fplus::keep_if(is_even, std::vector<int>({1,2,3,2,4,5}));
+    REQUIRE_EQ(result, std::vector<int>({2, 2, 4}));
+}
+
 TEST_CASE("filter_test, drop_if")
 {
     const std::vector<int> v = { 1, 2, 3, 2, 4, 5 };
