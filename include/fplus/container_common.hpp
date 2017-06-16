@@ -1052,7 +1052,7 @@ Container prepend_elem(internal::reuse_container_t,
     const T& y, Container&& xs)
 {
     xs.resize(size_of_cont(xs) + 1);
-    std::copy(++std::rbegin(xs), std::rend(xs), std::rbegin(xs));
+    std::copy(xs.rbegin(), xs.rend(), xs.rbegin());
     *std::begin(xs) = y;
     return std::forward<Container>(xs);
 }
