@@ -27,7 +27,8 @@ Container keep_if(internal::reuse_container_t, Pred pred, Container&& xs)
 }
 
 template <typename Pred, typename Container>
-Container keep_if(internal::create_new_container_t, Pred pred, const Container& xs)
+Container keep_if(internal::create_new_container_t, Pred pred,
+    const Container& xs)
 {
     internal::check_unary_predicate_for_container<Pred, Container>();
     Container result;

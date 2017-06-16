@@ -605,18 +605,40 @@ ContainerOut transform_inner(F f, const ContainerIn& xs)
         xs);
 }
 
-// API search type: reverse : [a] -> [a]
-// fwd bind count: 0
-// Reverse a sequence.
-// reverse([0,4,2,6]) == [6,2,4,0]
+namespace internal
+{
+
 template <typename Container>
-Container reverse(const Container& xs)
+Container reverse(internal::reuse_container_t, Container&& xs)
+{
+    static_assert(internal::has_order<Container>::value,
+        "Reverse: Container has no order.");
+    std::reverse(std::begin(xs), std::end(xs));
+    return std::forward<Container>(xs);
+}
+
+template <typename Container>
+Container reverse(internal::create_new_container_t, const Container& xs)
 {
     static_assert(internal::has_order<Container>::value,
         "Reverse: Container has no order.");
     Container ys = xs;
     std::reverse(std::begin(ys), std::end(ys));
     return ys;
+}
+
+} // namespace internal
+
+// API search type: reverse : [a] -> [a]
+// fwd bind count: 0
+// Reverse a sequence.
+// reverse([0,4,2,6]) == [6,2,4,0]
+template <typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut reverse(Container&& xs)
+{
+    return internal::reverse(internal::can_reuse_v<Container>{},
+        std::forward<Container>(xs));
 }
 
 // API search type: take : (Int, [a]) -> [a]
@@ -759,6 +781,7 @@ Container take_while(UnaryPredicate pred, const Container& xs)
 // Remove elements from the beginning of a sequence
 // as long as they are fulfilling a predicate.
 // drop_while(is_even, [0,2,4,5,6,7,8]) == [5,6,7,8]
+// Also known as trim_left_by.
 template <typename Container, typename UnaryPredicate>
 Container drop_while(UnaryPredicate pred, const Container& xs)
 {

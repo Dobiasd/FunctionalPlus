@@ -21,6 +21,7 @@ namespace {
     typedef std::vector<bool> BoolVector;
     typedef std::vector<std::size_t> IdxVector;
     IntVector xs = {1,2,2,3,2};
+    IntVector xs_reverse = {2,3,2,2,1};
     IntVector xsSorted = {1,2,2,2,3};
     IntVector xs2Times = {1,2,2,3,2,1,2,2,3,2};
     typedef std::list<int> IntList;
@@ -376,6 +377,13 @@ TEST_CASE("container_common_test, partial_sort")
 {
     using namespace fplus;
     REQUIRE_EQ(partial_sort(2, reverse(xs)), IntVector({1,2}));
+}
+
+TEST_CASE("container_common_test, reverse")
+{
+    using namespace fplus;
+    REQUIRE_EQ(reverse(IntVector({1,2,2,3,2})), xs_reverse);
+    REQUIRE_EQ(reverse(xs), xs_reverse);
 }
 
 TEST_CASE("container_common_test, nth_element")
