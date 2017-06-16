@@ -538,6 +538,9 @@ TEST_CASE("container_common_test, segment")
     REQUIRE_EQ(drop_while(is_odd_int, xs), IntVector({ 2,2,3,2 }));
     REQUIRE_EQ(span(is_odd_int, xs), std::make_pair(IntVector({ 1 }), IntVector({ 2,2,3,2 })));
     REQUIRE_EQ(replace_segment(2, IntVector({8,9}), xs), IntVector({1,2,8,9,2}));
+    REQUIRE_EQ(replace_segment(2, IntVector({8,9}), IntVector({1,2,2,3,2})), IntVector({1,2,8,9,2}));
+    REQUIRE_EQ(remove_segment(1, 3, xs), IntVector({1,3,2}));
+    REQUIRE_EQ(remove_segment(1, 3, IntVector({1,2,2,3,2})), IntVector({1,3,2}));
     REQUIRE_EQ(take_cyclic(5, IntVector({0,1,2,3})), IntVector({0,1,2,3,0}));
     REQUIRE_EQ(take_cyclic(7, IntVector({0,1,2,3})), IntVector({0,1,2,3,0,1,2}));
     REQUIRE_EQ(take_cyclic(7, IntVector({0,1})), IntVector({0,1,0,1,0,1,0}));
@@ -624,8 +627,9 @@ TEST_CASE("container_common_test, tail")
 {
     using namespace fplus;
     REQUIRE_EQ(init(xs), IntVector({1,2,2,3}));
+    REQUIRE_EQ(init(IntVector({1,2,2,3,2})), IntVector({1,2,2,3}));
     REQUIRE_EQ(tail(xs), IntVector({2,2,3,2}));
-
+    REQUIRE_EQ(tail(IntVector({1,2,2,3,2})), IntVector({2,2,3,2}));
     REQUIRE_EQ(inits(xs), IntVectors({{},{1},{1,2},{1,2,2},{1,2,2,3},{1,2,2,3,2}}));
     REQUIRE_EQ(tails(xs), IntVectors({{1,2,2,3,2},{2,2,3,2},{2,3,2},{3,2},{2},{}}));
 }

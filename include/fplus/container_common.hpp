@@ -358,31 +358,69 @@ ContainerOut get_segment
         idx_begin, idx_end, std::forward<Container>(xs));
 }
 
+namespace internal
+{
+
+template <typename ContainerToken, typename Container>
+Container set_segment(internal::reuse_container_t,
+    std::size_t idx_begin, const ContainerToken& token, Container&& xs)
+{
+    assert(idx_begin + size_of_cont(token) < size_of_cont(xs));
+    auto itBegin = std::begin(xs);
+    internal::advance_iterator(itBegin, idx_begin);
+    std::copy(std::begin(token), std::end(token), itBegin);
+    return std::forward<Container>(xs);
+}
+
+template <typename ContainerToken, typename Container>
+Container set_segment(internal::create_new_container_t,
+    std::size_t idx_begin, const ContainerToken& token, const Container& xs)
+{
+    Container result = xs;
+    return set_segment(internal::reuse_container_t(),
+        idx_begin, token, std::move(result));
+}
+
+} // namespace internal
+
 // API search type: set_segment : (Int, [a], [a]) -> [a]
 // fwd bind count: 2
 // Return a defined segment from the sequence with the given token.
 // set_segment(2, [9,9,9], [0,1,2,3,4,5,6,7,8]) == [0,1,9,9,9,5,6,7,8]
 // crashes on invalid indices
-template <typename Container>
-Container set_segment
-        (std::size_t idx_begin, const Container& token, const Container& xs)
+template <typename ContainerToken, typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut set_segment
+        (std::size_t idx_begin, const ContainerToken& token, Container&& xs)
 {
-    assert(idx_begin + size_of_cont(token) < size_of_cont(xs));
-    Container result = xs;
-    auto itBegin = std::begin(result);
-    internal::advance_iterator(itBegin, idx_begin);
-    std::copy(std::begin(token), std::end(token), itBegin);
-    return result;
+    return internal::set_segment(internal::can_reuse_v<Container>{},
+        idx_begin, token, std::forward<Container>(xs));
 }
 
-// API search type: remove_segment : (Int, Int, [a]) -> [a]
-// fwd bind count: 2
-// Cuts our a  defined segment from the sequence.
-// remove_segment(2, 5, [0,1,2,3,4,5,6,7]) == [0,1,5,6,7]
-// crashes on invalid indices
+namespace internal
+{
+
 template <typename Container>
-Container remove_segment
-        (std::size_t idx_begin, std::size_t idx_end, const Container& xs)
+Container remove_segment(internal::reuse_container_t,
+    std::size_t idx_begin, std::size_t idx_end, Container&& xs)
+{
+    assert(idx_begin <= idx_end);
+    assert(idx_end <= size_of_cont(xs));
+
+    auto firstBreakIt = std::begin(xs);
+    internal::advance_iterator(firstBreakIt, idx_begin);
+
+    auto secondBreakIt = std::begin(xs);
+    internal::advance_iterator(secondBreakIt, idx_end);
+
+    xs.erase(
+        std::copy(secondBreakIt, std::end(xs), firstBreakIt), std::end(xs));
+    return std::forward<Container>(xs);
+}
+
+template <typename Container>
+Container remove_segment(internal::create_new_container_t,
+    std::size_t idx_begin, std::size_t idx_end, const Container& xs)
 {
     assert(idx_begin <= idx_end);
     assert(idx_end <= size_of_cont(xs));
@@ -395,11 +433,27 @@ Container remove_segment
     internal::advance_iterator(firstBreakIt, idx_begin);
     std::copy(std::begin(xs), firstBreakIt, internal::get_back_inserter(result));
 
-    auto secondBreakIt = firstBreakIt;
-    internal::advance_iterator(secondBreakIt, length);
+    auto secondBreakIt = std::begin(xs);
+    internal::advance_iterator(secondBreakIt, idx_end);
     std::copy(secondBreakIt, std::end(xs), internal::get_back_inserter(result));
 
     return result;
+}
+
+} // namespace internal
+
+// API search type: remove_segment : (Int, Int, [a]) -> [a]
+// fwd bind count: 2
+// Cuts our a  defined segment from the sequence.
+// remove_segment(2, 5, [0,1,2,3,4,5,6,7]) == [0,1,5,6,7]
+// crashes on invalid indices
+template <typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut remove_segment(
+        std::size_t idx_begin, std::size_t idx_end, Container&& xs)
+{
+    return internal::remove_segment(internal::can_reuse_v<Container>{},
+        idx_begin, idx_end, std::forward<Container>(xs));
 }
 
 // API search type: insert_at : (Int, [a], [a]) -> [a]
@@ -430,12 +484,12 @@ Container insert_at(std::size_t idx_begin,
 // Replace part of a sequence with a token.
 // replace_segment(2, [8,9], [0,1,2,3,4]) == [0,1,8,9,4]
 // crashes on invalid index
-template <typename Container>
-Container replace_segment(std::size_t idx_begin,
-        const Container& token, const Container& xs)
+template <typename ContainerToken, typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut replace_segment(std::size_t idx_begin,
+        const ContainerToken& token, Container&& xs)
 {
-    std::size_t idx_end = idx_begin + size_of_cont(token);
-    return insert_at(idx_begin, token, remove_segment(idx_begin, idx_end, xs));
+    return set_segment(idx_begin, token, std::forward<Container>(xs));
 }
 
 // API search type: elem_at_idx : (Int, [a]) -> a
@@ -1661,11 +1715,12 @@ std::vector<std::size_t> all_idxs(const Container& xs)
 // fwd bind count: 0
 // init([0,1,2,3]) == [0,1,2]
 // Unsafe! xs must be non-empty.
-template <typename Container>
-Container init(const Container& xs)
+template <typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut init(Container&& xs)
 {
     assert(!is_empty(xs));
-    return get_segment(0, size_of_cont(xs) - 1, xs);
+    return get_segment(0, size_of_cont(std::forward<Container>(xs)) - 1, xs);
 }
 
 // API search type: tail : [a] -> [a]
@@ -1673,11 +1728,12 @@ Container init(const Container& xs)
 // Drops the first element of a container, keeps the rest. Unsafe!
 // tail([0,1,2,3]) == [1,2,3]
 // Unsafe! xs must be non-empty.
-template <typename Container>
-Container tail(const Container& xs)
+template <typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut tail(Container&& xs)
 {
     assert(!is_empty(xs));
-    return get_segment(1, size_of_cont(xs), xs);
+    return get_segment(1, size_of_cont(std::forward<Container>(xs)), xs);
 }
 
 // API search type: head : [a] -> a
