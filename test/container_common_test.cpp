@@ -518,8 +518,10 @@ TEST_CASE("container_common_test, segment")
 {
     using namespace fplus;
     IntList v789 = { 7,8,9 };
+    REQUIRE_EQ(set_segment(1, v789, IntList({ 1,2,2,3,2 })), IntList({ 1,7,8,9,2 }));
     REQUIRE_EQ(set_segment(1, v789, intList), IntList({ 1,7,8,9,2 }));
     REQUIRE_EQ(get_segment(1, 4, intList), IntList({ 2,2,3 }));
+    REQUIRE_EQ(get_segment(1, 4, IntList({ 1,2,2,3,2 })), IntList({ 2,2,3 }));
     REQUIRE_EQ(replace_elems(2, 5, xs), IntVector({1,5,5,3,5}));
     REQUIRE_EQ(replace_tokens(std::string("123"), std::string("_"), std::string("--123----123123")), std::string("--_----__"));
     REQUIRE_EQ(take(2, xs), IntVector({ 1,2 }));

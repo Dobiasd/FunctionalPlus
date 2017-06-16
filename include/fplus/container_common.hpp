@@ -309,15 +309,26 @@ ContainerOut convert_container_and_elems(const ContainerIn& xs)
     return ys;
 }
 
-// API search type: get_segment : (Int, Int, [a]) -> [a]
-// fwd bind count: 2
-// Return a defined segment from the sequence.
-// get_segment(2, 5, [0,1,2,3,4,5,6,7,8]) == [2,3,4]
-// Also known as slice.
-// crashes on invalid indices
+namespace internal
+{
+
 template <typename Container>
-Container get_segment
-        (std::size_t idx_begin, std::size_t idx_end, const Container& xs)
+Container get_segment(internal::reuse_container_t,
+    std::size_t idx_begin, std::size_t idx_end, Container&& xs)
+{
+    assert(idx_begin <= idx_end);
+    assert(idx_end <= size_of_cont(xs));
+    auto itBegin = std::begin(xs);
+    internal::advance_iterator(itBegin, idx_begin);
+    auto itEnd = itBegin;
+    internal::advance_iterator(itEnd, idx_end - idx_begin);
+    xs.erase(std::copy(itBegin, itEnd, std::begin(xs)), std::end(xs));
+    return std::forward<Container>(xs);
+}
+
+template <typename Container>
+Container get_segment(internal::create_new_container_t,
+    std::size_t idx_begin, std::size_t idx_end, const Container& xs)
 {
     assert(idx_begin <= idx_end);
     assert(idx_end <= size_of_cont(xs));
@@ -328,6 +339,23 @@ Container get_segment
     internal::advance_iterator(itEnd, idx_end - idx_begin);
     std::copy(itBegin, itEnd, internal::get_back_inserter(result));
     return result;
+}
+
+} // namespace internal
+
+// API search type: get_segment : (Int, Int, [a]) -> [a]
+// fwd bind count: 2
+// Return a defined segment from the sequence.
+// get_segment(2, 5, [0,1,2,3,4,5,6,7,8]) == [2,3,4]
+// Also known as slice.
+// crashes on invalid indices
+template <typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut get_segment
+        (std::size_t idx_begin, std::size_t idx_end, Container&& xs)
+{
+    return internal::get_segment(internal::can_reuse_v<Container>{},
+        idx_begin, idx_end, std::forward<Container>(xs));
 }
 
 // API search type: set_segment : (Int, [a], [a]) -> [a]
@@ -543,12 +571,13 @@ Container reverse(const Container& xs)
 // In case n >= length(xs), xs is returned.
 // take(3, [0,1,2,3,4,5,6,7]) == [0,1,2]
 // take(10, [0,1,2]) == [0,1,2]
-template <typename Container>
-Container take(std::size_t amount, const Container& xs)
+template <typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut take(std::size_t amount, Container&& xs)
 {
     if (amount >= size_of_cont(xs))
         return xs;
-    return get_segment(0, amount, xs);
+    return get_segment(0, amount, std::forward<Container>(xs));
 }
 
 // API search type: take_exact : (Int, [a]) -> [a]
@@ -557,10 +586,11 @@ Container take(std::size_t amount, const Container& xs)
 // Unsafe! Crashes then sequence is too short.
 // take_exact(3, [0,1,2,3,4,5,6,7]) == [0,1,2]
 // take_exact(10, [0,1,2]) == crash
-template <typename Container>
-Container take_exact(std::size_t amount, const Container& xs)
+template <typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut take_exact(std::size_t amount, Container&& xs)
 {
-    return get_segment(0, amount, xs);
+    return get_segment(0, amount, std::forward<Container>(xs));
 }
 
 // API search type: take_cyclic : (Int, [a]) -> [a]
@@ -603,12 +633,13 @@ Container take_cyclic(std::size_t amount, const Container& xs)
 // If n > length(xs) an empty sequence is returned.
 // drop(3, [0,1,2,3,4,5,6,7]) == [3,4,5,6,7]
 // Also known as skip.
-template <typename Container>
-Container drop(std::size_t amount, const Container& xs)
+template <typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut drop(std::size_t amount, Container&& xs)
 {
     if (amount >= size_of_cont(xs))
-        return Container();
-    return get_segment(amount, size_of_cont(xs), xs);
+        return ContainerOut();
+    return get_segment(amount, size_of_cont(xs), std::forward<Container>(xs));
 }
 
 // API search type: take_last : (Int, [a]) -> [a]
@@ -617,12 +648,13 @@ Container drop(std::size_t amount, const Container& xs)
 // In case n >= length(xs), xs is returned.
 // take_last(3, [0,1,2,3,4,5,6,7]) == [5,6,7]
 // take_last(10, [0,1,2]) == [0,1,2]
-template <typename Container>
-Container take_last(std::size_t amount, const Container& xs)
+template <typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut take_last(std::size_t amount, Container&& xs)
 {
     if (amount >= size_of_cont(xs))
         return xs;
-    return drop(size_of_cont(xs) - amount, xs);
+    return drop(size_of_cont(xs) - amount, std::forward<Container>(xs));
 }
 
 // API search type: drop_last : (Int, [a]) -> [a]
@@ -630,12 +662,13 @@ Container take_last(std::size_t amount, const Container& xs)
 // Skip the last n elements of a sequence xs.
 // If n > length(xs) an empty sequence is returned.
 // drop_last(3, [0,1,2,3,4,5,6,7]) == [0,1,2,3,4]
-template <typename Container>
-Container drop_last(std::size_t amount, const Container& xs)
+template <typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut drop_last(std::size_t amount, Container&& xs)
 {
     if (amount >= size_of_cont(xs))
-        return Container();
-    return take(size_of_cont(xs) - amount, xs);
+        return ContainerOut();
+    return take(size_of_cont(xs) - amount, std::forward<Container>(xs));
 }
 
 // API search type: drop_exact : (Int, [a]) -> [a]
@@ -644,10 +677,11 @@ Container drop_last(std::size_t amount, const Container& xs)
 // Unsafe! Crashes when xs is too short.
 // drop_exact(3, [0,1,2,3,4,5,6,7]) == [3,4,5,6,7]
 // drop_exact(10, [0,1,2,3,4,5,6,7]) == crash
-template <typename Container>
-Container drop_exact(std::size_t amount, const Container& xs)
+template <typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut drop_exact(std::size_t amount, Container&& xs)
 {
-    return get_segment(amount, size_of_cont(xs), xs);
+    return get_segment(amount, size_of_cont(xs), std::forward<Container>(xs));
 }
 
 // API search type: take_while : ((a -> Bool), [a]) -> [a]
