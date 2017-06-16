@@ -999,13 +999,19 @@ T product(const Container& xs)
     return result;
 }
 
-// API search type: append_elem : ([a], a) -> [a]
-// fwd bind count: 1
-// Extends a sequence with one element at the back.
-// append_elem([1, 2], 3) == [1, 2, 3]
-template <typename Container,
-    typename T = typename Container::value_type>
-Container append_elem(const Container& xs, const T& y)
+namespace internal
+{
+
+template <typename T, typename Container>
+Container append_elem(internal::reuse_container_t, const T& y, Container&& xs)
+{
+    *internal::get_back_inserter(xs) = y;
+    return std::forward<Container>(xs);
+}
+
+template <typename T, typename Container>
+Container append_elem(internal::create_new_container_t, const T& y,
+    const Container& xs)
 {
     Container result;
     internal::prepare_container(result, size_of_cont(xs) + 1);
@@ -1015,20 +1021,67 @@ Container append_elem(const Container& xs, const T& y)
     return result;
 }
 
+} // namespace internal
+
+// API search type: append_elem : ([a], a) -> [a]
+// fwd bind count: 1
+// Extends a sequence with one element at the back.
+// append_elem([1, 2], 3) == [1, 2, 3]
+template <typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type,
+    typename T = typename ContainerOut::value_type>
+ContainerOut append_elem(const T& y, Container&& xs)
+{
+    return internal::append_elem(internal::can_reuse_v<Container>{},
+        y, std::forward<Container>(xs));
+}
+
+namespace internal
+{
+
+template <typename T>
+std::list<T> prepend_elem(internal::reuse_container_t,
+    const T& y, std::list<T>&& xs)
+{
+    xs.push_front(y);
+    return std::forward<std::list<T>>(xs);
+}
+
+template <typename T, typename Container>
+Container prepend_elem(internal::reuse_container_t,
+    const T& y, Container&& xs)
+{
+    xs.resize(size_of_cont(xs) + 1);
+    std::copy(++std::rbegin(xs), std::rend(xs), std::rbegin(xs));
+    *std::begin(xs) = y;
+    return std::forward<Container>(xs);
+}
+
+template <typename T, typename Container>
+Container prepend_elem(internal::create_new_container_t, const T& y,
+    const Container& xs)
+{
+    Container result;
+    internal::prepare_container(result, size_of_cont(xs) + 1);
+    *internal::get_back_inserter(result) = y;
+    std::copy(std::begin(xs), std::end(xs),
+        internal::get_back_inserter(result));
+    return result;
+}
+
+} // namespace internal
+
 // API search type: prepend_elem : ([a], a) -> [a]
 // fwd bind count: 1
 // Extends a sequence with one element in the front.
 // prepend_elem([2, 3], 1) == [1, 2, 3]
 template <typename Container,
-    typename T = typename Container::value_type>
-Container prepend_elem(const Container& xs, const T& y)
+    typename ContainerOut = typename std::remove_reference<Container>::type,
+    typename T = typename ContainerOut::value_type>
+ContainerOut prepend_elem(const T& y, Container&& xs)
 {
-    Container result;
-    *internal::get_back_inserter(result) = y;
-    internal::prepare_container(result, size_of_cont(xs) + 1);
-    std::copy(std::begin(xs), std::end(xs),
-        internal::get_back_inserter(result));
-    return result;
+    return internal::prepend_elem(internal::can_reuse_v<Container>{},
+        y, std::forward<Container>(xs));
 }
 
 // API search type: append : ([a], [a]) -> [a]
@@ -1125,22 +1178,6 @@ std::pair<Container, Container> unweave(const Container& xs)
 namespace internal
 {
 
-template <typename Compare, typename Container>
-Container sort_by(internal::reuse_container_t, Compare comp, Container&& xs)
-{
-    std::sort(std::begin(xs), std::end(xs), comp);
-    return std::forward<Container>(xs);
-}
-
-template <typename Compare, typename Container>
-Container sort_by(internal::create_new_container_t, Compare comp,
-    const Container& xs)
-{
-    auto result = xs;
-    std::sort(std::begin(result), std::end(result), comp);
-    return result;
-}
-
 template <typename Compare, typename T>
 std::list<T> sort_by(internal::reuse_container_t, Compare comp,
     std::list<T>&& xs)
@@ -1155,6 +1192,22 @@ std::list<T> sort_by(internal::create_new_container_t, Compare comp,
 {
     auto result = xs;
     result.sort(comp);
+    return result;
+}
+
+template <typename Compare, typename Container>
+Container sort_by(internal::reuse_container_t, Compare comp, Container&& xs)
+{
+    std::sort(std::begin(xs), std::end(xs), comp);
+    return std::forward<Container>(xs);
+}
+
+template <typename Compare, typename Container>
+Container sort_by(internal::create_new_container_t, Compare comp,
+    const Container& xs)
+{
+    auto result = xs;
+    std::sort(std::begin(result), std::end(result), comp);
     return result;
 }
 
@@ -1227,23 +1280,6 @@ ContainerOut sort(Container&& xs)
 namespace internal
 {
 
-template <typename Compare, typename Container>
-Container stable_sort_by(internal::reuse_container_t, Compare comp,
-    Container&& xs)
-{
-    std::sort(std::begin(xs), std::end(xs), comp);
-    return std::forward<Container>(xs);
-}
-
-template <typename Compare, typename Container>
-Container stable_sort_by(internal::create_new_container_t, Compare comp,
-    const Container& xs)
-{
-    auto result = xs;
-    std::sort(std::begin(result), std::end(result), comp);
-    return result;
-}
-
 template <typename Compare, typename T>
 std::list<T> stable_sort_by(internal::reuse_container_t, Compare comp,
     std::list<T>&& xs)
@@ -1258,6 +1294,23 @@ std::list<T> stable_sort_by(internal::create_new_container_t, Compare comp,
 {
     auto result = xs;
     result.sort(comp); // std::list<T>::sort ist already stable.
+    return result;
+}
+
+template <typename Compare, typename Container>
+Container stable_sort_by(internal::reuse_container_t, Compare comp,
+    Container&& xs)
+{
+    std::sort(std::begin(xs), std::end(xs), comp);
+    return std::forward<Container>(xs);
+}
+
+template <typename Compare, typename Container>
+Container stable_sort_by(internal::create_new_container_t, Compare comp,
+    const Container& xs)
+{
+    auto result = xs;
+    std::sort(std::begin(result), std::end(result), comp);
     return result;
 }
 
@@ -1312,7 +1365,7 @@ Container partial_sort_by(internal::reuse_container_t, Compare comp,
     internal::advance_iterator(middle, count);
     std::partial_sort(std::begin(xs), middle, std::end(xs), comp);
     return std::forward<Container>(get_segment(internal::reuse_container_t(),
-        0, count, std::forward<Container>(xs)));
+        0, count, xs));
 }
 
 template <typename Compare, typename Container>
@@ -1321,7 +1374,7 @@ Container partial_sort_by(internal::create_new_container_t, Compare comp,
 {
     auto result = xs;
     return partial_sort_by(
-        internal::reuse_container_t(), count, std::move(xs));
+        internal::reuse_container_t(), comp, count, std::move(result));
 }
 
 } // namespace internal

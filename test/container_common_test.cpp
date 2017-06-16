@@ -171,13 +171,17 @@ TEST_CASE("container_common_test, convert")
 TEST_CASE("container_common_test, append_elem")
 {
     using namespace fplus;
-    REQUIRE_EQ(append_elem(IntVector({1,2}), 3), IntVector({1,2,3}));
+    IntVector values = {1,2};
+    REQUIRE_EQ(append_elem(3, values), IntVector({1,2,3}));
+    REQUIRE_EQ(append_elem(3, IntVector({1,2})), IntVector({1,2,3}));
 }
 
 TEST_CASE("container_common_test, prepend_elem")
 {
     using namespace fplus;
-    REQUIRE_EQ(prepend_elem(IntVector({2,3}), 1), IntVector({1,2,3}));
+    IntVector values = {2,3};
+    REQUIRE_EQ(prepend_elem(1, values), IntVector({1,2,3}));
+    REQUIRE_EQ(prepend_elem(1, IntVector({2,3})), IntVector({1,2,3}));
 }
 
 TEST_CASE("container_common_test, append")
@@ -387,6 +391,7 @@ TEST_CASE("container_common_test, stable_sort")
 TEST_CASE("container_common_test, partial_sort")
 {
     using namespace fplus;
+    REQUIRE_EQ(partial_sort(2, xs_reverse), IntVector({1,2}));
     REQUIRE_EQ(partial_sort(2, reverse(xs)), IntVector({1,2}));
 }
 
