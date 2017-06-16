@@ -116,6 +116,18 @@ namespace internal
         return std::back_inserter(ys);
     }
 
+    template <typename Container, typename Y>
+    std::back_insert_iterator<Container> get_back_inserter(std::list<Y>& ys)
+    {
+        return std::back_inserter(ys);
+    }
+
+    template <typename Container, typename Y>
+    std::back_insert_iterator<Container> get_back_inserter(std::deque<Y>& ys)
+    {
+        return std::back_inserter(ys);
+    }
+
     template <typename T, std::size_t N>
     struct array_back_insert_iterator : public std::back_insert_iterator<std::array<T, N>>
     {
