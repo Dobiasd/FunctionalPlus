@@ -1122,23 +1122,53 @@ std::pair<Container, Container> unweave(const Container& xs)
     return result;
 }
 
+namespace internal
+{
+
+template <typename Compare, typename Container>
+Container sort_by(internal::reuse_container_t, Compare comp, Container&& xs)
+{
+    std::sort(std::begin(xs), std::end(xs), comp);
+    return std::forward<Container>(xs);
+}
+
+template <typename Compare, typename Container>
+Container sort_by(internal::create_new_container_t, Compare comp,
+    const Container& xs)
+{
+    auto result = xs;
+    std::sort(std::begin(result), std::end(result), comp);
+    return result;
+}
+
 template <typename Compare, typename T>
-std::list<T> sort_by(Compare comp, const std::list<T>& xs)
+std::list<T> sort_by(internal::reuse_container_t, Compare comp,
+    std::list<T>&& xs)
+{
+    xs.sort(comp);
+    return std::forward<std::list<T>>(xs);
+}
+
+template <typename Compare, typename T>
+std::list<T> sort_by(internal::create_new_container_t, Compare comp,
+    const std::list<T>& xs)
 {
     auto result = xs;
     result.sort(comp);
     return result;
 }
 
+} // namespace internal
+
 // API search type: sort_by : (((a, a) -> Bool), [a]) -> [a]
 // fwd bind count: 1
 // Sort a sequence by given less comparator.
-template <typename Compare, typename Container>
-Container sort_by(Compare comp, const Container& xs)
+template <typename Compare, typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut sort_by(Compare comp, Container&& xs)
 {
-    auto result = xs;
-    std::sort(std::begin(result), std::end(result), comp);
-    return result;
+    return internal::sort_by(internal::can_reuse_v<Container>{},
+        comp, std::forward<Container>(xs));
 }
 
 namespace internal
@@ -1175,97 +1205,162 @@ namespace internal
 // API search type: sort_on : ((a -> b), [a]) -> [a]
 // fwd bind count: 1
 // Sort a sequence by a given transformer.
-template <typename F, typename Container>
-Container sort_on(F f, const Container& xs)
+template <typename F, typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut sort_on(F f, Container&& xs)
 {
-    return sort_by(internal::is_less_by_struct<F>(f), xs);
+    return sort_by(internal::is_less_by_struct<F>(f),
+        std::forward<Container>(xs));
 }
 
 // API search type: sort : [a] -> [a]
 // fwd bind count: 0
 // Sort a sequence to ascending order using std::less.
-template <typename Container>
-Container sort(const Container& xs)
+template <typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut sort(Container&& xs)
 {
-    typedef typename Container::value_type T;
-    return sort_by(std::less<T>(), xs);
+    typedef typename std::remove_reference<Container>::type::value_type T;
+    return sort_by(std::less<T>(), std::forward<Container>(xs));
+}
+
+namespace internal
+{
+
+template <typename Compare, typename Container>
+Container stable_sort_by(internal::reuse_container_t, Compare comp,
+    Container&& xs)
+{
+    std::sort(std::begin(xs), std::end(xs), comp);
+    return std::forward<Container>(xs);
+}
+
+template <typename Compare, typename Container>
+Container stable_sort_by(internal::create_new_container_t, Compare comp,
+    const Container& xs)
+{
+    auto result = xs;
+    std::sort(std::begin(result), std::end(result), comp);
+    return result;
 }
 
 template <typename Compare, typename T>
-std::list<T> stable_sort_by(Compare comp, const std::list<T>& xs)
+std::list<T> stable_sort_by(internal::reuse_container_t, Compare comp,
+    std::list<T>&& xs)
+{
+    xs.sort(comp); // std::list<T>::sort ist already stable.
+    return std::forward<std::list<T>>(xs);
+}
+
+template <typename Compare, typename T>
+std::list<T> stable_sort_by(internal::create_new_container_t, Compare comp,
+    const std::list<T>& xs)
 {
     auto result = xs;
     result.sort(comp); // std::list<T>::sort ist already stable.
     return result;
 }
 
+} // namespace internal
+
+
 // API search type: stable_sort_by : (((a, a) -> Bool), [a]) -> [a]
 // fwd bind count: 1
 // Sort a sequence stably by given less comparator.
-template <typename Compare, typename Container>
-Container stable_sort_by(Compare comp, const Container& xs)
+template <typename Compare, typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut stable_sort_by(Compare comp, Container&& xs)
 {
-    auto result = xs;
-    std::stable_sort(std::begin(result), std::end(result), comp);
-    return result;
+    return internal::stable_sort_by(internal::can_reuse_v<Container>{},
+        comp, std::forward<Container>(xs));
 }
 
 // API search type: stable_sort_on : ((a -> b), [a]) -> [a]
 // fwd bind count: 1
 // Sort a sequence stably by given transformer.
-template <typename F, typename Container>
-Container stable_sort_on(F f, const Container& xs)
+template <typename F, typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut stable_sort_on(F f, Container&& xs)
 {
-    return stable_sort_by(internal::is_less_by_struct<F>(f), xs);
+    return stable_sort_by(internal::is_less_by_struct<F>(f),
+        std::forward<Container>(xs));
 }
 
 // API search type: stable_sort : [a] -> [a]
 // fwd bind count: 0
 // Sort a sequence stably to ascending order using std::less.
-template <typename Container>
-Container stable_sort(const Container& xs)
+template <typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut stable_sort(Container&& xs)
 {
-    typedef typename Container::value_type T;
-    return stable_sort_by(std::less<T>(), xs);
+    typedef typename std::remove_reference<Container>::type::value_type T;
+    return stable_sort_by(std::less<T>(), std::forward<Container>(xs));
 }
+
+namespace internal
+{
+
+template <typename Compare, typename Container>
+Container partial_sort_by(internal::reuse_container_t, Compare comp,
+    std::size_t count, Container&& xs)
+{
+    if (count > xs.size())
+    {
+        count = xs.size();
+    }
+    auto middle = std::begin(xs);
+    internal::advance_iterator(middle, count);
+    std::partial_sort(std::begin(xs), middle, std::end(xs), comp);
+    return std::forward<Container>(get_segment(internal::reuse_container_t(),
+        0, count, std::forward<Container>(xs)));
+}
+
+template <typename Compare, typename Container>
+Container partial_sort_by(internal::create_new_container_t, Compare comp,
+    std::size_t count, const Container& xs)
+{
+    auto result = xs;
+    return partial_sort_by(
+        internal::reuse_container_t(), count, std::move(xs));
+}
+
+} // namespace internal
 
 // API search type: partial_sort_by : (((a, a) -> Bool), Int, [a]) -> [a]
 // fwd bind count: 2
 // Partially sort a sequence by a given less comparator.
 // Returns only the sorted segment.
-template <typename Compare, typename Container>
-Container partial_sort_by(Compare comp, std::size_t count, const Container& xs)
+template <typename Compare, typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut partial_sort_by(Compare comp, std::size_t count, Container&& xs)
 {
-    auto result = xs;
-    if (count > xs.size())
-    {
-        count = xs.size();
-    }
-    auto middle = std::begin(result);
-    internal::advance_iterator(middle, count);
-    std::partial_sort(std::begin(result), middle, std::end(result), comp);
-    return get_segment(0, count, result);
+    return internal::partial_sort_by(internal::can_reuse_v<Container>{},
+        comp, count, std::forward<Container>(xs));
 }
 
 // API search type: partial_sort_on : ((a -> b), Int, [a]) -> [a]
 // fwd bind count: 2
 // Partially sort a sequence by a given transformer.
 // Returns only the sorted segment.
-template <typename F, typename Container>
-Container partial_sort_on(F f, std::size_t count, const Container& xs)
+template <typename F, typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut partial_sort_on(F f, std::size_t count, Container&& xs)
 {
-    return partial_sort_by(internal::is_less_by_struct<F>(f), count, xs);
+    return partial_sort_by(internal::is_less_by_struct<F>(f), count,
+        std::forward<Container>(xs));
 }
 
 // API search type: partial_sort : (Int, [a]) -> [a]
 // fwd bind count: 1
 // Partially sort a sequence in ascending order using std::less.
 // Returns only the sorted segment.
-template <typename Container>
-Container partial_sort(std::size_t count, const Container& xs)
+template <typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut partial_sort(std::size_t count, Container&& xs)
 {
-    typedef typename Container::value_type T;
-    return partial_sort_by(std::less<T>(), count, xs);
+    typedef typename std::remove_reference<Container>::type::value_type T;
+    return partial_sort_by(std::less<T>(), count,
+        std::forward<Container>(xs));
 }
 
 // API search type: nth_element_by : (((a, a) -> Bool), Int, [a]) -> a

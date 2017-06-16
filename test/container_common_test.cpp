@@ -373,6 +373,17 @@ TEST_CASE("container_common_test, sort")
     REQUIRE_EQ(sort_on(size_of_cont<IntVector>, IntVectors({{1,2,3},{4,5}})), IntVectors({{4,5},{1,2,3}}));
 }
 
+TEST_CASE("container_common_test, stable_sort")
+{
+    using namespace fplus;
+    REQUIRE_EQ(stable_sort(reverse(xs)), xsSorted);
+    REQUIRE_EQ(stable_sort(reverse(intList)), intListSorted);
+    REQUIRE_EQ(stable_sort_by(std::greater<int>(), xs), reverse(xsSorted));
+
+    REQUIRE_EQ(stable_sort_on(int_mod_10, IntVector({26,3,14})), IntVector({3,14,26}));
+    REQUIRE_EQ(stable_sort_on(size_of_cont<IntVector>, IntVectors({{1,2,3},{4,5}})), IntVectors({{4,5},{1,2,3}}));
+}
+
 TEST_CASE("container_common_test, partial_sort")
 {
     using namespace fplus;
