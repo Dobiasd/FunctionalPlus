@@ -15,19 +15,40 @@
 namespace fplus
 {
 
-// API search type: keep_if : ((a -> Bool), [a]) -> [a]
-// fwd bind count: 1
-// Keep the elements of a sequence fulfilling a predicate.
-// keep_if(is_even, [1, 2, 3, 2, 4, 5]) == [2, 2, 4]
-// Also known as filter.
+namespace internal
+{
+
 template <typename Pred, typename Container>
-Container keep_if(Pred pred, const Container& xs)
+Container keep_if(internal::reuse_container_t, Pred pred, Container&& xs)
+{
+    xs.erase(std::remove_if(
+        std::begin(xs), std::end(xs), logical_not(pred)), std::end(xs));
+    return std::forward<Container>(xs);
+}
+
+template <typename Pred, typename Container>
+Container keep_if(internal::create_new_container_t, Pred pred, const Container& xs)
 {
     internal::check_unary_predicate_for_container<Pred, Container>();
     Container result;
     auto it = internal::get_back_inserter<Container>(result);
     std::copy_if(std::begin(xs), std::end(xs), it, pred);
     return result;
+}
+
+} // namespace internal
+
+// API search type: keep_if : ((a -> Bool), [a]) -> [a]
+// fwd bind count: 1
+// Keep the elements of a sequence fulfilling a predicate.
+// keep_if(is_even, [1, 2, 3, 2, 4, 5]) == [2, 2, 4]
+// Also known as filter.
+template <typename Pred, typename Container,
+    typename Out = typename std::remove_reference<Container>::type>
+Out keep_if(Pred pred, Container&& xs)
+{
+    return internal::keep_if(internal::can_reuse_v<Container>{},
+        pred, std::forward<Container>(xs));
 }
 
 // API search type: drop_if : ((a -> Bool), [a]) -> [a]

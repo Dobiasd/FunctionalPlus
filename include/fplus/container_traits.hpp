@@ -90,6 +90,55 @@ struct same_cont_new_t_from_binary_f
     typedef ContOut type;
 };
 
+
+
+// https://stackoverflow.com/a/44549820/1866775
+
+template<class T>
+struct can_self_assign {
+    using type = std::is_assignable<T&, T>;
+};
+
+template<typename T>
+using can_self_assign_t = typename can_self_assign<T>::type;
+
+template<typename T0, typename T1>
+struct can_self_assign<std::pair<T0, T1>>
+{
+    enum { t0 = can_self_assign_t<T0>::value, t1 = can_self_assign_t<T1>::value, x = t0&&t1 };
+    using type = std::integral_constant<bool, x>;
+};
+
+template<>
+struct can_self_assign<std::tuple<>>
+{
+    using type = std::integral_constant<bool, true>;
+};
+template<typename T0, typename...Ts>
+struct can_self_assign<std::tuple<T0, Ts...>>
+{
+    using type = std::integral_constant<bool, can_self_assign_t<T0>::value && can_self_assign_t<std::tuple<Ts...>>::value >;
+};
+
+template<class T, T v>
+struct reuse_container_bool_t {
+};
+using create_new_container_t = reuse_container_bool_t<bool, false>;
+using reuse_container_t = reuse_container_bool_t<bool, true>;
+
+template <typename Container>
+struct can_reuse
+{
+    using dContainer = typename std::decay<Container>::type;
+    using can_assign = can_self_assign_t<typename dContainer::value_type>;
+    using cannot_reuse = std::is_lvalue_reference<Container>;
+    using value = reuse_container_bool_t<bool, can_assign::value && !cannot_reuse::value >;
+};
+
+template<typename Container>
+using can_reuse_v = typename can_reuse<Container>::value;
+
+
 } // namespace internal
 
 } // namespace fplus
