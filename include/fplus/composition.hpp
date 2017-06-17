@@ -43,8 +43,8 @@ std::function<FOut(FIn1)> bind_1st_of_2(F f, T x)
     static_assert(std::is_convertible<T, FIn0>::value,
         "Function can not take bound parameter type.");
     return [f, x]
-           (FIn1 y)
-           { return f(x, y); };
+           (FIn1&& y)
+           { return f(x, std::forward<FIn1>(y)); };
 }
 
 // API search type: bind_2nd_of_2 : (((a, b) -> c), b) -> (a -> c)
@@ -59,8 +59,8 @@ std::function<FOut(FIn0)> bind_2nd_of_2(F f, T y)
     static_assert(std::is_convertible<T, FIn1>::value,
         "Function can not take bound parameter type.");
     return [f, y]
-           (FIn0 x)
-           { return f(x, y); };
+           (FIn0&& x)
+           { return f(std::forward<FIn0>(x), y); };
 }
 
 // API search type: bind_1st_of_3 : (((a, b, c) -> d), a) -> ((b, c) -> d)
@@ -76,8 +76,8 @@ std::function<FOut(FIn1, FIn2)> bind_1st_of_3(F f, X x)
     static_assert(std::is_convertible<X, FIn0>::value,
         "Function can not take bound parameter type.");
     return [f, x]
-           (FIn1 y, FIn2 z)
-           { return f(x, y, z); };
+           (FIn1&& y, FIn2&& z)
+           { return f(x, std::forward<FIn1>(y), std::forward<FIn2>(z)); };
 }
 
 // API search type: bind_1st_and_2nd_of_3 : (((a, b, c) -> d), a, b) -> (c -> d)
@@ -95,8 +95,8 @@ std::function<FOut(FIn2)> bind_1st_and_2nd_of_3(F f, X x, Y y)
     static_assert(std::is_convertible<Y, FIn1>::value,
         "Function can not take second bound parameter type.");
     return [f, x, y]
-           (FIn2 z)
-           { return f(x, y, z); };
+           (FIn2&& z)
+           { return f(x, y, std::forward<FIn2>(z)); };
 }
 
 // API search type: flip : (a -> b) -> (b -> a)
@@ -108,7 +108,9 @@ template <typename F,
 std::function<C(B, A)> flip(F f)
 {
     static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
-    return [f](B y, A x) { return f(x, y); };
+    return [f](B&& y, A&& x) {
+        return f(std::forward<A>(x), std::forward<B>(y));
+    };
 }
 
 // API search type: forward_apply : (a, (a -> b)) -> b
@@ -116,10 +118,10 @@ std::function<C(B, A)> flip(F f)
 // Returns the result of applying the function f to the value x.
 template <typename X, typename F,
     typename FOut = typename std::result_of<F(X)>::type>
-FOut forward_apply(const X& x, F f)
+FOut forward_apply(X&& x, F f)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return f(x);
+    return f(std::forward<X>(x));
 }
 
 // API search type: lazy : ((a -> b), a) -> (() -> b)
@@ -163,7 +165,7 @@ std::function<GOut(FIn)> compose(F f, G g)
     static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
     static_assert(std::is_convertible<FOut,GIn>::value,
         "Parameter types do not match");
-    return [f, g](FIn x) { return g(f(x)); };
+    return [f, g](FIn&& x) { return g(f(std::forward<FIn>(x))); };
 }
 
 // API search type: compose : ((a -> b), (b -> c), (c -> d)) -> (a -> d)
@@ -185,7 +187,7 @@ std::function<HOut(FIn)> compose(F f, G g, H h)
         "Parameter types do not match");
     static_assert(std::is_convertible<GOut,HIn>::value,
         "Parameter types do not match");
-    return [f, g, h](FIn x) { return h(g(f(x))); };
+    return [f, g, h](FIn&& x) { return h(g(f(std::forward<FIn>(x)))); };
 }
 
 // API search type: compose : ((a -> b), (b -> c), (c -> d), (d -> e)) -> (a -> e)
@@ -212,7 +214,7 @@ std::function<IOut(FIn)> compose(F f, G g, H h, I i)
         "Parameter types do not match");
     static_assert(std::is_convertible<HOut,IIn>::value,
         "Parameter types do not match");
-    return [f, g, h, i](FIn x) { return i(h(g(f(x)))); };
+    return [f, g, h, i](FIn&& x) { return i(h(g(f(std::forward<FIn>(x))))); };
 }
 
 // API search type: compose : ((a -> b), (b -> c), (c -> d), (d -> e), (e -> f)) -> (a -> f)
@@ -244,7 +246,10 @@ std::function<JOut(FIn)> compose(F f, G g, H h, I i, J j)
         "Parameter types do not match");
     static_assert(std::is_convertible<IOut,JIn>::value,
         "Parameter types do not match");
-    return [f, g, h, i, j](FIn x) { return j(i(h(g(f(x))))); };
+    return [f, g, h, i, j](FIn&& x)
+    {
+        return j(i(h(g(f(std::forward<FIn>(x))))));
+    };
 }
 
 // API search type: logical_not : (a -> Bool) -> (a -> Bool)
@@ -259,7 +264,7 @@ std::function<bool(X)> logical_not(UnaryPredicate f)
         "Wrong arity.");
     typedef typename std::result_of<UnaryPredicate(X)>::type Res;
     static_assert(std::is_same<Res, bool>::value, "Must return bool.");
-    return [f](X x) { return !f(x); };
+    return [f](X&& x) { return !f(std::forward<X>(x)); };
 }
 
 // API search type: logical_or : ((a -> Bool), (a -> Bool)) -> (a -> Bool)
@@ -281,7 +286,10 @@ std::function<bool(X)> logical_or(UnaryPredicateF f, UnaryPredicateG g)
         "Wrong arity.");
     static_assert(utils::function_traits<UnaryPredicateG>::arity == 1,
         "Wrong arity.");
-    return [f, g](X x) { return f(x) || g(x); };
+    return [f, g](X&& x)
+    {
+        return f(std::forward<X>(x)) || g(std::forward<X>(x));
+    };
 }
 
 // API search type: logical_and : ((a -> Bool), (a -> Bool)) -> (a -> Bool)
@@ -303,7 +311,10 @@ std::function<bool(X)> logical_and(UnaryPredicateF f, UnaryPredicateG g)
         "Wrong arity.");
     static_assert(utils::function_traits<UnaryPredicateG>::arity == 1,
         "Wrong arity.");
-    return [f, g](X x) { return f(x) && g(x); };
+    return [f, g](X&& x)
+    {
+        return f(std::forward<X>(x)) && g(std::forward<X>(x));
+    };
 }
 
 // API search type: logical_xor : ((a -> Bool), (a -> Bool)) -> (a -> Bool)
@@ -325,10 +336,10 @@ std::function<bool(X)> logical_xor(UnaryPredicateF f, UnaryPredicateG g)
         "Wrong arity.");
     static_assert(utils::function_traits<UnaryPredicateG>::arity == 1,
         "Wrong arity.");
-    return [f, g](X x)
+    return [f, g](X&& x)
     {
-        auto fx = f(x);
-        auto gx = g(x);
+        auto fx = f(std::forward<X>(x));
+        auto gx = g(std::forward<X>(x));
         return (fx && !gx) || (!fx && gx);
     };
 }

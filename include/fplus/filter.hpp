@@ -15,13 +15,20 @@
 namespace fplus
 {
 
-// API search type: keep_if : ((a -> Bool), [a]) -> [a]
-// fwd bind count: 1
-// Keep the elements of a sequence fulfilling a predicate.
-// keep_if(is_even, [1, 2, 3, 2, 4, 5]) == [2, 2, 4]
-// Also known as filter.
+namespace internal
+{
+
 template <typename Pred, typename Container>
-Container keep_if(Pred pred, const Container& xs)
+Container keep_if(internal::reuse_container_t, Pred pred, Container&& xs)
+{
+    xs.erase(std::remove_if(
+        std::begin(xs), std::end(xs), logical_not(pred)), std::end(xs));
+    return std::forward<Container>(xs);
+}
+
+template <typename Pred, typename Container>
+Container keep_if(internal::create_new_container_t, Pred pred,
+    const Container& xs)
 {
     internal::check_unary_predicate_for_container<Pred, Container>();
     Container result;
@@ -30,16 +37,31 @@ Container keep_if(Pred pred, const Container& xs)
     return result;
 }
 
+} // namespace internal
+
+// API search type: keep_if : ((a -> Bool), [a]) -> [a]
+// fwd bind count: 1
+// Keep the elements of a sequence fulfilling a predicate.
+// keep_if(is_even, [1, 2, 3, 2, 4, 5]) == [2, 2, 4]
+// Also known as filter.
+template <typename Pred, typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut keep_if(Pred pred, Container&& xs)
+{
+    return internal::keep_if(internal::can_reuse_v<Container>{},
+        pred, std::forward<Container>(xs));
+}
+
 // API search type: drop_if : ((a -> Bool), [a]) -> [a]
 // fwd bind count: 1
 // Drop the elements of a sequence fulfilling a predicate.
 // drop_if(is_even, [1, 2, 3, 2, 4, 5]) == [1, 3, 5]
 // Also known as reject.
-template <typename Pred, typename Container>
-Container drop_if(Pred pred, const Container& xs)
+template <typename Pred, typename Container,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut drop_if(Pred pred, Container&& xs)
 {
-    internal::check_unary_predicate_for_container<Pred, Container>();
-    return keep_if(logical_not(pred), xs);
+    return keep_if(logical_not(pred), std::forward<Container>(xs));
 }
 
 // API search type: without : (a, [a]) -> [a]
@@ -47,24 +69,27 @@ Container drop_if(Pred pred, const Container& xs)
 // Keep all elements a sequence not equal to elem.
 // without(0, [1, 0, 0, 5, 3, 0, 1]) == [1, 5, 3, 1]
 template <typename Container,
-    typename T = typename Container::value_type>
-Container without(T elem, const Container& xs)
+    typename T = typename Container::value_type,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut without(T elem, Container&& xs)
 {
-    return drop_if(is_equal_to(elem), xs);
+    return drop_if(is_equal_to(elem), std::forward<Container>(xs));
 }
 
 // API search type: without_any : (a, [a]) -> [a]
 // fwd bind count: 1
 // Keep all elements a sequence not present in elems.
 // without([0, 1], [1, 0, 0, 5, 3, 0, 1]) == [5, 3]
-template <typename Container, typename ContainerElems>
-Container without_any(const ContainerElems& elems, const Container& xs)
+template <typename Container, typename ContainerElems,
+    typename ContainerOut = typename std::remove_reference<Container>::type>
+ContainerOut without_any(const ContainerElems& elems, Container&& xs)
 {
     static_assert(std::is_same<
         typename ContainerElems::value_type,
-        typename Container::value_type>::value,
+        typename std::remove_reference<Container>::type::value_type>::value,
         "Container values must be of the same type.");
-    return drop_if(bind_2nd_of_2(is_elem_of<ContainerElems>, elems), xs);
+    const auto pred = bind_2nd_of_2(is_elem_of<ContainerElems>, elems);
+    return drop_if(pred, std::forward<Container>(xs));
 }
 
 // API search type: keep_if_with_idx : (((Int, a) -> Bool), [a]) -> [a]

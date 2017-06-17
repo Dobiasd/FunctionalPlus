@@ -134,7 +134,7 @@ void problem_13()
             }
             else
             {
-                return append_elem(acc, singleton_seq(x));
+                return append_elem(singleton_seq(x), acc);
             }
         }
     };

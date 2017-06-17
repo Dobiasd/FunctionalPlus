@@ -21,6 +21,7 @@ namespace {
     typedef std::vector<bool> BoolVector;
     typedef std::vector<std::size_t> IdxVector;
     IntVector xs = {1,2,2,3,2};
+    IntVector xs_reverse = {2,3,2,2,1};
     IntVector xsSorted = {1,2,2,2,3};
     IntVector xs2Times = {1,2,2,3,2,1,2,2,3,2};
     typedef std::list<int> IntList;
@@ -170,13 +171,17 @@ TEST_CASE("container_common_test, convert")
 TEST_CASE("container_common_test, append_elem")
 {
     using namespace fplus;
-    REQUIRE_EQ(append_elem(IntVector({1,2}), 3), IntVector({1,2,3}));
+    IntVector values = {1,2};
+    REQUIRE_EQ(append_elem(3, values), IntVector({1,2,3}));
+    REQUIRE_EQ(append_elem(3, IntVector({1,2})), IntVector({1,2,3}));
 }
 
 TEST_CASE("container_common_test, prepend_elem")
 {
     using namespace fplus;
-    REQUIRE_EQ(prepend_elem(IntVector({2,3}), 1), IntVector({1,2,3}));
+    IntVector values = {2,3};
+    REQUIRE_EQ(prepend_elem(1, values), IntVector({1,2,3}));
+    REQUIRE_EQ(prepend_elem(1, IntVector({2,3})), IntVector({1,2,3}));
 }
 
 TEST_CASE("container_common_test, append")
@@ -372,10 +377,29 @@ TEST_CASE("container_common_test, sort")
     REQUIRE_EQ(sort_on(size_of_cont<IntVector>, IntVectors({{1,2,3},{4,5}})), IntVectors({{4,5},{1,2,3}}));
 }
 
+TEST_CASE("container_common_test, stable_sort")
+{
+    using namespace fplus;
+    REQUIRE_EQ(stable_sort(reverse(xs)), xsSorted);
+    REQUIRE_EQ(stable_sort(reverse(intList)), intListSorted);
+    REQUIRE_EQ(stable_sort_by(std::greater<int>(), xs), reverse(xsSorted));
+
+    REQUIRE_EQ(stable_sort_on(int_mod_10, IntVector({26,3,14})), IntVector({3,14,26}));
+    REQUIRE_EQ(stable_sort_on(size_of_cont<IntVector>, IntVectors({{1,2,3},{4,5}})), IntVectors({{4,5},{1,2,3}}));
+}
+
 TEST_CASE("container_common_test, partial_sort")
 {
     using namespace fplus;
+    REQUIRE_EQ(partial_sort(2, xs_reverse), IntVector({1,2}));
     REQUIRE_EQ(partial_sort(2, reverse(xs)), IntVector({1,2}));
+}
+
+TEST_CASE("container_common_test, reverse")
+{
+    using namespace fplus;
+    REQUIRE_EQ(reverse(IntVector({1,2,2,3,2})), xs_reverse);
+    REQUIRE_EQ(reverse(xs), xs_reverse);
 }
 
 TEST_CASE("container_common_test, nth_element")
@@ -518,8 +542,10 @@ TEST_CASE("container_common_test, segment")
 {
     using namespace fplus;
     IntList v789 = { 7,8,9 };
+    REQUIRE_EQ(set_segment(1, v789, IntList({ 1,2,2,3,2 })), IntList({ 1,7,8,9,2 }));
     REQUIRE_EQ(set_segment(1, v789, intList), IntList({ 1,7,8,9,2 }));
     REQUIRE_EQ(get_segment(1, 4, intList), IntList({ 2,2,3 }));
+    REQUIRE_EQ(get_segment(1, 4, IntList({ 1,2,2,3,2 })), IntList({ 2,2,3 }));
     REQUIRE_EQ(replace_elems(2, 5, xs), IntVector({1,5,5,3,5}));
     REQUIRE_EQ(replace_tokens(std::string("123"), std::string("_"), std::string("--123----123123")), std::string("--_----__"));
     REQUIRE_EQ(take(2, xs), IntVector({ 1,2 }));
@@ -536,6 +562,9 @@ TEST_CASE("container_common_test, segment")
     REQUIRE_EQ(drop_while(is_odd_int, xs), IntVector({ 2,2,3,2 }));
     REQUIRE_EQ(span(is_odd_int, xs), std::make_pair(IntVector({ 1 }), IntVector({ 2,2,3,2 })));
     REQUIRE_EQ(replace_segment(2, IntVector({8,9}), xs), IntVector({1,2,8,9,2}));
+    REQUIRE_EQ(replace_segment(2, IntVector({8,9}), IntVector({1,2,2,3,2})), IntVector({1,2,8,9,2}));
+    REQUIRE_EQ(remove_segment(1, 3, xs), IntVector({1,3,2}));
+    REQUIRE_EQ(remove_segment(1, 3, IntVector({1,2,2,3,2})), IntVector({1,3,2}));
     REQUIRE_EQ(take_cyclic(5, IntVector({0,1,2,3})), IntVector({0,1,2,3,0}));
     REQUIRE_EQ(take_cyclic(7, IntVector({0,1,2,3})), IntVector({0,1,2,3,0,1,2}));
     REQUIRE_EQ(take_cyclic(7, IntVector({0,1})), IntVector({0,1,0,1,0,1,0}));
@@ -622,8 +651,9 @@ TEST_CASE("container_common_test, tail")
 {
     using namespace fplus;
     REQUIRE_EQ(init(xs), IntVector({1,2,2,3}));
+    REQUIRE_EQ(init(IntVector({1,2,2,3,2})), IntVector({1,2,2,3}));
     REQUIRE_EQ(tail(xs), IntVector({2,2,3,2}));
-
+    REQUIRE_EQ(tail(IntVector({1,2,2,3,2})), IntVector({2,2,3,2}));
     REQUIRE_EQ(inits(xs), IntVectors({{},{1},{1,2},{1,2,2},{1,2,2,3},{1,2,2,3,2}}));
     REQUIRE_EQ(tails(xs), IntVectors({{1,2,2,3,2},{2,2,3,2},{2,3,2},{3,2},{2},{}}));
 }

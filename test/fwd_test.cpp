@@ -74,7 +74,7 @@ TEST_CASE("fwd_test, compose")
 
     const auto function_chain_old_style = compose(
         bind_1st_of_2(transform<decltype(times_3), std::vector<int>, std::vector<int>>, times_3),
-        bind_1st_of_2(drop_if<decltype(is_odd_int), std::vector<int>>, is_odd_int),
+        bind_1st_of_2(drop_if<decltype(is_odd_int), const std::vector<int>&>, is_odd_int),
         bind_1st_of_2(transform<decltype(as_string_length_lambda), std::vector<int>>, as_string_length_lambda),
         sum<std::vector<std::size_t>>);
 
