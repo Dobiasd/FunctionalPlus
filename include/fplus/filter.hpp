@@ -21,6 +21,7 @@ namespace internal
 template <typename Pred, typename Container>
 Container keep_if(internal::reuse_container_t, Pred pred, Container&& xs)
 {
+    internal::check_unary_predicate_for_container<Pred, Container>();
     xs.erase(std::remove_if(
         std::begin(xs), std::end(xs), logical_not(pred)), std::end(xs));
     return std::forward<Container>(xs);
