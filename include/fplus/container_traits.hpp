@@ -132,7 +132,7 @@ struct can_reuse
     using dContainer = typename std::decay<Container>::type;
     using can_assign = can_self_assign_t<typename dContainer::value_type>;
     using cannot_reuse = std::is_lvalue_reference<Container>;
-    using value = reuse_container_bool_t<bool, can_assign::value && !cannot_reuse::value >;
+    using value = reuse_container_bool_t<bool, can_assign::value && !cannot_reuse::value>;
 };
 
 template<typename Container>
