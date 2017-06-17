@@ -385,9 +385,10 @@ Container set_segment(internal::create_new_container_t,
 
 // API search type: set_segment : (Int, [a], [a]) -> [a]
 // fwd bind count: 2
-// Return a defined segment from the sequence with the given token.
+// Replace part of a sequence with a token.
 // set_segment(2, [9,9,9], [0,1,2,3,4,5,6,7,8]) == [0,1,9,9,9,5,6,7,8]
-// crashes on invalid indices
+// Crashes on invalid indices.
+// Also known as replace_segment.
 template <typename ContainerToken, typename Container,
     typename ContainerOut = typename std::remove_reference<Container>::type>
 ContainerOut set_segment
@@ -477,19 +478,6 @@ Container insert_at(std::size_t idx_begin,
     std::copy(breakIt, std::end(xs), internal::get_back_inserter(result));
 
     return result;
-}
-
-// API search type: replace_segment : (Int, [a], [a]) -> [a]
-// fwd bind count: 2
-// Replace part of a sequence with a token.
-// replace_segment(2, [8,9], [0,1,2,3,4]) == [0,1,8,9,4]
-// crashes on invalid index
-template <typename ContainerToken, typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
-ContainerOut replace_segment(std::size_t idx_begin,
-        const ContainerToken& token, Container&& xs)
-{
-    return set_segment(idx_begin, token, std::forward<Container>(xs));
 }
 
 // API search type: elem_at_idx : (Int, [a]) -> a

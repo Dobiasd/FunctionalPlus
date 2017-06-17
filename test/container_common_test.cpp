@@ -561,8 +561,8 @@ TEST_CASE("container_common_test, segment")
     REQUIRE_EQ(drop_while(always<int>(false), xs), xs);
     REQUIRE_EQ(drop_while(is_odd_int, xs), IntVector({ 2,2,3,2 }));
     REQUIRE_EQ(span(is_odd_int, xs), std::make_pair(IntVector({ 1 }), IntVector({ 2,2,3,2 })));
-    REQUIRE_EQ(replace_segment(2, IntVector({8,9}), xs), IntVector({1,2,8,9,2}));
-    REQUIRE_EQ(replace_segment(2, IntVector({8,9}), IntVector({1,2,2,3,2})), IntVector({1,2,8,9,2}));
+    REQUIRE_EQ(set_segment(2, IntVector({8,9}), xs), IntVector({1,2,8,9,2}));
+    REQUIRE_EQ(set_segment(2, IntVector({8,9}), IntVector({1,2,2,3,2})), IntVector({1,2,8,9,2}));
     REQUIRE_EQ(remove_segment(1, 3, xs), IntVector({1,3,2}));
     REQUIRE_EQ(remove_segment(1, 3, IntVector({1,2,2,3,2})), IntVector({1,3,2}));
     REQUIRE_EQ(take_cyclic(5, IntVector({0,1,2,3})), IntVector({0,1,2,3,0}));
