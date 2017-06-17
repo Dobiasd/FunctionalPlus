@@ -138,6 +138,15 @@ struct can_reuse
 template<typename Container>
 using can_reuse_v = typename can_reuse<Container>::value;
 
+template <typename T>
+struct remove_const_and_ref
+{
+    using type = typename std::remove_const<typename std::remove_reference<T>::type>::type;
+};
+
+template<typename T>
+using remove_const_and_ref_t = typename remove_const_and_ref<T>::type;
+
 
 } // namespace internal
 

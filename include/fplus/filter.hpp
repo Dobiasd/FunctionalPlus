@@ -46,7 +46,7 @@ Container keep_if(internal::create_new_container_t, Pred pred,
 // keep_if(is_even, [1, 2, 3, 2, 4, 5]) == [2, 2, 4]
 // Also known as filter.
 template <typename Pred, typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut keep_if(Pred pred, Container&& xs)
 {
     return internal::keep_if(internal::can_reuse_v<Container>{},
@@ -59,7 +59,7 @@ ContainerOut keep_if(Pred pred, Container&& xs)
 // drop_if(is_even, [1, 2, 3, 2, 4, 5]) == [1, 3, 5]
 // Also known as reject.
 template <typename Pred, typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut drop_if(Pred pred, Container&& xs)
 {
     return keep_if(logical_not(pred), std::forward<Container>(xs));
@@ -71,7 +71,7 @@ ContainerOut drop_if(Pred pred, Container&& xs)
 // without(0, [1, 0, 0, 5, 3, 0, 1]) == [1, 5, 3, 1]
 template <typename Container,
     typename T = typename Container::value_type,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut without(T elem, Container&& xs)
 {
     return drop_if(is_equal_to(elem), std::forward<Container>(xs));
@@ -82,7 +82,7 @@ ContainerOut without(T elem, Container&& xs)
 // Keep all elements a sequence not present in elems.
 // without([0, 1], [1, 0, 0, 5, 3, 0, 1]) == [5, 3]
 template <typename Container, typename ContainerElems,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut without_any(const ContainerElems& elems, Container&& xs)
 {
     static_assert(std::is_same<

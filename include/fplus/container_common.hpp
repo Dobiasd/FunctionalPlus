@@ -350,7 +350,7 @@ Container get_segment(internal::create_new_container_t,
 // Also known as slice.
 // crashes on invalid indices
 template <typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut get_segment
         (std::size_t idx_begin, std::size_t idx_end, Container&& xs)
 {
@@ -390,7 +390,7 @@ Container set_segment(internal::create_new_container_t,
 // Crashes on invalid indices.
 // Also known as replace_segment.
 template <typename ContainerToken, typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut set_segment
         (std::size_t idx_begin, const ContainerToken& token, Container&& xs)
 {
@@ -449,7 +449,7 @@ Container remove_segment(internal::create_new_container_t,
 // remove_segment(2, 5, [0,1,2,3,4,5,6,7]) == [0,1,5,6,7]
 // crashes on invalid indices
 template <typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut remove_segment(
         std::size_t idx_begin, std::size_t idx_end, Container&& xs)
 {
@@ -622,7 +622,7 @@ Container reverse(internal::create_new_container_t, const Container& xs)
 // Reverse a sequence.
 // reverse([0,4,2,6]) == [6,2,4,0]
 template <typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut reverse(Container&& xs)
 {
     return internal::reverse(internal::can_reuse_v<Container>{},
@@ -636,7 +636,7 @@ ContainerOut reverse(Container&& xs)
 // take(3, [0,1,2,3,4,5,6,7]) == [0,1,2]
 // take(10, [0,1,2]) == [0,1,2]
 template <typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut take(std::size_t amount, Container&& xs)
 {
     if (amount >= size_of_cont(xs))
@@ -651,7 +651,7 @@ ContainerOut take(std::size_t amount, Container&& xs)
 // take_exact(3, [0,1,2,3,4,5,6,7]) == [0,1,2]
 // take_exact(10, [0,1,2]) == crash
 template <typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut take_exact(std::size_t amount, Container&& xs)
 {
     return get_segment(0, amount, std::forward<Container>(xs));
@@ -698,7 +698,7 @@ Container take_cyclic(std::size_t amount, const Container& xs)
 // drop(3, [0,1,2,3,4,5,6,7]) == [3,4,5,6,7]
 // Also known as skip.
 template <typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut drop(std::size_t amount, Container&& xs)
 {
     if (amount >= size_of_cont(xs))
@@ -713,7 +713,7 @@ ContainerOut drop(std::size_t amount, Container&& xs)
 // take_last(3, [0,1,2,3,4,5,6,7]) == [5,6,7]
 // take_last(10, [0,1,2]) == [0,1,2]
 template <typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut take_last(std::size_t amount, Container&& xs)
 {
     if (amount >= size_of_cont(xs))
@@ -727,7 +727,7 @@ ContainerOut take_last(std::size_t amount, Container&& xs)
 // If n > length(xs) an empty sequence is returned.
 // drop_last(3, [0,1,2,3,4,5,6,7]) == [0,1,2,3,4]
 template <typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut drop_last(std::size_t amount, Container&& xs)
 {
     if (amount >= size_of_cont(xs))
@@ -742,7 +742,7 @@ ContainerOut drop_last(std::size_t amount, Container&& xs)
 // drop_exact(3, [0,1,2,3,4,5,6,7]) == [3,4,5,6,7]
 // drop_exact(10, [0,1,2,3,4,5,6,7]) == crash
 template <typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut drop_exact(std::size_t amount, Container&& xs)
 {
     return get_segment(amount, size_of_cont(xs), std::forward<Container>(xs));
@@ -1016,7 +1016,7 @@ Container append_elem(internal::create_new_container_t, const T& y,
 // Extends a sequence with one element at the back.
 // append_elem([1, 2], 3) == [1, 2, 3]
 template <typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type,
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>,
     typename T = typename ContainerOut::value_type>
 ContainerOut append_elem(const T& y, Container&& xs)
 {
@@ -1064,7 +1064,7 @@ Container prepend_elem(internal::create_new_container_t, const T& y,
 // Extends a sequence with one element in the front.
 // prepend_elem([2, 3], 1) == [1, 2, 3]
 template <typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type,
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>,
     typename T = typename ContainerOut::value_type>
 ContainerOut prepend_elem(const T& y, Container&& xs)
 {
@@ -1205,7 +1205,7 @@ Container sort_by(internal::create_new_container_t, Compare comp,
 // fwd bind count: 1
 // Sort a sequence by given less comparator.
 template <typename Compare, typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut sort_by(Compare comp, Container&& xs)
 {
     return internal::sort_by(internal::can_reuse_v<Container>{},
@@ -1247,7 +1247,7 @@ namespace internal
 // fwd bind count: 1
 // Sort a sequence by a given transformer.
 template <typename F, typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut sort_on(F f, Container&& xs)
 {
     return sort_by(internal::is_less_by_struct<F>(f),
@@ -1258,7 +1258,7 @@ ContainerOut sort_on(F f, Container&& xs)
 // fwd bind count: 0
 // Sort a sequence to ascending order using std::less.
 template <typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut sort(Container&& xs)
 {
     typedef typename std::remove_reference<Container>::type::value_type T;
@@ -1309,7 +1309,7 @@ Container stable_sort_by(internal::create_new_container_t, Compare comp,
 // fwd bind count: 1
 // Sort a sequence stably by given less comparator.
 template <typename Compare, typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut stable_sort_by(Compare comp, Container&& xs)
 {
     return internal::stable_sort_by(internal::can_reuse_v<Container>{},
@@ -1320,7 +1320,7 @@ ContainerOut stable_sort_by(Compare comp, Container&& xs)
 // fwd bind count: 1
 // Sort a sequence stably by given transformer.
 template <typename F, typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut stable_sort_on(F f, Container&& xs)
 {
     return stable_sort_by(internal::is_less_by_struct<F>(f),
@@ -1331,7 +1331,7 @@ ContainerOut stable_sort_on(F f, Container&& xs)
 // fwd bind count: 0
 // Sort a sequence stably to ascending order using std::less.
 template <typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut stable_sort(Container&& xs)
 {
     typedef typename std::remove_reference<Container>::type::value_type T;
@@ -1372,7 +1372,7 @@ Container partial_sort_by(internal::create_new_container_t, Compare comp,
 // Partially sort a sequence by a given less comparator.
 // Returns only the sorted segment.
 template <typename Compare, typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut partial_sort_by(Compare comp, std::size_t count, Container&& xs)
 {
     return internal::partial_sort_by(internal::can_reuse_v<Container>{},
@@ -1384,7 +1384,7 @@ ContainerOut partial_sort_by(Compare comp, std::size_t count, Container&& xs)
 // Partially sort a sequence by a given transformer.
 // Returns only the sorted segment.
 template <typename F, typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut partial_sort_on(F f, std::size_t count, Container&& xs)
 {
     return partial_sort_by(internal::is_less_by_struct<F>(f), count,
@@ -1396,7 +1396,7 @@ ContainerOut partial_sort_on(F f, std::size_t count, Container&& xs)
 // Partially sort a sequence in ascending order using std::less.
 // Returns only the sorted segment.
 template <typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut partial_sort(std::size_t count, Container&& xs)
 {
     typedef typename std::remove_reference<Container>::type::value_type T;
@@ -1439,6 +1439,29 @@ T nth_element(std::size_t n, const Container& xs)
     return nth_element_by(std::less<T>(), n, xs);
 }
 
+namespace internal
+{
+
+template <typename BinaryPredicate, typename Container>
+Container unique_by(internal::reuse_container_t,
+    BinaryPredicate pred, Container&& xs)
+{
+    internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
+    const auto it_end = std::unique(std::begin(xs), std::end(xs), pred);
+    xs.erase(it_end, std::end(xs));
+    return std::forward<Container>(xs);
+}
+
+template <typename BinaryPredicate, typename Container>
+Container unique_by(internal::create_new_container_t,
+    BinaryPredicate pred, const Container& xs)
+{
+    auto result = xs;
+    return unique_by(internal::reuse_container_t(), pred, std::move(result));
+}
+
+} // namespace internal
+
 // API search type: unique_by : (((a, a) -> Bool), [a]) -> [a]
 // fwd bind count: 1
 // Like unique, eliminates all but the first element
@@ -1446,14 +1469,12 @@ T nth_element(std::size_t n, const Container& xs)
 // but with a user supplied equality predicate.
 // See nub_by for making elements globally unique in a sequence.
 // O(n)
-template <typename Container, typename BinaryPredicate>
-Container unique_by(BinaryPredicate p, const Container& xs)
+template <typename BinaryPredicate, typename Container,
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
+ContainerOut unique_by(BinaryPredicate pred, Container&& xs)
 {
-    internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
-    auto result = xs;
-    auto last = std::unique(std::begin(result), std::end(result), p);
-    result.erase(last, std::end(result));
-    return result;
+    return internal::unique_by(internal::can_reuse_v<Container>{},
+        pred, std::forward<Container>(xs));
 }
 
 // API search type: unique_on : ((a -> b), [a]) -> [a]
@@ -1464,10 +1485,12 @@ Container unique_by(BinaryPredicate p, const Container& xs)
 // See nub_on for making elements globally unique in a sequence.
 // O(n)
 // Also known as drop_repeats.
-template <typename Container, typename F>
-Container unique_on(F f, const Container& xs)
+template <typename F, typename Container,
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
+ContainerOut unique_on(F f, Container&& xs)
 {
-    return unique_by(internal::is_equal_by_struct<F>(f), xs);
+    return unique_by(internal::is_equal_by_struct<F>(f),
+        std::forward<Container>(xs));
 }
 
 // API search type: unique : [a] -> [a]
@@ -1477,13 +1500,12 @@ Container unique_on(F f, const Container& xs)
 // unique([1,2,2,3,2]) == [1,2,3,2]
 // See nub for making elements globally unique in a sequence.
 // O(n)
-template <typename Container>
-Container unique(const Container& xs)
+template <typename Container,
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
+ContainerOut unique(Container&& xs)
 {
-    auto result = xs;
-    auto last = std::unique(std::begin(result), std::end(result));
-    result.erase(last, std::end(result));
-    return result;
+    typedef typename std::remove_reference<Container>::type::value_type T;
+    return unique_on(identity<T>, std::forward<Container>(xs));
 }
 
 // API search type: intersperse : (a, [a]) -> [a]
@@ -1875,7 +1897,7 @@ std::vector<std::size_t> all_idxs(const Container& xs)
 // init([0,1,2,3]) == [0,1,2]
 // Unsafe! xs must be non-empty.
 template <typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut init(Container&& xs)
 {
     assert(!is_empty(xs));
@@ -1888,7 +1910,7 @@ ContainerOut init(Container&& xs)
 // tail([0,1,2,3]) == [1,2,3]
 // Unsafe! xs must be non-empty.
 template <typename Container,
-    typename ContainerOut = typename std::remove_reference<Container>::type>
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut tail(Container&& xs)
 {
     assert(!is_empty(xs));
@@ -2036,11 +2058,12 @@ bool lexicographical_less(const Container& xs, const Container& ys)
 // API search type: lexicographical_sort : [[a]] -> [[a]]
 // fwd bind count: 0
 // sort by lexicographical_less
-template <typename Container>
-Container lexicographical_sort(const Container& xs)
+template <typename Container,
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
+ContainerOut lexicographical_sort(Container&& xs)
 {
-    typedef typename Container::value_type T;
-    return sort_by(lexicographical_less<T>, xs);
+    typedef typename std::remove_reference<Container>::type::value_type T;
+    return sort_by(lexicographical_less<T>, std::forward<Container>(xs));
 }
 
 // API search type: replicate : (Int, a) -> [a]
