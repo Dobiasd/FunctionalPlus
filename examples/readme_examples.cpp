@@ -221,14 +221,13 @@ std::string gemstone_count_fwd_apply(const std::string& input)
     );
 }
 
-using namespace fplus;
 typedef std::set<std::string::value_type> characters;
-const auto gemstone_count_fwd_compose = fwd::compose(
-    fwd::split_lines(false),
-    fwd::transform(convert_container<characters, std::string>),
-    fwd::fold_left_1(set_intersection<characters>),
-    fwd::size_of_cont(),
-    fwd::show()
+const auto gemstone_count_fwd_compose = fplus::fwd::compose(
+    fplus::fwd::split_lines(false),
+    fplus::fwd::transform(fplus::convert_container<characters, std::string>),
+    fplus::fwd::fold_left_1(fplus::set_intersection<characters>),
+    fplus::fwd::size_of_cont(),
+    fplus::fwd::show()
 );
 
 void Test_example_fwd_style()
@@ -238,6 +237,47 @@ void Test_example_fwd_style()
     const auto result = gemstone_count(input);
     const auto result_fwd_apply = gemstone_count_fwd_apply(input);
     const auto result_fwd_compose = gemstone_count_fwd_compose(input);
+}
+
+std::string square_is_even(const std::vector<int>& xs)
+{
+    using namespace fplus;
+    auto ys = fplus::transform(fplus::square<int>, xs);
+    auto zs = fplus::keep_if(fplus::is_even<int>, ys);
+    return show(size_of_cont(zs));
+}
+
+std::string square_is_even_chain(const std::vector<int>& xs)
+{
+    using namespace fplus;
+    auto zs = fplus::keep_if(fplus::is_even<int>, fplus::transform(fplus::square<int>, xs));
+    return show(size_of_cont(zs));
+}
+
+std::string square_is_even_fwd_apply(const std::vector<int>& xs)
+{
+    using namespace fplus;
+    auto zs = fwd::apply(
+        xs
+        , fplus::fwd::transform(fplus::square<int>)
+        , fplus::fwd::keep_if(fplus::is_even<int>));
+    return show(size_of_cont(zs));
+}
+
+const auto square_is_even_fwd_compose = fplus::fwd::compose(
+    fplus::fwd::transform(fplus::square<int>),
+    fplus::fwd::keep_if(fplus::is_even<int>),
+    fplus::fwd::size_of_cont(),
+    fplus::fwd::show()
+);
+
+void Test_square_is_even()
+{
+    const std::vector<int> xs = {0,1,2,3,4,5,6,7};
+    const auto result = square_is_even(xs); // uses l-value keep_if internally
+    const auto result_chain = square_is_even_chain(xs); // uses r-value keep_if internally
+    const auto result_fwd_apply = square_is_even_fwd_apply(xs); // uses r-value keep_if internally
+    const auto result_fwd_compose = square_is_even_fwd_compose(xs); // uses r-value keep_if internally
 }
 
 int main()
@@ -251,6 +291,7 @@ int main()
     Test_example_TheCutestCat();
     Test_example_CollatzSequence();
     Test_example_fwd_style();
+    Test_square_is_even();
     std::cout << "-------" << std::endl;
     std::cout << "Applications OK." << std::endl;
     std::cout << "=======" << std::endl;
