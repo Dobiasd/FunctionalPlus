@@ -57,13 +57,15 @@ TEST_CASE("transform_test, transpose")
     REQUIRE_EQ(transpose(IntVectors({{1,2,3},{4,5},{7,8,9}})), IntVectors({{1,4,7},{2,5,8},{3,9}}));
 }
 
-
 TEST_CASE("transform_test, shuffle")
 {
     using namespace fplus;
 
     const auto shuffled1 = shuffle(std::mt19937::default_seed, xs);
     REQUIRE(is_permutation_of(shuffled1, xs));
+
+    const auto shuffled1_rvalue = shuffle(std::mt19937::default_seed, IntVector({1,2,2,3,2}));
+    REQUIRE(is_permutation_of(shuffled1_rvalue, xs));
 
     const auto shuffled2 = shuffle(std::random_device()(), xs);
     REQUIRE(is_permutation_of(shuffled2, xs));

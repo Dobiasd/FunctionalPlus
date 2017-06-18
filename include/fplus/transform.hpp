@@ -156,18 +156,39 @@ Container transpose(const Container& rows)
         size_of_cont(rows), interleave(rows));
 }
 
+namespace internal
+{
+
+template <typename Container>
+Container shuffle(internal::reuse_container_t,
+    std::uint_fast32_t seed, Container&& xs)
+{
+    std::mt19937 g(seed);
+    std::shuffle(std::begin(xs), std::end(xs), g);
+    return std::forward<Container>(xs);
+}
+
+template <typename Container>
+Container shuffle(internal::create_new_container_t,
+    std::uint_fast32_t seed, const Container& xs)
+{
+    Container ys = xs;
+    return internal::shuffle(internal::reuse_container_t(), seed, std::move(ys));
+}
+
+} // namespace internal
+
 // API search type: shuffle : (Int, [a]) -> [a]
 // fwd bind count: 1
 // Returns a randomly shuffled version of xs.
 // Example call: shuffle(std::mt19937::default_seed, xs);
 // Example call: shuffle(std::random_device()(), xs);
-template <typename Container>
-Container shuffle(std::uint_fast32_t seed, const Container& xs)
+template <typename Container,
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
+ContainerOut shuffle(std::uint_fast32_t seed, Container&& xs)
 {
-    std::mt19937 g(seed);
-    Container ys = xs;
-    std::shuffle(std::begin(ys), std::end(ys), g);
-    return ys;
+    return(internal::shuffle(internal::can_reuse_v<Container>{},
+        seed, std::forward<Container>(xs)));
 }
 
 // API search type: sample : (Int, Int, [a]) -> [a]
