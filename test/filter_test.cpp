@@ -75,6 +75,8 @@ TEST_CASE("filter_test, keep_by_idx")
     const std::vector<int> v = { 11, 17, 3, 8, 49, 6 };
     auto result = fplus::keep_by_idx(is_even_size_t, v);
     REQUIRE_EQ(result, std::vector<int>({11, 3, 49}));
+    auto result_rvalue = fplus::keep_by_idx(is_even_size_t, std::vector<int>({ 11, 17, 3, 8, 49, 6 }));
+    REQUIRE_EQ(result_rvalue, std::vector<int>({11, 3, 49}));
 }
 
 TEST_CASE("filter_test, drop_by_idx")

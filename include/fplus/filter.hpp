@@ -131,34 +131,58 @@ Container drop_if_with_idx(Pred pred, const Container& xs)
     return keep_if_with_idx(inverse_pred, xs);
 }
 
+namespace internal
+{
+
+template <typename UnaryPredicate, typename Container>
+Container keep_by_idx(internal::reuse_container_t,
+    UnaryPredicate pred, Container&& xs)
+{
+    auto itOut = std::begin(xs);
+    std::size_t i = 0;
+    for (auto it = std::begin(xs); it != std::end(xs); ++it)
+    {
+        if (pred(i++))
+            *itOut++ = std::move(*it);
+    }
+    xs.erase(itOut, std::end(xs));
+    return std::forward<Container>(xs);
+}
+
+template <typename UnaryPredicate, typename Container>
+Container keep_by_idx(internal::create_new_container_t,
+    UnaryPredicate pred, const Container& xs)
+{
+    Container ys = xs;
+    return internal::keep_by_idx(internal::reuse_container_t(),
+        pred, std::move(ys));
+}
+
+} // namespace internal
+
 // API search type: keep_by_idx : ((Int -> Bool), [a]) -> [a]
 // fwd bind count: 1
 // Keep the elements of a sequence with an index fulfilling a predicate.
 // Predicate takes an index and decides if an element is kept.
-template <typename UnaryPredicate, typename Container>
-Container keep_by_idx(UnaryPredicate pred, const Container& xs)
+template <typename UnaryPredicate, typename Container,
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
+ContainerOut keep_by_idx(UnaryPredicate pred, Container&& xs)
 {
     internal::check_unary_predicate_for_type<UnaryPredicate, std::size_t>();
-    Container ys;
-    auto it = internal::get_back_inserter<Container>(ys);
-    std::size_t idx = 0;
-    for (const auto& x : xs)
-    {
-        if (pred(idx++))
-            *it = x;
-    }
-    return ys;
+    return internal::keep_by_idx(internal::can_reuse_v<Container>{},
+        pred, std::forward<Container>(xs));
 }
 
 // API search type: drop_by_idx : ((Int -> Bool), [a]) -> [a]
 // fwd bind count: 1
 // Drop the elements of a sequence with an index fulfilling a predicate.
 // Predicate takes an index and decides if an element is dropped.
-template <typename UnaryPredicate, typename Container>
-Container drop_by_idx(UnaryPredicate pred, const Container& xs)
+template <typename UnaryPredicate, typename Container,
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
+ContainerOut drop_by_idx(UnaryPredicate pred, Container&& xs)
 {
     internal::check_unary_predicate_for_type<UnaryPredicate, std::size_t>();
-    return keep_by_idx(logical_not(pred), xs);
+    return keep_by_idx(logical_not(pred), std::forward<Container>(xs));
 }
 
 // API search type: keep_idxs : ([Int], [a]) -> [a]
