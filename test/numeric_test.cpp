@@ -27,7 +27,7 @@ namespace {
     }
 
     typedef std::vector<int> Ints;
-    typedef std::vector<double> Floats;
+    typedef std::vector<float> Floats;
     typedef std::vector<double> Doubles;
 }
 
@@ -412,13 +412,21 @@ TEST_CASE("numeric_test, normalize")
 {
     using namespace fplus;
 
-    REQUIRE_EQ(normalize_min_max(0, 10, Doubles({1, 3, 6})), Doubles({0, 4, 10}));
-    REQUIRE_EQ(normalize_mean_stddev(3, 2, Doubles({7, 8})), Doubles({1, 5}));
-    REQUIRE_EQ(standardize(Doubles({2.0, 6.0})), Doubles({-1, 1}));
+    REQUIRE_EQ(normalize_min_max(0.0, 10.0, Doubles({1, 3, 6})), Doubles({0, 4, 10}));
+    REQUIRE_EQ(normalize_mean_stddev(3.0, 2.0, Doubles({7, 8})), Doubles({1, 5}));
+    REQUIRE_EQ(standardize(Doubles({2, 6})), Doubles({-1, 1}));
 
-    REQUIRE_EQ(normalize_min_max(0, 10, Floats({1, 3, 6})), Floats({0, 4, 10}));
-    REQUIRE_EQ(normalize_mean_stddev(3, 2, Floats({7, 8})), Floats({1, 5}));
-    REQUIRE_EQ(standardize(Floats({2.0, 6.0})), Floats({-1, 1}));
+    REQUIRE_EQ(normalize_min_max(0.0f, 10.0f, Floats({1, 3, 6})), Floats({0, 4, 10}));
+    REQUIRE_EQ(normalize_mean_stddev(3.0f, 2.0f, Floats({7, 8})), Floats({1, 5}));
+    REQUIRE_EQ(standardize(Floats({2, 6})), Floats({-1, 1}));
+
+    Floats xs1 = {1, 3, 6};
+    Floats xs2 = {7, 8};
+    Floats xs3 = {2.0, 6.0};
+    REQUIRE_EQ(normalize_min_max(0.0f, 10.0f, xs1), Floats({0, 4, 10}));
+    REQUIRE_EQ(normalize_mean_stddev(3.0f, 2.0f, xs2), Floats({1, 5}));
+    REQUIRE_EQ(standardize(xs3), Floats({-1, 1}));
+
 }
 
 TEST_CASE("numeric_test, winsorize")

@@ -599,19 +599,15 @@ T rad_to_deg(T x)
     return static_cast<T>(x * 180.0 / pi());
 }
 
-// API search type: normalize_min_max : (a, a, [a]) -> [a]
-// fwd bind count: 2
-// Linearly scales the values into the given interval.
-// normalize_min_max(0, 10, [1, 3, 6]) == [0, 4, 10]
-// It is recommended to convert integers to double beforehand.
-template <typename Container>
-Container normalize_min_max(
-    const typename Container::value_type& lower,
-    const typename Container::value_type& upper, const Container& xs)
+namespace internal
+{
+
+template <typename Container, typename T>
+Container normalize_min_max(internal::reuse_container_t,
+    const T& lower, const T& upper, Container&& xs)
 {
     assert(size_of_cont(xs) != 0);
     assert(lower <= upper);
-    typedef typename Container::value_type T;
     const auto minmax_it_p = std::minmax_element(std::begin(xs), std::end(xs));
     const T x_min = *minmax_it_p.first;
     const T x_max = *minmax_it_p.second;
@@ -619,39 +615,91 @@ Container normalize_min_max(
     {
         return lower + (upper - lower) * (x - x_min) / (x_max - x_min);
     };
-    return fplus::transform(f, xs);
+    std::transform(std::begin(xs), std::end(xs), std::begin(xs), f);
+    return std::forward<Container>(xs);
 }
 
-// API search type: normalize_mean_stddev : (a, a, [a]) -> [a]
+template <typename Container, typename T>
+Container normalize_min_max(internal::create_new_container_t,
+    const T& lower, const T& upper, const Container& xs)
+{
+    auto ys = xs;
+    return normalize_min_max(internal::reuse_container_t(),
+        lower, upper, std::move(ys));
+}
+
+} // namespace internal
+
+// API search type: normalize_min_max : (a, a, [a]) -> [a]
 // fwd bind count: 2
-// Linearly scales the values
-// to match the given mean and population standard deviation.
-// normalize_mean_stddev(3, 2, [7, 8]) == [1, 5]
-template <typename Container>
-Container normalize_mean_stddev(
-    const typename Container::value_type& mean,
-    const typename Container::value_type& stddev,
-    const Container& xs)
+// Linearly scales the values into the given interval.
+// normalize_min_max(0, 10, [1, 3, 6]) == [0, 4, 10]
+// It is recommended to convert integers to double beforehand.
+template <typename Container,
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>,
+    typename T = typename internal::remove_const_and_ref_t<Container>::value_type>
+ContainerOut normalize_min_max(const T& lower, const T& upper, Container&& xs)
+{
+    return internal::normalize_min_max(internal::can_reuse_v<Container>{},
+        lower, upper, std::forward<Container>(xs));
+}
+
+namespace internal
+{
+
+template <typename Container, typename T>
+Container normalize_mean_stddev(internal::reuse_container_t,
+    const T& mean, const T& stddev, Container&& xs)
 {
     assert(size_of_cont(xs) != 0);
-    typedef typename Container::value_type T;
     const auto mean_and_stddev = fplus::mean_stddev<T>(xs);
     const auto f = [&](const T& x) -> T
     {
         return mean +
             stddev * (x - mean_and_stddev.first) / mean_and_stddev.second;
     };
-    return fplus::transform(f, xs);
+    std::transform(std::begin(xs), std::end(xs), std::begin(xs), f);
+    return std::forward<Container>(xs);
+}
+
+template <typename Container, typename T>
+Container normalize_mean_stddev(internal::create_new_container_t,
+    const T& mean, const T& stddev, const Container& xs)
+{
+    auto ys = xs;
+    return normalize_mean_stddev(internal::reuse_container_t(),
+        mean, stddev, std::move(ys));
+}
+
+} // namespace internal
+
+// API search type: normalize_mean_stddev : (a, a, [a]) -> [a]
+// fwd bind count: 2
+// Linearly scales the values
+// to match the given mean and population standard deviation.
+// normalize_mean_stddev(3, 2, [7, 8]) == [1, 5]
+template <typename Container,
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>,
+    typename T = typename internal::remove_const_and_ref_t<Container>::value_type>
+ContainerOut normalize_mean_stddev(
+    const T& mean, const T& stddev, Container&& xs)
+{
+    return internal::normalize_mean_stddev(internal::can_reuse_v<Container>{},
+        mean, stddev, std::forward<Container>(xs));
 }
 
 // API search type: standardize : [a] -> [a]
 // fwd bind count: 0
 // Linearly scales the values to zero mean and population standard deviation 1.
 // standardize([7, 8]) == [-1, 1]
-template <typename Container>
-Container standardize(const Container& xs)
+template <typename Container,
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
+ContainerOut standardize(Container&& xs)
 {
-    return normalize_mean_stddev(0, 1, xs);
+    typedef typename internal::remove_const_and_ref_t<Container>::value_type T;
+    T mean(0);
+    T stddev(1);
+    return normalize_mean_stddev(mean, stddev, std::forward<Container>(xs));
 }
 
 // API search type: add_to : a -> (a -> a)
