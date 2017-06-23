@@ -32,6 +32,7 @@
 #include <fplus/split.hpp>
 #include <fplus/string_tools.hpp>
 #include <fplus/transform.hpp>
+#include <fplus/tree.hpp>
 #include <fplus/side_effects.hpp>
 #include <fplus/variant.hpp>
 

@@ -42,6 +42,7 @@ _add_test(side_effects_test)
 _add_test(split_test)
 _add_test(stringtools_test)
 _add_test(transform_test)
+_add_test(tree_test)
 _add_test(variant_test)
 
 
@@ -75,6 +76,7 @@ add_custom_target(unittest compare_test
                         COMMAND split_test
                         COMMAND stringtools_test
                         COMMAND transform_test
+                        COMMAND tree_test
                         COMMAND variant_test
                         COMMENT "Running unittests\n\n"
                         VERBATIM
