@@ -81,6 +81,22 @@ typename std::size_t minimum_idx_by(Compare comp,
         std::min_element(std::begin(xs), std::end(xs), comp)));
 }
 
+// API search type: minimum_idx_by_maybe : (((a, a) -> Bool), [a]) -> Int
+// fwd bind count: 1
+// Return the index of the first minimum element using a less comparator
+// if sequence is not empty.
+// minimum_idx_by_maybe(lessLength, ["123", "12", "1234", "123"]) -> Just "1"
+// minimum_idx_by_maybe(lessLength, []) -> Nothing
+template <typename Compare, typename Container>
+maybe<typename std::size_t> minimum_idx_by_maybe(Compare comp,
+        const Container& xs)
+{
+    if (is_empty(xs))
+        return {};
+    else
+        return minimum_idx_by(comp, xs);
+}
+
 // API search type: maximum_idx_by : (((a, a) -> Bool), [a]) -> Int
 // fwd bind count: 1
 // Return the index of the first maximum element using a less comparator.
@@ -95,6 +111,22 @@ typename std::size_t maximum_idx_by(Compare comp,
         std::max_element(std::begin(xs), std::end(xs), comp)));
 }
 
+// API search type: maximum_idx_by_maybe : (((a, a) -> Bool), [a]) -> Maybe Int
+// fwd bind count: 1
+// Return the index of the first maximum element using a less comparator
+// if sequence is not empty.
+// maximum_idx_by_maybe(lessLength, ["123", "12", "1234", "123"]) == Just "2"
+// maximum_idx_by_maybe(lessLength, []) == Nothing
+template <typename Compare, typename Container>
+maybe<typename std::size_t> maximum_idx_by_maybe(Compare comp,
+        const Container& xs)
+{
+    if (is_empty(xs))
+        return {};
+    else
+        return maximum_idx_by(comp, xs);
+}
+
 
 // API search type: minimum_idx : [a] -> Int
 // fwd bind count: 0
@@ -106,6 +138,20 @@ typename std::size_t minimum_idx(const Container& xs)
     return minimum_idx_by(is_less<typename Container::value_type>, xs);
 }
 
+// API search type: minimum_idx_maybe : [a] -> Maybe Int
+// fwd bind count: 0
+// Return the index of the first minimum element if sequence is not empty.
+// minimum_idx_maybe([3, 1, 4, 2]) == Just 1
+// minimum_idx_maybe([]) == Nothing
+template <typename Container>
+maybe<typename std::size_t> minimum_idx_maybe(const Container& xs)
+{
+    if (is_empty(xs))
+        return {};
+    else
+        return minimum_idx(xs);
+}
+
 // API search type: maximum_idx : [a] -> Int
 // fwd bind count: 0
 // Return the index of the first maximum element.
@@ -114,6 +160,20 @@ template <typename Container>
 typename std::size_t maximum_idx(const Container& xs)
 {
     return maximum_idx_by(is_less<typename Container::value_type>, xs);
+}
+
+// API search type: maximum_idx_maybe : [a] -> Maybe Int
+// fwd bind count: 0
+// Return the index of the first maximum element if sequence is not empty.
+// maximum_idx_maybe([3, 1, 4, 2]) == Just 2
+// maximum_imaximum_idx_maybedx([]) == Nothing
+template <typename Container>
+maybe<typename std::size_t> maximum_idx_maybe(const Container& xs)
+{
+    if (is_empty(xs))
+        return {};
+    else
+        return maximum_idx(xs);
 }
 
 
@@ -129,6 +189,21 @@ typename std::size_t minimum_idx_on(F f, const Container& xs)
     return minimum_idx(transformed);
 }
 
+// API search type: minimum_idx_on_maybe : ((a -> b), [a]) -> Just Int
+// fwd bind count: 1
+// Return the index of the first minimum element using a transformer
+// if sequence is not empty.
+// minimum_idx_on_maybe(length, ["123", "12", "1234", "123"]) -> Just "1"
+// minimum_idx_on_maybe(length, []) -> Nothing"
+template <typename F, typename Container>
+maybe<typename std::size_t> minimum_idx_on_maybe(F f, const Container& xs)
+{
+    if (is_empty(xs))
+        return {};
+    else
+        return minimum_idx_on_maybe(f, xs);
+}
+
 // API search type: maximum_idx_on : ((a -> b), [a]) -> Int
 // fwd bind count: 1
 // Return the index of the first maximum element using a transformer.
@@ -141,6 +216,20 @@ typename std::size_t maximum_idx_on(F f, const Container& xs)
     return maximum_idx(transformed);
 }
 
+// API search type: maximum_idx_on_maybe : ((a -> b), [a]) -> Maybe Int
+// fwd bind count: 1
+// Return the index of the first maximum element using a transformer
+// if sequence is not empty.
+// maximum_idx_on_maybe(length, ["123", "12", "1234", "123"]) == Just "2"
+// maximum_idx_on_maybe(length, []) == Nothing
+template <typename F, typename Container>
+maybe<typename std::size_t> maximum_idx_on_maybe(F f, const Container& xs)
+{
+    if (is_empty(xs))
+        return {};
+    else
+        return maximum_idx_on(f, xs);
+}
 
 // API search type: minimum_by : (((a, a) -> Bool), [a]) -> a
 // fwd bind count: 1
@@ -153,6 +242,22 @@ typename Container::value_type minimum_by(Compare comp,
     internal::check_compare_for_container<Compare, Container>();
     assert(is_not_empty(xs));
     return *std::min_element(std::begin(xs), std::end(xs), comp);
+}
+
+// API search type: minimum_by_maybe : (((a, a) -> Bool), [a]) -> a
+// fwd bind count: 1
+// Return the first minimum element using a less comparator
+// if sequence is not empty.
+// minimum_by_maybe(lessLength, ["123", "12", "1234", "123"]) -> Just "12"
+// minimum_by_maybe(lessLength, []) -> Nothing
+template <typename Compare, typename Container>
+maybe<typename Container::value_type> minimum_by_maybe(Compare comp,
+        const Container& xs)
+{
+    if (is_empty(xs))
+        return {};
+    else
+        return minimum_by(comp, xs);
 }
 
 // API search type: maximum_by : (((a, a) -> Bool), [a]) -> a
@@ -168,6 +273,22 @@ typename Container::value_type maximum_by(Compare comp,
     return *std::max_element(std::begin(xs), std::end(xs), comp);
 }
 
+// API search type: maximum_by_maybe : (((a, a) -> Bool), [a]) -> Maybe a
+// fwd bind count: 1
+// Return the first maximum element using a less comparator
+// if sequence is not empty.
+// maximum_by_maybe(lessLength, ["123", "12", "1234", "123"]) == Just "1234"
+// maximum_by_maybe(lessLength, []) == Nothing
+template <typename Compare, typename Container>
+maybe<typename Container::value_type> maximum_by_maybe(Compare comp,
+        const Container& xs)
+{
+    if (is_empty(xs))
+        return {};
+    else
+        return maximum_by(comp, xs);
+}
+
 
 // API search type: minimum : [a] -> a
 // fwd bind count: 0
@@ -179,6 +300,21 @@ typename Container::value_type minimum(const Container& xs)
     return minimum_by(is_less<typename Container::value_type>, xs);
 }
 
+// API search type: minimum_maybe : [a] -> Maybe a
+// fwd bind count: 0
+// Return the first minimum element if sequence is not empty
+// if sequence is not empty.
+// minimum_maybe([3, 1, 4, 2]) == Just 1
+// minimum_maybe([]) == Nothing
+template <typename Container>
+maybe<typename Container::value_type> minimum_maybe(const Container& xs)
+{
+    if (is_empty(xs))
+        return {};
+    else
+        return minimum(xs);
+}
+
 // API search type: maximum : [a] -> a
 // fwd bind count: 0
 // Return the first maximum element.
@@ -187,6 +323,21 @@ template <typename Container>
 typename Container::value_type maximum(const Container& xs)
 {
     return maximum_by(is_less<typename Container::value_type>, xs);
+}
+
+// API search type: maximum_maybe : [a] -> Maybe a
+// fwd bind count: 0
+// Return the first maximum element if sequence is not empty
+// if sequence is not empty.
+// maximum_maybe([3, 1, 4, 2]) == Just 4
+// maximum_maybe([]) == Nothing
+template <typename Container>
+maybe<typename Container::value_type> maximum_maybe(const Container& xs)
+{
+    if (is_empty(xs))
+        return {};
+    else
+        return maximum(xs);
 }
 
 
@@ -201,6 +352,22 @@ typename Container::value_type minimum_on(F f, const Container& xs)
     return elem_at_idx(minimum_idx_on(f, xs), xs);
 }
 
+// API search type: minimum_on_maybe : ((a -> b), [a]) -> Maybe a
+// fwd bind count: 1
+// Return the first minimum element using a transformer
+// if sequence is not empty.
+// minimum_on_maybe(length, ["123", "12", "1234", "123"]) -> Just "12"
+// minimum_on_maybe(length, []) -> Nothing
+template <typename F, typename Container>
+maybe<typename Container::value_type> minimum_on_maybe(
+    F f, const Container& xs)
+{
+    if (is_empty(xs))
+        return {};
+    else
+        return minimum_on(f, xs);
+}
+
 // API search type: maximum_on : ((a -> b), [a]) -> a
 // fwd bind count: 1
 // Return the first maximum element using a transformer.
@@ -210,6 +377,22 @@ typename Container::value_type maximum_on(F f, const Container& xs)
 {
     internal::check_arity<1, F>();
     return elem_at_idx(maximum_idx_on(f, xs), xs);
+}
+
+// API search type: maximum_on_maybe : ((a -> b), [a]) -> Maybe a
+// fwd bind count: 1
+// Return the first maximum element using a transformer
+// if sequence is not empty.
+// maximum_on_maybe(length, ["123", "12", "1234", "123"]) == Just "1234"
+// maximum_on_maybe(length, ["123", "12", "1234", "123"]) == Nothing
+template <typename F, typename Container>
+maybe<typename Container::value_type> maximum_on_maybe(
+    F f, const Container& xs)
+{
+    if (is_empty(xs))
+        return {};
+    else
+        return maximum_on(f, xs);
 }
 
 // API search type: mean : [a] -> a
