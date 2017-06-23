@@ -289,8 +289,6 @@ namespace internal
     template<class T>
     inline void unused(T&&) { }
 
-
-
     // minimum of x values after transformation
     // (has an overload for non-POD types)
     // min_on(mod2, 4, 3) == 4
@@ -351,7 +349,6 @@ T min_2_on(F f, const T& x, const T& y)
 
 namespace internal
 {
-
     // maximum of x values after transformation
     // (has an overload for non-POD types)
     // max_on(mod2, 4, 3) == 3
