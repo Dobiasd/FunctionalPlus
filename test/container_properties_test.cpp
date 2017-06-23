@@ -88,14 +88,14 @@ TEST_CASE("container_properties_test, minmax_maybe")
     REQUIRE_EQ(minimum_on_maybe(negateInt, xs), maybe<int>(3));
     REQUIRE_EQ(maximum_on_maybe(negateInt, xs), maybe<int>(1));
 
-    REQUIRE_EQ(minimum_idx_maybe(xs), maybe<int>(0));
-    REQUIRE_EQ(maximum_idx_maybe(xs), maybe<int>(3));
+    REQUIRE_EQ(minimum_idx_maybe(xs), maybe<std::size_t>(0));
+    REQUIRE_EQ(maximum_idx_maybe(xs), maybe<std::size_t>(3));
 
-    REQUIRE_EQ(minimum_idx_by_maybe(std::greater<int>(), xs), maybe<int>(3));
-    REQUIRE_EQ(maximum_idx_by_maybe(std::greater<int>(), xs), maybe<int>(0));
+    REQUIRE_EQ(minimum_idx_by_maybe(std::greater<int>(), xs), maybe<std::size_t>(3));
+    REQUIRE_EQ(maximum_idx_by_maybe(std::greater<int>(), xs), maybe<std::size_t>(0));
 
-    REQUIRE_EQ(minimum_idx_on_maybe(negateInt, xs), maybe<int>(3));
-    REQUIRE_EQ(maximum_idx_on_maybe(negateInt, xs), maybe<int>(0));
+    REQUIRE_EQ(minimum_idx_on_maybe(negateInt, xs), maybe<std::size_t>(3));
+    REQUIRE_EQ(maximum_idx_on_maybe(negateInt, xs), maybe<std::size_t>(0));
 }
 
 TEST_CASE("container_properties_test, mean")
