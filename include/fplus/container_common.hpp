@@ -461,7 +461,7 @@ ContainerOut remove_segment(
 // fwd bind count: 2
 // Inserts a token into a sequence at a specific position.
 // insert_at(2, [8,9], [0,1,2,3,4]) == [0,1,8,9,2,3,4]
-// crashes on invalid index
+// Unsafe! Crashes on invalid index.
 template <typename Container>
 Container insert_at(std::size_t idx_begin,
         const Container& token, const Container& xs)
@@ -484,7 +484,7 @@ Container insert_at(std::size_t idx_begin,
 // fwd bind count: 1
 // Return the nth element of a sequence.
 // elem_at_idx(2, [7,6,5,4,3]) == 5
-// Unsafe!
+// Unsafe! Crashes on invalid index.
 template <typename Container,
     typename T = typename Container::value_type>
 T elem_at_idx(std::size_t idx, const Container& xs)

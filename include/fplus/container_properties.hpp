@@ -71,6 +71,7 @@ bool none(const Container& xs)
 // fwd bind count: 1
 // Return the index of the first minimum element using a less comparator.
 // minimum_idx_by(lessLength, ["123", "12", "1234", "123"]) -> "1"
+// Unsafe! Crashes on an empty sequence.
 template <typename Compare, typename Container>
 typename std::size_t minimum_idx_by(Compare comp,
         const Container& xs)
@@ -101,6 +102,7 @@ maybe<typename std::size_t> minimum_idx_by_maybe(Compare comp,
 // fwd bind count: 1
 // Return the index of the first maximum element using a less comparator.
 // maximum_idx_by(lessLength, ["123", "12", "1234", "123"]) == "2"
+// Unsafe! Crashes on an empty sequence.
 template <typename Compare, typename Container>
 typename std::size_t maximum_idx_by(Compare comp,
         const Container& xs)
@@ -132,6 +134,7 @@ maybe<typename std::size_t> maximum_idx_by_maybe(Compare comp,
 // fwd bind count: 0
 // Return the index of the first minimum element.
 // minimum_idx([3, 1, 4, 2]) == 1
+// Unsafe! Crashes on an empty sequence.
 template <typename Container>
 typename std::size_t minimum_idx(const Container& xs)
 {
@@ -156,6 +159,7 @@ maybe<typename std::size_t> minimum_idx_maybe(const Container& xs)
 // fwd bind count: 0
 // Return the index of the first maximum element.
 // maximum_idx([3, 1, 4, 2]) == 2
+// Unsafe! Crashes on an empty sequence.
 template <typename Container>
 typename std::size_t maximum_idx(const Container& xs)
 {
@@ -181,6 +185,7 @@ maybe<typename std::size_t> maximum_idx_maybe(const Container& xs)
 // fwd bind count: 1
 // Return the index of the first minimum element using a transformer.
 // minimum_idx_on(length, ["123", "12", "1234", "123"]) -> "1"
+// Unsafe! Crashes on an empty sequence.
 template <typename F, typename Container>
 typename std::size_t minimum_idx_on(F f, const Container& xs)
 {
@@ -208,6 +213,7 @@ maybe<typename std::size_t> minimum_idx_on_maybe(F f, const Container& xs)
 // fwd bind count: 1
 // Return the index of the first maximum element using a transformer.
 // maximum_idx_on(length, ["123", "12", "1234", "123"]) == "2"
+// Unsafe! Crashes on an empty sequence.
 template <typename F, typename Container>
 typename std::size_t maximum_idx_on(F f, const Container& xs)
 {
@@ -235,6 +241,7 @@ maybe<typename std::size_t> maximum_idx_on_maybe(F f, const Container& xs)
 // fwd bind count: 1
 // Return the first minimum element using a less comparator.
 // minimum_by(lessLength, ["123", "12", "1234", "123"]) -> "12"
+// Unsafe! Crashes on an empty sequence.
 template <typename Compare, typename Container>
 typename Container::value_type minimum_by(Compare comp,
         const Container& xs)
@@ -264,6 +271,7 @@ maybe<typename Container::value_type> minimum_by_maybe(Compare comp,
 // fwd bind count: 1
 // Return the first maximum element using a less comparator.
 // maximum_by(lessLength, ["123", "12", "1234", "123"]) == "1234"
+// Unsafe! Crashes on an empty sequence.
 template <typename Compare, typename Container>
 typename Container::value_type maximum_by(Compare comp,
         const Container& xs)
@@ -294,6 +302,7 @@ maybe<typename Container::value_type> maximum_by_maybe(Compare comp,
 // fwd bind count: 0
 // Return the first minimum element.
 // minimum([3, 1, 4, 2]) == 1
+// Unsafe! Crashes on an empty sequence.
 template <typename Container>
 typename Container::value_type minimum(const Container& xs)
 {
@@ -319,6 +328,7 @@ maybe<typename Container::value_type> minimum_maybe(const Container& xs)
 // fwd bind count: 0
 // Return the first maximum element.
 // maximum([3, 1, 4, 2]) == 4
+// Unsafe! Crashes on an empty sequence.
 template <typename Container>
 typename Container::value_type maximum(const Container& xs)
 {
@@ -345,6 +355,7 @@ maybe<typename Container::value_type> maximum_maybe(const Container& xs)
 // fwd bind count: 1
 // Return the first minimum element using a transformer.
 // minimum_on(length, ["123", "12", "1234", "123"]) -> "12"
+// Unsafe! Crashes on an empty sequence.
 template <typename F, typename Container>
 typename Container::value_type minimum_on(F f, const Container& xs)
 {
@@ -372,6 +383,7 @@ maybe<typename Container::value_type> minimum_on_maybe(
 // fwd bind count: 1
 // Return the first maximum element using a transformer.
 // maximum_on(length, ["123", "12", "1234", "123"]) == "1234"
+// Unsafe! Crashes on an empty sequence.
 template <typename F, typename Container>
 typename Container::value_type maximum_on(F f, const Container& xs)
 {
@@ -401,6 +413,7 @@ maybe<typename Container::value_type> maximum_on_maybe(
 // Also known as average.
 // xs must have at least one element.
 // Use mean_using_doubles if overflow errors for sum(xs) can occur.
+// Unsafe! Crashes on an empty sequence.
 template <typename Result, typename Container>
 Result mean(const Container& xs)
 {
@@ -413,7 +426,8 @@ Result mean(const Container& xs)
 // fwd bind count: 0
 // mean_obj_div_size_t([B 1, B 4, B 4]) == B 3
 // The provided objects must support division by a std::size_t.
-// unsafe! Make sure sum(xs) does not overflow.
+// Unsafe! Crashes on an empty sequence.
+// Also Make sure sum(xs) does not overflow.
 template <typename Container,
     typename T = typename Container::value_type>
 T mean_obj_div_size_t(const Container& xs)
@@ -426,7 +440,8 @@ T mean_obj_div_size_t(const Container& xs)
 // fwd bind count: 0
 // mean_obj_div_double([B 1, B 4, B 4]) == B 3
 // The provided objects must support division by a double.
-// unsafe! Make sure sum(xs) does not overflow.
+// Unsafe! Crashes on an empty sequence.
+// Also Make sure sum(xs) does not overflow.
 template <typename Container,
     typename T = typename Container::value_type>
 T mean_obj_div_double(const Container& xs)
@@ -438,7 +453,9 @@ T mean_obj_div_double(const Container& xs)
 // API search type: mean_using_doubles : [a] -> a
 // fwd bind count: 0
 // mean_using_doubles([1, 4, 4]) == 3
-// Converts elements to double before calculating the sum to prevent overflows.
+// Converts elements to double before calculating the sum
+// to prevent overflows.
+// Unsafe! Crashes on an empty sequence.
 template <typename Result, typename Container>
 Result mean_using_doubles(const Container& xs)
 {
@@ -455,6 +472,7 @@ Result mean_using_doubles(const Container& xs)
 // API search type: median : [a] -> a
 // fwd bind count: 0
 // median([5, 6, 4, 3, 2, 6, 7, 9, 3]) == 5
+// Unsafe! Crashes on an empty sequence.
 template <typename Container,
         typename Result = typename Container::value_type>
 Result median(const Container& xs)
