@@ -201,7 +201,7 @@ template <typename T>
 std::size_t tree_depth(const tree<T>& x)
 {
     return 1 + just_with_default<std::size_t>(0,
-        maximum(transform(tree_depth<T>, x.children_)));
+        maximum_maybe(transform(tree_depth<T>, x.children_)));
 }
 
 // API search type: flatten_tree_depth_first : Tree a -> [a]

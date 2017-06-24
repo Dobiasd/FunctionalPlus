@@ -50,52 +50,51 @@ TEST_CASE("container_properties_test, none")
     REQUIRE_EQ(none_by(is_even_int, IntVector({2, 1})), false);
 }
 
-TEST_CASE("container_properties_test, minmax_unsafe")
-{
-    using namespace fplus;
-    auto negateInt = [](int i) -> int { return -i; };
-
-    REQUIRE_EQ(minimum_unsafe(xs), 1);
-    REQUIRE_EQ(maximum_unsafe(xs), 3);
-
-    REQUIRE_EQ(minimum_by_unsafe(std::greater<int>(), xs), 3);
-    REQUIRE_EQ(maximum_by_unsafe(std::greater<int>(), xs), 1);
-
-    REQUIRE_EQ(minimum_on_unsafe(negateInt, xs), 3);
-    REQUIRE_EQ(maximum_on_unsafe(negateInt, xs), 1);
-
-    REQUIRE_EQ(minimum_idx_unsafe(xs), 0);
-    REQUIRE_EQ(maximum_idx_unsafe(xs), 3);
-
-    REQUIRE_EQ(minimum_idx_by_unsafe(std::greater<int>(), xs), 3);
-    REQUIRE_EQ(maximum_idx_by_unsafe(std::greater<int>(), xs), 0);
-
-    REQUIRE_EQ(minimum_idx_on_unsafe(negateInt, xs), 3);
-    REQUIRE_EQ(maximum_idx_on_unsafe(negateInt, xs), 0);
-}
-
 TEST_CASE("container_properties_test, minmax")
 {
     using namespace fplus;
     auto negateInt = [](int i) -> int { return -i; };
 
-    REQUIRE_EQ(minimum(xs), maybe<int>(1));
-    REQUIRE_EQ(maximum(xs), maybe<int>(3));
+    REQUIRE_EQ(minimum(xs), 1);
+    REQUIRE_EQ(maximum(xs), 3);
 
-    REQUIRE_EQ(minimum_by(std::greater<int>(), xs), maybe<int>(3));
-    REQUIRE_EQ(maximum_by(std::greater<int>(), xs), maybe<int>(1));
+    REQUIRE_EQ(minimum_by(std::greater<int>(), xs), 3);
+    REQUIRE_EQ(maximum_by(std::greater<int>(), xs), 1);
 
-    REQUIRE_EQ(minimum_on(negateInt, xs), maybe<int>(3));
-    REQUIRE_EQ(maximum_on(negateInt, xs), maybe<int>(1));
+    REQUIRE_EQ(minimum_on(negateInt, xs), 3);
+    REQUIRE_EQ(maximum_on(negateInt, xs), 1);
 
-    REQUIRE_EQ(minimum_idx(xs), maybe<std::size_t>(0));
-    REQUIRE_EQ(maximum_idx(xs), maybe<std::size_t>(3));
+    REQUIRE_EQ(minimum_idx(xs), 0);
+    REQUIRE_EQ(maximum_idx(xs), 3);
 
-    REQUIRE_EQ(minimum_idx_by(std::greater<int>(), xs), maybe<std::size_t>(3));
-    REQUIRE_EQ(maximum_idx_by(std::greater<int>(), xs), maybe<std::size_t>(0));
+    REQUIRE_EQ(minimum_idx_by(std::greater<int>(), xs), 3);
+    REQUIRE_EQ(maximum_idx_by(std::greater<int>(), xs), 0);
 
-    REQUIRE_EQ(minimum_idx_on(negateInt, xs), maybe<std::size_t>(3));
-    REQUIRE_EQ(maximum_idx_on(negateInt, xs), maybe<std::size_t>(0));
+    REQUIRE_EQ(minimum_idx_on(negateInt, xs), 3);
+    REQUIRE_EQ(maximum_idx_on(negateInt, xs), 0);
+}
+
+TEST_CASE("container_properties_test, minmax_maybe")
+{
+    using namespace fplus;
+    auto negateInt = [](int i) -> int { return -i; };
+
+    REQUIRE_EQ(minimum_maybe(xs), maybe<int>(1));
+    REQUIRE_EQ(maximum_maybe(xs), maybe<int>(3));
+
+    REQUIRE_EQ(minimum_by_maybe(std::greater<int>(), xs), maybe<int>(3));
+    REQUIRE_EQ(maximum_by_maybe(std::greater<int>(), xs), maybe<int>(1));
+
+    REQUIRE_EQ(minimum_on_maybe(negateInt, xs), maybe<int>(3));
+    REQUIRE_EQ(maximum_on_maybe(negateInt, xs), maybe<int>(1));
+
+    REQUIRE_EQ(minimum_idx_maybe(xs), maybe<std::size_t>(0));
+    REQUIRE_EQ(maximum_idx_maybe(xs), maybe<std::size_t>(3));
+
+    REQUIRE_EQ(minimum_idx_by_maybe(std::greater<int>(), xs), maybe<std::size_t>(3));
+    REQUIRE_EQ(maximum_idx_by_maybe(std::greater<int>(), xs), maybe<std::size_t>(0));
+
+
 }
 
 TEST_CASE("container_properties_test, mean")
