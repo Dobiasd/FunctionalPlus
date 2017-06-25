@@ -3,9 +3,6 @@ language: generic
 dist: trusty
 sudo: required
 
-cache:
-    apt: true
-
 matrix:
     include:
     - env: CXX=g++-7 CC=gcc-7
