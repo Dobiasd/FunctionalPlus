@@ -687,3 +687,14 @@ TEST_CASE("container_common_test, stride")
     REQUIRE_EQ(stride(3, IntVector({0,1,2,3,4,5,6,7})), IntVector({0,3,6}));
     REQUIRE_EQ(divvy(1, 3, IntVector({0,1,2,3,4,5,6,7})), IntVectors({{0},{3},{6}}));
 }
+
+TEST_CASE("composition_test, instead_of_if_empty")
+{
+    using namespace fplus;
+
+    std::vector<int> xs_empty;
+    std::vector<int> xs_full = {1,2,3};
+    std::vector<int> xs_alt = {0};
+    REQUIRE_EQ(instead_of_if_empty(xs_alt, xs_empty), xs_alt);
+    REQUIRE_EQ(instead_of_if_empty(xs_alt, xs_full), xs_full);
+}

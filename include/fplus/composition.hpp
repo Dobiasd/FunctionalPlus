@@ -455,7 +455,7 @@ std::function<FOut(FIn1, FIn2)> memoize_binary(F f)
 // };
 // const auto create_foo = constructor_as_function<foo, int int>;
 // create_foo(1,2) == foo(1, 2);
-template<typename T, class ... Types>
+template <typename T, class ... Types>
 T constructor_as_function(Types ... args)
 {
     return T{args...};

@@ -2077,4 +2077,52 @@ ContainerOut replicate(std::size_t n, const T& x)
     return ContainerOut(n, x);
 }
 
+namespace internal
+{
+
+template <typename UnaryPredicate, typename T>
+T instead_of_if(internal::reuse_container_t, UnaryPredicate pred,
+    const T& alt, T&& x)
+{
+    if (pred(x))
+        return alt;
+    else
+        return std::forward<T>(x);
+}
+
+template <typename UnaryPredicate, typename T>
+T instead_of_if(internal::create_new_container_t, UnaryPredicate pred,
+    const T& alt, const T& x)
+{
+    if (pred(x))
+        return alt;
+    else
+        return x;
+}
+
+} // namespace internal
+
+// API search type: instead_of_if : ((a -> Bool), a, a) -> a
+// fwd bind count: 2
+// Return alt if pred(x), otherwise x itself.
+template <typename UnaryPredicate, typename T, typename TAlt,
+    typename TOut = internal::remove_const_and_ref_t<T>>
+TOut instead_of_if(UnaryPredicate pred, const TAlt& alt, T&& x)
+{
+    return internal::instead_of_if(internal::can_reuse_v<T>{},
+        pred, alt, std::forward<T>(x));
+}
+
+// API search type: instead_of_if_empty : ((a -> Bool), [a], [a]) -> [a]
+// fwd bind count: 2
+// Return alt if xs is empty, otherwise xs itself.
+template <typename Container, typename ContainerAlt,
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
+ContainerOut instead_of_if_empty(const ContainerAlt& alt, Container&& xs)
+{
+    return instead_of_if(
+        is_empty<internal::remove_const_and_ref_t<Container>>,
+        alt, std::forward<Container>(xs));
+}
+
 } // namespace fplus
