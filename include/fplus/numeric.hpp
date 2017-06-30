@@ -864,11 +864,13 @@ std::vector<T> modulo_chain(const std::vector<T>& factors, T val)
 // fwd bind count: 2
 // Can be used to interpolate and to extrapolate
 // based on two given two-dimensional points.
-// line_equation((0, 0), (2, 1), 3) == 2
-// line_equation((-1, 1), (-2, 4), 0) == -2
+// Using slope, return nan if x_1 equals to x_2
+// line_equation((0.0, 0.0), (2.0, 1.0), 3.0) == 1.5
+// line_equation((-1.0, 1.0), (-2.0, 4.0), 0.0) == -2.0
 template <typename T>
 T line_equation(const std::pair<T, T>& a, const std::pair<T, T>& b, T x)
 {
+    static_assert(std::is_floating_point<T>::value, "Please use a floating-point type.");
     const double m = (b.second - a.second) / (b.first - a.first);
     return m * x + a.second - m * a.first;
 }
