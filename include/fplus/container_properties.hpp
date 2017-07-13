@@ -482,6 +482,9 @@ Result median(const Container& xs)
     if (size_of_cont(xs) == 1)
         return static_cast<Result>(xs.front());
 
+    // std::nth_element (instead of sorting)
+    // would be faster for random-access containers
+    // but not work at all on other containers like std::list.
     auto xsSorted = sort(xs);
     if (size_of_cont(xsSorted) % 2 == 1)
     {
