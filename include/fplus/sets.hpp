@@ -182,6 +182,7 @@ UnorderSetType unordered_set_symmetric_difference(
 // fwd bind count: 0
 // Returns the intersection of the given sets.
 // Also known as intersect_many.
+// For performance try to sort the inputs sets prior, ascendending by size.
 template <typename ContainerIn,
     typename SetType = typename ContainerIn::value_type>
 SetType sets_intersection(const ContainerIn& sets)
