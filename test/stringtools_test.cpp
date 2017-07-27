@@ -55,8 +55,8 @@ TEST_CASE("stringtools_test, split")
     REQUIRE_EQ(split_lines(true, text), textAsLinesWithEmty);
     REQUIRE_EQ(split_lines(false, text), textAsLinesWithoutEmpty);
     REQUIRE_EQ(split_words(false, text), textAsWords);
-    REQUIRE_EQ(split_words_by(' ', false, text), textSplitBySpaceOnly);
-    REQUIRE_EQ(split_words_by_many(std::string{ " ,\r\n" }, false, text), textSplitBySpaceAndCommaAndLine);
+    REQUIRE_EQ(split(' ', false, text), textSplitBySpaceOnly);
+    REQUIRE_EQ(split_one_of(std::string{ " ,\r\n" }, false, text), textSplitBySpaceAndCommaAndLine);
 }
 
 TEST_CASE("stringtools_test, to_string_filled")

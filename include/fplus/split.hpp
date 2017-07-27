@@ -403,11 +403,13 @@ ContainerOut split(const T& x, bool allow_empty, const ContainerIn& xs)
     return split_by(is_equal_to(x), allow_empty, xs);
 }
 
-// API search type: split_one_of : ([a], [a]) -> [[a]]
+// API search type: split_one_of : ([a], Bool, [a]) -> [[a]]
 // fwd bind count: 2
 // Split a sequence at every element present in delimiters.
 // The splitting elements are discarded.
+// Also known as split_words_by_many.
 // split_one_of([0,3], true [1,3,2,0,0,6,0,7,5]) == [[1],[2],[],[6],[7,5]]
+// split_one_of(" o", false, "How are u?") == ["H","w","are","u?"]
 // O(n)
 template <typename ContainerIn,
         typename ContainerDelims,
