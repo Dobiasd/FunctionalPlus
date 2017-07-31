@@ -13,9 +13,10 @@
 
 #include <algorithm>
 #include <cassert>
-#include <numeric>
-#include <iterator>
 #include <cmath>
+#include <cstddef>
+#include <iterator>
+#include <numeric>
 
 namespace fplus
 {
@@ -193,6 +194,12 @@ namespace internal
     {
         std::advance(it,
             static_cast<typename Iterator::difference_type>(distance));
+    }
+
+    template <typename T>
+    void advance_iterator(T*& it, std::size_t distance)
+    {
+        it += static_cast<std::ptrdiff_t>(distance);
     }
 
     template <typename Iterator>
