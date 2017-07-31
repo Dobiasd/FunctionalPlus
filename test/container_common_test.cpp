@@ -22,7 +22,7 @@ namespace {
     typedef std::vector<std::size_t> IdxVector;
     typedef std::array<int, 5> IntArray5;
     IntVector xs = {1,2,2,3,2};
-    IntArray5 xs_arr = {1,2,2,3,2};
+    IntArray5 xs_arr = {{1,2,2,3,2}};
     IntVector xs_reverse = {2,3,2,2,1};
     IntVector xsSorted = {1,2,2,2,3};
     IntVector xs2Times = {1,2,2,3,2,1,2,2,3,2};
