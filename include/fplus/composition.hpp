@@ -382,7 +382,7 @@ namespace internal
         typename ResultF = std::function<FOut(FIn2)>>
     ResultF memoize_recursive_helper(const F f, std::shared_ptr<Cache> storage)
     {
-        return [f, storage](uint x)
+        return [f, storage](FIn2 x)
         {
             const auto it = storage->find(x);
             if (it == storage->end())
