@@ -21,14 +21,15 @@ namespace {
     typedef IntDeq IntCont;
     typedef IntCont Row;
 
-    uint64_t fibo(uint64_t n)
+    std::uint64_t fibo(std::uint64_t n)
     {
         if (n < 2)
             return n;
         else
             return fibo(n-1) + fibo(n-2);
     }
-    uint64_t fibo_cont(const std::function<uint64_t(uint64_t)>& cont, uint64_t n)
+    // version using continuation passing style (CPS)
+    std::uint64_t fibo_cont(const std::function<std::uint64_t(std::uint64_t)>& cont, std::uint64_t n)
     {
         if (n < 2)
             return n;
@@ -172,7 +173,7 @@ TEST_CASE("composition_test, memoize")
 
     const auto fibo_memo = memoize_recursive(fibo_cont);
 
-    for (uint64_t n = 0; n < 10; ++n)
+    for (std::uint64_t n = 0; n < 10; ++n)
     {
         REQUIRE_EQ(fibo_memo(n), fibo(n));
     }
