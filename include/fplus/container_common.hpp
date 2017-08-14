@@ -105,7 +105,7 @@ namespace internal
     {
     }
 
-    template <typename Container, typename Y>
+    template <typename Container>
     std::back_insert_iterator<Container> get_back_inserter(std::string& ys)
     {
         return std::back_inserter(ys);
