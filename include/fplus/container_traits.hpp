@@ -17,6 +17,7 @@
 #include <queue>
 #include <set>
 #include <stack>
+#include <string>
 #include <vector>
 
 namespace fplus
