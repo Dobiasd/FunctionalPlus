@@ -373,6 +373,47 @@ cmake -DUNITTEST=ON -DCPP14TEST=ON ..
 make unittest
 ```
 
+### using [cmake's ExternalProject](https://cmake.org/cmake/help/v3.0/module/ExternalProject.html)
+
+You can also add `FunctionalPlus` as an `ExternalProject` to your CMakeLists.
+
+The benefits of this:
+
+- No installation
+- Better version control with the `GIT_TAG`
+  - Always get the latest version when `GIT_TAG master`
+  - When you builds your project, it will automatically update the headers if there is a change
+  - Or get the specific version by setting it to a specific commit point
+
+
+
+```cmake
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+project(FplusMinimalExternalExample)
+set(CMAKE_CXX_STANDARD 14)
+
+include(ExternalProject)
+ExternalProject_Add(functional_plus
+  GIT_REPOSITORY https://github.com/Dobiasd/FunctionalPlus.git
+  GIT_TAG master
+
+  SOURCE_DIR "${CMAKE_BINARY_DIR}/thirdparty/fplus"
+
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ""
+  INSTALL_COMMAND ""
+
+  LOG_DOWNLOAD ON
+  LOG_BUILD ON
+)
+set(FPLUS_INCLUDE_DIR ${CMAKE_BINARY_DIR}/thirdparty/fplus/include)
+include_directories(${FPLUS_INCLUDE_DIR})
+
+add_executable(main src/main.cpp)
+add_dependencies(main functional_plus)
+```
+
+
 ### using [cget](https://github.com/pfultz2/cget/)
 
 ```
