@@ -380,12 +380,14 @@ You can also add `FunctionalPlus` as an `ExternalProject` to your CMakeLists.
 The benefits of this:
 
 - No installation
-- Better version control by setting the `GIT_TAG`
-  - You can always get the latest version by setting it to `master`
-  - Or you can get the specific version by setting it to a specific commit point 
+- Better version control with the `GIT_TAG`
+  - Always get the latest version when `GIT_TAG master`
+  - When you builds your project, it will automatically update the headers if there is a change
+  - Or get the specific version by setting it to a specific commit point
 
 
-```
+
+```cmake
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 project(FplusMinimalExternalExample)
 set(CMAKE_CXX_STANDARD 14)
