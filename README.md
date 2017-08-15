@@ -349,13 +349,9 @@ Requirements and Installation
 
 A **C++11**-compatible compiler is needed (C++14 if you want to use the features from `namespace fwd`). Compilers from these versions on are fine: GCC 4.9, Clang 3.6 and Visual C++ 2015
 
-You can install FunctionalPlus in one of the following ways:
+You can install FunctionalPlus in **one of the following 4 ways**:
 
-### download manually
-
-Just [download](https://github.com/Dobiasd/FunctionalPlus/archive/master.zip)/extract FunctionalPlus and tell your compiler to use the `include` directory.
-
-### using [cmake](https://cmake.org/)
+### way 1: using [cmake](https://cmake.org/)
 
 ```
 git clone https://github.com/Dobiasd/FunctionalPlus
@@ -373,7 +369,8 @@ cmake -DUNITTEST=ON -DCPP14TEST=ON ..
 make unittest
 ```
 
-### using [cmake's ExternalProject](https://cmake.org/cmake/help/v3.0/module/ExternalProject.html)
+
+### way 2: using [cmake's ExternalProject](https://cmake.org/cmake/help/v3.0/module/ExternalProject.html)
 
 You can also add `FunctionalPlus` as an `ExternalProject` to your CMakeLists.
 
@@ -382,9 +379,8 @@ The benefits of this:
 - No installation
 - Better version control with the `GIT_TAG`
   - Always get the latest version when `GIT_TAG master`
-  - When you builds your project, it will automatically update the headers if there is a change
+  - When you build your project, it will automatically update the headers if there is a change
   - Or get the specific version by setting it to a specific commit point
-
 
 
 ```cmake
@@ -414,7 +410,7 @@ add_dependencies(main functional_plus)
 ```
 
 
-### using [cget](https://github.com/pfultz2/cget/)
+### way 3: using [cget](https://github.com/pfultz2/cget/)
 
 ```
 # Setup up toolchain to use c++11
@@ -422,6 +418,12 @@ cget init --std=c++11
 # Test and install
 cget install Dobiasd/FunctionalPlus
 ```
+
+
+### way 4: download manually
+
+Just [download](https://github.com/Dobiasd/FunctionalPlus/archive/master.zip)/extract FunctionalPlus and tell your compiler to use the `include` directory.
+
 
 Disclaimer
 ----------
