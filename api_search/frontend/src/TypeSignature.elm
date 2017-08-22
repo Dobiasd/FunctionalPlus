@@ -382,12 +382,12 @@ parseSignature inputData =
             Maybe.Nothing
 
 
-equalityToFloat : a -> a -> Float
-equalityToFloat x y =
+equalityToFloat : Float -> Float -> a -> a -> Float
+equalityToFloat valueTrue valueFalse x y =
     if x == y then
-        1
+        valueTrue
     else
-        0
+        valueFalse
 
 
 sigIsArrow : Signature -> Bool
@@ -410,19 +410,19 @@ functionCompatibility db query =
             0.8
 
         ( TypeApplication (TypeConstructor "Maybe") (VariableType x), VariableType y ) ->
-            0.8 * equalityToFloat x y
+            0.8 * equalityToFloat 1.0 0.0 x y
 
         ( TypeApplication (TypeConstructor "Maybe") (TypeConstructor x), TypeConstructor y ) ->
-            0.8 * equalityToFloat x y
+            0.8 * equalityToFloat 1.0 0.0 x y
 
         ( Arrow a b, Arrow x y ) ->
             functionCompatibility a x * functionCompatibility b y
 
         ( TypeConstructor x, TypeConstructor y ) ->
-            equalityToFloat x y
+            equalityToFloat 1.0 0.0 x y
 
         ( VariableType x, VariableType y ) ->
-            equalityToFloat x y
+            equalityToFloat 1.0 0.85 x y
 
         ( TypeApplication a b, TypeApplication x y ) ->
             functionCompatibility a x * functionCompatibility b y
