@@ -22,17 +22,19 @@ struct make_void
 template <typename... Ts>
 using void_t = typename make_void<Ts...>::type;
 
-template <class...>
+// disjunction/conjunction/negation, useful to short circuit SFINAE checks
+// Use with parsimony, MSVC 2015 can have ICEs quite easily
+template <typename...>
 struct disjunction : std::false_type
 {
 };
 
-template <class B1>
+template <typename B1>
 struct disjunction<B1> : B1
 {
 };
 
-template <class B1, class... Bn>
+template <typename B1, typename... Bn>
 struct disjunction<B1, Bn...>
     : std::conditional<bool(B1::value), B1, disjunction<Bn...>>::type
 {
