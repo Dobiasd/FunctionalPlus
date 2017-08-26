@@ -1018,7 +1018,7 @@ Container append_elem(internal::create_new_container_t, const T& y,
 
 } // namespace internal
 
-// API search type: append_elem : ([a], a) -> [a]
+// API search type: append_elem : (a, [a]) -> [a]
 // fwd bind count: 1
 // Extends a sequence with one element at the back.
 // append_elem([1, 2], 3) == [1, 2, 3]
@@ -1066,7 +1066,7 @@ Container prepend_elem(internal::create_new_container_t, const T& y,
 
 } // namespace internal
 
-// API search type: prepend_elem : ([a], a) -> [a]
+// API search type: prepend_elem : (a, [a]) -> [a]
 // fwd bind count: 1
 // Extends a sequence with one element in the front.
 // prepend_elem([2, 3], 1) == [1, 2, 3]
