@@ -28,6 +28,11 @@ public:
         assert(is_just());
         return *reinterpret_cast<const T*>(&mem_[0]);
     }
+    T& unsafe_get_just()
+    {
+        assert(is_just());
+        return *reinterpret_cast<T*>(&mem_[0]);
+    }
     typedef T type;
 #ifdef __GNUC__ // workaround for bug in GCC 4.9
 #pragma GCC diagnostic push
