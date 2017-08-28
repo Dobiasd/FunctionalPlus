@@ -57,6 +57,15 @@ TEST_CASE("maybe_test, ctor")
     foo::msgs_.clear();
 }
 
+TEST_CASE("maybe_test, unsafe_get_just")
+{
+    using namespace fplus;
+    fplus::maybe<int> m(4);
+    REQUIRE_EQ(m.unsafe_get_just(), 4);
+    m.unsafe_get_just() += 1;
+    REQUIRE_EQ(m.unsafe_get_just(), 5);
+}
+
 TEST_CASE("maybe_test, as_just_if")
 {
     using namespace fplus;
