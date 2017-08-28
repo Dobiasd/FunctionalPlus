@@ -183,13 +183,13 @@ std::list<int> collatz_seq(int x)
 
 TEST_CASE("fwd_test, collatz")
 {
-    using namespace fplus::fwd;
+    using namespace fplus;
 
-    auto collatz_dict = apply(
-        fplus::numbers<int>(0,20)
-        , create_map_with(compose(
+    auto collatz_dict = fwd::apply(
+        fplus::numbers<int>(0, 20)
+        , fwd::create_map_with(fwd::compose(
             collatz_seq,
-            show_cont_with(" => ")))
+            fwd::show_cont_with(" => ")))
         );
 }
 
