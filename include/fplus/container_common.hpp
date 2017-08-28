@@ -1576,7 +1576,7 @@ Container intersperse(const X& value, const Container& xs)
 // fwd bind count: 1
 // Inserts a separator sequence in between the elements
 // of a sequence of sequences and concatenates the result.
-// Also known as intercalate.
+// Also known as intercalate or implode.
 // join(", ", "["a", "bee", "cee"]) == "a, bee, cee"
 // join([0, 0], [[1], [2], [3, 4]]) == [1, 0, 0, 2, 0, 0, 3, 4]
 template <typename Container,
