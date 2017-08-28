@@ -6,6 +6,7 @@ if [[ "$CXX" == clang* ]]; then
     # print libstdc++ version
     ldconfig -p | grep stdc++
     strings /usr/lib/libstdc++.so.6 | grep LIBCXX
+    strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep LIBCXX
 fi
 
 [ ! -d build ] && mkdir build
