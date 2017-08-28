@@ -73,9 +73,9 @@ TEST_CASE("fwd_test, compose")
     using namespace fplus;
 
     const auto function_chain_old_style = compose(
-        bind_1st_of_2(transform<decltype(times_3), std::vector<int>, std::vector<int>>, times_3),
+        bind_1st_of_2(transform<decltype(times_3), const std::vector<int>&, std::vector<int>>, times_3),
         bind_1st_of_2(drop_if<decltype(is_odd_int), const std::vector<int>&>, is_odd_int),
-        bind_1st_of_2(transform<decltype(as_string_length_lambda), std::vector<int>>, as_string_length_lambda),
+        bind_1st_of_2(transform<decltype(as_string_length_lambda), const std::vector<int>&>, as_string_length_lambda),
         sum<std::vector<std::size_t>>);
 
     const auto function_chain_new_style = fwd::compose(
@@ -116,7 +116,6 @@ TEST_CASE("fwd_test, fold_left")
     REQUIRE_EQ(fold_result_old_style, fold_result_new_style);
 }
 
-
 TEST_CASE("fwd_test, transform_nested")
 {
     using namespace fplus;
@@ -125,7 +124,7 @@ TEST_CASE("fwd_test, transform_nested")
     const std::vector<ints> nested_ints = {{1,2,3},{4,5,6}};
 
     const auto nested_transformed_old_style = transform(
-        bind_1st_of_2(transform<decltype(times_3), std::vector<int>, std::vector<int>>, times_3),
+        bind_1st_of_2(transform<decltype(times_3), const std::vector<int>&, std::vector<int>>, times_3),
         nested_ints);
 
     const auto nested_transformed_new_style = fwd::apply(

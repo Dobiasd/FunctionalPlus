@@ -56,7 +56,7 @@ namespace internal
     // and std::back_inserter instead of std::back_inserter.
     // In VC2015, release mode, Celsius W520 Xeon
     // this leads to an increase in performance of about a factor of 3
-    // for Transform.
+    // for transform.
     template <typename C>
     void prepare_container(const std::basic_string<C, std::char_traits<C>,
         std::allocator<C>>& ys, std::size_t size)
@@ -543,15 +543,20 @@ std::vector<T> elems_at_idxs(const ContainerIdxs& idxs, const Container& xs)
     return result;
 }
 
-// API search type: transform : ((a -> b), [a]) -> [b]
-// fwd bind count: 1
-// Apply a function to every element in a sequence.
-// transform((*2), [1, 3, 4]) == [2, 6, 8]
-// Also known as map or fmap.
-template <typename F, typename ContainerIn,
-    typename ContainerOut = typename internal::same_cont_new_t_from_unary_f<
-        ContainerIn, F, 0>::type>
-ContainerOut transform(F f, const ContainerIn& xs)
+namespace internal
+{
+
+template <typename Container, typename F>
+Container transform(internal::reuse_container_t, F f, Container&& xs)
+{
+    internal::check_arity<1, F>();
+    std::transform(std::begin(xs), std::end(xs), std::begin(xs), f);
+    return std::forward<Container>(xs);
+}
+
+template <typename ContainerOut, typename F, typename ContainerIn>
+ContainerOut transform(internal::create_new_container_t, F f,
+    const ContainerIn& xs)
 {
     internal::check_arity<1, F>();
     ContainerOut ys;
@@ -559,6 +564,34 @@ ContainerOut transform(F f, const ContainerIn& xs)
     auto it = internal::get_back_inserter<ContainerOut>(ys);
     std::transform(std::begin(xs), std::end(xs), it, f);
     return ys;
+}
+
+} // namespace internal
+
+// API search type: transform : ((a -> b), [a]) -> [b]
+// fwd bind count: 1
+// Apply a function to every element in a sequence.
+// transform((*2), [1, 3, 4]) == [2, 6, 8]
+// Also known as map or fmap.
+template <typename F, typename ContainerIn,
+    typename ContainerOut = typename internal::same_cont_new_t_from_unary_f<
+        internal::remove_const_and_ref_t<ContainerIn>, F, 0>::type>
+ContainerOut transform(F f, ContainerIn&& xs)
+{
+    using reuse_t = typename std::conditional<
+        std::is_same<
+            internal::can_reuse_v<ContainerIn>,
+            internal::reuse_container_t>::value &&
+        std::is_base_of<
+            std::true_type,
+            internal::has_order<ContainerIn>>::value &&
+        std::is_same<
+            internal::remove_const_and_ref_t<ContainerIn>,
+            ContainerOut>::value,
+        internal::reuse_container_t,
+        internal::create_new_container_t>::type;
+    return internal::transform<ContainerOut>(
+        reuse_t{}, f, std::forward<ContainerIn>(xs));
 }
 
 // API search type: transform_convert : ((a -> b), [a]) -> [b]
@@ -596,7 +629,7 @@ ContainerOut transform_inner(F f, const ContainerIn& xs)
     internal::check_arity<1, F>();
     return fplus::transform(
         fplus::bind_1st_of_2(
-            fplus::transform<F, typename ContainerIn::value_type>, f),
+            fplus::transform<F, const typename ContainerIn::value_type&>, f),
         xs);
 }
 

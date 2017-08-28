@@ -10,7 +10,6 @@
 #include <vector>
 
 namespace {
-
     bool is_even(int value)
     {
         return ( value % 2 == 0 );
@@ -25,6 +24,9 @@ namespace {
     {
         return ( index % 2 == 0 ) && ( value >= 10 );
     }
+
+    typedef std::vector<int> IntVector;
+    typedef std::vector<IntVector> IntVectors;
 }
 
 TEST_CASE("filter_test, keep_if")
@@ -32,6 +34,13 @@ TEST_CASE("filter_test, keep_if")
     const std::vector<int> v = { 1, 2, 3, 2, 4, 5 };
     auto result = fplus::keep_if(is_even, v);
     REQUIRE_EQ(result, std::vector<int>({2, 2, 4}));
+
+    const auto keep_evens = fplus::bind_1st_of_2(
+        fplus::keep_if<decltype(is_even), const IntVector&>, is_even);
+
+    REQUIRE_EQ(
+        fplus::transform(keep_evens, IntVectors({{1,3,4},{1,2}})),
+        IntVectors({{4},{2}}));
 }
 
 TEST_CASE("filter_test, keep_if_r_value")
