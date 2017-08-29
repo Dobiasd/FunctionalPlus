@@ -18,11 +18,6 @@ matrix:
             - llvm-toolchain-precise-3.7
             - llvm-toolchain-precise-3.6
             - sourceline: 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-4.0 main'
-            - sourceline: 'deb-src http://apt.llvm.org/trusty/ llvm-toolchain-trusty-4.0 main'
-            - sourceline: 'deb-src http://apt.llvm.org/trusty/ llvm-toolchain-trusty-3.9 main'
-            - sourceline: 'deb-src http://apt.llvm.org/trusty/ llvm-toolchain-trusty-3.8 main'
-            - sourceline: 'deb-src http://apt.llvm.org/trusty/ llvm-toolchain-trusty-3.7 main'
-            - sourceline: 'deb-src http://apt.llvm.org/trusty/ llvm-toolchain-trusty-3.6 main'
               key_url: 'http://apt.llvm.org/llvm-snapshot.gpg.key'
     - env: CXX=g++-6 CC=gcc-6
       addons:
@@ -47,35 +42,35 @@ matrix:
         apt:
           packages:
             - clang-4.0
-            - libc++-dev-4.0
+            - libc++-dev
           sources: *sources
     - env: CXX=clang++-3.9 CC=clang-3.9
       addons:
         apt:
           packages:
             - clang-3.9
-            - libc++-dev-3.9
+            - libc++-dev
           sources: *sources
     - env: CXX=clang++-3.8 CC=clang-3.8
       addons:
         apt:
           packages:
             - clang-3.8
-            - libc++-dev-3.8
+            - libc++-dev
           sources: *sources
     - env: CXX=clang++-3.7 CC=clang-3.7
       addons:
         apt:
           packages:
             - clang-3.7
-            - libc++-dev-3.7
+            - libc++-dev
           sources: *sources
     - env: CXX=clang++-3.6 CC=clang-3.6
       addons:
         apt:
           packages:
             - clang-3.6
-            - libc++-dev-3.6
+            - libc++-dev
           sources: *sources
 
 script:
