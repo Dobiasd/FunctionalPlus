@@ -6,6 +6,7 @@ set(PROJECT_VERSION 0.2)
 message(STATUS "===( ${PROJECT_NAME} ${PROJECT_VERSION} )===")
 
 option(UNITTEST "Build unit tests" OFF)
+option(CPP14TEST "Build with C++14 enabled" OFF)
 
 
 install(DIRECTORY include/fplus DESTINATION include)
