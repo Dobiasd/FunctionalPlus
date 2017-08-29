@@ -11,24 +11,23 @@ option(CPP14TEST "Build with C++14 enabled" OFF)
 
 install(DIRECTORY include/fplus DESTINATION include)
 
-add_definitions(-Wall
-                -Wextra
-                -pedantic
-                -Wshadow
-                -Werror
-                -Weffc++
-                -Wconversion
-                -Wsign-conversion
-                -Wctor-dtor-privacy
-                -Wreorder
-                -Wold-style-cast
-                -Wparentheses
-                )
+add_compile_options(-Wall
+                    -Wextra
+                    -pedantic
+                    -Wshadow
+                    -Werror
+                    -Weffc++
+                    -Wconversion
+                    -Wsign-conversion
+                    -Wctor-dtor-privacy
+                    -Wreorder
+                    -Wold-style-cast
+                    -Wparentheses
+                    )
 
 find_package(Threads REQUIRED)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include(Cpp11)
 
 include_directories(include)
 
@@ -39,9 +38,12 @@ endif()
 
 if( CPP14TEST )
     set(CMAKE_CXX_STANDARD 14)
-    set(CMAKE_CXX_STANDARD_REQUIRED ON)
-    set(CMAKE_CXX_EXTENSIONS OFF)
+else()
+    set(CMAKE_CXX_STANDARD 11)
 endif()
+
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 
 add_executable(readme_examples EXCLUDE_FROM_ALL examples/readme_examples.cpp)
