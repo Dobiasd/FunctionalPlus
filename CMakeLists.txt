@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.2)
 
 project(FunctionalPlus)
 set(PROJECT_VERSION 0.2)
