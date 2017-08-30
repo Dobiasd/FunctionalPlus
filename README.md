@@ -347,7 +347,7 @@ When using FunctionalPlus on the other hand you work with normal STL-containers.
 Requirements and Installation
 -----------------------------
 
-A **C++11**-compatible compiler is needed (C++14 if you want to use the features from `namespace fwd`). Compilers from these versions on are fine: GCC 4.9, Clang 3.6 and Visual C++ 2015
+A **C++14**-compatible compiler is needed. Compilers from these versions on are fine: GCC 4.9, Clang 3.7 (libc++ 3.7) and Visual C++ 2015
 
 You can install FunctionalPlus in **one of the following 4 ways**:
 
@@ -365,7 +365,7 @@ sudo make install
 Building the tests (optional) requires [doctest](https://github.com/onqtam/doctest). Unit Tests are disabled by default – they are enabled and executed by:
 
 ```
-cmake -DUNITTEST=ON -DCPP14TEST=ON ..
+cmake -DUNITTEST=ON
 make unittest
 ```
 
@@ -413,8 +413,8 @@ add_dependencies(main functional_plus)
 ### way 3: using [cget](https://github.com/pfultz2/cget/)
 
 ```
-# Setup up toolchain to use c++11
-cget init --std=c++11
+# Setup up toolchain to use c++14
+cget init --std=c++14
 # Test and install
 cget install Dobiasd/FunctionalPlus
 ```

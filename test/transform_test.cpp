@@ -119,8 +119,7 @@ TEST_CASE("transform_test, transform")
     auto intTimes2 = [](int x) -> int { return x*2; };
     auto intTimes3 = [](int x) -> int { return x*3; };
 
-    // The following works with C++14.
-    // REQUIRE_EQ(transform([](auto x) { return x*x; }, xs), IntVector({1,4,4,9,4}));
+    REQUIRE_EQ(transform([](auto x) { return x*x; }, xs), IntVector({1,4,4,9,4}));
     std::initializer_list<int> initListInts = { 1,2,2,3,2 };
     REQUIRE_EQ(transform(squareLambda, std::vector<int>(initListInts)), IntVector({1,4,4,9,4}));
     REQUIRE_EQ(transform_convert<std::vector<int>>(squareLambda, initListInts), IntVector({1,4,4,9,4}));

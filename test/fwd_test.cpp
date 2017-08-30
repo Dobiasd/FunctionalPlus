@@ -8,8 +8,6 @@
 #include "doctest.h"
 #include <fplus/fplus.hpp>
 
-#if __cplusplus >= 201402L
-
 namespace {
     bool is_odd_int(int x)
     {
@@ -215,5 +213,3 @@ TEST_CASE("fwd_test, keep_if_r_value")
     auto result = fplus::fwd::keep_if(is_even_int)(std::vector<int>({1,2,3,2,4,5}));
     REQUIRE_EQ(result, std::vector<int>({2, 2, 4}));
 }
-
-#endif // __cplusplus >= 201402L

@@ -8,8 +8,6 @@
 #include "doctest.h"
 #include <fplus/fplus.hpp>
 
-#if __cplusplus >= 201402L
-
 namespace {
 
 }
@@ -23,5 +21,3 @@ TEST_CASE("curry_test, show_fill_left")
     //const auto result_new_style = curry__show_fill_left(' ')(std::size_t(4))(3);
     REQUIRE_EQ(result_old_style, result_new_style);
 }
-
-#endif // __cplusplus >= 201402L

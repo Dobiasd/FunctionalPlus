@@ -6,7 +6,6 @@ set(PROJECT_VERSION 0.2)
 message(STATUS "===( ${PROJECT_NAME} ${PROJECT_VERSION} )===")
 
 option(UNITTEST "Build unit tests" OFF)
-option(CPP14TEST "Build with C++14 enabled" OFF)
 
 
 install(DIRECTORY include/fplus DESTINATION include)
@@ -36,11 +35,8 @@ if( UNITTEST )
     subdirs(test)
 endif()
 
-if( CPP14TEST )
-    set(CMAKE_CXX_STANDARD 14)
-else()
-    set(CMAKE_CXX_STANDARD 11)
-endif()
+
+set(CMAKE_CXX_STANDARD 14)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)

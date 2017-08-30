@@ -36,7 +36,5 @@
 #include <fplus/side_effects.hpp>
 #include <fplus/variant.hpp>
 
-#if __cplusplus >= 201402L || _MSC_VER >= 1900
-    #include <fplus/fwd.hpp>
-    #include <fplus/curry.hpp>
-#endif
+#include <fplus/curry.hpp>
+#include <fplus/fwd.hpp>
