@@ -7,7 +7,7 @@ fi
 [ ! -d build ] && mkdir build
 (
     pushd build
-    cmake -DUNITTEST=ON
+    cmake -DUNITTEST=ON ..
     make
     make unittest
 )
