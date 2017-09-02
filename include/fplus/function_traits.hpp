@@ -27,6 +27,8 @@ the standard library.
 
 #include <fplus/detail/meta.hpp>
 
+namespace fplus {
+
 // source: https://github.com/kennytm/utils
 namespace utils {
 
@@ -320,6 +322,7 @@ typename std::add_rvalue_reference<T>::type rt_val() noexcept
 #pragma GCC diagnostic pop
 #endif
 
+}
 }
 
 namespace fplus
