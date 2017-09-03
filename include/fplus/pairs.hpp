@@ -245,13 +245,21 @@ std::pair<X, ResultSecond> transform_snd(F f, const std::pair<X, Y>& pair)
 // fwd bind count: 2
 // Apply functions the both parts of a pair.
 // transform_pair(square, square, (4, 5)) == (16, 25)
-template <typename X, typename Y, typename F, typename G,
-    typename ResultFirst = typename std::result_of<F(X)>::type,
-    typename ResultSecond = typename std::result_of<G(Y)>::type>
-std::pair<ResultFirst, ResultSecond> transform_pair(
-    F f, G g, const std::pair<X, Y>& pair)
+template <
+    typename X,
+    typename Y,
+    typename F,
+    typename G,
+    bool = detail::trigger_static_asserts<detail::transform_fst_tag, F, X>(),
+    bool = detail::trigger_static_asserts<detail::transform_snd_tag, G, Y>(),
+    typename ResultFirst = std::decay_t<detail::invoke_result_t<F, X>>,
+    typename ResultSecond = std::decay_t<detail::invoke_result_t<G, Y>>>
+std::pair<ResultFirst, ResultSecond> transform_pair(F f,
+                                                    G g,
+                                                    const std::pair<X, Y>& pair)
 {
-    return std::make_pair(f(pair.first), g(pair.second));
+    return std::make_pair(detail::invoke(f, pair.first),
+                          detail::invoke(g, pair.second));
 }
 
 // API search type: swap_pair_elems : (a, b) -> (b, a)
