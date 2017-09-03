@@ -13,12 +13,29 @@ namespace fplus
 {
 namespace detail
 {
+struct apply_to_pair_tag
+{
+};
+
 struct zip_with_tag
 {
 };
 
 struct zip_with_3_tag
 {
+};
+
+template <typename F, typename X, typename Y>
+struct function_traits_asserts<apply_to_pair_tag, F, X, Y>
+{
+    static_assert(utils::function_traits<F>::arity == 2,
+        "Function must take two parameters.");
+    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
+    static_assert(std::is_convertible<X, FIn0>::value,
+        "Function does not take pair.first type as first Parameter.");
+    static_assert(std::is_convertible<Y, FIn1>::value,
+        "Function does not take pair.second type as second Parameter.");
 };
 
 template <typename F, typename X, typename Y>
