@@ -35,7 +35,10 @@ TEST_CASE("pairs_test, zip_with_3")
 {
     using namespace fplus;
     const auto multiply = [](int x, int y, int z){ return x * y * z; };
-    REQUIRE_EQ(zip_with_3(multiply, xs, xs, xs), transform(cubeLambda, xs));
+    const auto multiply_generic = [](auto x, auto y, auto z){ return x * y * z; };
+    const auto cubed = transform(cubeLambda, xs);
+    REQUIRE_EQ(zip_with_3(multiply, xs, xs, xs), cubed);
+    REQUIRE_EQ(zip_with_3(multiply_generic, xs, xs, xs), cubed);
 }
 
 TEST_CASE("pairs_test, zip_with_defaults")
