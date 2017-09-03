@@ -215,22 +215,30 @@ Y snd(const std::pair<X, Y>& pair)
 // fwd bind count: 1
 // Apply a function to the first element of a pair.
 // transform_fst(square, (4, 5)) == (16, 5)
-template <typename X, typename Y, typename F,
-    typename ResultFirst = typename std::result_of<F(X)>::type>
+template <
+    typename X,
+    typename Y,
+    typename F,
+    bool = detail::trigger_static_asserts<detail::transform_fst_tag, F, X>(),
+    typename ResultFirst = std::decay_t<detail::invoke_result_t<F, X>>>
 std::pair<ResultFirst, Y> transform_fst(F f, const std::pair<X, Y>& pair)
 {
-    return std::make_pair(f(pair.first), pair.second);
+    return std::make_pair(detail::invoke(f, pair.first), pair.second);
 }
 
 // API search type: transform_snd : ((b -> c), (a, b)) -> (a, c)
 // fwd bind count: 1
 // Apply a function to the second element of a pair.
 // transform_snd(square, (4, 5)) == (4, 25)
-template <typename X, typename Y, typename F,
-    typename ResultSecond = typename std::result_of<F(Y)>::type>
+template <
+    typename X,
+    typename Y,
+    typename F,
+    bool = detail::trigger_static_asserts<detail::transform_snd_tag, F, Y>(),
+    typename ResultSecond = std::decay_t<detail::invoke_result_t<F, Y>>>
 std::pair<X, ResultSecond> transform_snd(F f, const std::pair<X, Y>& pair)
 {
-    return std::make_pair(pair.first, f(pair.second));
+    return std::make_pair(pair.first, detail::invoke(f, pair.second));
 }
 
 // API search type: transform_pair : ((a -> c), (b -> d), (a, b)) -> (c, d)
