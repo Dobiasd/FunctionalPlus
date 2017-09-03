@@ -18,14 +18,16 @@ namespace fplus
 // API search type: apply_to_pair : (((a, b) -> c), (a, b)) -> c
 // fwd bind count: 1
 // Apply binary function to parts of a pair.
-template <typename F,
-    typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
-    typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
-    typename FOut = typename std::result_of<F(FIn0, FIn1)>::type>
+template <
+    typename F,
+    typename FIn0,
+    typename FIn1,
+    bool = detail::
+        trigger_static_asserts<detail::apply_to_pair_tag, F, FIn0, FIn1>(),
+    typename FOut = std::decay_t<detail::invoke_result_t<F, FIn0, FIn1>>>
 FOut apply_to_pair(F f, const std::pair<FIn0, FIn1>& p)
 {
-    internal::check_arity<2, F>();
-    return f(p.first, p.second);
+    return detail::invoke(f, p.first, p.second);
 }
 
 // API search type: zip_with : (((a, b) -> c), [a], [b]) -> [c]
