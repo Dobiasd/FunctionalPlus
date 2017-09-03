@@ -59,7 +59,7 @@ template <typename ContainerIn1,
           typename X = typename ContainerIn1::value_type,
           typename Y = typename ContainerIn2::value_type,
           bool = detail::trigger_static_asserts<detail::zip_with_tag, F, X, Y>(),
-          typename TOut = detail::invoke_result_t<F, X, Y>,
+          typename TOut = std::decay_t<detail::invoke_result_t<F, X, Y>>,
           typename ContainerOut = std::vector<TOut>>
 ContainerOut zip_with(F f, const ContainerIn1& xs, const ContainerIn2& ys)
 {
