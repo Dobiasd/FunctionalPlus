@@ -70,6 +70,8 @@ TEST_CASE("pairs_test, pair functions")
     REQUIRE_EQ(swap_pairs_elems(intPairs), intPairsSwapped);
     REQUIRE_EQ(transform_fst(squareLambda, intPair), std::make_pair(4, 3));
     REQUIRE_EQ(transform_snd(squareLambda, intPair), std::make_pair(2, 9));
+    REQUIRE_EQ(transform_fst([](auto i) { return i * i; }, intPair), std::make_pair(4, 3));
+    REQUIRE_EQ(transform_snd([](auto i) { return i * i; }, intPair), std::make_pair(2, 9));
 
     typedef std::vector<std::pair<std::string, int>> StringIntPairs;
     StringIntPairs stringIntPairs = {{"a", 1}, {"a", 2}, {"b", 6}, {"a", 4}};

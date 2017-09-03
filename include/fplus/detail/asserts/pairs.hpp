@@ -25,6 +25,14 @@ struct zip_with_3_tag
 {
 };
 
+struct transform_fst_tag
+{
+};
+
+struct transform_snd_tag
+{
+};
+
 template <typename F, typename X, typename Y>
 struct function_traits_asserts<apply_to_pair_tag, F, X, Y>
 {
@@ -65,6 +73,26 @@ struct function_traits_asserts<zip_with_3_tag, F, X, Y, Z>
         "Function does not take elements from second Container as second Parameter.");
     static_assert(std::is_convertible<Z, FIn2>::value,
         "Function does not take elements from third Container as third Parameter.");
+};
+
+template <typename F, typename X>
+struct function_traits_asserts<transform_fst_tag, F, X>
+{
+    static_assert(utils::function_traits<F>::arity == 1,
+        "Function must take one parameter.");
+    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+    static_assert(std::is_convertible<X, FIn0>::value,
+        "Function does not take pair.first type as first Parameter.");
+};
+
+template <typename F, typename X>
+struct function_traits_asserts<transform_snd_tag, F, X>
+{
+    static_assert(utils::function_traits<F>::arity == 1,
+        "Function must take one parameter.");
+    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+    static_assert(std::is_convertible<X, FIn0>::value,
+        "Function does not take pair.second type as first Parameter.");
 };
 }
 }
