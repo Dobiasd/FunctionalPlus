@@ -15,6 +15,11 @@ namespace {
     typedef std::pair<int, int> IntPair;
     typedef std::vector<IntPair> IntPairs;
     IntVector xs = {1,2,2,3,2};
+
+    struct dummy
+    {
+      int i;
+    };
 }
 
 TEST_CASE("pairs_test, zip_with")
@@ -72,6 +77,7 @@ TEST_CASE("pairs_test, pair functions")
     REQUIRE_EQ(transform_snd(squareLambda, intPair), std::make_pair(2, 9));
     REQUIRE_EQ(transform_fst([](auto i) { return i * i; }, intPair), std::make_pair(4, 3));
     REQUIRE_EQ(transform_snd([](auto i) { return i * i; }, intPair), std::make_pair(2, 9));
+    REQUIRE_EQ(transform_pair(squareLambda, squareLambda, intPair), std::make_pair(4, 9));
 
     typedef std::vector<std::pair<std::string, int>> StringIntPairs;
     StringIntPairs stringIntPairs = {{"a", 1}, {"a", 2}, {"b", 6}, {"a", 4}};
@@ -82,6 +88,16 @@ TEST_CASE("pairs_test, pair functions")
     auto groupMendianValues = transform(getMedianValue, groupNames);
     auto stringIntPairsSndReplacedWithGroupMedian = zip(groupNames, groupMendianValues);
     REQUIRE_EQ(stringIntPairsSndReplacedWithGroupMedian, StringIntPairs({{"a", 2}, {"a", 2}, {"b", 6}, {"a", 2}}));
+
+    // Thanks to invoke, such code works.
+    // (I don't have a use case for it though)
+    dummy dumb;
+    dumb.i = 42;
+
+    auto p = std::make_pair(dumb, dumb);
+    auto result = transform_pair(&dummy::i, &dummy::i, p);
+    REQUIRE_EQ(result, std::make_pair(42, 42));
+
 }
 
 TEST_CASE("pairs_test, enumerate")
