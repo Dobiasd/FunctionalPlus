@@ -115,14 +115,20 @@ ContainerOut zip_with_3(F f,
 // and extrapolate the shorter sequence with a default value.
 // zip_with_defaults((+), 6, 7, [1,2,3], [1,2]) == [2,4,10]
 // zip_with_defaults((+), 6, 7, [1,2], [1,2,3]) == [2,4,9]
-template <typename ContainerIn1, typename ContainerIn2, typename F,
+template <
+    typename ContainerIn1,
+    typename ContainerIn2,
+    typename F,
     typename X = typename ContainerIn1::value_type,
     typename Y = typename ContainerIn2::value_type,
-    typename TOut = typename std::result_of<F(X, Y)>::type,
+    bool = detail::trigger_static_asserts<detail::zip_with_tag, F, X, Y>(),
+    typename TOut = std::decay_t<detail::invoke_result_t<F, X, Y>>,
     typename ContainerOut = typename std::vector<TOut>>
 ContainerOut zip_with_defaults(F f,
-        const X& default_x, const Y& default_y,
-        const ContainerIn1& xs, const ContainerIn2& ys)
+                               const X& default_x,
+                               const Y& default_y,
+                               const ContainerIn1& xs,
+                               const ContainerIn2& ys)
 {
     const auto size_xs = size_of_cont(xs);
     const auto size_ys = size_of_cont(ys);

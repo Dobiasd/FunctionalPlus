@@ -45,8 +45,10 @@ TEST_CASE("pairs_test, zip_with_defaults")
 {
     using namespace fplus;
     const auto add = [](int x, int y){ return x + y; };
+    const auto add_generic = [](auto x, auto y){ return x + y; };
     REQUIRE_EQ(zip_with_defaults(add, 6, 7, IntVector({1,2,3}), IntVector({1,2})), IntVector({2,4,10}));
     REQUIRE_EQ(zip_with_defaults(add, 6, 7, IntVector({1,2}), IntVector({1,2,3})), IntVector({2,4,9}));
+    REQUIRE_EQ(zip_with_defaults(add_generic, 6, 7, IntVector({1,2}), IntVector({1,2,3})), IntVector({2,4,9}));
 }
 
 TEST_CASE("pairs_test, zip")
