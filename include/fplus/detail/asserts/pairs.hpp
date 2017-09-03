@@ -17,6 +17,10 @@ struct zip_with_tag
 {
 };
 
+struct zip_with_3_tag
+{
+};
+
 template <typename F, typename X, typename Y>
 struct function_traits_asserts<zip_with_tag, F, X, Y>
 {
@@ -28,6 +32,22 @@ struct function_traits_asserts<zip_with_tag, F, X, Y>
         "Function does not take elements from first Container as first Parameter.");
     static_assert(std::is_convertible<Y, FIn1>::value,
         "Function does not take elements from second Container as second Parameter.");
+};
+
+template <typename F, typename X, typename Y, typename Z>
+struct function_traits_asserts<zip_with_3_tag, F, X, Y, Z>
+{
+    static_assert(utils::function_traits<F>::arity == 3,
+        "Function must take two parameters.");
+    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
+    typedef typename utils::function_traits<F>::template arg<2>::type FIn2;
+    static_assert(std::is_convertible<X, FIn0>::value,
+        "Function does not take elements from first Container as first Parameter.");
+    static_assert(std::is_convertible<Y, FIn1>::value,
+        "Function does not take elements from second Container as second Parameter.");
+    static_assert(std::is_convertible<Z, FIn2>::value,
+        "Function does not take elements from third Container as third Parameter.");
 };
 }
 }
