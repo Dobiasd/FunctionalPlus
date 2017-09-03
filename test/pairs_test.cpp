@@ -26,13 +26,9 @@ TEST_CASE("pairs_test, zip_with")
     REQUIRE_EQ(zip_with(add, IntVector({1,2,3}), IntVector({1,2})), IntVector({2,4}));
     REQUIRE_EQ(zip_with(add, IntVector({1,2}), IntVector({1,2,3})), IntVector({2,4}));
 
-    // uncomment to see static_asserts
-    // zip_with([](auto a, auto b, auto c) { return a + b; },
-    //          IntVector({1, 2, 3}),
-    //          IntVector({1, 2, 3}));
-    // zip_with([](int a, int b, int c) { return a + b; },
-    //          IntVector({1, 2, 3}),
-    //          IntVector({1, 2, 3}));
+    const auto add_generic = [](auto x, int y) {return x + y;};
+    REQUIRE_EQ(zip_with(add_generic, IntVector({1,2,3}), IntVector({1,2})), IntVector({2,4}));
+    REQUIRE_EQ(zip_with(std::plus<>{}, IntVector({1,2,3}), IntVector({1,2})), IntVector({2,4}));
 }
 
 TEST_CASE("pairs_test, zip_with_3")
