@@ -66,33 +66,22 @@ ContainerOut zip_with(F f, const ContainerIn1& xs, const ContainerIn2& ys)
 // fwd bind count: 3
 // Zip three sequences using a ternary function.
 // zip_with_3((+), [1, 2, 3], [5, 6], [1, 1]) == [7, 9]
-template <typename ContainerIn1, typename ContainerIn2, typename ContainerIn3,
+template <
+    typename ContainerIn1,
+    typename ContainerIn2,
+    typename ContainerIn3,
     typename F,
     typename X = typename ContainerIn1::value_type,
     typename Y = typename ContainerIn2::value_type,
     typename Z = typename ContainerIn3::value_type,
-    typename TOut = typename std::result_of<F(X, Y, Z)>::type,
+    bool = detail::trigger_static_asserts<detail::zip_with_3_tag, F, X, Y, Z>(),
+    typename TOut = std::decay_t<detail::invoke_result_t<F, X, Y, Z>>,
     typename ContainerOut = typename std::vector<TOut>>
 ContainerOut zip_with_3(F f,
-    const ContainerIn1& xs, const ContainerIn2& ys, const ContainerIn3& zs)
+                        const ContainerIn1& xs,
+                        const ContainerIn2& ys,
+                        const ContainerIn3& zs)
 {
-    static_assert(utils::function_traits<F>::arity == 3,
-        "Function must take two parameters.");
-    typedef typename std::result_of<F(X, Y, Z)>::type FOut;
-    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
-    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
-    typedef typename utils::function_traits<F>::template arg<2>::type FIn2;
-    typedef typename ContainerIn1::value_type T1;
-    typedef typename ContainerIn2::value_type T2;
-    typedef typename ContainerIn3::value_type T3;
-    static_assert(std::is_convertible<T1, FIn0>::value,
-        "Function does not take elements from first Container as first Parameter.");
-    static_assert(std::is_convertible<T2, FIn1>::value,
-        "Function does not take elements from second Container as second Parameter.");
-    static_assert(std::is_convertible<T3, FIn2>::value,
-        "Function does not take elements from third Container as third Parameter.");
-    static_assert(std::is_convertible<FOut, TOut>::value,
-        "Elements produced by this function can not be stored in ContainerOut.");
     static_assert(std::is_same<
         typename internal::same_cont_new_t<ContainerIn1, void>::type,
         typename internal::same_cont_new_t<ContainerIn2, void>::type>::value,
@@ -110,7 +99,7 @@ ContainerOut zip_with_3(F f,
     auto itZs = std::begin(zs);
     for (std::size_t i = 0; i < resultSize; ++i)
     {
-        *itResult = f(*itXs, *itYs, *itZs);
+        *itResult = detail::invoke(f, *itXs, *itYs, *itZs);
         ++itXs;
         ++itYs;
         ++itZs;
