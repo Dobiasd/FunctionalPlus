@@ -404,14 +404,27 @@ std::vector<std::pair<std::size_t, T>> enumerate(const Container& xs)
 // fwd bind count: 4
 // Calculate the inner product of two sequences using custom operations.
 // inner_product_with((+), (*), [1, 2, 3], [4, 5, 6]) == [32]
-template <typename ContainerIn1, typename ContainerIn2,
-    typename OP1, typename OP2,
-    typename Z,
-    typename OP1In0 = typename utils::function_traits<OP1>::template arg<0>::type,
-    typename OP1In1 = typename utils::function_traits<OP1>::template arg<1>::type,
-    typename TOut = typename std::result_of<OP1(OP1In0, OP1In1)>::type>
-TOut inner_product_with(OP1 op1, OP2 op2, const Z& value,
-        const ContainerIn1& xs, const ContainerIn2& ys)
+template <
+    typename ContainerIn1,
+    typename ContainerIn2,
+    typename OP1,
+    typename OP2,
+    typename Acc,
+    typename X = typename ContainerIn1::value_type,
+    typename Y = typename ContainerIn2::value_type,
+    bool = detail::
+        trigger_static_asserts<detail::inner_product_with_tag, OP2, X, Y>(),
+    typename OP2Out = detail::invoke_result_t<OP2, X, Y>,
+    bool = detail::trigger_static_asserts<detail::inner_product_with_tag,
+                                          OP1,
+                                          Acc,
+                                          OP2Out>(),
+    typename TOut = std::decay_t<detail::invoke_result_t<OP1, Acc, OP2Out>>>
+TOut inner_product_with(OP1 op1,
+                        OP2 op2,
+                        const Acc& value,
+                        const ContainerIn1& xs,
+                        const ContainerIn2& ys)
 {
     assert(size_of_cont(xs) == size_of_cont(ys));
     return std::inner_product(

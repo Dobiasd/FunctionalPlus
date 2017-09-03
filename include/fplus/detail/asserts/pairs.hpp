@@ -33,6 +33,10 @@ struct transform_snd_tag
 {
 };
 
+struct inner_product_with_tag
+{
+};
+
 template <typename F, typename X, typename Y>
 struct function_traits_asserts<apply_to_pair_tag, F, X, Y>
 {
@@ -93,6 +97,19 @@ struct function_traits_asserts<transform_snd_tag, F, X>
     typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
     static_assert(std::is_convertible<X, FIn0>::value,
         "Function does not take pair.second type as first Parameter.");
+};
+
+template <typename F, typename X, typename Y>
+struct function_traits_asserts<inner_product_with_tag, F, X, Y>
+{
+    static_assert(utils::function_traits<F>::arity == 2,
+        "Function must take two parameters.");
+    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
+    static_assert(std::is_convertible<X, FIn0>::value,
+        "Function does not take elements from first Container as first Parameter.");
+    static_assert(std::is_convertible<Y, FIn1>::value,
+        "Function does not take elements from second Container as second Parameter.");
 };
 }
 }

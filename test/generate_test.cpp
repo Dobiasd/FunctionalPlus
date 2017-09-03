@@ -362,6 +362,7 @@ TEST_CASE("generate_test, inner_product")
     const auto mult = [](int x, int y) { return x * y; };
     REQUIRE_EQ(fplus::inner_product(0, xs, ys), 32);
     REQUIRE_EQ(fplus::inner_product_with(plus, mult, 0, xs, ys), 32);
+    REQUIRE_EQ(fplus::inner_product_with(std::plus<>{}, std::multiplies<>{}, 0, xs, ys), 32);
 }
 
 TEST_CASE("generate_test, numbers")
