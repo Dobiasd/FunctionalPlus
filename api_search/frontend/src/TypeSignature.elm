@@ -1,4 +1,4 @@
-module TypeSignature exposing (Signature, parseSignature, showSignature, normalizeSignature, functionCompatibility, curry1, sigIsArrow)
+module TypeSignature exposing (Signature, parseSignature, showSignature, normalizeSignature, functionCompatibility, curry1, curry1Flip, sigIsArrow)
 
 {-| This module provides the possibility to parse Haskell and Elm type signatures.
 -}
@@ -67,6 +67,15 @@ curry1 sig =
                 ++ showSignature True sig
                 |> Debug.crash
 
+curry1Flip : Signature -> Signature
+curry1Flip sig =
+    case (sig |> curry1) of
+        Arrow a (Arrow b ret) ->
+            Arrow b (Arrow a ret)
+        _ ->
+            "Error curry1Flip: "
+                ++ showSignature True sig
+                |> Debug.crash
 
 mapS : (s -> String -> ( s, String )) -> s -> List Signature -> ( List Signature, s )
 mapS f s =

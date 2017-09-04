@@ -20,6 +20,8 @@ type alias WithParsedSignature a =
         | parsedSignature : TypeSignature.Signature
         , signatureFwd : Maybe String
         , parsedSignatureFwd : Maybe TypeSignature.Signature
+        , signatureFwdFlip : Maybe String
+        , parsedSignatureFwdFlip : Maybe TypeSignature.Signature
     }
 
 
@@ -49,6 +51,9 @@ hasFwdSignature : String -> Bool
 hasFwdSignature documentation =
     String.contains "fwd bind count" documentation
 
+hasFwdFlipSignature : String -> Bool
+hasFwdFlipSignature documentation =
+    String.contains "fwd bind count: 1" documentation
 
 removeFwdBindCount : String -> String
 removeFwdBindCount documentation =
@@ -71,6 +76,14 @@ addParsedSignatureToFunction function =
                     |> Maybe.Just
             else
                 Maybe.Nothing
+
+        parsedSigFwdFlip =
+            if hasFwdFlipSignature function.documentation then
+                parsedSig
+                    |> TypeSignature.curry1Flip
+                    |> Maybe.Just
+            else
+                Maybe.Nothing
     in
         { name = function.name
         , signature = function.signature
@@ -80,6 +93,12 @@ addParsedSignatureToFunction function =
                 |> Maybe.map TypeSignature.normalizeSignature
         , signatureFwd =
             parsedSigFwd
+                |> Maybe.map (TypeSignature.showSignature True)
+        , parsedSignatureFwdFlip =
+            parsedSigFwdFlip
+                |> Maybe.map TypeSignature.normalizeSignature
+        , signatureFwdFlip =
+            parsedSigFwdFlip
                 |> Maybe.map (TypeSignature.showSignature True)
         , documentation = removeFwdBindCount function.documentation
         , declaration = function.declaration
@@ -256,6 +275,20 @@ showFunctionDivs function =
                 Maybe.Nothing ->
                     div [] []
 
+        functionNameAndSigFwdFlip =
+            case function.signatureFwdFlip of
+                Maybe.Just sigFwdFlip ->
+                    div [ class "functionnameandsig" ]
+                        [ "fwd::flip::"
+                            ++ function.name
+                            ++ " : "
+                            ++ sigFwdFlip
+                            |> stringToCode "haskell"
+                        ]
+
+                Maybe.Nothing ->
+                    div [] []
+
         functionDocumentation =
             div [ class "functiondoc" ]
                 [ function.documentation
@@ -270,6 +303,7 @@ showFunctionDivs function =
     in
         [ functionNameAndSig
         , functionNameAndSigFwd
+        , functionNameAndSigFwdFlip
         , functionDocumentation
         , functionDeclaration
         ]
