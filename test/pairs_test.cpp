@@ -88,6 +88,11 @@ TEST_CASE("pairs_test, pair functions")
     auto groupMendianValues = transform(getMedianValue, groupNames);
     auto stringIntPairsSndReplacedWithGroupMedian = zip(groupNames, groupMendianValues);
     REQUIRE_EQ(stringIntPairsSndReplacedWithGroupMedian, StringIntPairs({{"a", 2}, {"a", 2}, {"b", 6}, {"a", 2}}));
+    const std::function<int(int)> double_int = [](int x) -> int {
+      return 2 * x;
+    };
+    typedef std::pair<int, int> IntPair;
+    transform_pair(double_int, double_int, IntPair({2, 3}));
 
     // Thanks to invoke, such code works.
     // (I don't have a use case for it though)
