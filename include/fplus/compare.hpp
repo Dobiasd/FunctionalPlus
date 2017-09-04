@@ -7,6 +7,8 @@
 #pragma once
 
 #include <fplus/function_traits.hpp>
+#include <fplus/detail/invoke.hpp>
+#include <fplus/detail/asserts/compare.hpp>
 
 namespace fplus
 {
@@ -266,17 +268,16 @@ Y always_arg_2_of_2(const X&, const Y& y)
 // f(x) == g(y)
 // Provides an equality check of two values
 // after applying a transformation function each.
-template <typename F, typename G,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename GOut = typename std::result_of<G(GIn)>::type>
-std::function<bool(const FIn& x, const GIn& y)>
-        is_equal_by_and_by(F f, G g)
+template <typename F, typename G>
+auto is_equal_by_and_by(F f, G g)
 {
-    internal::check_compare_preprocessors_for_types<F, G, FIn, GIn>();
-    return [f, g](const FIn& x, const GIn& y)
-    {
+    return [f, g](const auto& x, const auto& y) {
+        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+                                             F,
+                                             decltype(x)>();
+        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+                                             G,
+                                             decltype(y)>();
         return is_equal(f(x), g(y));
     };
 }
