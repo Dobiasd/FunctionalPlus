@@ -17,7 +17,7 @@ Table of contents
   * [Usage examples](#usage-examples)
   * [Type deduction and useful error messages](#type-deduction-and-useful-error-messages)
   * [Tutorial](#tutorial)
-  * [Forward composition and application](#forward-composition-and-application)
+  * [Forward application and composition](#forward-application-and-composition)
   * [Finding the functions you need](#finding-the-functions-you-need)
   * [Performance](#performance)
   * [Comparison with range-v3](#comparison-with-range-v3)
@@ -219,7 +219,7 @@ Tutorial
 The article "[Functional programming in C++ with the FunctionalPlus library; today: HackerRank challenge Gemstones](https://github.com/Dobiasd/articles/blob/master/functional_programming_in_cpp_with_the_functionalplus_library_today_hackerrank_challange_gemstones.md)" provides a smooth introduction into the library by showing how one could develop an elegant solution to a problem using the FunctionalPlus approach.
 
 
-Forward composition and application
+Forward application and composition
 -----------------------------------
 
 The "Gemstones" tutorial above explains how one can apply functional thinking to arrive at the solution below for the following problem:
