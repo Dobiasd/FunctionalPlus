@@ -61,7 +61,7 @@ function_help lines_to_function_help(const string_vec& lines)
     const auto trim_type_line = fplus::bind_1st_of_2(
             fplus::trim_token_left<std::string>, api_search_type_key);
     const auto trim_lines = fplus::bind_1st_of_2(
-            fplus::transform<decltype(trim_line), string_vec>,
+            fplus::transform<decltype(trim_line), const string_vec&>,
             trim_line);
     const auto search_type = trim_type_line(trim_line(lines[0]));
     const auto doc_and_decl = fplus::span(is_comment, fplus::tail(lines));

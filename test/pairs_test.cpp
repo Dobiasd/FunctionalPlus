@@ -92,7 +92,8 @@ TEST_CASE("pairs_test, pair functions")
       return 2 * x;
     };
     typedef std::pair<int, int> IntPair;
-    transform_pair(double_int, double_int, IntPair({2, 3}));
+    REQUIRE_EQ(transform_pair(double_int, double_int, IntPair({2, 3})),
+        IntPair({4, 6}));
 
     // Thanks to invoke, such code works.
     // (I don't have a use case for it though)
@@ -102,7 +103,6 @@ TEST_CASE("pairs_test, pair functions")
     auto p = std::make_pair(dumb, dumb);
     auto result = transform_pair(&dummy::i, &dummy::i, p);
     REQUIRE_EQ(result, std::make_pair(42, 42));
-
 }
 
 TEST_CASE("pairs_test, enumerate")
