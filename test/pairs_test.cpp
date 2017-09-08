@@ -91,7 +91,6 @@ TEST_CASE("pairs_test, pair functions")
     const std::function<int(int)> double_int = [](int x) -> int {
       return 2 * x;
     };
-    typedef std::pair<int, int> IntPair;
     REQUIRE_EQ(transform_pair(double_int, double_int, IntPair({2, 3})),
         IntPair({4, 6}));
 
