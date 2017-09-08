@@ -32,7 +32,6 @@ TEST_CASE("transform_test, replicate_elems")
 TEST_CASE("transform_test, interleave")
 {
     using namespace fplus;
-    typedef std::vector<IntVector> IntVectors;
     REQUIRE_EQ(interleave(IntVectors()), IntVector());
     REQUIRE_EQ(interleave(IntVectors({})), IntVector());
     REQUIRE_EQ(interleave(IntVectors({IntVector({})})), IntVector());
@@ -45,7 +44,6 @@ TEST_CASE("transform_test, interleave")
 TEST_CASE("transform_test, transpose")
 {
     using namespace fplus;
-    typedef std::vector<IntVector> IntVectors;
     REQUIRE_EQ(transpose(IntVectors()), IntVectors());
     REQUIRE_EQ(transpose(IntVectors({})), IntVectors());
     REQUIRE_EQ(transpose(IntVectors({},{})), IntVectors());
