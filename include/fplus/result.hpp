@@ -8,8 +8,10 @@
 
 #include <fplus/function_traits.hpp>
 #include <fplus/maybe.hpp>
-#include <fplus/detail/invoke.hpp>
+
 #include <fplus/detail/asserts/result.hpp>
+#include <fplus/detail/composition.hpp>
+#include <fplus/detail/invoke.hpp>
 
 #include <cassert>
 #include <functional>
@@ -276,86 +278,39 @@ auto and_then_result(F f, const result<Ok, Error>& r)
 }
 
 // API search type: compose_result : ((a -> Result b c), (b -> Result d c)) -> (a -> Result d c)
-// Left-to-right Kleisli composition of monads (2 functions).
-// Composes two functions taking a value and returning result.
-// If the first function returns a ok, the value from the ok
-// is extracted and shoved into the second function.
-// If the first functions returns an error, the error is forwarded.
-template <typename F, typename G,
-    typename FIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename FOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(FIn)>::type>::type>::type,
-    typename GIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
-    typename GOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<G(GIn)>::type>::type>::type,
-    typename Ok = typename GOut::ok_t,
-    typename Error = typename GOut::error_t>
-std::function<result<Ok, Error>(const FIn&)> compose_result(F f, G g)
+// Left-to-right Kleisli composition of monads.
+// It is possible to compose a variadic number of callables.
+// The first callable can take a variadic number of parameters.
+template <typename... Callables>
+auto compose_result(Callables&&... callables)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
-    static_assert(std::is_convertible<typename FOut::ok_t,GIn>::value,
-        "Function parameter types do not match");
-    static_assert(std::is_same<typename FOut::error_t, typename GOut::error_t>::value,
-        "Error type must stay the same.");
-    return [f, g](const FIn& x) -> result<Ok, Error>
-    {
-        auto resultB = f(x);
-        if (is_ok(resultB))
-            return g(unsafe_get_ok(resultB));
-        return error<Ok, Error>(unsafe_get_error(resultB));
+    auto bind_result = [](auto f, auto g) {
+        return [f = std::move(f), g = std::move(g)](auto&&... args)
+        {
+            (void)detail::trigger_static_asserts<detail::compose_result_tag,
+                                                 decltype(f),
+                                                 decltype(args)...>();
+            using FOut = std::decay_t<
+                detail::invoke_result_t<decltype(f), decltype(args)...>>;
+
+            (void)detail::trigger_static_asserts<detail::compose_result_bis_tag,
+                                                 decltype(g),
+                                                 typename FOut::ok_t>();
+            using GOut = std::decay_t<
+                detail::invoke_result_t<decltype(g), typename FOut::ok_t>>;
+            static_assert(std::is_same<typename FOut::error_t,
+                                       typename GOut::error_t>::value,
+                          "Error type must stay the same.");
+
+            auto resultB =
+                detail::invoke(f, std::forward<decltype(args)>(args)...);
+            if (is_ok(resultB))
+                return detail::invoke(g, unsafe_get_ok(resultB));
+            return error<typename GOut::ok_t, typename GOut::error_t>(
+                unsafe_get_error(resultB));
+        };
     };
+    return detail::compose_binary_lift(bind_result,
+                                       std::forward<Callables>(callables)...);
 }
-
-// API search type: compose_result : ((a -> Result b c), (b -> Result d c), (d -> Result e c)) -> (a -> Result e c)
-// Left-to-right Kleisli composition of monads (3 functions).
-template <typename F, typename G, typename H,
-    typename FIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename FOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(FIn)>::type>::type>::type,
-    typename GIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
-    typename GOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<G(GIn)>::type>::type>::type,
-    typename HIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<H>::template arg<0>::type>::type>::type,
-    typename HOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<H(HIn)>::type>::type>::type,
-    typename Ok = typename HOut::ok_t,
-    typename Error = typename HOut::error_t>
-std::function<result<Ok, Error>(const FIn&)> compose_result(F f, G g, H h)
-{
-    return compose_result(compose_result(f, g), h);
-}
-
-// API search type: compose_result : ((a -> Result b c), (b -> Result d c), (d -> Result e c), (e -> Result f c)) -> (a -> Result f c)
-// Left-to-right Kleisli composition of monads (4 functions).
-template <typename F, typename G, typename H, typename I,
-    typename FIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename FOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(FIn)>::type>::type>::type,
-    typename GIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
-    typename GOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<G(GIn)>::type>::type>::type,
-    typename HIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<H>::template arg<0>::type>::type>::type,
-    typename HOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<H(HIn)>::type>::type>::type,
-    typename IIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<I>::template arg<0>::type>::type>::type,
-    typename IOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<I(IIn)>::type>::type>::type,
-    typename Ok = typename IOut::ok_t,
-    typename Error = typename IOut::error_t>
-std::function<result<Ok, Error>(const FIn&)>
-compose_result(F f, G g, H h, I i)
-{
-    return compose_result(compose_result(compose_result(f, g), h), i);
-}
-
 } // namespace fplus
