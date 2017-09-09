@@ -262,22 +262,21 @@ auto lift_maybe_2(F f, const maybe<A>& m_a, const maybe<B>& m_b)
 // Maybe values is nothing.
 // Otherwise it applies the function to the two values inside the Justs
 // and returns the result of this application.
-template <typename F,
-    typename A = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<
-            F>::template arg<0>::type>::type>::type,
-    typename B = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<
-            F>::template arg<1>::type>::type>::type,
-    typename C = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(A, B)>::type>::type>::type>
-C lift_maybe_2_def(const C& def, F f,
-    const maybe<A>& m_a, const maybe<B>& m_b)
+template <typename F, typename A, typename B, typename Default>
+auto lift_maybe_2_def(const Default& def,
+                      F f,
+                      const maybe<A>& m_a,
+                      const maybe<B>& m_b)
 {
-    static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
+    (void)detail::trigger_static_asserts<detail::lift_maybe_tag, F, A, B>();
+
+    using C = std::decay_t<detail::invoke_result_t<F, A, B>>;
+    static_assert(
+        std::is_convertible<Default, C>::value,
+        "Default value must be convertible to Function's return type");
     if (is_just(m_a) && is_just(m_b))
-        return f(unsafe_get_just(m_a), unsafe_get_just(m_b));
-    return def;
+        return C(detail::invoke(f, unsafe_get_just(m_a), unsafe_get_just(m_b)));
+    return C(def);
 }
 
 // API search type: and_then_maybe : ((a -> Maybe b), (Maybe a)) -> Maybe b
