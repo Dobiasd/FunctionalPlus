@@ -221,18 +221,18 @@ auto lift_maybe(F f, const maybe<A>& m)
 // This function returns the default value if the Maybe value is nothing.
 // Otherwise it applies the function to the value inside the Just
 // of the Maybe value and returns the result of this application.
-template <typename F,
-    typename A = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<
-            F>::template arg<0>::type>::type>::type,
-    typename B = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(A)>::type>::type>::type>
-B lift_maybe_def(const B& def, F f, const maybe<A>& m)
+template <typename F, typename A, typename Default>
+auto lift_maybe_def(const Default& def, F f, const maybe<A>& m)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    (void)detail::trigger_static_asserts<detail::lift_maybe_tag, F, A>();
+
+    using B = std::decay_t<detail::invoke_result_t<F, A>>;
+    static_assert(
+        std::is_convertible<Default, B>::value,
+        "Default value must be convertible to Function's return type");
     if (is_just(m))
-        return f(unsafe_get_just(m));
-    return def;
+        return B(detail::invoke(f, unsafe_get_just(m)));
+    return B(def);
 }
 
 // API search type: lift_maybe_2 : (((a, b) -> c), Maybe a, Maybe b) -> Maybe c

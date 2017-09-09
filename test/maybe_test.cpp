@@ -99,15 +99,19 @@ TEST_CASE("maybe_test, lift")
     using namespace fplus;
     auto x = just<int>(2);
     maybe<int> y = nothing<int>();
+    auto squareGeneric = [](auto n) { return n * n; };
+
     REQUIRE_EQ(lift_maybe(square<int>, x), just(4));
     REQUIRE_EQ(lift_maybe(square<int>, y), nothing<int>());
-    REQUIRE_EQ(lift_maybe([](auto n){ return n * n; }, x), just(4));
-    REQUIRE_EQ(lift_maybe([](auto n){ return n * n; }, y), nothing<int>());
+    REQUIRE_EQ(lift_maybe(squareGeneric, x), just(4));
+    REQUIRE_EQ(lift_maybe(squareGeneric, y), nothing<int>());
     auto SquareAndSquare = compose(square<int>, square<int>);
     REQUIRE_EQ(lift_maybe(SquareAndSquare, x), just(16));
 
     REQUIRE_EQ(lift_maybe_def(3, square<int>, x), 4);
     REQUIRE_EQ(lift_maybe_def(3, square<int>, y), 3);
+    REQUIRE_EQ(lift_maybe_def(3, squareGeneric, x), 4);
+    REQUIRE_EQ(lift_maybe_def(3, squareGeneric, y), 3);
 
     REQUIRE_EQ(lift_maybe_2(std::plus<int>(), x, x), just(4));
     REQUIRE_EQ(lift_maybe_2(std::plus<int>(), x, y), y);
