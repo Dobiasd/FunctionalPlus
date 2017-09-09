@@ -96,6 +96,16 @@ TEST_CASE("result_test, compose_result")
     auto IntToFloatAndSqrtAndSqrt = compose_result(IntToResultFloat, sqrtAndSqrt);
     REQUIRE(is_in_interval(1.41f, 1.42f, unsafe_get_ok<float>
             (IntToFloatAndSqrtAndSqrt(4))));
+
+    // first callable can take a variadic number of arguments
+    auto sumToResult = [](auto a, auto b) {
+        return ok<decltype(a + b), std::string>(a + b);
+    };
+    auto squareSumResult = compose_result(sumToResult, [](auto sum) {
+        return ok<decltype(sum * sum), std::string>(sum * sum);
+    });
+
+    REQUIRE_EQ(squareSumResult(5, 5), (ok<int, std::string>(100)));
 }
 
 TEST_CASE("result_test, lift")
