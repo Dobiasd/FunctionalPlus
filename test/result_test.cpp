@@ -116,6 +116,10 @@ TEST_CASE("result_test, lift_both")
     const auto y = error<int, std::string>("an error");
     REQUIRE_EQ(lift_result_both(square<int>, to_upper_case<std::string>, x), (ok<int, std::string>(4)));
     REQUIRE_EQ(lift_result_both(square<int>, to_upper_case<std::string>, y), (error<int, std::string>("AN ERROR")));
+    REQUIRE_EQ(lift_result_both([](auto z) { return z * z; },
+                                [](auto z) { return to_upper_case(z); },
+                                y),
+               (error<int, std::string>("AN ERROR")));
 }
 
 TEST_CASE("result_test, unify_result")

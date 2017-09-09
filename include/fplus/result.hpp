@@ -224,23 +224,18 @@ auto lift_result(F f, const result<A, Error>& r)
 // API search type: lift_result_both : ((a -> c), (b -> d), Result a b) -> Result c d
 // fwd bind count: 2
 // Lifts two functions into the result functor.
-template <
-    typename F,
-    typename G,
-    typename A = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename C = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(A)>::type>::type>::type,
-    typename B = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
-    typename D = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<G(B)>::type>::type>::type>
-result<C, D> lift_result_both(F f, G g, const result<A, B>& r)
+template <typename F, typename G, typename A, typename B>
+auto lift_result_both(F f, G g, const result<A, B>& r)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    (void)detail::trigger_static_asserts<detail::lift_result_tag, F, A>();
+    (void)detail::trigger_static_asserts<detail::lift_result_tag, G, B>();
+
+    using C = std::decay_t<detail::invoke_result_t<F, A>>;
+    using D = std::decay_t<detail::invoke_result_t<G, B>>;
+
     if (is_ok(r))
-        return ok<C, D>(f(unsafe_get_ok(r)));
-    return error<C, D>(g(unsafe_get_error(r)));
+        return ok<C, D>(detail::invoke(f, unsafe_get_ok(r)));
+    return error<C, D>(detail::invoke(g, unsafe_get_error(r)));
 }
 
 // API search type: unify_result : ((a -> c), (b -> c), Result a b) -> c
