@@ -155,6 +155,12 @@ TEST_CASE("maybe_test, compose")
     auto JustInt = just<int>;
     auto IntToMaybeFloat = compose(JustInt, LiftedIntToFloat);
     auto IntToFloatAndSqrtAndSqrt = compose_maybe(IntToMaybeFloat, sqrtAndSqrt);
+
+    auto squareMaybe = [](auto n) { return just<decltype(n * n)>(n * n); };
+    auto plusMaybe = [](auto m, auto n) {
+        return just<decltype(m + n)>(m + n);
+    };
+    REQUIRE_EQ(compose_maybe(plusMaybe, squareMaybe)(2, 3), just(25));
     REQUIRE(is_in_interval(1.41f, 1.42f, unsafe_get_just<float>
             (IntToFloatAndSqrtAndSqrt(4))));
 }
