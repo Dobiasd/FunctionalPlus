@@ -15,6 +15,45 @@ namespace fplus
 {
 namespace detail
 {
+// source: https://codereview.stackexchange.com/a/63893
+// note: the code in the link above is called with the arguments in reverse order
+template <typename... Fs>
+class compose_impl
+{
+    static constexpr std::size_t size = sizeof...(Fs);
+    static_assert(size > 1,
+                  "Invalid number of functions to compose, minimum is two.");
+
+  public:
+    compose_impl(Fs&&... fs) : _functionTuple(std::forward<Fs>(fs)...)
+    {
+    }
+
+    template <typename... Ts>
+    auto operator()(Ts&&... ts) const
+    {
+        return _apply(std::integral_constant<std::size_t, 0>{},
+                      std::forward<Ts>(ts)...);
+    }
+
+  private:
+    template <std::size_t N, typename... Ts>
+    auto _apply(std::integral_constant<std::size_t, N>, Ts&&... ts) const
+    {
+        return _apply(std::integral_constant<std::size_t, N + 1>{},
+                      std::get<N>(_functionTuple)(std::forward<Ts>(ts)...));
+    }
+
+    template <typename... Ts>
+    auto _apply(std::integral_constant<std::size_t, size - 1>, Ts&&... ts) const
+    {
+        return detail::invoke(std::get<size - 1>(_functionTuple),
+                              std::forward<Ts>(ts)...);
+    }
+
+    std::tuple<Fs...> _functionTuple;
+};
+
 // Is BinaryLift really correct?
 template <typename Tuple, typename BinaryLift>
 auto compose_binary_lift_impl(std::integral_constant<std::size_t, 1>,
