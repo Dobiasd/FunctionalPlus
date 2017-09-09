@@ -48,7 +48,6 @@ TEST_CASE("result_test, ok_with_default")
     auto x = ok<int, std::string>(2);
     auto y = error<int, std::string>("an error");
     auto Or42 = bind_1st_of_2(ok_with_default<int, std::string>, 42);
-    auto SquareAndSquare = compose(square<int>, square<int>);
     REQUIRE_EQ(Or42(x), 2);
     REQUIRE_EQ(Or42(y), 42);
 }
