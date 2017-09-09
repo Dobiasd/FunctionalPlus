@@ -242,25 +242,17 @@ auto lift_result_both(F f, G g, const result<A, B>& r)
 // fwd bind count: 2
 // Extracts the value (Ok or Error) from a Result
 // as defined by the two given functions.
-template <
-    typename F,
-    typename G,
-    typename A = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename C = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(A)>::type>::type>::type,
-    typename B = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
-    typename D = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<G(B)>::type>::type>::type>
-C unify_result(F f, G g, const result<A, B>& r)
+template <typename F, typename G, typename A, typename B>
+auto unify_result(F f, G g, const result<A, B>& r)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
-    static_assert(std::is_same<C, D>::value, "Both functions must return the same type.");
+    (void)detail::trigger_static_asserts<detail::unify_result_tag, F, A>();
+    (void)detail::trigger_static_asserts<detail::unify_result_tag, G, B>();
+    static_assert(std::is_same<detail::invoke_result_t<F, A>,
+                               detail::invoke_result_t<G, B>>::value,
+                  "Both functions must return the same type.");
     if (is_ok(r))
-        return f(unsafe_get_ok(r));
-    return g(unsafe_get_error(r));
+        return detail::invoke(f, unsafe_get_ok(r));
+    return detail::invoke(g, unsafe_get_error(r));
 }
 
 // API search type: and_then_result : ((a -> Result c b), (Result a b)) -> Result c b
