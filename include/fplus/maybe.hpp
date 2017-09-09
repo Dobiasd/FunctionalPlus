@@ -240,21 +240,18 @@ auto lift_maybe_def(const Default& def, F f, const maybe<A>& m)
 // Lifts a binary function into the maybe functor.
 // Applies the function only if both arguments are justs.
 // Otherwise returns a nothing.
-template <typename F,
-    typename A = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<
-            F>::template arg<0>::type>::type>::type,
-    typename B = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<
-            F>::template arg<1>::type>::type>::type,
-    typename C = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(A, B)>::type>::type>::type>
-maybe<C> lift_maybe_2(F f, const maybe<A>& m_a, const maybe<B>& m_b)
+template <typename F, typename A, typename B>
+auto lift_maybe_2(F f, const maybe<A>& m_a, const maybe<B>& m_b)
 {
-    static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
+    (void)detail::trigger_static_asserts<detail::lift_maybe_tag, F, A, B>();
+
+    using FOut = std::decay_t<detail::invoke_result_t<F, A, B>>;
     if (is_just(m_a) && is_just(m_b))
-        return just<C>(f(unsafe_get_just(m_a), unsafe_get_just(m_b)));
-    return nothing<C>();
+    {
+        return just<FOut>(
+            detail::invoke(f, unsafe_get_just(m_a), unsafe_get_just(m_b)));
+    }
+    return nothing<FOut>();
 }
 
 // API search type: lift_maybe_2_def : (c, ((a, b) -> c), Maybe a, Maybe b) -> c
