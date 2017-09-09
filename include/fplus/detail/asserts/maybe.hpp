@@ -16,11 +16,11 @@ struct lift_maybe_tag
 {
 };
 
-template <typename F, typename X>
-struct function_traits_asserts<lift_maybe_tag, F, X>
+template <typename F, typename ...Args>
+struct function_traits_asserts<lift_maybe_tag, F, Args...>
 {
-    static_assert(utils::function_traits<F>::arity == 1,
-                  "Function must take one parameter.");
+    static_assert(utils::function_traits<F>::arity == sizeof...(Args),
+                  "Wrong arity");
 };
 }
 }
