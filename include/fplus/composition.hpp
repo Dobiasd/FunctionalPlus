@@ -7,6 +7,8 @@
 #pragma once
 
 #include <fplus/function_traits.hpp>
+#include <fplus/detail/asserts/composition.hpp>
+#include <fplus/detail/composition.hpp>
 
 #include <functional>
 #include <map>
@@ -154,102 +156,13 @@ std::function<T()> fixed(T x)
 // API search type: compose : ((a -> b), (b -> c)) -> (a -> c)
 // Forward function composition.
 // compose(f, g)(x) = g(f(x))
-template <typename F, typename G,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename GOut = typename std::result_of<G(GIn)>::type>
-std::function<GOut(FIn)> compose(F f, G g)
+// It is possible to compose a variadic number of callables.
+// The first callable can also take a variadic number of parameters.
+// compose(f, g, h)(x, y, z) = h(g(f(x, y, z)))
+template <typename... Fs>
+auto compose(Fs&&... fs)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
-    static_assert(std::is_convertible<FOut,GIn>::value,
-        "Parameter types do not match");
-    return [f, g](FIn&& x) { return g(f(std::forward<FIn>(x))); };
-}
-
-// API search type: compose : ((a -> b), (b -> c), (c -> d)) -> (a -> d)
-// Forward function composition.
-// compose(f, g, h)(x) = h(g(f(x)))
-template <typename F, typename G, typename H,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename GOut = typename std::result_of<G(GIn)>::type,
-    typename HIn = typename utils::function_traits<H>::template arg<0>::type,
-    typename HOut = typename std::result_of<H(HIn)>::type>
-std::function<HOut(FIn)> compose(F f, G g, H h)
-{
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
-    static_assert(utils::function_traits<H>::arity == 1, "Wrong arity.");
-    static_assert(std::is_convertible<FOut,GIn>::value,
-        "Parameter types do not match");
-    static_assert(std::is_convertible<GOut,HIn>::value,
-        "Parameter types do not match");
-    return [f, g, h](FIn&& x) { return h(g(f(std::forward<FIn>(x)))); };
-}
-
-// API search type: compose : ((a -> b), (b -> c), (c -> d), (d -> e)) -> (a -> e)
-// Forward function composition.
-// compose(f, g, h, i)(x) = i(h(g(f(x))))
-template <typename F, typename G, typename H, typename I,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename GOut = typename std::result_of<G(GIn)>::type,
-    typename HIn = typename utils::function_traits<H>::template arg<0>::type,
-    typename HOut = typename std::result_of<H(HIn)>::type,
-    typename IIn = typename utils::function_traits<I>::template arg<0>::type,
-    typename IOut = typename std::result_of<I(IIn)>::type>
-std::function<IOut(FIn)> compose(F f, G g, H h, I i)
-{
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
-    static_assert(utils::function_traits<H>::arity == 1, "Wrong arity.");
-    static_assert(utils::function_traits<I>::arity == 1, "Wrong arity.");
-    static_assert(std::is_convertible<FOut,GIn>::value,
-        "Parameter types do not match");
-    static_assert(std::is_convertible<GOut,HIn>::value,
-        "Parameter types do not match");
-    static_assert(std::is_convertible<HOut,IIn>::value,
-        "Parameter types do not match");
-    return [f, g, h, i](FIn&& x) { return i(h(g(f(std::forward<FIn>(x))))); };
-}
-
-// API search type: compose : ((a -> b), (b -> c), (c -> d), (d -> e), (e -> f)) -> (a -> f)
-// Forward function composition.
-// compose(f, g, h, i, j)(x) = j(i(h(g(f(x)))))
-template <typename F, typename G, typename H, typename I, typename J,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename GOut = typename std::result_of<G(GIn)>::type,
-    typename HIn = typename utils::function_traits<H>::template arg<0>::type,
-    typename HOut = typename std::result_of<H(HIn)>::type,
-    typename IIn = typename utils::function_traits<I>::template arg<0>::type,
-    typename IOut = typename std::result_of<I(IIn)>::type,
-    typename JIn = typename utils::function_traits<I>::template arg<0>::type,
-    typename JOut = typename std::result_of<I(JIn)>::type>
-std::function<JOut(FIn)> compose(F f, G g, H h, I i, J j)
-{
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
-    static_assert(utils::function_traits<H>::arity == 1, "Wrong arity.");
-    static_assert(utils::function_traits<I>::arity == 1, "Wrong arity.");
-    static_assert(utils::function_traits<J>::arity == 1, "Wrong arity.");
-    static_assert(std::is_convertible<FOut,GIn>::value,
-        "Parameter types do not match");
-    static_assert(std::is_convertible<GOut,HIn>::value,
-        "Parameter types do not match");
-    static_assert(std::is_convertible<HOut,IIn>::value,
-        "Parameter types do not match");
-    static_assert(std::is_convertible<IOut,JIn>::value,
-        "Parameter types do not match");
-    return [f, g, h, i, j](FIn&& x)
-    {
-        return j(i(h(g(f(std::forward<FIn>(x))))));
-    };
+    return detail::compose_impl<Fs...>(std::forward<Fs>(fs)...);
 }
 
 // API search type: logical_not : (a -> Bool) -> (a -> Bool)
