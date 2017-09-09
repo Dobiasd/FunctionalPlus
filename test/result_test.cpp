@@ -133,6 +133,14 @@ TEST_CASE("result_test, unify_result")
     };
     REQUIRE_EQ(unify(x), "2");
     REQUIRE_EQ(unify(y), "AN ERROR");
+
+    const auto unifyGeneric = [](auto r) {
+        return unify_result(show<typename decltype(r)::ok_t>,
+                            to_upper_case<typename decltype(r)::error_t>,
+                            r);
+    };
+    REQUIRE_EQ(unifyGeneric(x), "2");
+    REQUIRE_EQ(unifyGeneric(y), "AN ERROR");
 }
 
 TEST_CASE("result_test, equality")
