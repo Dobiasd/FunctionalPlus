@@ -16,6 +16,10 @@ struct lift_result_tag
 {
 };
 
+struct and_then_result_tag
+{
+};
+
 struct unify_result_tag
 {
 };
@@ -27,6 +31,16 @@ struct function_traits_asserts<lift_result_tag, F, X>
                   "Function must take one parameter.");
     typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
     static_assert(std::is_convertible<X, FIn0>::value,
+                  "Invalid type for parameter");
+};
+
+template <typename F, typename Ok>
+struct function_traits_asserts<and_then_result_tag, F, Ok>
+{
+    static_assert(utils::function_traits<F>::arity == 1,
+                  "Function must take one parameter.");
+    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+    static_assert(std::is_convertible<Ok, FIn0>::value,
                   "Invalid type for parameter");
 };
 

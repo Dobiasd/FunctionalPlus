@@ -261,24 +261,18 @@ auto unify_result(F f, G g, const result<A, B>& r)
 // Returns the error if the result is an error.
 // Otherwise return the result of applying
 // the function to the ok value of the result.
-template <typename Ok, typename Error, typename F,
-    typename FIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename FOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(FIn)>::type>::type>::type,
-    typename FOutOk = typename FOut::ok_t,
-    typename FOutError = typename FOut::error_t>
-result<FOutOk, Error> and_then_result(F f, const result<Ok, Error>& r)
+template <typename Ok, typename Error, typename F>
+auto and_then_result(F f, const result<Ok, Error>& r)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    static_assert(std::is_same<Error, FOutError>::value,
-        "Error type must stay the same.");
-    static_assert(std::is_convertible<Ok, FIn>::value,
-        "Function parameter types do not match.");
+    (void)detail::trigger_static_asserts<detail::and_then_result_tag, F, Ok>();
+
+    using FOut = std::decay_t<detail::invoke_result_t<F, Ok>>;
+    static_assert(std::is_same<Error, typename FOut::error_t>::value,
+                  "Error type must stay the same.");
     if (is_ok(r))
-        return f(unsafe_get_ok(r));
+        return detail::invoke(f, unsafe_get_ok(r));
     else
-        return error<FOutOk, FOutError>(r.unsafe_get_error());
+        return error<typename FOut::ok_t, typename FOut::error_t>(r.unsafe_get_error());
 }
 
 // API search type: compose_result : ((a -> Result b c), (b -> Result d c)) -> (a -> Result d c)
