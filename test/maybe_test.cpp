@@ -101,6 +101,8 @@ TEST_CASE("maybe_test, lift")
     maybe<int> y = nothing<int>();
     REQUIRE_EQ(lift_maybe(square<int>, x), just(4));
     REQUIRE_EQ(lift_maybe(square<int>, y), nothing<int>());
+    REQUIRE_EQ(lift_maybe([](auto n){ return n * n; }, x), just(4));
+    REQUIRE_EQ(lift_maybe([](auto n){ return n * n; }, y), nothing<int>());
     auto SquareAndSquare = compose(square<int>, square<int>);
     REQUIRE_EQ(lift_maybe(SquareAndSquare, x), just(16));
 
