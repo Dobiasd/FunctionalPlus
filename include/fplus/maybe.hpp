@@ -8,6 +8,8 @@
 
 #include <fplus/function_traits.hpp>
 
+#include <fplus/detail/asserts/maybe.hpp>
+
 #include <cassert>
 #include <exception>
 #include <functional>
@@ -201,17 +203,14 @@ bool operator != (const maybe<T>& x, const maybe<T>& y)
 // A function that for example was able to convert and int into a string,
 // now can convert a Maybe<int> into a Maybe<string>.
 // A nothing remains a nothing, regardless of the conversion.
-template <typename F,
-    typename A = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<
-            F>::template arg<0>::type>::type>::type,
-    typename B = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(A)>::type>::type>::type>
-maybe<B> lift_maybe(F f, const maybe<A>& m)
+template <typename F, typename A>
+auto lift_maybe(F f, const maybe<A>& m)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    (void)detail::trigger_static_asserts<detail::lift_maybe_tag, F, A>();
+
+    using B = std::decay_t<detail::invoke_result_t<F, A>>;
     if (is_just(m))
-        return just<B>(f(unsafe_get_just(m)));
+        return just<B>(detail::invoke(f, unsafe_get_just(m)));
     return nothing<B>();
 }
 
