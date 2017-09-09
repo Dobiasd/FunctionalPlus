@@ -115,8 +115,8 @@ TEST_CASE("maybe_test, lift")
 
     REQUIRE_EQ(lift_maybe_2(std::plus<int>(), x, x), just(4));
     REQUIRE_EQ(lift_maybe_2(std::plus<int>(), x, y), y);
-    REQUIRE_EQ(lift_maybe_2(std::plus<int>(), y, x), y);
-    REQUIRE_EQ(lift_maybe_2(std::plus<int>(), y, y), y);
+    REQUIRE_EQ(lift_maybe_2(std::plus<>(), y, x), y);
+    REQUIRE_EQ(lift_maybe_2(std::plus<>(), y, y), y);
 
     REQUIRE_EQ(lift_maybe_2_def(3, std::plus<int>(), x, x), 4);
     REQUIRE_EQ(lift_maybe_2_def(3, std::plus<int>(), x, y), 3);
