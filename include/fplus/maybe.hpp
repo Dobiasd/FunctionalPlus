@@ -8,6 +8,7 @@
 
 #include <fplus/function_traits.hpp>
 
+#include <fplus/detail/composition.hpp>
 #include <fplus/detail/asserts/maybe.hpp>
 
 #include <cassert>
@@ -17,7 +18,6 @@
 
 namespace fplus
 {
-
 // Can hold a value of type T or nothing.
 template <typename T>
 class maybe
@@ -312,81 +312,39 @@ auto and_then_maybe(F f, const maybe<T>& m)
 }
 
 // API search type: compose_maybe : ((a -> Maybe b), (b -> Maybe c)) -> (a -> Maybe c)
-// Left-to-right Kleisli composition of monads (2 functions).
-// Composes two functions taking a value and returning Maybe.
-// If the first function returns a just, the value from the just
-// is extracted and shoved into the second function.
-// If the first functions returns a nothing, it remains a nothing.
-template <typename F, typename G,
-    typename FIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<
-            F>::template arg<0>::type>::type>::type,
-    typename FOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(FIn)>::type>::type>::type,
-    typename GIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
-    typename GOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<G(GIn)>::type>::type>::type,
-    typename T = typename GOut::type>
-std::function<maybe<T>(const FIn&)> compose_maybe(F f, G g)
+// Left-to-right Kleisli composition of monads.
+// Composes multiple callables taking a value and returning Maybe.
+// If the first callable returns a just, the value from the just
+// is extracted and shoved into the next callable.
+// If the first callable returns a nothing, it remains a nothing.
+// The first callable can take a variadic number of parameters.
+template <typename... Callables>
+auto compose_maybe(Callables&&... callables)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
-    static_assert(std::is_convertible<typename FOut::type,GIn>::value,
-        "Function parameter types do not match");
-    return [f, g](const FIn& x) -> maybe<T>
-    {
-        auto maybeB = f(x);
-        if (is_just(maybeB))
-            return g(unsafe_get_just(maybeB));
-        return nothing<T>();
+    auto bind_maybe = [](auto f, auto g) {
+        // next step would be to perfectly forward callables, as shown here:
+        // https://vittorioromeo.info/index/blog/capturing_perfectly_forwarded_objects_in_lambdas.html
+        return [f = std::move(f), g = std::move(g)](auto&&... args)
+        {
+            using FOut = std::decay_t<
+                detail::invoke_result_t<decltype(f), decltype(args)...>>;
+            static_assert(detail::is_maybe<FOut>::value,
+                          "Functions must return a maybe<> type");
+            using GOut = std::decay_t<
+                detail::invoke_result_t<decltype(g), typename FOut::type>>;
+            static_assert(detail::is_maybe<GOut>::value,
+                          "Functions must return a maybe<> type");
+
+            auto maybeB =
+                detail::invoke(f, std::forward<decltype(args)>(args)...);
+            if (is_just(maybeB))
+                return detail::invoke(g, unsafe_get_just(maybeB));
+            return GOut{};
+        };
     };
-}
 
-// API search type: compose_maybe : ((a -> Maybe b), (b -> Maybe c), (c -> Maybe d)) -> (Maybe a -> Maybe d)
-// Left-to-right Kleisli composition of monads (3 functions).
-template <typename F, typename G, typename H,
-    typename FIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename FOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(FIn)>::type>::type>::type,
-    typename GIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
-    typename GOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<G(GIn)>::type>::type>::type,
-    typename HIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<H>::template arg<0>::type>::type>::type,
-    typename HOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<H(HIn)>::type>::type>::type,
-    typename T = typename HOut::type>
-std::function<maybe<T>(const FIn&)> compose_maybe(F f, G g, H h)
-{
-    return compose_maybe(compose_maybe(f, g), h);
-}
-
-// API search type: compose_maybe : ((a -> Maybe b), (b -> Maybe c), (c -> Maybe d), (d -> Maybe e)) -> (Maybe a -> Maybe e)
-// Left-to-right Kleisli composition of monads (4 functions).
-template <typename F, typename G, typename H, typename I,
-    typename FIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename FOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(FIn)>::type>::type>::type,
-    typename GIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
-    typename GOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<G(GIn)>::type>::type>::type,
-    typename HIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<H>::template arg<0>::type>::type>::type,
-    typename HOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<H(HIn)>::type>::type>::type,
-    typename IIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<I>::template arg<0>::type>::type>::type,
-    typename IOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<I(IIn)>::type>::type>::type,
-    typename T = typename IOut::type>
-std::function<maybe<T>(const FIn&)> compose_maybe(F f, G g, H h, I i)
-{
-    return compose_maybe(compose_maybe(compose_maybe(f, g), h), i);
+    return detail::compose_binary_lift(bind_maybe,
+                                       std::forward<Callables>(callables)...);
 }
 
 // API search type: flatten_maybe : (Maybe (Maybe a)) -> Maybe a
