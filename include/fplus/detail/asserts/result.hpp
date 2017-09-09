@@ -20,6 +20,14 @@ struct and_then_result_tag
 {
 };
 
+struct compose_result_tag
+{
+};
+
+struct compose_result_bis_tag
+{
+};
+
 struct unify_result_tag
 {
 };
@@ -41,6 +49,23 @@ struct function_traits_asserts<and_then_result_tag, F, Ok>
                   "Function must take one parameter.");
     typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
     static_assert(std::is_convertible<Ok, FIn0>::value,
+                  "Invalid type for parameter");
+};
+
+template <typename F, typename ...Args>
+struct function_traits_asserts<compose_result_tag, F, Args...>
+{
+    static_assert(utils::function_traits<F>::arity == sizeof...(Args),
+                  "Invalid arity for function");
+};
+
+template <typename G, typename X>
+struct function_traits_asserts<compose_result_bis_tag, G, X>
+{
+    static_assert(utils::function_traits<G>::arity == 1,
+                  "Function must take one parameter.");
+    typedef typename utils::function_traits<G>::template arg<0>::type GIn;
+    static_assert(std::is_convertible<X, GIn>::value,
                   "Invalid type for parameter");
 };
 
