@@ -73,6 +73,19 @@ private:
     std::array<unsigned char, sizeof(T)> mem_;
 };
 
+namespace detail
+{
+template <typename>
+struct is_maybe : std::false_type
+{
+};
+
+template <typename T>
+struct is_maybe<maybe<T>> : std::true_type
+{
+};
+}
+
 // API search type: is_just : Maybe a -> Bool
 // fwd bind count: 0
 // Is not nothing?
@@ -285,21 +298,17 @@ auto lift_maybe_2_def(const Default& def,
 // Returns nothing if the maybe already is nothing.
 // Otherwise return the result of applying
 // the function to the just value of the maybe.
-template <typename T, typename F,
-    typename FIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename FOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(FIn)>::type>::type>::type,
-    typename FOutJustT = typename FOut::type>
-maybe<FOutJustT> and_then_maybe(F f, const maybe<T>& m)
+template <typename T, typename F>
+auto and_then_maybe(F f, const maybe<T>& m)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    static_assert(std::is_convertible<T, FIn>::value,
-        "Function parameter types do not match.");
+    (void)detail::trigger_static_asserts<detail::lift_maybe_tag, F, T>();
+    using FOut = std::decay_t<detail::invoke_result_t<F, T>>;
+    static_assert(detail::is_maybe<FOut>::value,
+                  "Function must return a maybe<> type");
     if (is_just(m))
-        return f(unsafe_get_just(m));
+        return detail::invoke(f, unsafe_get_just(m));
     else
-        return nothing<FOutJustT>();
+        return nothing<typename FOut::type>();
 }
 
 // API search type: compose_maybe : ((a -> Maybe b), (b -> Maybe c)) -> (a -> Maybe c)
