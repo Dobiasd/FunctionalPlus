@@ -8,6 +8,8 @@
 
 #include <fplus/function_traits.hpp>
 #include <fplus/maybe.hpp>
+#include <fplus/detail/invoke.hpp>
+#include <fplus/detail/asserts/result.hpp>
 
 #include <cassert>
 #include <functional>
@@ -207,17 +209,15 @@ bool operator != (const result<Ok, Error>& x, const result<Ok, Error>& y)
 // A function that for example was able to convert and int into a string,
 // now can convert a result<int, Err> into a result<string, Err>.
 // An error stays the same error, regardless of the conversion.
-template <typename Error,
-    typename F,
-    typename A = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename B = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(A)>::type>::type>::type>
-result<B, Error> lift_result(F f, const result<A, Error>& r)
+template <typename Error, typename F, typename A>
+auto lift_result(F f, const result<A, Error>& r)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    (void)detail::trigger_static_asserts<detail::lift_result_tag, F, A>();
+
+    using B = std::decay_t<detail::invoke_result_t<F, A>>;
+
     if (is_ok(r))
-        return ok<B, Error>(f(unsafe_get_ok(r)));
+        return ok<B, Error>(detail::invoke(f, unsafe_get_ok(r)));
     return error<B, Error>(unsafe_get_error(r));
 }
 

@@ -104,7 +104,9 @@ TEST_CASE("result_test, lift")
     auto x = ok<int, std::string>(2);
     auto y = error<int, std::string>("an error");
     auto SquareAndSquare = compose(square<int>, square<int>);
-    REQUIRE_EQ((lift_result<std::string>(SquareAndSquare, x)), (ok<int, std::string>(16)));
+    REQUIRE_EQ((lift_result(SquareAndSquare, x)), (ok<int, std::string>(16)));
+    REQUIRE_EQ((lift_result([](auto n) { return square(n) * square(n); }, x)),
+               (ok<int, std::string>(16)));
 }
 
 TEST_CASE("result_test, lift_both")
