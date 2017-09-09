@@ -61,11 +61,11 @@ TEST_CASE("result_test, and_then_result")
     REQUIRE_EQ(and_then_result(sqrtToResultInt, ok_4), ok_2);
     REQUIRE_EQ(and_then_result(sqrtToResultInt, an_error), an_error);
 
-    const auto string_to_result_int_string =
-        [](const std::string& str) -> result<int, std::string>
-    {
-        if (str == "42") return ok<int, std::string>(42);
-        else return error<int, std::string>("not 42");
+    const auto string_to_result_int_string = [](const auto& str) {
+        if (str == "42")
+            return ok<int, std::string>(42);
+        else
+            return error<int, std::string>("not 42");
     };
     REQUIRE_EQ(and_then_result(string_to_result_int_string, (ok<std::string, std::string>("3"))), (error<int, std::string>("not 42")));
     REQUIRE_EQ(and_then_result(string_to_result_int_string, (ok<std::string, std::string>("42"))), (ok<int, std::string>(42)));
