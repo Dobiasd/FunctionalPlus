@@ -7,7 +7,6 @@
 #pragma once
 
 #include <fplus/detail/function_traits_asserts.hpp>
-#include <fplus/detail/invoke.hpp>
 
 namespace fplus
 {

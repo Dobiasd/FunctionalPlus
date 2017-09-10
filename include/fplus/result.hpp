@@ -9,6 +9,10 @@
 #include <fplus/function_traits.hpp>
 #include <fplus/maybe.hpp>
 
+#include <fplus/detail/asserts/result.hpp>
+#include <fplus/detail/composition.hpp>
+#include <fplus/detail/invoke.hpp>
+
 #include <cassert>
 #include <functional>
 #include <memory>
@@ -207,65 +211,50 @@ bool operator != (const result<Ok, Error>& x, const result<Ok, Error>& y)
 // A function that for example was able to convert and int into a string,
 // now can convert a result<int, Err> into a result<string, Err>.
 // An error stays the same error, regardless of the conversion.
-template <typename Error,
-    typename F,
-    typename A = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename B = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(A)>::type>::type>::type>
-result<B, Error> lift_result(F f, const result<A, Error>& r)
+template <typename Error, typename F, typename A>
+auto lift_result(F f, const result<A, Error>& r)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    (void)detail::trigger_static_asserts<detail::lift_result_tag, F, A>();
+
+    using B = std::decay_t<detail::invoke_result_t<F, A>>;
+
     if (is_ok(r))
-        return ok<B, Error>(f(unsafe_get_ok(r)));
+        return ok<B, Error>(detail::invoke(f, unsafe_get_ok(r)));
     return error<B, Error>(unsafe_get_error(r));
 }
 
 // API search type: lift_result_both : ((a -> c), (b -> d), Result a b) -> Result c d
 // fwd bind count: 2
 // Lifts two functions into the result functor.
-template <
-    typename F,
-    typename G,
-    typename A = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename C = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(A)>::type>::type>::type,
-    typename B = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
-    typename D = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<G(B)>::type>::type>::type>
-result<C, D> lift_result_both(F f, G g, const result<A, B>& r)
+template <typename F, typename G, typename A, typename B>
+auto lift_result_both(F f, G g, const result<A, B>& r)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    (void)detail::trigger_static_asserts<detail::lift_result_tag, F, A>();
+    (void)detail::trigger_static_asserts<detail::lift_result_tag, G, B>();
+
+    using C = std::decay_t<detail::invoke_result_t<F, A>>;
+    using D = std::decay_t<detail::invoke_result_t<G, B>>;
+
     if (is_ok(r))
-        return ok<C, D>(f(unsafe_get_ok(r)));
-    return error<C, D>(g(unsafe_get_error(r)));
+        return ok<C, D>(detail::invoke(f, unsafe_get_ok(r)));
+    return error<C, D>(detail::invoke(g, unsafe_get_error(r)));
 }
 
 // API search type: unify_result : ((a -> c), (b -> c), Result a b) -> c
 // fwd bind count: 2
 // Extracts the value (Ok or Error) from a Result
 // as defined by the two given functions.
-template <
-    typename F,
-    typename G,
-    typename A = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename C = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(A)>::type>::type>::type,
-    typename B = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
-    typename D = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<G(B)>::type>::type>::type>
-C unify_result(F f, G g, const result<A, B>& r)
+template <typename F, typename G, typename A, typename B>
+auto unify_result(F f, G g, const result<A, B>& r)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
-    static_assert(std::is_same<C, D>::value, "Both functions must return the same type.");
+    (void)detail::trigger_static_asserts<detail::unify_result_tag, F, A>();
+    (void)detail::trigger_static_asserts<detail::unify_result_tag, G, B>();
+    static_assert(std::is_same<detail::invoke_result_t<F, A>,
+                               detail::invoke_result_t<G, B>>::value,
+                  "Both functions must return the same type.");
     if (is_ok(r))
-        return f(unsafe_get_ok(r));
-    return g(unsafe_get_error(r));
+        return detail::invoke(f, unsafe_get_ok(r));
+    return detail::invoke(g, unsafe_get_error(r));
 }
 
 // API search type: and_then_result : ((a -> Result c b), (Result a b)) -> Result c b
@@ -274,107 +263,54 @@ C unify_result(F f, G g, const result<A, B>& r)
 // Returns the error if the result is an error.
 // Otherwise return the result of applying
 // the function to the ok value of the result.
-template <typename Ok, typename Error, typename F,
-    typename FIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename FOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(FIn)>::type>::type>::type,
-    typename FOutOk = typename FOut::ok_t,
-    typename FOutError = typename FOut::error_t>
-result<FOutOk, Error> and_then_result(F f, const result<Ok, Error>& r)
+template <typename Ok, typename Error, typename F>
+auto and_then_result(F f, const result<Ok, Error>& r)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    static_assert(std::is_same<Error, FOutError>::value,
-        "Error type must stay the same.");
-    static_assert(std::is_convertible<Ok, FIn>::value,
-        "Function parameter types do not match.");
+    (void)detail::trigger_static_asserts<detail::and_then_result_tag, F, Ok>();
+
+    using FOut = std::decay_t<detail::invoke_result_t<F, Ok>>;
+    static_assert(std::is_same<Error, typename FOut::error_t>::value,
+                  "Error type must stay the same.");
     if (is_ok(r))
-        return f(unsafe_get_ok(r));
+        return detail::invoke(f, unsafe_get_ok(r));
     else
-        return error<FOutOk, FOutError>(r.unsafe_get_error());
+        return error<typename FOut::ok_t, typename FOut::error_t>(r.unsafe_get_error());
 }
 
 // API search type: compose_result : ((a -> Result b c), (b -> Result d c)) -> (a -> Result d c)
-// Left-to-right Kleisli composition of monads (2 functions).
-// Composes two functions taking a value and returning result.
-// If the first function returns a ok, the value from the ok
-// is extracted and shoved into the second function.
-// If the first functions returns an error, the error is forwarded.
-template <typename F, typename G,
-    typename FIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename FOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(FIn)>::type>::type>::type,
-    typename GIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
-    typename GOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<G(GIn)>::type>::type>::type,
-    typename Ok = typename GOut::ok_t,
-    typename Error = typename GOut::error_t>
-std::function<result<Ok, Error>(const FIn&)> compose_result(F f, G g)
+// Left-to-right Kleisli composition of monads.
+// It is possible to compose a variadic number of callables.
+// The first callable can take a variadic number of parameters.
+template <typename... Callables>
+auto compose_result(Callables&&... callables)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
-    static_assert(std::is_convertible<typename FOut::ok_t,GIn>::value,
-        "Function parameter types do not match");
-    static_assert(std::is_same<typename FOut::error_t, typename GOut::error_t>::value,
-        "Error type must stay the same.");
-    return [f, g](const FIn& x) -> result<Ok, Error>
-    {
-        auto resultB = f(x);
-        if (is_ok(resultB))
-            return g(unsafe_get_ok(resultB));
-        return error<Ok, Error>(unsafe_get_error(resultB));
+    auto bind_result = [](auto f, auto g) {
+        return [f = std::move(f), g = std::move(g)](auto&&... args)
+        {
+            (void)detail::trigger_static_asserts<detail::compose_result_tag,
+                                                 decltype(f),
+                                                 decltype(args)...>();
+            using FOut = std::decay_t<
+                detail::invoke_result_t<decltype(f), decltype(args)...>>;
+
+            (void)detail::trigger_static_asserts<detail::compose_result_bis_tag,
+                                                 decltype(g),
+                                                 typename FOut::ok_t>();
+            using GOut = std::decay_t<
+                detail::invoke_result_t<decltype(g), typename FOut::ok_t>>;
+            static_assert(std::is_same<typename FOut::error_t,
+                                       typename GOut::error_t>::value,
+                          "Error type must stay the same.");
+
+            auto resultB =
+                detail::invoke(f, std::forward<decltype(args)>(args)...);
+            if (is_ok(resultB))
+                return detail::invoke(g, unsafe_get_ok(resultB));
+            return error<typename GOut::ok_t, typename GOut::error_t>(
+                unsafe_get_error(resultB));
+        };
     };
+    return detail::compose_binary_lift(bind_result,
+                                       std::forward<Callables>(callables)...);
 }
-
-// API search type: compose_result : ((a -> Result b c), (b -> Result d c), (d -> Result e c)) -> (a -> Result e c)
-// Left-to-right Kleisli composition of monads (3 functions).
-template <typename F, typename G, typename H,
-    typename FIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename FOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(FIn)>::type>::type>::type,
-    typename GIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
-    typename GOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<G(GIn)>::type>::type>::type,
-    typename HIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<H>::template arg<0>::type>::type>::type,
-    typename HOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<H(HIn)>::type>::type>::type,
-    typename Ok = typename HOut::ok_t,
-    typename Error = typename HOut::error_t>
-std::function<result<Ok, Error>(const FIn&)> compose_result(F f, G g, H h)
-{
-    return compose_result(compose_result(f, g), h);
-}
-
-// API search type: compose_result : ((a -> Result b c), (b -> Result d c), (d -> Result e c), (e -> Result f c)) -> (a -> Result f c)
-// Left-to-right Kleisli composition of monads (4 functions).
-template <typename F, typename G, typename H, typename I,
-    typename FIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
-    typename FOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<F(FIn)>::type>::type>::type,
-    typename GIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
-    typename GOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<G(GIn)>::type>::type>::type,
-    typename HIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<H>::template arg<0>::type>::type>::type,
-    typename HOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<H(HIn)>::type>::type>::type,
-    typename IIn = typename std::remove_const<typename std::remove_reference<
-        typename utils::function_traits<I>::template arg<0>::type>::type>::type,
-    typename IOut = typename std::remove_const<typename std::remove_reference<
-        typename std::result_of<I(IIn)>::type>::type>::type,
-    typename Ok = typename IOut::ok_t,
-    typename Error = typename IOut::error_t>
-std::function<result<Ok, Error>(const FIn&)>
-compose_result(F f, G g, H h, I i)
-{
-    return compose_result(compose_result(compose_result(f, g), h), i);
-}
-
 } // namespace fplus
