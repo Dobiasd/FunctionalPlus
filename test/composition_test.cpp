@@ -75,7 +75,6 @@ TEST_CASE("composition_test, parameter_binding")
     typedef IntContCont Mat;
     Mat mat;
     auto square = [](int x){ return x*x; };
-    REQUIRE_EQ(bind_unary(square, 2)(), 4);
     auto squareRowElems = bind_1st_of_2(
         transform<decltype(square), const Row&>, square);
     Row squaredRow = squareRowElems(row);
