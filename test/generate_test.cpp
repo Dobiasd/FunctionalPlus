@@ -37,6 +37,9 @@ TEST_CASE("generate_test, generate_by_idx")
     auto f = [](std::size_t value) { return value + 10; };
     auto result = fplus::generate_by_idx<std::vector<std::size_t>>(f, 6);
     REQUIRE_EQ(result, std::vector<std::size_t>({10, 11, 12, 13, 14 ,15}));
+    auto f2 = [f](auto value) { return f(value); };
+    auto result2 = fplus::generate_by_idx<std::vector<std::size_t>>(f2, 6);
+    REQUIRE_EQ(result2, result);
 }
 
 TEST_CASE("generate_test, repeat")
