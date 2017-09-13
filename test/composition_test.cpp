@@ -75,8 +75,11 @@ TEST_CASE("composition_test, parameter_binding")
     typedef IntContCont Mat;
     Mat mat;
     auto square = [](int x){ return x*x; };
-    auto squareRowElems = bind_1st_of_2(
-        transform<decltype(square), const Row&>, square);
+    auto squareRowElems =
+        bind_1st_of_2(transform<decltype(square), const Row&>, square);
+    auto add = [](auto x, auto y) { return x + y; };
+    auto add4 = bind_1st_of_2(add, 4);
+    REQUIRE_EQ(add4(2), 6);
     Row squaredRow = squareRowElems(row);
     REQUIRE_EQ(squaredRow, IntCont({1,4,9}));
 
