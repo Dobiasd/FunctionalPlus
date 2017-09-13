@@ -17,23 +17,26 @@
 #include <unordered_map>
 #include <utility>
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow"
+#endif
+
 namespace fplus
 {
 
 // API search type: bind_1st_of_2 : (((a, b) -> c), a) -> (b -> c)
 // Bind first parameter of binary function.
-template <typename F, typename T,
-    typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
-    typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
-    typename FOut = typename std::result_of<F(FIn0, FIn1)>::type>
-std::function<FOut(FIn1)> bind_1st_of_2(F f, T x)
+template <typename F, typename T>
+auto bind_1st_of_2(F f, T x)
 {
-    static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
-    static_assert(std::is_convertible<T, FIn0>::value,
-        "Function can not take bound parameter type.");
-    return [f, x]
-           (FIn1&& y)
-           { return f(x, std::forward<FIn1>(y)); };
+    return [f, x](auto&& y) {
+        (void)detail::trigger_static_asserts<detail::bind_1st_of_2_tag,
+                                             F,
+                                             T,
+                                             decltype(y)>();
+        return detail::invoke(f, x, std::forward<decltype(y)>(y));
+    };
 }
 
 // API search type: bind_2nd_of_2 : (((a, b) -> c), b) -> (a -> c)
@@ -362,3 +365,7 @@ T constructor_as_function(Types ... args)
 }
 
 } // namespace fplus
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
