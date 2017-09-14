@@ -197,3 +197,17 @@ TEST_CASE("composition_test, constructor_as_function")
     REQUIRE_EQ(my_foo.a_, 1);
     REQUIRE_EQ(my_foo.b_, 4);
 }
+
+TEST_CASE("composition_test, constructor_as_function")
+{
+    // todo: re-enable
+    /*
+    const std::vector<int> xs = {1,2,3,4,5};
+    const auto ys = fplus::keep_if(
+        fplus::compose(
+            fplus::square<int>,
+            fplus::is_greater_or_equal_than(3)),
+        xs);
+    REQUIRE_EQ(ys.size(), 4);
+    */
+}
