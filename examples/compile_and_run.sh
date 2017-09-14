@@ -15,16 +15,16 @@ then
 fi
 
 
-g++ -std=c++14 -O3 -Wall -Wextra -pedantic -Wshadow -Werror -Weffc++ -Wconversion -Wsign-conversion -Wctor-dtor-privacy -Wreorder -Wold-style-cast -Wparentheses -pthread -o ./temp_readme_examples__gcc -I./../include readme_examples.cpp
-if [ -f ./temp_readme_examples__gcc ];
+g++ -std=c++14 -O3 -Wall -Wextra -pedantic -Wshadow -Werror -Weffc++ -Wconversion -Wsign-conversion -Wctor-dtor-privacy -Wreorder -Wold-style-cast -Wparentheses -pthread -o ./temp_readme_perf_examples__gcc -I./../include readme_perf_examples.cpp
+if [ -f ./temp_readme_perf_examples__gcc ];
 then
-    ./temp_readme_examples__gcc
-    rm ./temp_readme_examples__gcc
+    ./temp_readme_perf_examples__gcc
+    rm ./temp_readme_perf_examples__gcc
 fi
 
-clang++ -std=c++14 -O3 -Wall -Wextra -pedantic -Wshadow -Werror -Weffc++ -Wconversion -Wsign-conversion -Wctor-dtor-privacy -Wreorder -Wold-style-cast -Wparentheses -pthread -o ./temp_readme_examples__clang -I./../include readme_examples.cpp
-if [ -f ./temp_readme_examples__clang ];
+clang++ -std=c++14 -O3 -Wall -Wextra -pedantic -Wshadow -Werror -Weffc++ -Wconversion -Wsign-conversion -Wctor-dtor-privacy -Wreorder -Wold-style-cast -Wparentheses -pthread -o ./temp_readme_perf_examples__clang -I./../include readme_perf_examples.cpp
+if [ -f ./temp_readme_perf_examples__clang ];
 then
-    ./temp_readme_examples__clang
-    rm ./temp_readme_examples__clang
+    ./temp_readme_perf_examples__clang
+    rm ./temp_readme_perf_examples__clang
 fi

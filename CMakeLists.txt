@@ -41,6 +41,8 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+add_executable(readme_perf_examples EXCLUDE_FROM_ALL examples/readme_perf_examples.cpp)
+target_link_libraries(readme_perf_examples ${CMAKE_THREAD_LIBS_INIT})
 
-add_executable(readme_examples EXCLUDE_FROM_ALL examples/readme_examples.cpp)
-target_link_libraries(readme_examples ${CMAKE_THREAD_LIBS_INIT})
+add_executable(99_problems EXCLUDE_FROM_ALL examples/99_problems.cpp)
+target_link_libraries(99_problems ${CMAKE_THREAD_LIBS_INIT})
