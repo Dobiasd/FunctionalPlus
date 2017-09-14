@@ -8,33 +8,11 @@
 
 #include <fplus/container_common.hpp>
 #include <fplus/function_traits.hpp>
-#include <fplus/detail/invoke.hpp>
-#include <fplus/detail/function_traits_asserts.hpp>
 
 #include <utility>
 
 namespace fplus
 {
-namespace detail
-{
-struct zip_with_tag
-{
-};
-
-template <typename F, typename X, typename Y>
-struct function_traits_asserts<zip_with_tag, F, X, Y>
-{
-    static_assert(utils::function_traits<F>::arity == 2,
-        "Function must take two parameters.");
-    using FOut = invoke_result_t<F, X, Y>;
-    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
-    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
-    static_assert(std::is_convertible<X, FIn0>::value,
-        "Function does not take elements from first Container as first Parameter.");
-    static_assert(std::is_convertible<Y, FIn1>::value,
-        "Function does not take elements from second Container as second Parameter.");
-};
-}
 
 // API search type: apply_to_pair : (((a, b) -> c), (a, b)) -> c
 // fwd bind count: 1
@@ -53,38 +31,44 @@ FOut apply_to_pair(F f, const std::pair<FIn0, FIn1>& p)
 // fwd bind count: 2
 // Zip two sequences using a binary function.
 // zip_with((+), [1, 2, 3], [5, 6]) == [1+5, 2+6] == [6, 8]
-template <typename ContainerIn1,
-          typename ContainerIn2,
-          typename F,
-          typename X = typename ContainerIn1::value_type,
-          typename Y = typename ContainerIn2::value_type,
-          bool = detail::trigger_static_asserts<detail::zip_with_tag, F, X, Y>(),
-          typename TOut = detail::invoke_result_t<F, X, Y>,
-          typename ContainerOut = std::vector<TOut>>
-ContainerOut zip_with(F f, const ContainerIn1& xs, const ContainerIn2& ys)
+template <typename ContainerIn1, typename ContainerIn2, typename F,
+    typename X = typename ContainerIn1::value_type,
+    typename Y = typename ContainerIn2::value_type,
+    typename TOut = typename std::result_of<F(X, Y)>::type,
+    typename ContainerOut = typename std::vector<TOut>>
+ContainerOut zip_with(F f,
+        const ContainerIn1& xs, const ContainerIn2& ys)
 {
-  using FOut = detail::invoke_result_t<F, X, Y>;
-  static_assert(
-      std::is_convertible<FOut, TOut>::value,
-      "Elements produced by this function can not be stored in ContainerOut.");
-  static_assert(
-      std::is_same<
-          typename internal::same_cont_new_t<ContainerIn1, void>::type,
-          typename internal::same_cont_new_t<ContainerIn2, void>::type>::value,
-      "Both Containers must be of same outer type.");
-  ContainerOut result;
-  std::size_t resultSize = std::min(size_of_cont(xs), size_of_cont(ys));
-  internal::prepare_container(result, resultSize);
-  auto itResult = internal::get_back_inserter(result);
-  auto itXs = std::begin(xs);
-  auto itYs = std::begin(ys);
-  for (std::size_t i = 0; i < resultSize; ++i)
-  {
-    *itResult = f(*itXs, *itYs);
-    ++itXs;
-    ++itYs;
-  }
-  return result;
+    static_assert(utils::function_traits<F>::arity == 2,
+        "Function must take two parameters.");
+    typedef typename std::result_of<F(X, Y)>::type FOut;
+    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
+    typedef typename ContainerIn1::value_type T1;
+    typedef typename ContainerIn2::value_type T2;
+    static_assert(std::is_convertible<T1, FIn0>::value,
+        "Function does not take elements from first Container as first Parameter.");
+    static_assert(std::is_convertible<T2, FIn1>::value,
+        "Function does not take elements from second Container as second Parameter.");
+    static_assert(std::is_convertible<FOut, TOut>::value,
+        "Elements produced by this function can not be stored in ContainerOut.");
+    static_assert(std::is_same<
+        typename internal::same_cont_new_t<ContainerIn1, void>::type,
+        typename internal::same_cont_new_t<ContainerIn2, void>::type>::value,
+        "Both Containers must be of same outer type.");
+    ContainerOut result;
+    std::size_t resultSize = std::min(size_of_cont(xs), size_of_cont(ys));
+    internal::prepare_container(result, resultSize);
+    auto itResult = internal::get_back_inserter(result);
+    auto itXs = std::begin(xs);
+    auto itYs = std::begin(ys);
+    for (std::size_t i = 0; i < resultSize; ++i)
+    {
+        *itResult = f(*itXs, *itYs);
+        ++itXs;
+        ++itYs;
+    }
+    return result;
 }
 
 // API search type: zip_with_3 : (((a, b, c) -> d), [a], [b], [c]) -> [c]
