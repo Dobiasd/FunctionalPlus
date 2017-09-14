@@ -15,11 +15,6 @@ namespace {
     typedef std::pair<int, int> IntPair;
     typedef std::vector<IntPair> IntPairs;
     IntVector xs = {1,2,2,3,2};
-
-    struct dummy
-    {
-      int i;
-    };
 }
 
 TEST_CASE("pairs_test, zip_with")
@@ -31,29 +26,28 @@ TEST_CASE("pairs_test, zip_with")
     REQUIRE_EQ(zip_with(add, IntVector({1,2,3}), IntVector({1,2})), IntVector({2,4}));
     REQUIRE_EQ(zip_with(add, IntVector({1,2}), IntVector({1,2,3})), IntVector({2,4}));
 
-    const auto add_generic = [](auto x, int y) {return x + y;};
-    REQUIRE_EQ(zip_with(add_generic, IntVector({1,2,3}), IntVector({1,2})), IntVector({2,4}));
-    REQUIRE_EQ(zip_with(std::plus<>{}, IntVector({1,2,3}), IntVector({1,2})), IntVector({2,4}));
+    // uncomment to see static_asserts
+    // zip_with([](auto a, auto b, auto c) { return a + b; },
+    //          IntVector({1, 2, 3}),
+    //          IntVector({1, 2, 3}));
+    // zip_with([](int a, int b, int c) { return a + b; },
+    //          IntVector({1, 2, 3}),
+    //          IntVector({1, 2, 3}));
 }
 
 TEST_CASE("pairs_test, zip_with_3")
 {
     using namespace fplus;
     const auto multiply = [](int x, int y, int z){ return x * y * z; };
-    const auto multiply_generic = [](auto x, auto y, auto z){ return x * y * z; };
-    const auto cubed = transform(cubeLambda, xs);
-    REQUIRE_EQ(zip_with_3(multiply, xs, xs, xs), cubed);
-    REQUIRE_EQ(zip_with_3(multiply_generic, xs, xs, xs), cubed);
+    REQUIRE_EQ(zip_with_3(multiply, xs, xs, xs), transform(cubeLambda, xs));
 }
 
 TEST_CASE("pairs_test, zip_with_defaults")
 {
     using namespace fplus;
     const auto add = [](int x, int y){ return x + y; };
-    const auto add_generic = [](auto x, auto y){ return x + y; };
     REQUIRE_EQ(zip_with_defaults(add, 6, 7, IntVector({1,2,3}), IntVector({1,2})), IntVector({2,4,10}));
     REQUIRE_EQ(zip_with_defaults(add, 6, 7, IntVector({1,2}), IntVector({1,2,3})), IntVector({2,4,9}));
-    REQUIRE_EQ(zip_with_defaults(add_generic, 6, 7, IntVector({1,2}), IntVector({1,2,3})), IntVector({2,4,9}));
 }
 
 TEST_CASE("pairs_test, zip")
@@ -75,9 +69,6 @@ TEST_CASE("pairs_test, pair functions")
     REQUIRE_EQ(swap_pairs_elems(intPairs), intPairsSwapped);
     REQUIRE_EQ(transform_fst(squareLambda, intPair), std::make_pair(4, 3));
     REQUIRE_EQ(transform_snd(squareLambda, intPair), std::make_pair(2, 9));
-    REQUIRE_EQ(transform_fst([](auto i) { return i * i; }, intPair), std::make_pair(4, 3));
-    REQUIRE_EQ(transform_snd([](auto i) { return i * i; }, intPair), std::make_pair(2, 9));
-    REQUIRE_EQ(transform_pair(squareLambda, squareLambda, intPair), std::make_pair(4, 9));
 
     typedef std::vector<std::pair<std::string, int>> StringIntPairs;
     StringIntPairs stringIntPairs = {{"a", 1}, {"a", 2}, {"b", 6}, {"a", 4}};
@@ -93,15 +84,6 @@ TEST_CASE("pairs_test, pair functions")
     };
     REQUIRE_EQ(transform_pair(double_int, double_int, IntPair({2, 3})),
         IntPair({4, 6}));
-
-    // Thanks to invoke, such code works.
-    // (I don't have a use case for it though)
-    dummy dumb;
-    dumb.i = 42;
-
-    auto p = std::make_pair(dumb, dumb);
-    auto result = transform_pair(&dummy::i, &dummy::i, p);
-    REQUIRE_EQ(result, std::make_pair(42, 42));
 }
 
 TEST_CASE("pairs_test, enumerate")
