@@ -25,9 +25,9 @@ namespace {
         return 3 * x;
     }
 
-    int as_string_length(int i)
+    std::size_t as_string_length(int i)
     {
-        return static_cast<int>(std::to_string(i).size());
+        return std::to_string(i).size();
     }
 
     const auto times_3_lambda = [](int x){return times_3(x);};
@@ -75,7 +75,7 @@ TEST_CASE("fwd_test, compose")
         bind_1st_of_2(transform<decltype(times_3), const std::vector<int>&, std::vector<int>>, times_3),
         bind_1st_of_2(drop_if<decltype(is_odd_int), const std::vector<int>&>, is_odd_int),
         bind_1st_of_2(transform<decltype(as_string_length_lambda), const std::vector<int>&>, as_string_length_lambda),
-        sum<std::vector<int>>);
+        sum<std::vector<std::size_t>>);
 
     const auto function_chain_new_style = fwd::compose(
         fwd::transform(times_3),

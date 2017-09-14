@@ -96,7 +96,6 @@ TEST_CASE("composition_test, compose")
     REQUIRE_EQ((compose(square, square, square)(2)), 256);
     REQUIRE_EQ((compose(square, square, square, square)(2)), 65536);
     REQUIRE_EQ((compose(square, square, square, square, square)(1)), 1);
-    REQUIRE_EQ((compose(std::multiplies<>{}, square)(4, 2)), 64);
 }
 
 TEST_CASE("composition_test, flip")

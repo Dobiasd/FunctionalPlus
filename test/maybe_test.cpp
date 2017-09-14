@@ -99,29 +99,23 @@ TEST_CASE("maybe_test, lift")
     using namespace fplus;
     auto x = just<int>(2);
     maybe<int> y = nothing<int>();
-    auto squareGeneric = [](auto n) { return n * n; };
-
     REQUIRE_EQ(lift_maybe(square<int>, x), just(4));
     REQUIRE_EQ(lift_maybe(square<int>, y), nothing<int>());
-    REQUIRE_EQ(lift_maybe(squareGeneric, x), just(4));
-    REQUIRE_EQ(lift_maybe(squareGeneric, y), nothing<int>());
     auto SquareAndSquare = compose(square<int>, square<int>);
     REQUIRE_EQ(lift_maybe(SquareAndSquare, x), just(16));
 
     REQUIRE_EQ(lift_maybe_def(3, square<int>, x), 4);
     REQUIRE_EQ(lift_maybe_def(3, square<int>, y), 3);
-    REQUIRE_EQ(lift_maybe_def(3, squareGeneric, x), 4);
-    REQUIRE_EQ(lift_maybe_def(3, squareGeneric, y), 3);
 
     REQUIRE_EQ(lift_maybe_2(std::plus<int>(), x, x), just(4));
     REQUIRE_EQ(lift_maybe_2(std::plus<int>(), x, y), y);
-    REQUIRE_EQ(lift_maybe_2(std::plus<>(), y, x), y);
-    REQUIRE_EQ(lift_maybe_2(std::plus<>(), y, y), y);
+    REQUIRE_EQ(lift_maybe_2(std::plus<int>(), y, x), y);
+    REQUIRE_EQ(lift_maybe_2(std::plus<int>(), y, y), y);
 
     REQUIRE_EQ(lift_maybe_2_def(3, std::plus<int>(), x, x), 4);
     REQUIRE_EQ(lift_maybe_2_def(3, std::plus<int>(), x, y), 3);
-    REQUIRE_EQ(lift_maybe_2_def(3, std::plus<>(), y, x), 3);
-    REQUIRE_EQ(lift_maybe_2_def(3, std::plus<>(), y, y), 3);
+    REQUIRE_EQ(lift_maybe_2_def(3, std::plus<int>(), y, x), 3);
+    REQUIRE_EQ(lift_maybe_2_def(3, std::plus<int>(), y, y), 3);
 }
 
 TEST_CASE("maybe_test, and_then")
@@ -129,7 +123,7 @@ TEST_CASE("maybe_test, and_then")
     using namespace fplus;
     REQUIRE_EQ(and_then_maybe(sqrtToMaybeInt, just(4)), just(2));
     REQUIRE_EQ(and_then_maybe(sqrtToMaybeInt, nothing<int>()), nothing<int>());
-    const auto string_to_maybe_int = [](const auto& str)
+    const auto string_to_maybe_int = [](const std::string& str) -> maybe<int>
     {
         if (str == "42") return just<int>(42);
         else return nothing<int>();
@@ -155,12 +149,6 @@ TEST_CASE("maybe_test, compose")
     auto JustInt = just<int>;
     auto IntToMaybeFloat = compose(JustInt, LiftedIntToFloat);
     auto IntToFloatAndSqrtAndSqrt = compose_maybe(IntToMaybeFloat, sqrtAndSqrt);
-
-    auto squareMaybe = [](auto n) { return just<decltype(n * n)>(n * n); };
-    auto plusMaybe = [](auto m, auto n) {
-        return just<decltype(m + n)>(m + n);
-    };
-    REQUIRE_EQ(compose_maybe(plusMaybe, squareMaybe)(2, 3), just(25));
     REQUIRE(is_in_interval(1.41f, 1.42f, unsafe_get_just<float>
             (IntToFloatAndSqrtAndSqrt(4))));
 }

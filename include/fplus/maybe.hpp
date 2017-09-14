@@ -8,9 +8,6 @@
 
 #include <fplus/function_traits.hpp>
 
-#include <fplus/detail/composition.hpp>
-#include <fplus/detail/asserts/maybe.hpp>
-
 #include <cassert>
 #include <exception>
 #include <functional>
@@ -18,6 +15,7 @@
 
 namespace fplus
 {
+
 // Can hold a value of type T or nothing.
 template <typename T>
 class maybe
@@ -72,19 +70,6 @@ private:
     bool is_present_;
     std::array<unsigned char, sizeof(T)> mem_;
 };
-
-namespace detail
-{
-template <typename>
-struct is_maybe : std::false_type
-{
-};
-
-template <typename T>
-struct is_maybe<maybe<T>> : std::true_type
-{
-};
-}
 
 // API search type: is_just : Maybe a -> Bool
 // fwd bind count: 0
@@ -216,14 +201,17 @@ bool operator != (const maybe<T>& x, const maybe<T>& y)
 // A function that for example was able to convert and int into a string,
 // now can convert a Maybe<int> into a Maybe<string>.
 // A nothing remains a nothing, regardless of the conversion.
-template <typename F, typename A>
-auto lift_maybe(F f, const maybe<A>& m)
+template <typename F,
+    typename A = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<
+            F>::template arg<0>::type>::type>::type,
+    typename B = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<F(A)>::type>::type>::type>
+maybe<B> lift_maybe(F f, const maybe<A>& m)
 {
-    (void)detail::trigger_static_asserts<detail::lift_maybe_tag, F, A>();
-
-    using B = std::decay_t<detail::invoke_result_t<F, A>>;
+    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     if (is_just(m))
-        return just<B>(detail::invoke(f, unsafe_get_just(m)));
+        return just<B>(f(unsafe_get_just(m)));
     return nothing<B>();
 }
 
@@ -234,18 +222,18 @@ auto lift_maybe(F f, const maybe<A>& m)
 // This function returns the default value if the Maybe value is nothing.
 // Otherwise it applies the function to the value inside the Just
 // of the Maybe value and returns the result of this application.
-template <typename F, typename A, typename Default>
-auto lift_maybe_def(const Default& def, F f, const maybe<A>& m)
+template <typename F,
+    typename A = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<
+            F>::template arg<0>::type>::type>::type,
+    typename B = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<F(A)>::type>::type>::type>
+B lift_maybe_def(const B& def, F f, const maybe<A>& m)
 {
-    (void)detail::trigger_static_asserts<detail::lift_maybe_tag, F, A>();
-
-    using B = std::decay_t<detail::invoke_result_t<F, A>>;
-    static_assert(
-        std::is_convertible<Default, B>::value,
-        "Default value must be convertible to Function's return type");
+    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     if (is_just(m))
-        return B(detail::invoke(f, unsafe_get_just(m)));
-    return B(def);
+        return f(unsafe_get_just(m));
+    return def;
 }
 
 // API search type: lift_maybe_2 : (((a, b) -> c), Maybe a, Maybe b) -> Maybe c
@@ -253,18 +241,21 @@ auto lift_maybe_def(const Default& def, F f, const maybe<A>& m)
 // Lifts a binary function into the maybe functor.
 // Applies the function only if both arguments are justs.
 // Otherwise returns a nothing.
-template <typename F, typename A, typename B>
-auto lift_maybe_2(F f, const maybe<A>& m_a, const maybe<B>& m_b)
+template <typename F,
+    typename A = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<
+            F>::template arg<0>::type>::type>::type,
+    typename B = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<
+            F>::template arg<1>::type>::type>::type,
+    typename C = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<F(A, B)>::type>::type>::type>
+maybe<C> lift_maybe_2(F f, const maybe<A>& m_a, const maybe<B>& m_b)
 {
-    (void)detail::trigger_static_asserts<detail::lift_maybe_tag, F, A, B>();
-
-    using FOut = std::decay_t<detail::invoke_result_t<F, A, B>>;
+    static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
     if (is_just(m_a) && is_just(m_b))
-    {
-        return just<FOut>(
-            detail::invoke(f, unsafe_get_just(m_a), unsafe_get_just(m_b)));
-    }
-    return nothing<FOut>();
+        return just<C>(f(unsafe_get_just(m_a), unsafe_get_just(m_b)));
+    return nothing<C>();
 }
 
 // API search type: lift_maybe_2_def : (c, ((a, b) -> c), Maybe a, Maybe b) -> c
@@ -275,21 +266,22 @@ auto lift_maybe_2(F f, const maybe<A>& m_a, const maybe<B>& m_b)
 // Maybe values is nothing.
 // Otherwise it applies the function to the two values inside the Justs
 // and returns the result of this application.
-template <typename F, typename A, typename B, typename Default>
-auto lift_maybe_2_def(const Default& def,
-                      F f,
-                      const maybe<A>& m_a,
-                      const maybe<B>& m_b)
+template <typename F,
+    typename A = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<
+            F>::template arg<0>::type>::type>::type,
+    typename B = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<
+            F>::template arg<1>::type>::type>::type,
+    typename C = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<F(A, B)>::type>::type>::type>
+C lift_maybe_2_def(const C& def, F f,
+    const maybe<A>& m_a, const maybe<B>& m_b)
 {
-    (void)detail::trigger_static_asserts<detail::lift_maybe_tag, F, A, B>();
-
-    using C = std::decay_t<detail::invoke_result_t<F, A, B>>;
-    static_assert(
-        std::is_convertible<Default, C>::value,
-        "Default value must be convertible to Function's return type");
+    static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
     if (is_just(m_a) && is_just(m_b))
-        return C(detail::invoke(f, unsafe_get_just(m_a), unsafe_get_just(m_b)));
-    return C(def);
+        return f(unsafe_get_just(m_a), unsafe_get_just(m_b));
+    return def;
 }
 
 // API search type: and_then_maybe : ((a -> Maybe b), (Maybe a)) -> Maybe b
@@ -298,53 +290,99 @@ auto lift_maybe_2_def(const Default& def,
 // Returns nothing if the maybe already is nothing.
 // Otherwise return the result of applying
 // the function to the just value of the maybe.
-template <typename T, typename F>
-auto and_then_maybe(F f, const maybe<T>& m)
+template <typename T, typename F,
+    typename FIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename FOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<F(FIn)>::type>::type>::type,
+    typename FOutJustT = typename FOut::type>
+maybe<FOutJustT> and_then_maybe(F f, const maybe<T>& m)
 {
-    (void)detail::trigger_static_asserts<detail::lift_maybe_tag, F, T>();
-    using FOut = std::decay_t<detail::invoke_result_t<F, T>>;
-    static_assert(detail::is_maybe<FOut>::value,
-                  "Function must return a maybe<> type");
+    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    static_assert(std::is_convertible<T, FIn>::value,
+        "Function parameter types do not match.");
     if (is_just(m))
-        return detail::invoke(f, unsafe_get_just(m));
+        return f(unsafe_get_just(m));
     else
-        return nothing<typename FOut::type>();
+        return nothing<FOutJustT>();
 }
 
 // API search type: compose_maybe : ((a -> Maybe b), (b -> Maybe c)) -> (a -> Maybe c)
-// Left-to-right Kleisli composition of monads.
-// Composes multiple callables taking a value and returning Maybe.
-// If the first callable returns a just, the value from the just
-// is extracted and shoved into the next callable.
-// If the first callable returns a nothing, it remains a nothing.
-// The first callable can take a variadic number of parameters.
-template <typename... Callables>
-auto compose_maybe(Callables&&... callables)
+// Left-to-right Kleisli composition of monads (2 functions).
+// Composes two functions taking a value and returning Maybe.
+// If the first function returns a just, the value from the just
+// is extracted and shoved into the second function.
+// If the first functions returns a nothing, it remains a nothing.
+template <typename F, typename G,
+    typename FIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<
+            F>::template arg<0>::type>::type>::type,
+    typename FOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<F(FIn)>::type>::type>::type,
+    typename GIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
+    typename GOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<G(GIn)>::type>::type>::type,
+    typename T = typename GOut::type>
+std::function<maybe<T>(const FIn&)> compose_maybe(F f, G g)
 {
-    auto bind_maybe = [](auto f, auto g) {
-        // next step would be to perfectly forward callables, as shown here:
-        // https://vittorioromeo.info/index/blog/capturing_perfectly_forwarded_objects_in_lambdas.html
-        return [f = std::move(f), g = std::move(g)](auto&&... args)
-        {
-            using FOut = std::decay_t<
-                detail::invoke_result_t<decltype(f), decltype(args)...>>;
-            static_assert(detail::is_maybe<FOut>::value,
-                          "Functions must return a maybe<> type");
-            using GOut = std::decay_t<
-                detail::invoke_result_t<decltype(g), typename FOut::type>>;
-            static_assert(detail::is_maybe<GOut>::value,
-                          "Functions must return a maybe<> type");
-
-            auto maybeB =
-                detail::invoke(f, std::forward<decltype(args)>(args)...);
-            if (is_just(maybeB))
-                return detail::invoke(g, unsafe_get_just(maybeB));
-            return GOut{};
-        };
+    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    static_assert(utils::function_traits<G>::arity == 1, "Wrong arity.");
+    static_assert(std::is_convertible<typename FOut::type,GIn>::value,
+        "Function parameter types do not match");
+    return [f, g](const FIn& x) -> maybe<T>
+    {
+        auto maybeB = f(x);
+        if (is_just(maybeB))
+            return g(unsafe_get_just(maybeB));
+        return nothing<T>();
     };
+}
 
-    return detail::compose_binary_lift(bind_maybe,
-                                       std::forward<Callables>(callables)...);
+// API search type: compose_maybe : ((a -> Maybe b), (b -> Maybe c), (c -> Maybe d)) -> (Maybe a -> Maybe d)
+// Left-to-right Kleisli composition of monads (3 functions).
+template <typename F, typename G, typename H,
+    typename FIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename FOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<F(FIn)>::type>::type>::type,
+    typename GIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
+    typename GOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<G(GIn)>::type>::type>::type,
+    typename HIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<H>::template arg<0>::type>::type>::type,
+    typename HOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<H(HIn)>::type>::type>::type,
+    typename T = typename HOut::type>
+std::function<maybe<T>(const FIn&)> compose_maybe(F f, G g, H h)
+{
+    return compose_maybe(compose_maybe(f, g), h);
+}
+
+// API search type: compose_maybe : ((a -> Maybe b), (b -> Maybe c), (c -> Maybe d), (d -> Maybe e)) -> (Maybe a -> Maybe e)
+// Left-to-right Kleisli composition of monads (4 functions).
+template <typename F, typename G, typename H, typename I,
+    typename FIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<F>::template arg<0>::type>::type>::type,
+    typename FOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<F(FIn)>::type>::type>::type,
+    typename GIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<G>::template arg<0>::type>::type>::type,
+    typename GOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<G(GIn)>::type>::type>::type,
+    typename HIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<H>::template arg<0>::type>::type>::type,
+    typename HOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<H(HIn)>::type>::type>::type,
+    typename IIn = typename std::remove_const<typename std::remove_reference<
+        typename utils::function_traits<I>::template arg<0>::type>::type>::type,
+    typename IOut = typename std::remove_const<typename std::remove_reference<
+        typename std::result_of<I(IIn)>::type>::type>::type,
+    typename T = typename IOut::type>
+std::function<maybe<T>(const FIn&)> compose_maybe(F f, G g, H h, I i)
+{
+    return compose_maybe(compose_maybe(compose_maybe(f, g), h), i);
 }
 
 // API search type: flatten_maybe : (Maybe (Maybe a)) -> Maybe a

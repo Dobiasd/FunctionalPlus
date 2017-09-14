@@ -61,17 +61,6 @@ struct negation : std::integral_constant<bool, !bool(B::value)>
 {
 };
 
-// non short-circuiting meta functions
-// source: https://stackoverflow.com/a/27221517/4116453
-template <bool...>
-struct bool_pack;
-
-template <bool... Values>
-struct all_of
-    : std::is_same<bool_pack<Values..., true>, bool_pack<true, Values...>>
-{
-};
-
 // there seems to be a bug in libc++'s std::is_function
 // provide our own (cppreference one)
 
