@@ -33,6 +33,7 @@ _add_test(pairs_test)
 _add_test(queue_test)
 _add_test(raii_test)
 _add_test(read_test)
+_add_test(readme_examples_test)
 _add_test(result_test)
 _add_test(replace_test)
 _add_test(search_test)
@@ -68,6 +69,7 @@ add_custom_target(unittest compare_test
                         COMMAND queue_test
                         COMMAND raii_test
                         COMMAND read_test
+                        COMMAND readme_examples_test
                         COMMAND result_test
                         COMMAND replace_test
                         COMMAND search_test
