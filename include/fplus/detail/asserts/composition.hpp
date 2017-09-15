@@ -36,6 +36,10 @@ struct bind_1st_and_2nd_of_3_tag
 {
 };
 
+struct forward_apply_tag
+{
+};
+
 template <typename F>
 struct function_traits_asserts<compose_tag, F>
 {
@@ -106,6 +110,13 @@ struct function_traits_asserts<bind_1st_and_2nd_of_3_tag, F, X, Y, Z>
                   "Function can not take second bound parameter type");
     static_assert(std::is_convertible<Z, FIn2>::value,
                   "Function can not take provided parameter type");
+};
+
+template <typename F, typename X>
+struct function_traits_asserts<forward_apply_tag, F, X>
+{
+    static_assert(utils::function_traits<F>::arity == 1,
+                  "Function must take one parameter.");
 };
 }
 }

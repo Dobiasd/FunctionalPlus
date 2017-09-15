@@ -102,12 +102,11 @@ auto flip(F f)
 // API search type: forward_apply : (a, (a -> b)) -> b
 // Forward application.
 // Returns the result of applying the function f to the value x.
-template <typename X, typename F,
-    typename FOut = typename std::result_of<F(X)>::type>
-FOut forward_apply(X&& x, F f)
+template <typename X, typename F>
+auto forward_apply(X&& x, F f)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    return f(std::forward<X>(x));
+    (void)detail::trigger_static_asserts<detail::forward_apply_tag, F, X>();
+    return detail::invoke(f, std::forward<X>(x));
 }
 
 // API search type: lazy : ((a -> b), a) -> (() -> b)
