@@ -197,8 +197,6 @@ TEST_CASE("composition_test, constructor_as_function")
 
 TEST_CASE("composition_test, constructor_as_function")
 {
-    // todo: re-enable
-    /*
     const std::vector<int> xs = {1,2,3,4,5};
     const auto ys = fplus::keep_if(
         fplus::compose(
@@ -206,5 +204,4 @@ TEST_CASE("composition_test, constructor_as_function")
             fplus::is_greater_or_equal_than(3)),
         xs);
     REQUIRE_EQ(ys.size(), 4);
-    */
 }

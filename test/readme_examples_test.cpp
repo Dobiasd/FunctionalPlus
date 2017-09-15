@@ -121,13 +121,7 @@ TEST_CASE("readme_examples_test, CollatzSequence")
     auto show_ints = fplus::bind_1st_of_2(fplus::show_cont_with<Ints>, " => ");
 
     // A composed function that calculates a Collatz sequence and shows it.
-
-    // todo: re-enable compose again
-    //auto show_collats_seq = fplus::compose(collatz_seq, show_ints);
-    auto show_collats_seq = [&](int x) -> std::string
-    {
-        return show_ints(collatz_seq(x));
-    };
+    auto show_collats_seq = fplus::compose(collatz_seq, show_ints);
 
     // Associate the numbers with the string representation of their sequences.
     auto collatz_dict = fplus::create_map_with(show_collats_seq, xs);
