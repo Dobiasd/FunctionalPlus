@@ -163,11 +163,15 @@ template <typename UnaryPredicate,
     typename X = typename utils::function_traits<UnaryPredicate>::template arg<0>::type>
 std::function<bool(X)> logical_not(UnaryPredicate f)
 {
-    static_assert(utils::function_traits<UnaryPredicate>::arity == 1,
-        "Wrong arity.");
-    typedef typename std::result_of<UnaryPredicate(X)>::type Res;
-    static_assert(std::is_same<Res, bool>::value, "Must return bool.");
-    return [f](X&& x) { return !f(std::forward<X>(x)); };
+    return [f](auto&& x) {
+        (void)detail::trigger_static_asserts<detail::logical_unary_op_tag,
+                                             UnaryPredicate,
+                                             decltype(x)>();
+        using Res = std::decay_t<detail::invoke_result_t<UnaryPredicate, decltype(x)>>;
+        static_assert(std::is_same<Res, bool>::value, "Must return bool.");
+
+        return !detail::invoke(f, std::forward<decltype(x)>(x));
+    };
 }
 
 // API search type: logical_or : ((a -> Bool), (a -> Bool)) -> (a -> Bool)

@@ -20,6 +20,10 @@ struct bind_1st_of_2_tag
 {
 };
 
+struct logical_unary_op_tag
+{
+};
+
 template <typename F>
 struct function_traits_asserts<compose_tag, F>
 {
@@ -38,6 +42,13 @@ struct function_traits_asserts<bind_1st_of_2_tag, F, X, Y>
                   "Function can not take bound parameter type");
     static_assert(std::is_convertible<Y, FIn1>::value,
                   "Function can not take provided parameter type");
+};
+
+template <typename F, typename X>
+struct function_traits_asserts<logical_unary_op_tag, F, X>
+{
+    static_assert(utils::function_traits<F>::arity == 1,
+                  "Function must take one parameter.");
 };
 }
 }

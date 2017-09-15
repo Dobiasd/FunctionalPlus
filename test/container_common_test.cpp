@@ -74,10 +74,10 @@ TEST_CASE("container_common_test, singleton_seq")
 TEST_CASE("container_common_test, filter")
 {
     using namespace fplus;
-    REQUIRE_EQ(keep_if(is_even_size_t, xs), IntVector({2,2,2}));
-    REQUIRE_EQ(drop_if(is_even_size_t, xs), IntVector({1,3}));
-    REQUIRE_EQ(keep_if(is_even_size_t, intList), IntList({ 2,2,2 }));
-    REQUIRE_EQ(drop_if(is_even_size_t, intList), IntList({ 1,3 }));
+    REQUIRE_EQ(keep_if(is_even_int, xs), IntVector({2,2,2}));
+    REQUIRE_EQ(drop_if(is_even_int, xs), IntVector({1,3}));
+    REQUIRE_EQ(keep_if(is_even_int, intList), IntList({ 2,2,2 }));
+    REQUIRE_EQ(drop_if(is_even_int, intList), IntList({ 1,3 }));
     REQUIRE_EQ(without(2, intList), IntList({ 1,3 }));
     REQUIRE_EQ(without_any(IntVector({2,3}), intList), IntList({ 1 }));
     auto sumis_even = [&](std::size_t x, int y)
