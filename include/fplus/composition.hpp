@@ -203,27 +203,14 @@ auto logical_and(UnaryPredicateF f, UnaryPredicateG g)
 // logical_xor(f, g) = \x -> f(x) xor g(x)
 // Combines to unary predicates into a single one
 // that holds true if exactly one of the original predicated is true.
-template <typename UnaryPredicateF, typename UnaryPredicateG,
-    typename X = typename utils::function_traits<UnaryPredicateF>::template arg<0>::type,
-    typename Y = typename utils::function_traits<UnaryPredicateG>::template arg<0>::type>
-std::function<bool(X)> logical_xor(UnaryPredicateF f, UnaryPredicateG g)
+template <typename UnaryPredicateF, typename UnaryPredicateG>
+auto logical_xor(UnaryPredicateF f, UnaryPredicateG g)
 {
-    static_assert(std::is_convertible<X, Y>::value,
-        "Parameter types do not match");
-    typedef typename std::result_of<UnaryPredicateF(X)>::type FRes;
-    typedef typename std::result_of<UnaryPredicateG(Y)>::type GRes;
-    static_assert(std::is_same<FRes, bool>::value, "Must return bool.");
-    static_assert(std::is_same<GRes, bool>::value, "Must return bool.");
-    static_assert(utils::function_traits<UnaryPredicateF>::arity == 1,
-        "Wrong arity.");
-    static_assert(utils::function_traits<UnaryPredicateG>::arity == 1,
-        "Wrong arity.");
-    return [f, g](X&& x)
-    {
-        auto fx = f(std::forward<X>(x));
-        auto gx = g(std::forward<X>(x));
-        return (fx && !gx) || (!fx && gx);
-    };
+  auto op = [](auto f1, auto f2, auto x) {
+    return detail::invoke(f1, x) != detail::invoke(f2, x);
+  };
+
+  return detail::logical_binary_op(op, f, g);
 }
 
 // API search type: memoize : (a -> b) -> (a -> b)
