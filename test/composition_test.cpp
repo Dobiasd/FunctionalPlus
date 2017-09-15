@@ -88,6 +88,8 @@ TEST_CASE("composition_test, parameter_binding")
     REQUIRE_EQ(bind_2nd_of_2([](auto x, auto y) { return x / y; }, 2)(6), 3);
 
     auto add3 = [](int x, int y, int z) { return x + y + z; };
+    REQUIRE_EQ(bind_1st_of_3(add3, 3)(30, 9), 42);
+    REQUIRE_EQ(bind_1st_of_3([](auto x, auto y, auto z){ return x + y + z; }, 3)(30, 9), 42);
     REQUIRE_EQ(bind_1st_and_2nd_of_3(add3, 3, 5)(7), 15);
 }
 
