@@ -51,6 +51,7 @@ TEST_CASE("composition_test, forward_apply")
 {
     using namespace fplus;
     REQUIRE_EQ(forward_apply(3, square<int>), 9);
+    REQUIRE_EQ(forward_apply(3, [](auto x) { return x * x; }), 9);
 }
 
 TEST_CASE("composition_test, lazy")
