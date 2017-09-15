@@ -40,6 +40,10 @@ struct forward_apply_tag
 {
 };
 
+struct lazy_tag
+{
+};
+
 template <typename F>
 struct function_traits_asserts<compose_tag, F>
 {
@@ -117,6 +121,13 @@ struct function_traits_asserts<forward_apply_tag, F, X>
 {
     static_assert(utils::function_traits<F>::arity == 1,
                   "Function must take one parameter.");
+};
+
+template <typename F, typename... Args>
+struct function_traits_asserts<lazy_tag, F, Args...>
+{
+    static_assert(utils::function_traits<F>::arity == sizeof...(Args),
+                  "Wrong arity.");
 };
 }
 }

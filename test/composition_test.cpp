@@ -59,6 +59,7 @@ TEST_CASE("composition_test, lazy")
     using namespace fplus;
     const auto square_3_stub = lazy(square<int>, 3);
     REQUIRE_EQ(square_3_stub(), 9);
+    REQUIRE_EQ(lazy([](auto x) { return x * x; }, 3)(), 9);
 }
 
 TEST_CASE("composition_test, fixed")
