@@ -134,5 +134,35 @@ template<class Ret, class... Args>
 struct is_function<Ret(Args...,...) volatile &&> : std::true_type {};
 template<class Ret, class... Args>
 struct is_function<Ret(Args...,...) const volatile &&> : std::true_type {};
+
+template <typename>
+struct reverse_integer_sequence_impl;
+
+template <typename T>
+struct reverse_integer_sequence_impl<std::integer_sequence<T>>
+    : std::integer_sequence<T>
+{
+};
+
+template <typename T, T... Ints>
+struct reverse_integer_sequence_impl<std::integer_sequence<T, Ints...>>
+    : std::integer_sequence<T, sizeof...(Ints) - 1 - Ints...>
+{
+};
+
+template <typename Seq>
+using reverse_integer_sequence = reverse_integer_sequence_impl<Seq>;
+
+template <typename T, T N>
+using make_reverse_integer_sequence =
+    reverse_integer_sequence<std::make_integer_sequence<T, N>>;
+
+template <std::size_t... Idx>
+using reverse_index_sequence =
+    reverse_integer_sequence<std::index_sequence<Idx...>>;
+
+template <std::size_t N>
+using make_reverse_index_sequence =
+    make_reverse_integer_sequence<std::size_t, N>;
 }
 }
