@@ -112,8 +112,10 @@ TEST_CASE("composition_test, flip")
 
     auto APlusTwoTimesB = [](int a, int b) { return a + 2 * b; };
     auto TwoTimesAPlusB = [](int a, int b) { return 2 * a + b; };
+    auto Minus = [](auto a, auto b, auto c) { return a - b - c; };
     REQUIRE_EQ((flip(APlusTwoTimesB)(2, 1)), 5);
     REQUIRE_EQ((flip(TwoTimesAPlusB)(1, 2)), 5);
+    REQUIRE_EQ((flip(Minus)(1, 2, 3)), 0);
 }
 
 TEST_CASE("composition_test, logical")
