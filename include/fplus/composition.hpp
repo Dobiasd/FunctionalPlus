@@ -7,6 +7,7 @@
 #pragma once
 
 #include <fplus/function_traits.hpp>
+#include <fplus/detail/apply.hpp>
 #include <fplus/detail/asserts/composition.hpp>
 #include <fplus/detail/composition.hpp>
 
@@ -86,15 +87,15 @@ auto bind_1st_and_2nd_of_3(F f, X x, Y y)
 
 // API search type: flip : (a -> b) -> (b -> a)
 // Flips the arguments of a binary function
-template <typename F,
-    typename A = typename utils::function_traits<F>::template arg<0>::type,
-    typename B = typename utils::function_traits<F>::template arg<1>::type,
-    typename C = typename std::result_of<F(A, B)>::type>
-std::function<C(B, A)> flip(F f)
+// Note: The callable can take a variadic number of arguments
+template <typename F>
+auto flip(F f)
 {
-    static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
-    return [f](B&& y, A&& x) {
-        return f(std::forward<A>(x), std::forward<B>(y));
+    return [f](auto&&... args) {
+        return detail::apply_impl(
+            f,
+            std::forward_as_tuple(std::forward<decltype(args)>(args)...),
+            detail::make_reverse_index_sequence<sizeof...(args)>{});
     };
 }
 
