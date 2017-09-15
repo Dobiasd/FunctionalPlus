@@ -79,12 +79,16 @@ before_install:
   - wget https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h
   - sudo mv ./doctest.h /usr/local/include/doctest.h
 
-  - if [ -n "$GCC_VERSION" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
-  - if [ -n "$CLANG_VERSION" ]; then export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"; fi
+  - if [ -n "$GCC_VERSION" ]; then export CXX="g++-${GCC_VERSION}"; fi
+  - if [ -n "$CLANG_VERSION" ]; then export CXX="clang++-${CLANG_VERSION}; fi
   - which $CXX
   - which $CC
   - $CXX --version
-  - if [ -n "$CLANG_VERSION" ]; then sudo PATH="${PATH}" CXX="$CXX" CC="$CC" ./install_libcxx.sh; fi
+  - |
+    if [ -n "$CLANG_VERSION" ]; then
+      sudo PATH="${PATH}" CXX="$CXX" CC="$CC"
+      ./install_libcxx.sh
+    fi
 
 install:
   - |
