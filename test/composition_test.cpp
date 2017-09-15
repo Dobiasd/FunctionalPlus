@@ -96,7 +96,6 @@ TEST_CASE("composition_test, compose")
     REQUIRE_EQ((compose(square, square, square)(2)), 256);
     REQUIRE_EQ((compose(square, square, square, square)(2)), 65536);
     REQUIRE_EQ((compose(square, square, square, square, square)(1)), 1);
-    REQUIRE_EQ((compose(std::multiplies<>{}, square)(4, 2)), 64);
 }
 
 TEST_CASE("composition_test, flip")
@@ -131,9 +130,7 @@ TEST_CASE("composition_test, apply_to_pair")
 {
     using namespace fplus;
     auto APlusTwoTimesB = [](int a, int b) { return a + 2 * b; };
-    auto APlusTwoTimesBGenericLambda = [](auto a, auto b) { return a + 2 * b; };
     REQUIRE_EQ((apply_to_pair(APlusTwoTimesB, std::make_pair(1, 2))), 5);
-    REQUIRE_EQ((apply_to_pair(APlusTwoTimesBGenericLambda, std::make_pair(1, 2))), 5);
     REQUIRE_EQ((apply_to_pair(APlusTwoTimesBFunc, std::make_pair(1, 2))), 5);
 }
 

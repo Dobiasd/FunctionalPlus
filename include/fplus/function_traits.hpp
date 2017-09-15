@@ -25,8 +25,6 @@ the standard library.
 #include <functional>
 #include <type_traits>
 
-#include <fplus/detail/meta.hpp>
-
 namespace fplus {
 
 // source: https://github.com/kennytm/utils
@@ -322,128 +320,6 @@ typename std::add_rvalue_reference<T>::type rt_val() noexcept
 #pragma GCC diagnostic pop
 #endif
 
-}
-}
-
-namespace fplus
-{
-namespace detail
-{
-template <typename>
-struct is_std_function : std::false_type
-{
-};
-
-template <typename T>
-struct is_std_function<std::function<T>> : std::true_type
-{
-};
-
-// Those traits are needed to not perform arity checks on a generic-lambd
-// or a templated/overloaded operator()
-template <typename T, typename = void>
-struct has_function_traits : std::false_type
-{
-};
-
-// There is a bug with GCC 7 when a std::function is passed as T.
-// It produces an ambiguous call between this one and the std::function overload
-// It's related to our void_t implementation, the C++14 compatible version does not
-// work, whereas the C++17 one does...
-//
-// So, help GCC a bit with is_std_function
-template <typename T>
-struct has_function_traits<T,
-                           std::enable_if_t<!is_std_function<T>::value,
-                                            void_t<decltype(&T::operator())>>>
-    : std::true_type
-{
-};
-
-template <typename ReturnType, typename... Args>
-struct has_function_traits<ReturnType(Args...)> : std::true_type
-{
-};
-
-template <typename ReturnType, typename... Args>
-struct has_function_traits<ReturnType (*)(Args...)> : std::true_type
-{
-};
-
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...)> : std::true_type
-{
-};
-
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...) const>
-    : std::true_type
-{
-};
-
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...) volatile>
-    : std::true_type
-{
-};
-
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...) const volatile>
-    : std::true_type
-{
-};
-
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...)&> : std::true_type
-{
-};
-
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...) const &>
-    : std::true_type
-{
-};
-
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...) volatile&>
-    : std::true_type
-{
-};
-
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...) const volatile&>
-    : std::true_type
-{
-};
-
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...) &&>
-    : std::true_type
-{
-};
-
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...) const &&>
-    : std::true_type
-{
-};
-
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...) volatile&&>
-    : std::true_type
-{
-};
-
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...) const volatile&&>
-    : std::true_type
-{
-};
-
-template <typename FunctionType>
-struct has_function_traits<std::function<FunctionType>> : std::true_type
-{
-};
 }
 }
 

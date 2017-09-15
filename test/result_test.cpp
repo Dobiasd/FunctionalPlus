@@ -48,6 +48,7 @@ TEST_CASE("result_test, ok_with_default")
     auto x = ok<int, std::string>(2);
     auto y = error<int, std::string>("an error");
     auto Or42 = bind_1st_of_2(ok_with_default<int, std::string>, 42);
+    auto SquareAndSquare = compose(square<int>, square<int>);
     REQUIRE_EQ(Or42(x), 2);
     REQUIRE_EQ(Or42(y), 42);
 }
@@ -61,11 +62,11 @@ TEST_CASE("result_test, and_then_result")
     REQUIRE_EQ(and_then_result(sqrtToResultInt, ok_4), ok_2);
     REQUIRE_EQ(and_then_result(sqrtToResultInt, an_error), an_error);
 
-    const auto string_to_result_int_string = [](const auto& str) {
-        if (str == "42")
-            return ok<int, std::string>(42);
-        else
-            return error<int, std::string>("not 42");
+    const auto string_to_result_int_string =
+        [](const std::string& str) -> result<int, std::string>
+    {
+        if (str == "42") return ok<int, std::string>(42);
+        else return error<int, std::string>("not 42");
     };
     REQUIRE_EQ(and_then_result(string_to_result_int_string, (ok<std::string, std::string>("3"))), (error<int, std::string>("not 42")));
     REQUIRE_EQ(and_then_result(string_to_result_int_string, (ok<std::string, std::string>("42"))), (ok<int, std::string>(42)));
@@ -96,16 +97,6 @@ TEST_CASE("result_test, compose_result")
     auto IntToFloatAndSqrtAndSqrt = compose_result(IntToResultFloat, sqrtAndSqrt);
     REQUIRE(is_in_interval(1.41f, 1.42f, unsafe_get_ok<float>
             (IntToFloatAndSqrtAndSqrt(4))));
-
-    // first callable can take a variadic number of arguments
-    auto sumToResult = [](auto a, auto b) {
-        return ok<decltype(a + b), std::string>(a + b);
-    };
-    auto squareSumResult = compose_result(sumToResult, [](auto sum) {
-        return ok<decltype(sum * sum), std::string>(sum * sum);
-    });
-
-    REQUIRE_EQ(squareSumResult(5, 5), (ok<int, std::string>(100)));
 }
 
 TEST_CASE("result_test, lift")
@@ -114,9 +105,7 @@ TEST_CASE("result_test, lift")
     auto x = ok<int, std::string>(2);
     auto y = error<int, std::string>("an error");
     auto SquareAndSquare = compose(square<int>, square<int>);
-    REQUIRE_EQ((lift_result(SquareAndSquare, x)), (ok<int, std::string>(16)));
-    REQUIRE_EQ((lift_result([](auto n) { return square(n) * square(n); }, x)),
-               (ok<int, std::string>(16)));
+    REQUIRE_EQ((lift_result<std::string>(SquareAndSquare, x)), (ok<int, std::string>(16)));
 }
 
 TEST_CASE("result_test, lift_both")
@@ -126,10 +115,6 @@ TEST_CASE("result_test, lift_both")
     const auto y = error<int, std::string>("an error");
     REQUIRE_EQ(lift_result_both(square<int>, to_upper_case<std::string>, x), (ok<int, std::string>(4)));
     REQUIRE_EQ(lift_result_both(square<int>, to_upper_case<std::string>, y), (error<int, std::string>("AN ERROR")));
-    REQUIRE_EQ(lift_result_both([](auto z) { return z * z; },
-                                [](auto z) { return to_upper_case(z); },
-                                y),
-               (error<int, std::string>("AN ERROR")));
 }
 
 TEST_CASE("result_test, unify_result")
@@ -143,14 +128,6 @@ TEST_CASE("result_test, unify_result")
     };
     REQUIRE_EQ(unify(x), "2");
     REQUIRE_EQ(unify(y), "AN ERROR");
-
-    const auto unifyGeneric = [](auto r) {
-        return unify_result(show<typename decltype(r)::ok_t>,
-                            to_upper_case<typename decltype(r)::error_t>,
-                            r);
-    };
-    REQUIRE_EQ(unifyGeneric(x), "2");
-    REQUIRE_EQ(unifyGeneric(y), "AN ERROR");
 }
 
 TEST_CASE("result_test, equality")
