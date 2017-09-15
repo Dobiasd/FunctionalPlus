@@ -85,5 +85,27 @@ auto compose_binary_lift(const BinaryLift& lifter, Callables&&... args)
         tup,
         lifter);
 }
+
+// concentrate asserts in this method. Lambda is provided by the library.
+template <typename Lambda, typename F, typename G>
+auto logical_binary_op(Lambda op, F f, G g)
+{
+    // Perfect-forwarding might move twice, if we add a requirement on F and G,
+    // that might not be an issue.
+    return [op, f, g](auto x) {
+        (void)detail::trigger_static_asserts<detail::logical_unary_op_tag,
+                                             F,
+                                             decltype(x)>();
+        (void)detail::trigger_static_asserts<detail::logical_unary_op_tag,
+                                             G,
+                                             decltype(x)>();
+        using FRes = std::decay_t<detail::invoke_result_t<F, decltype(x)>>;
+        using GRes = std::decay_t<detail::invoke_result_t<G, decltype(x)>>;
+        static_assert(std::is_same<FRes, bool>::value, "Must return bool.");
+        static_assert(std::is_same<GRes, bool>::value, "Must return bool.");
+
+        return op(f, g, x);
+    };
+}
 }
 }
