@@ -87,7 +87,7 @@ before_install:
   - |
     if [ -n "$CLANG_VERSION" ]; then
       sudo PATH="${PATH}" CXX="$CXX" CC="$CC"
-      ./install_libcxx.sh
+      sudo ./install_libcxx.sh
     fi
 
 install:
