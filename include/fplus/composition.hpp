@@ -113,13 +113,13 @@ auto forward_apply(X&& x, F f)
 // Lazy evaluation.
 // Returns a function evaluating f with the given arguments when called.
 // Also known as defer.
-template<typename F, typename... Args,
-    typename FOut = typename std::result_of<F(Args ...)>::type>
-std::function<FOut()> lazy(F f, Args ... args)
+// Note: f can take a variadic number of parameters
+template<typename F, typename... Args>
+auto lazy(F f, Args ... args)
 {
-    return [f, args...]() -> FOut
-    {
-        return f(args...);
+    return [f, args...] {
+        (void)detail::trigger_static_asserts<detail::lazy_tag, F, Args...>();
+        return detail::invoke(f, args...);
     };
 }
 
