@@ -37,7 +37,7 @@ matrix:
 
     - os: linux
       compiler: clang
-      env: 
+      env:
         - CC=clang-5.0
         - CXX=clang++-5.0
       addons:
@@ -47,7 +47,7 @@ matrix:
 
     - os: linux
       compiler: clang
-      env: 
+      env:
         - CC=clang-4.0
         - CXX=clang++-4.0
       addons:
@@ -57,7 +57,7 @@ matrix:
 
     - os: linux
       compiler: clang
-      env: 
+      env:
         - CC=clang-3.9
         - CXX=clang++-3.9
       addons:
@@ -67,7 +67,7 @@ matrix:
 
     - os: linux
       compiler: clang
-      env: 
+      env:
         - CC=clang-3.8
         - CXX=clang++-3.8
       addons:
@@ -76,6 +76,7 @@ matrix:
           packages: ['clang-3.8', 'g++-6']
 
 script:
+  - if [[ "$CXX" == clang* ]]; then export CXXFLAGS="-stdlib=libc++"; fi
   - mkdir -p build && cd build
   - cmake .. -DUNITTEST=ON && cmake --build . --target unittest --config Release -- -j4
 
