@@ -41,18 +41,16 @@ auto bind_1st_of_2(F f, T x)
 
 // API search type: bind_2nd_of_2 : (((a, b) -> c), b) -> (a -> c)
 // Bind second parameter of binary function.
-template <typename F, typename T,
-    typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
-    typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
-    typename FOut = typename std::result_of<F(FIn0, FIn1)>::type>
-std::function<FOut(FIn0)> bind_2nd_of_2(F f, T y)
+template <typename F, typename T>
+auto bind_2nd_of_2(F f, T y)
 {
-    static_assert(utils::function_traits<F>::arity == 2, "Wrong arity.");
-    static_assert(std::is_convertible<T, FIn1>::value,
-        "Function can not take bound parameter type.");
-    return [f, y]
-           (FIn0&& x)
-           { return f(std::forward<FIn0>(x), y); };
+    return [f, y](auto&& x) {
+        (void)detail::trigger_static_asserts<detail::bind_2nd_of_2_tag,
+                                             F,
+                                             decltype(x),
+                                             T>();
+        return detail::invoke(f, std::forward<decltype(x)>(x), y);
+    };
 }
 
 // API search type: bind_1st_of_3 : (((a, b, c) -> d), a) -> ((b, c) -> d)
@@ -159,9 +157,8 @@ auto compose(Fs&&... fs)
 // Converts a unary predicate p
 // into a new one, always returning the exact opposite of p.
 // logical_not(f) = \x -> !x
-template <typename UnaryPredicate,
-    typename X = typename utils::function_traits<UnaryPredicate>::template arg<0>::type>
-std::function<bool(X)> logical_not(UnaryPredicate f)
+template <typename UnaryPredicate>
+auto logical_not(UnaryPredicate f)
 {
     return [f](auto&& x) {
         (void)detail::trigger_static_asserts<detail::logical_unary_op_tag,
