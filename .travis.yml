@@ -5,61 +5,79 @@ sudo: required
 
 matrix:
     include:
-    - env: CXX=g++-7 CC=gcc-7
+    - os: linux
+      compiler: gcc
+      env:
+        - CC=gcc-7
+        - CXX=g++-7
       addons:
         apt:
-          packages:
-            - g++-7
-          sources: &sources
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.8
-            - llvm-toolchain-trusty
-            - llvm-toolchain-trusty-3.9
-            - llvm-toolchain-trusty-4.0
-            - llvm-toolchain-trusty-5.0
-    - env: CXX=g++-6 CC=gcc-6
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-7']
+
+    - os: linux
+      compiler: gcc
+      env:
+        - CC=gcc-6
+        - CXX=g++-6
       addons:
         apt:
-          packages:
-            - g++-6
-          sources: *sources
-    - env: CXX=g++-5 CC=gcc-5
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-6']
+
+    - os: linux
+      compiler: gcc
+      env:
+        - CC=gcc-5
+        - CXX=g++-5
       addons:
         apt:
-          packages:
-            - g++-5
-          sources: *sources
-    - env: CXX=clang++-5.0 CC=clang-5.0
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-5']
+
+    - os: linux
+      compiler: clang
+      env: 
+        - CC=clang-5.0
+        - CXX=clang++-5.0
       addons:
         apt:
-          packages:
-            - clang-5.0
-            - libc++-dev
-          sources: *sources
-    - env: CXX=clang++-4.0 CC=clang-4.0
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-5.0']
+          packages: ['clang-5.0', 'g++-6']
+
+    - os: linux
+      compiler: clang
+      env: 
+        - CC=clang-4.0
+        - CXX=clang++-4.0
       addons:
         apt:
-          packages:
-            - clang-4.0
-            - libc++-dev
-          sources: *sources
-    - env: CXX=clang++-3.9 CC=clang-3.9
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-4.0']
+          packages: ['clang-4.0', 'g++-6']
+
+    - os: linux
+      compiler: clang
+      env: 
+        - CC=clang-3.9
+        - CXX=clang++-3.9
       addons:
         apt:
-          packages:
-            - clang-3.9
-            - libc++-dev
-          sources: *sources
-    - env: CXX=clang++-3.8 CC=clang-3.8
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-3.9']
+          packages: ['clang-3.9', 'g++-6']
+
+    - os: linux
+      compiler: clang
+      env: 
+        - CC=clang-3.8
+        - CXX=clang++-3.8
       addons:
         apt:
-          packages:
-            - clang-3.8
-            - libc++-dev
-          sources: *sources
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-3.8']
+          packages: ['clang-3.8', 'g++-6']
 
 script:
-    - ./build_and_test.sh
+  - mkdir -p build && cd build
+  - cmake .. -DUNITTEST=ON && cmake --build . --target unittest --config Release -- -j4
 
 before_install:
     - ./before_install.sh
