@@ -55,19 +55,18 @@ auto bind_2nd_of_2(F f, T y)
 
 // API search type: bind_1st_of_3 : (((a, b, c) -> d), a) -> ((b, c) -> d)
 // Bind first parameter of ternary function.
-template <typename F, typename X,
-    typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
-    typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
-    typename FIn2 = typename utils::function_traits<F>::template arg<2>::type,
-    typename FOut = typename std::result_of<F(FIn0, FIn1)>::type>
-std::function<FOut(FIn1, FIn2)> bind_1st_of_3(F f, X x)
+template <typename F, typename X>
+auto bind_1st_of_3(F f, X x)
 {
-    static_assert(utils::function_traits<F>::arity == 3, "Wrong arity.");
-    static_assert(std::is_convertible<X, FIn0>::value,
-        "Function can not take bound parameter type.");
-    return [f, x]
-           (FIn1&& y, FIn2&& z)
-           { return f(x, std::forward<FIn1>(y), std::forward<FIn2>(z)); };
+    return [f, x](auto&& y, auto&& z) {
+        (void)detail::trigger_static_asserts<detail::bind_1st_of_3_tag,
+                                             F,
+                                             X,
+                                             decltype(y),
+                                             decltype(z)>();
+        return detail::invoke(
+            f, x, std::forward<decltype(y)>(y), std::forward<decltype(z)>(z));
+    };
 }
 
 // API search type: bind_1st_and_2nd_of_3 : (((a, b, c) -> d), a, b) -> (c -> d)
