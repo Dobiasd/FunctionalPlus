@@ -124,13 +124,12 @@ TEST_CASE("composition_test, logical")
 {
     using namespace fplus;
     auto is1 = [](int x) { return x == 1; };
-    auto is2 = [](int x) { return x == 2; };
+    auto is2 = [](auto x) { return x == 2; };
     REQUIRE_FALSE((logical_not(is1)(1)));
     REQUIRE((logical_not(is1)(2)));
 
     REQUIRE((logical_or(is1, is2)(1)));
     REQUIRE((logical_or(is1, is2)(2)));
-    REQUIRE_FALSE((logical_or([](auto x){ return x == 1; }, is2)(3)));
     REQUIRE_FALSE((logical_and(is1, is2)(1)));
     REQUIRE((logical_and([](auto x){ return x == 1; }, is1)(1)));
     REQUIRE_FALSE((logical_xor(is1, is1)(1)));
