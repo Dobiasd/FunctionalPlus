@@ -128,7 +128,7 @@ auto lazy(F f, Args ... args)
 // Returns a function returning x when called.
 // Like lazy with identity as f.
 template<typename T>
-std::function<T()> fixed(T x)
+auto fixed(T x)
 {
     return [x]() -> T
     {
