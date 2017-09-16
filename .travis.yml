@@ -75,13 +75,17 @@ matrix:
           sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-3.8']
           packages: ['clang-3.8', 'g++-6']
 
-before_install:
+install:
   - wget https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h
   - sudo mv ./doctest.h /usr/local/include/doctest.h
-  - if [ -n "$GCC_VERSION" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
-  - if [ -n "$CLANG_VERSION" ]; then export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"; fi
   - |
+    if [ -n "$GCC_VERSION" ]; then
+      export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"
+    fi
     if [ -n "$CLANG_VERSION" ]; then
+      export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"
+    fi
+    if [ "$LIBCXX" == "On" ]; then
       sudo apt-get purge cmake
       wget https://cmake.org/files/v3.9/cmake-3.9.1.tar.gz
       tar -xzf cmake-3.9.1.tar.gz
@@ -91,18 +95,12 @@ before_install:
       sudo make install
       cd ..
       cmake --version
-      sudo PATH="${PATH}" CXX="$CXX" CC="$CC"
+      sudo CXX="$CXX" CC="$CC"
       sudo ./install_libcxx.sh
-  - which $CXX
-  - which $CC
-  - $CXX --version
-
-install:
-  - |
-    if [ "$LIBCXX" == "On" ]; then
-      CXX_FLAGS="${CXX_FLAGS} -stdlib=libc++ -nostdinc++ -cxx-isystem /usr/include/c++/v1/ -Wno-unused-command-line-argument"
-      CXX_LINKER_FLAGS="${CXX_LINKER_FLAGS} -lc++abi"
+      export CXXFLAGS="-stdlib=libc++"
     fi
+  - which $CXX
+  - $CXX --version
 
 script:
   - mkdir -p build && cd build
