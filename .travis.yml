@@ -88,20 +88,7 @@ before_install:
   - wget https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h
   - sudo mv ./doctest.h /usr/local/include/doctest.h
 
-  - |
-    if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
-      if [ -z "$(ls -A ${DEPS_DIR}/cmake-${CMAKE_VERSION}/cached)" ]; then
-        CMAKE_URL="https://cmake.org/files/v3.9/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz"
-        mkdir -p ${DEPS_DIR}/cmake-${CMAKE_VERSION}
-        travis_retry wget --no-check-certificate --quiet -O - "${CMAKE_URL}" | tar --strip-components=1 -xz -C ${DEPS_DIR}/cmake-${CMAKE_VERSION}
-        touch ${DEPS_DIR}/cmake-${CMAKE_VERSION}/cached
-      else
-        echo "Using cached cmake version ${CMAKE_VERSION}."
-      fi
-      export PATH="${DEPS_DIR}/cmake-${CMAKE_VERSION}/bin:${PATH}"
-    else
-      if ! brew ls --version cmake &>/dev/null; then brew install cmake; fi
-    fi
+  - brew install cmake
 
   - if [ -n "$GCC_VERSION" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
   - if [ -n "$CLANG_VERSION" ]; then export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"; fi
