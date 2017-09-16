@@ -213,22 +213,23 @@ auto logical_xor(UnaryPredicateF f, UnaryPredicateG g)
 // unary function.
 // Returns a closure mutating an internally held dictionary
 // mapping input values to output values.
-template <typename F,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename MemoMap = std::unordered_map<
-        typename std::remove_reference<typename std::remove_const<FIn>::type>::type,
-        FOut>>
-std::function<FOut(FIn)> memoize(F f)
+template <typename F>
+auto memoize(F f)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
-    MemoMap storage;
-    return [=](FIn x) mutable -> FOut
-    {
+    return [f](auto x) mutable {
+        (void)detail::
+            trigger_static_asserts<detail::memoize_tag, F, decltype(x)>();
+
+        using X = decltype(x);
+        using FOut = detail::invoke_result_t<F, X>;
+        using MemoMap = std::map<detail::uncvref_t<X>, std::decay_t<FOut>>;
+
+        MemoMap storage;
+
         const auto it = storage.find(x);
         if (it == storage.end())
         {
-            return storage.insert(std::make_pair(x, f(x))).first->second;
+            return storage.emplace(x, detail::invoke(f, x)).first->second;
         }
         else
         {
@@ -288,23 +289,15 @@ std::function<FOut(FIn2)> memoize_recursive(F f)
 // binary function.
 // Returns a closure mutating an internally held dictionary
 // mapping input values to output values.
-template <typename F,
-    typename FIn1 = typename utils::function_traits<F>::template arg<0>::type,
-    typename FIn2 = typename utils::function_traits<F>::template arg<1>::type,
-    typename FOut = typename std::result_of<F(FIn1, FIn2)>::type,
-    typename ParamPair = std::pair<
-        typename std::remove_reference<typename std::remove_const<FIn1>::type>::type,
-        typename std::remove_reference<typename std::remove_const<FIn2>::type>::type>,
-    typename MemoMap = std::unordered_map<ParamPair, FOut>>
-std::function<FOut(FIn1, FIn2)> memoize_binary(F f)
+template <typename F>
+auto memoize_binary(F f)
 {
-    const auto unary_f = [f](const ParamPair& params) -> FOut
+    const auto unary_f = [f](const auto& params)
     {
-        return f(params.first, params.second);
+        return detail::invoke(f, params.first, params.second);
     };
-    auto unary_f_memoized = memoize<decltype(unary_f),
-        ParamPair, FOut, std::map<ParamPair, FOut>>(unary_f);
-    return [unary_f_memoized](FIn1 a, FIn2 b) mutable -> FOut
+    auto unary_f_memoized = memoize(unary_f);
+    return [unary_f_memoized](auto a, auto b) mutable
     {
         return unary_f_memoized(std::make_pair(a, b));
     };
