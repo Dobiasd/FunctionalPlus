@@ -44,6 +44,10 @@ struct lazy_tag
 {
 };
 
+struct memoize_tag
+{
+};
+
 template <typename F>
 struct function_traits_asserts<compose_tag, F>
 {
@@ -128,6 +132,13 @@ struct function_traits_asserts<lazy_tag, F, Args...>
 {
     static_assert(utils::function_traits<F>::arity == sizeof...(Args),
                   "Wrong arity.");
+};
+
+template <typename F, typename X>
+struct function_traits_asserts<memoize_tag, F, X>
+{
+    static_assert(utils::function_traits<F>::arity == 1,
+                  "Function must take one parameter.");
 };
 }
 }

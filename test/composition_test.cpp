@@ -175,7 +175,13 @@ TEST_CASE("composition_test, memoize")
     REQUIRE_EQ(f(3), 9);
     REQUIRE_EQ(f(3), 9);
 
-    const auto add = [](int x, int y) -> int
+    auto g = memoize([](auto x) { return x * x; });
+    REQUIRE_EQ(g(2), 4);
+    REQUIRE_EQ(g(2), 4);
+    REQUIRE_EQ(g(3), 9);
+    REQUIRE_EQ(g(3), 9);
+
+    const auto add = [](auto x, int y)
     {
         return x + y;
     };
