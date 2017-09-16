@@ -3,6 +3,15 @@ language: generic
 dist: trusty
 sudo: required
 
+env:
+  global:
+    - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
+    - CMAKE_VERSION="3.9.1"
+
+cache:
+  directories:
+    - ${DEPS_DIR}/cmake-${CMAKE_VERSION}
+
 matrix:
     include:
     - os: linux
