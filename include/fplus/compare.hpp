@@ -103,8 +103,7 @@ namespace internal
     template <typename UnaryPredicate, typename T>
     void check_unary_predicate_for_type()
     {
-        internal::check_unary_predicate_for_type_helper<UnaryPredicate, T>(
-            std::integral_constant<bool, check_callable<UnaryPredicate>::value>());
+        static_assert(detail::is_invocable<UnaryPredicate, T>::value, "");
     }
 
     template <typename F, typename T>

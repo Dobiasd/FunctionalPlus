@@ -11,6 +11,8 @@
 #include <fplus/maybe.hpp>
 #include <fplus/compare.hpp>
 
+#include <fplus/detail/asserts/container_common.hpp>
+
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -549,7 +551,9 @@ namespace internal
 template <typename Container, typename F>
 Container transform(internal::reuse_container_t, F f, Container&& xs)
 {
-    internal::check_arity<1, F>();
+    (void)detail::trigger_static_asserts<detail::transform_tag,
+                                         F,
+                                         decltype(*std::begin(xs))>();
     std::transform(std::begin(xs), std::end(xs), std::begin(xs), f);
     return std::forward<Container>(xs);
 }
@@ -558,7 +562,9 @@ template <typename ContainerOut, typename F, typename ContainerIn>
 ContainerOut transform(internal::create_new_container_t, F f,
     const ContainerIn& xs)
 {
-    internal::check_arity<1, F>();
+    (void)detail::trigger_static_asserts<detail::transform_tag,
+                                         F,
+                                         decltype(*std::begin(xs))>();
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
     auto it = internal::get_back_inserter<ContainerOut>(ys);
