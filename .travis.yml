@@ -75,7 +75,7 @@ matrix:
           sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-3.8']
           packages: ['clang-3.8', 'g++-6']
 
-install:
+before_install:
   - wget https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h
   - sudo mv ./doctest.h /usr/local/include/doctest.h
   - |
@@ -99,9 +99,12 @@ install:
       sudo ./install_libcxx.sh
       export CXXFLAGS="-stdlib=libc++"
     fi
-  - which $CXX
-  - $CXX --version
+
+install:
+  - mkdir -p build && cd build
+  - cmake .. -DUNITTEST=ON
 
 script:
-  - mkdir -p build && cd build
-  - cmake .. -DUNITTEST=ON && cmake --build . --target unittest --config Release -- -j4
+  - which $CXX
+  - $CXX --version
+  - cmake --build . --target unittest --config Release -- -j4
