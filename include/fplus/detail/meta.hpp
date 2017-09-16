@@ -22,6 +22,11 @@ struct make_void
 template <typename... Ts>
 using void_t = typename make_void<Ts...>::type;
 
+// Sometimes you don't want to use std::decay_t, and the temptation of short
+// writing can be huge...
+template <typename T>
+using uncvref_t = std::remove_cv_t<std::remove_reference_t<T>>;
+
 // disjunction/conjunction/negation, useful to short circuit SFINAE checks
 // Use with parsimony, MSVC 2015 can have ICEs quite easily
 template <typename...>
