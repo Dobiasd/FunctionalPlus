@@ -87,13 +87,14 @@ before_install:
     fi
     if [ "$LIBCXX" == "On" ]; then
       sudo apt-get purge cmake
-      wget https://cmake.org/files/v3.9/cmake-3.9.1.tar.gz
-      tar -xzf cmake-3.9.1.tar.gz
-      cd cmake-3.9.1/
-      ./bootstrap
-      make -j4
-      sudo make install
-      cd ..
+      #wget https://cmake.org/files/v3.9/cmake-3.9.1.tar.gz
+      #tar -xzf cmake-3.9.1.tar.gz
+      #cd cmake-3.9.1/
+      #./bootstrap
+      #make -j4
+      #sudo make install
+      #cd ..
+      sudo apt-get install cmake3
       cmake --version
       sudo CXX="$CXX" CC="$CC"
       sudo ./install_libcxx.sh
