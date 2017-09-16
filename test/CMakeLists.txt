@@ -12,6 +12,7 @@ macro(_add_test _NAME)
     target_link_libraries(${_NAME} ${CMAKE_THREAD_LIBS_INIT})
 endmacro()
 
+_add_test(show_versions)
 _add_test(compare_test)
 _add_test(composition_test)
 _add_test(container_common_test)
@@ -48,7 +49,8 @@ _add_test(udemy_course_test)
 _add_test(variant_test)
 
 
-add_custom_target(unittest compare_test
+add_custom_target(unittest show_versions
+                        COMMAND compare_test
                         COMMAND composition_test
                         COMMAND container_common_test
                         COMMAND container_properties_test
