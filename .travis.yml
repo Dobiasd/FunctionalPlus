@@ -90,7 +90,7 @@ before_install:
       sudo apt-get install cmake3
       cmake --version
       sudo CXX="$CXX" CC="$CC"
-      sudo ./install_libcxx.sh
+      sudo ./cmake/install_libcxx.sh
       export CXXFLAGS="-stdlib=libc++"
     fi
 
