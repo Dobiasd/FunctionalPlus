@@ -78,27 +78,24 @@ matrix:
 before_install:
   - wget https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h
   - sudo mv ./doctest.h /usr/local/include/doctest.h
-
-  - |
-    sudo apt-get purge cmake
-    wget https://cmake.org/files/v3.9/cmake-3.9.1.tar.gz
-    tar -xzf cmake-3.9.1.tar.gz
-    cd cmake-3.9.1/
-    ./bootstrap
-    make -j4
-    sudo make install
-    cd ..
-    cmake --version
   - if [ -n "$GCC_VERSION" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
   - if [ -n "$CLANG_VERSION" ]; then export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"; fi
+  - |
+    if [ -n "$CLANG_VERSION" ]; then
+      sudo apt-get purge cmake
+      wget https://cmake.org/files/v3.9/cmake-3.9.1.tar.gz
+      tar -xzf cmake-3.9.1.tar.gz
+      cd cmake-3.9.1/
+      ./bootstrap
+      make -j4
+      sudo make install
+      cd ..
+      cmake --version
+      sudo PATH="${PATH}" CXX="$CXX" CC="$CC"
+      sudo ./install_libcxx.sh
   - which $CXX
   - which $CC
   - $CXX --version
-  - |
-    if [ -n "$CLANG_VERSION" ]; then
-      sudo PATH="${PATH}" CXX="$CXX" CC="$CC"
-      sudo ./install_libcxx.sh
-    fi
 
 install:
   - |
