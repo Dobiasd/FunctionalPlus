@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# source: https://github.com/ericniebler/range-v3
+
 TRUNK_VERSION="5.0.0"
 
 set -e
