@@ -55,6 +55,14 @@ TEST_CASE("compare_test, is_less_or_equal")
     REQUIRE(is_less_or_equal_than(3)(2));
 }
 
+TEST_CASE("compare_test, is_less_by")
+{
+    using namespace fplus;
+    auto square = [](int x) { return x * x; };
+    auto squareGeneric = [](auto x) { return x * x; };
+    REQUIRE(is_less_by_and_by(squareGeneric, square)(2, -3));
+}
+
 TEST_CASE("compare_test, is_greater")
 {
     using namespace fplus;
