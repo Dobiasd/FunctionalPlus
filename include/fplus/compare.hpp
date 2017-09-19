@@ -353,11 +353,8 @@ auto is_not_equal_by_and_by(F f, G g)
 // f(x) != f(y)
 // Provides an unequality check of two values
 // after applying the same transformation function to both.
-template <typename F,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type>
-std::function<bool(const FIn& x, const FIn& y)>
-        is_not_equal_by(F f)
+template <typename F>
+auto is_not_equal_by(F f)
 {
     return is_not_equal_by_and_by(f, f);
 }
