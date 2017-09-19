@@ -363,13 +363,14 @@ auto is_not_equal_by(F f)
 // f(y) != x
 // Provides an unequality check to a fixed value
 // after applying a transformation function.
-template <typename F, typename X,
-    typename Y = typename utils::function_traits<F>::template arg<0>::type>
-std::function<bool(const Y&)> is_not_equal_by_to(F f, const X& x)
+template <typename F, typename X>
+auto is_not_equal_by_to(F f, const X& x)
 {
-    return [f, x](const Y& y)
-    {
-        return is_not_equal(f(y), x);
+    return [f, x](const auto& y) {
+        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+                                             F,
+                                             decltype(y)>();
+        return is_not_equal(detail::invoke(f, y), x);
     };
 }
 
