@@ -437,6 +437,10 @@ TEST_CASE("container_common_test, all_the_same")
 
     REQUIRE_EQ(all_the_same_on(int_mod_10, IntVector({3,13,33})), true);
     REQUIRE_EQ(all_the_same_on(int_mod_10, IntVector({3,14,33})), false);
+
+    struct foo {};
+    const auto foo_to_int = [](const foo&) -> int { return 3; };
+    REQUIRE(fplus::all_the_same_on(foo_to_int, std::vector<foo>({})));
 }
 
 TEST_CASE("container_common_test, all_unique")

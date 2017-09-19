@@ -1860,7 +1860,7 @@ bool all_the_same_on(F f, const Container& xs)
 {
     if (size_of_cont(xs) < 2)
         return true;
-    auto unaryPredicate = is_equal_by_to(f, xs.front());
+    auto unaryPredicate = is_equal_by_to(f, f(xs.front()));
     return all_by(unaryPredicate, xs);
 }
 
