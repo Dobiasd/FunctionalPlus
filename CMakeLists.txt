@@ -13,7 +13,6 @@ install(DIRECTORY include/fplus DESTINATION include)
 add_compile_options(-Wall
                     -Wextra
                     -pedantic
-                    -Wshadow
                     -Werror
                     -Weffc++
                     -Wconversion

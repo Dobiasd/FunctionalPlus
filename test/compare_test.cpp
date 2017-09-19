@@ -81,6 +81,7 @@ TEST_CASE("compare_test, is_equal_by")
     REQUIRE(is_equal_by_and_by([](auto i){ return i * i; }, square)(2, -2));
     REQUIRE(is_equal_by(square)(2, -2));
     REQUIRE(is_not_equal_by_and_by(square, square)(2, 3));
+    REQUIRE(is_equal_by([](auto i) { return i * i; })(2, -2));
     REQUIRE(is_not_equal_by(square)(2, 3));
 }
 
