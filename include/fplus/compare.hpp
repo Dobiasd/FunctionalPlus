@@ -331,18 +331,21 @@ bool is_not_equal(const T& x, const T& y)
 // f(x) != g(y)
 // Provides an unequality check of two values
 // after applying a transformation function eac
-template <typename F, typename G,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename GOut = typename std::result_of<G(GIn)>::type>
-std::function<bool(const FIn& x, const GIn& y)>
-        is_not_equal_by_and_by(F f, G g)
+template <typename F, typename G>
+auto is_not_equal_by_and_by(F f, G g)
 {
-    internal::check_compare_preprocessors_for_types<F, G, FIn, GIn>();
-    return [f, g](const FIn& x, const GIn& y)
-    {
-        return is_not_equal(f(x), g(y));
+    return [f, g](const auto& x, const auto& y) {
+        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+                                             F,
+                                             decltype(x)>();
+        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+                                             G,
+                                             decltype(y)>();
+        using FOut = std::decay_t<detail::invoke_result_t<F, decltype(x)>>;
+        using GOut = std::decay_t<detail::invoke_result_t<G, decltype(y)>>;
+        static_assert(std::is_same<FOut, GOut>::value,
+                      "Functions must return the same type.");
+        return is_not_equal(detail::invoke(f, x), detail::invoke(g, y));
     };
 }
 
