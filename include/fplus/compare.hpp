@@ -241,10 +241,10 @@ bool is_equal(const T& x, const T& y)
 
 // API search type: always : a -> (b -> a)
 // always(x)(y) == x
-template <typename Y, typename X>
-std::function<X(const Y&)> always(const X& x)
+template <typename X>
+auto always(const X& x)
 {
-    return [x](const Y&) { return x; };
+    return [x](const auto&) { return x; };
 }
 
 // API search type: always_arg_1_of_2 : (a, b) -> a
