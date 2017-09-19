@@ -312,7 +312,7 @@ auto is_equal_by_to(F f, const X& x)
 // curried version of is_equal
 // Provides an equality check with a fixed value.
 template <typename X>
-std::function<bool(const X&)> is_equal_to(const X& x)
+auto is_equal_to(const X& x)
 {
     return is_equal_by_to(identity<X>, x);
 }
