@@ -69,7 +69,7 @@ template <typename F, typename X,
     typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
     typename FIn2 = typename utils::function_traits<F>::template arg<2>::type,
-    typename FOut = typename std::result_of<F(FIn0, FIn1)>::type>
+    typename FOut = typename std::result_of<F(FIn0, FIn1, FIn2)>::type>
 std::function<FOut(FIn1, FIn2)> bind_1st_of_3(F f, X x)
 {
     static_assert(utils::function_traits<F>::arity == 3, "Wrong arity.");
