@@ -216,6 +216,7 @@ TEST_CASE("composition_test, get_mem")
     const std::vector<foo> foos = {{1},{2},{3}};
     const auto bars = fplus::transform(fplus_get_mem(bar_), foos);
     REQUIRE_EQ(bars, std::vector<int>({1,2,3}));
+    REQUIRE(fplus::all_unique_on(fplus_get_c_mem_t(foo, bar_, int), foos));
 }
 
 TEST_CASE("composition_test, get_ptr_mem")
@@ -231,4 +232,6 @@ TEST_CASE("composition_test, get_ptr_mem")
         std::make_shared<foo>(3)};
     const auto bars = fplus::transform(fplus_get_ptr_mem(bar_), foo_ptrs);
     REQUIRE_EQ(bars, std::vector<int>({1,2,3}));
+    //REQUIRE(fplus::all_unique_on(
+      //  fplus_get_c_ptr_mem_t(foo, bar_, int), foo_ptrs));
 }

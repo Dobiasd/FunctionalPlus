@@ -474,3 +474,15 @@ T constructor_as_function(Types ... args)
 { \
     return fplus_get_ptr_mem_x->fplus_get_ptr_mem_name; \
 }
+
+#define fplus_get_c_mem_t(fplus_get_c_mem_t_c, fplus_get_c_mem_t_name, fplus_get_c_mem_t_t) \
+[](const fplus_get_c_mem_t_c& fplus_get_c_mem_t_x) -> fplus_get_c_mem_t_t \
+{ \
+    return fplus_get_c_mem_t_x.fplus_get_c_mem_t_name; \
+}
+
+#define fplus_get_c_ptr_mem_t(fplus_get_c_ptr_mem_t_c, fplus_get_c_ptr_mem_name, fplus_get_c_ptr_mem_t) \
+[](const fplus_get_c_ptr_mem_t_c& fplus_get_c_ptr_mem_t_x) -> fplus_get_c_ptr_mem_t_t \
+{ \
+    return fplus_get_c_ptr_mem_t_x.fplus_get_c_ptr_mem_t_name; \
+}
