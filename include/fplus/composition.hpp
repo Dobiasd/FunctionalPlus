@@ -481,8 +481,32 @@ T constructor_as_function(Types ... args)
     return fplus_get_c_mem_t_x.fplus_get_c_mem_t_name; \
 }
 
-#define fplus_get_c_ptr_mem_t(fplus_get_c_ptr_mem_t_c, fplus_get_c_ptr_mem_name, fplus_get_c_ptr_mem_t) \
+#define fplus_get_c_ptr_mem_t(fplus_get_c_ptr_mem_t_c, fplus_get_c_ptr_mem_t_name, fplus_get_c_ptr_mem_t_t) \
 [](const fplus_get_c_ptr_mem_t_c& fplus_get_c_ptr_mem_t_x) -> fplus_get_c_ptr_mem_t_t \
 { \
-    return fplus_get_c_ptr_mem_t_x.fplus_get_c_ptr_mem_t_name; \
+    return fplus_get_c_ptr_mem_t_x->fplus_get_c_ptr_mem_t_name; \
+}
+
+#define fplus_mem_fn(fplus_mem_fn_name) \
+[](const auto& fplus_mem_fn_x) \
+{ \
+    return fplus_mem_fn_x.fplus_mem_fn_name(); \
+}
+
+#define fplus_ptr_mem_fn(fplus_ptr_mem_fn_name) \
+[](const auto& fplus_ptr_mem_fn_x) \
+{ \
+    return fplus_ptr_mem_fn_x->fplus_ptr_mem_fn_name(); \
+}
+
+#define fplus_c_mem_fn_t(fplus_c_mem_fn_t_c, fplus_c_mem_fn_t_name, fplus_c_mem_fn_t_t) \
+[](const fplus_c_mem_fn_t_c& fplus_c_mem_fn_t_x) -> fplus_c_mem_fn_t_t \
+{ \
+    return fplus_c_mem_fn_t_x.fplus_c_mem_fn_t_name(); \
+}
+
+#define fplus_c_ptr_mem_fn_t(fplus_c_ptr_mem_fn_t_c, fplus_c_ptr_mem_fn_t_name, fplus_c_ptr_mem_fn_t_t) \
+[](const fplus_c_ptr_mem_fn_t_c& fplus_c_ptr_mem_fn_t_x) -> fplus_c_ptr_mem_fn_t_t \
+{ \
+    return fplus_c_ptr_mem_fn_t_x->fplus_c_ptr_mem_fn_t_name(); \
 }
