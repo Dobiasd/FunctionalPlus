@@ -206,3 +206,29 @@ TEST_CASE("composition_test, constructor_as_function")
         xs);
     REQUIRE_EQ(ys.size(), 4);
 }
+
+TEST_CASE("composition_test, get_mem")
+{
+    struct foo
+    {
+        int bar_;
+    };
+    const std::vector<foo> foos = {{1},{2},{3}};
+    const auto bars = fplus::transform(fplus_get_mem(bar_), foos);
+    REQUIRE_EQ(bars, std::vector<int>({1,2,3}));
+}
+
+TEST_CASE("composition_test, get_ptr_mem")
+{
+    struct foo
+    {
+        foo(int bar) : bar_(bar) {}
+        int bar_;
+    };
+    const std::vector<std::shared_ptr<foo>> foo_ptrs = {
+        std::make_shared<foo>(1),
+        std::make_shared<foo>(2),
+        std::make_shared<foo>(3)};
+    const auto bars = fplus::transform(fplus_get_ptr_mem(bar_), foo_ptrs);
+    REQUIRE_EQ(bars, std::vector<int>({1,2,3}));
+}

@@ -461,4 +461,16 @@ T constructor_as_function(Types ... args)
     return T{args...};
 }
 
+#define fplus_get_mem(fplus_get_mem_name) \
+[](const auto& fplus_get_mem_x)\
+{ \
+    return fplus_get_mem_x.fplus_get_mem_name; \
+}
+
+#define fplus_get_ptr_mem(fplus_get_ptr_mem_name) \
+[](const auto& fplus_get_ptr_mem_x)\
+{ \
+    return fplus_get_ptr_mem_x->fplus_get_ptr_mem_name; \
+}
+
 } // namespace fplus
