@@ -71,14 +71,16 @@ auto transform_and_keep_justs(F f, const ContainerIn& xs)
 // API search type: transform_and_keep_oks : ((a -> Result b), [a]) -> [b]
 // fwd bind count: 1
 // Map function over values and drop resulting errors.
-template <typename F, typename ContainerIn,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename ContainerOut = typename internal::same_cont_new_t<
-        ContainerIn, typename FOut::ok_t>::type>
-ContainerOut transform_and_keep_oks(F f, const ContainerIn& xs)
+template <typename F, typename ContainerIn>
+auto transform_and_keep_oks(F f, const ContainerIn& xs)
 {
-    internal::check_arity<1, F>();
+    using X = typename ContainerIn::value_type;
+    (void)detail::
+        trigger_static_asserts<detail::transform_and_keep_oks_tag, F, X>();
+
+    using ContainerOut = typename internal::same_cont_new_t<
+        ContainerIn,
+        typename std::decay_t<detail::invoke_result_t<F, X>>::ok_t>::type;
     auto transformed = transform(f, xs);
     return oks<decltype(transformed), ContainerOut>(transformed);
 }

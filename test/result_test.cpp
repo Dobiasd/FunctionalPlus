@@ -11,17 +11,17 @@
 
 namespace {
 
-    fplus::result<float, std::string> sqrtToResult(float x)
+    auto sqrtToResult = [](auto x)
     {
         return x < 0.0f ? fplus::error<float>(std::string("no sqrt of negative numbers")) :
                 fplus::ok<float, std::string>(static_cast<float>(sqrt(static_cast<float>(x))));
-    }
+    };
 
-    fplus::result<int, std::string> sqrtToResultInt(int x)
+    auto sqrtToResultInt = [](auto x)
     {
         return x < 0 ? fplus::error<int>(std::string("no sqrt of negative numbers")) :
                 fplus::ok<int, std::string>(fplus::round(sqrt(static_cast<float>(x))));
-    }
+    };
 
     float IntToFloat(const int& x)
     {
