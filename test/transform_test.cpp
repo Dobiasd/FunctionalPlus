@@ -12,7 +12,7 @@ namespace {
     typedef std::vector<int> IntVector;
     typedef std::vector<IntVector> IntVectors;
     IntVector xs = {1,2,2,3,2};
-    auto squareLambda = [](int x) -> int { return x*x; };
+    auto squareLambda = [](auto x) { return x*x; };
     typedef std::array<int, 5> IntArray5;
     IntArray5 xs_array = {{1,2,2,3,2}};
     typedef std::list<int> IntList;
