@@ -277,22 +277,21 @@ auto apply_functions(const FunctionContainer& functions, const FIn& x)
 // API search type: apply_function_n_times : ((a -> a), Int, a) -> a
 // fwd bind count: 2
 // Applies a functional n times in a row.
-template <typename F,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type>
-FOut apply_function_n_times(const F f, std::size_t n, const FIn& x)
+template <typename F, typename FIn>
+auto apply_function_n_times(F f, std::size_t n, const FIn& x)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    (void)detail::trigger_static_asserts<detail::apply_functions_tag, F, FIn>();
+    using FOut = std::decay_t<detail::invoke_result_t<F, FIn>>;
     static_assert(std::is_same<FOut, FIn>::value,
-        "Input and output of F must be the same type.");
+                  "Input and output of F must be the same type.");
     if (n == 0)
     {
         return x;
     }
-    FOut y = f(x);
+    FOut y = detail::invoke(f, x);
     for (std::size_t i = 1; i < n; ++i)
     {
-        y = f(y);
+        y = detail::invoke(f, y);
     }
     return y;
 }
