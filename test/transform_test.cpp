@@ -146,8 +146,8 @@ TEST_CASE("transform_test, transform")
     std::vector<std::function<int(int)>> multiplyFunctions = {intTimes2, intTimes3};
     REQUIRE_EQ(apply_functions(multiplyFunctions, 4), IntVector({8, 12}));
 
-    auto showInt = [](int x) -> std::string { return fplus::show(x); };
-    std::vector<std::function<std::string(int)>> showIntFuncs = {showInt, showInt};
+    auto showInt = [](auto x) { return fplus::show(x); };
+    std::vector<decltype(showInt)> showIntFuncs = {showInt, showInt};
     REQUIRE_EQ(apply_functions(showIntFuncs, 4), std::vector<std::string>({"4", "4"}));
 
     REQUIRE_EQ(apply_function_n_times(squareLambda, 3, 2), 256);

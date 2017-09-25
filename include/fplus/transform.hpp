@@ -254,19 +254,22 @@ Container random_elements(
 // fwd bind count: 1
 // Applies a list of functions to a value.
 template <typename FunctionContainer,
-    typename F = typename FunctionContainer::value_type,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename ContainerOut = typename internal::same_cont_new_t<FunctionContainer, FOut, 0>::type>
-ContainerOut apply_functions(const FunctionContainer& functions, const FIn& x)
+          typename F = typename FunctionContainer::value_type,
+          typename FIn>
+auto apply_functions(const FunctionContainer& functions, const FIn& x)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    (void)detail::trigger_static_asserts<detail::apply_functions_tag, F, FIn>();
+
+    using FOut = std::decay_t<detail::invoke_result_t<F, FIn>>;
+    using ContainerOut =
+        typename internal::same_cont_new_t<FunctionContainer, FOut, 0>::type;
+
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(functions));
     auto it = internal::get_back_inserter<ContainerOut>(ys);
     for (const auto& f : functions)
     {
-        *it = f(x);
+        *it = detail::invoke(f, x);
     }
     return ys;
 }
