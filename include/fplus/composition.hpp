@@ -458,7 +458,7 @@ std::function<FOut(FIn1, FIn2)> memoize_binary(F f)
 template <typename T, class ... Types>
 T constructor_as_function(Types ... args)
 {
-    return T{args...};
+    return T(args...);
 }
 
 } // namespace fplus

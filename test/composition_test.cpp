@@ -194,6 +194,16 @@ TEST_CASE("composition_test, constructor_as_function")
     const auto my_foo = create_foo(1,2);
     REQUIRE_EQ(my_foo.a_, 1);
     REQUIRE_EQ(my_foo.b_, 4);
+
+    struct two_ctors
+    {
+        two_ctors(int, int) : val_(1) {}
+        two_ctors(std::initializer_list<int>) : val_(2) {}
+        int val_;
+    };
+    const two_ctors one_or_two =
+        constructor_as_function<two_ctors, int, int>(3, 4);
+    REQUIRE_EQ(one_or_two.val_, 1);
 }
 
 TEST_CASE("composition_test, constructor_as_function")
