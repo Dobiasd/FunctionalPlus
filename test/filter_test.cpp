@@ -10,20 +10,20 @@
 #include <vector>
 
 namespace {
-    bool is_even(int value)
+    auto is_even = [](auto value)
+    {
+        return (value % 2 == 0);
+    };
+
+    auto is_even_size_t = [](auto value)
     {
         return ( value % 2 == 0 );
-    }
+    };
 
-    bool is_even_size_t(std::size_t value)
-    {
-        return ( value % 2 == 0 );
-    }
-
-    bool accept_with_index(std::size_t index, int value)
+    auto accept_with_index = [](std::size_t index, auto value)
     {
         return ( index % 2 == 0 ) && ( value >= 10 );
-    }
+    };
 
     typedef std::vector<int> IntVector;
     typedef std::vector<IntVector> IntVectors;
@@ -227,20 +227,20 @@ TEST_CASE("filter_test, adjacent_keep_snd_if")
 TEST_CASE("filter_test, adjacent_drop_snd_if")
 {
     const std::vector<int> v = { 0, 1, 7, 8, 9, 0, 1 };
-    REQUIRE_EQ(fplus::adjacent_drop_snd_if(std::less<int>(), v), std::vector<int>({0,0}));
+    REQUIRE_EQ(fplus::adjacent_drop_snd_if(std::less<>(), v), std::vector<int>({0,0}));
     REQUIRE_EQ(fplus::adjacent_drop_snd_if(std::greater<int>(), v), std::vector<int>({0,1,7,8,9,1}));
 }
 
 TEST_CASE("filter_test, adjacent_drop_fst_if")
 {
     const std::vector<int> v = { 0, 1, 7, 8, 9, 0, 1 };
-    REQUIRE_EQ(fplus::adjacent_drop_fst_if(std::less<int>(), v), std::vector<int>({9,1}));
+    REQUIRE_EQ(fplus::adjacent_drop_fst_if(std::less<>(), v), std::vector<int>({9,1}));
     REQUIRE_EQ(fplus::adjacent_drop_fst_if(std::greater<int>(), v), std::vector<int>({0,1,7,8,0,1}));
 }
 
 TEST_CASE("filter_test, adjacent_keep_fst_if")
 {
     const std::vector<int> v = { 0, 1, 7, 8, 9, 0, 1 };
-    REQUIRE_EQ(fplus::adjacent_keep_fst_if(std::greater<int>(), v), std::vector<int>({9,1}));
+    REQUIRE_EQ(fplus::adjacent_keep_fst_if(std::greater<>(), v), std::vector<int>({9,1}));
     REQUIRE_EQ(fplus::adjacent_keep_fst_if(std::less<int>(), v), std::vector<int>({0,1,7,8,0,1}));
 }
