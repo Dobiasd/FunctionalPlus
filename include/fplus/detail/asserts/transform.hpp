@@ -16,8 +16,22 @@ struct transform_and_keep_justs_tag
 {
 };
 
+struct transform_and_keep_oks_tag
+{
+};
+
 template <typename F, typename X>
 struct function_traits_asserts<transform_and_keep_justs_tag, F, X> 
+{
+    static_assert(utils::function_traits<F>::arity == 1,
+                  "Function must take one parameter");
+    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+    static_assert(std::is_convertible<X, FIn0>::value,
+                  "Invalid parameter type.");
+};
+
+template <typename F, typename X>
+struct function_traits_asserts<transform_and_keep_oks_tag, F, X> 
 {
     static_assert(utils::function_traits<F>::arity == 1,
                   "Function must take one parameter");
