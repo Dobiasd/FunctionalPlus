@@ -122,11 +122,9 @@ template <typename Pred, typename Container>
 Container drop_if_with_idx(Pred pred, const Container& xs)
 {
     internal::check_index_with_type_predicate_for_container<Pred, Container>();
-    typedef typename utils::function_traits<Pred>::template arg<0>::type Idx;
-    typedef typename utils::function_traits<Pred>::template arg<1>::type T;
-    const auto inverse_pred = [pred](Idx idx, const T& x)
+    const auto inverse_pred = [pred](auto idx, const auto& x)
     {
-        return !pred(idx, x);
+        return !detail::invoke(pred, idx, x);
     };
     return keep_if_with_idx(inverse_pred, xs);
 }
@@ -484,7 +482,7 @@ Container adjacent_drop_snd_if(BinaryPredicate p, const Container& xs)
     typedef typename Container::value_type T;
     const auto not_p = [&p](const T& x, const T& y) -> bool
     {
-        return !p(x, y);
+        return !detail::invoke(p, x, y);
     };
     return adjacent_keep_snd_if(not_p, xs);
 }
@@ -503,7 +501,7 @@ Container adjacent_keep_fst_if(BinaryPredicate p, const Container& xs)
     typedef typename Container::value_type T;
     const auto not_p = [&p](const T& x, const T& y) -> bool
     {
-        return !p(x, y);
+        return !detail::invoke(p, x, y);
     };
     return adjacent_drop_fst_if(not_p, xs);
 }

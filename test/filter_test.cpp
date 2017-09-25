@@ -220,7 +220,7 @@ TEST_CASE("filter_test, trim_token")
 TEST_CASE("filter_test, adjacent_keep_snd_if")
 {
     const std::vector<int> v = { 0, 1, 7, 8, 9, 0, 1 };
-    REQUIRE_EQ(fplus::adjacent_keep_snd_if(std::greater<int>(), v), std::vector<int>({0,0}));
+    REQUIRE_EQ(fplus::adjacent_keep_snd_if(std::greater<>(), v), std::vector<int>({0,0}));
     REQUIRE_EQ(fplus::adjacent_keep_snd_if(std::less<int>(), v), std::vector<int>({0,1,7,8,9,1}));
 }
 
