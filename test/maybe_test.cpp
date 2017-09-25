@@ -11,17 +11,17 @@
 
 namespace {
 
-    fplus::maybe<float> sqrtToMaybe(float x)
+    auto sqrtToMaybe = [](auto x)
     {
         return x < 0.0f ? fplus::nothing<float>() :
                 fplus::just(static_cast<float>(sqrt(static_cast<float>(x))));
-    }
+    };
 
-    fplus::maybe<int> sqrtToMaybeInt(int x)
+    auto sqrtToMaybeInt = [](auto x)
     {
         return x < 0 ? fplus::nothing<int>() :
                 fplus::just(fplus::round(sqrt(static_cast<float>(x))));
-    }
+    };
 
     float IntToFloat(const int& x)
     {
