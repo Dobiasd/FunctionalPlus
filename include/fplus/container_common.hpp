@@ -892,11 +892,13 @@ typename Container::value_type reduce_1(F f, const Container& xs)
 // Takes the second argument and the last item of the list
 // and applies the function,
 // then it takes the penultimate item from the end and the result, and so on.
-template <typename F, typename Container,
-    typename Acc = typename utils::function_traits<F>::template arg<1>::type>
+template <typename F, typename Container, typename Acc>
 Acc fold_right(F f, const Acc& init, const Container& xs)
 {
-    return fold_left(flip(f), init, reverse(xs));
+    using std::rbegin;
+    using std::rend;
+
+    return std::accumulate(rbegin(xs), rend(xs), init, flip(f));
 }
 
 // API search type: fold_right_1 : (((a, a) -> a), [a]) -> a
@@ -908,7 +910,13 @@ template <typename F, typename Container,
     typename Acc = typename Container::value_type>
 Acc fold_right_1(F f, const Container& xs)
 {
-    return fold_left_1(flip(f), reverse(xs));
+    assert(!xs.empty());
+
+    using std::rbegin;
+    using std::rend;
+
+    const auto it = rbegin(xs);
+    return std::accumulate(std::next(it), rend(xs), *it, flip(f));
 }
 
 // API search type: scan_left : (((a, b) -> a), a, [b]) -> [a]

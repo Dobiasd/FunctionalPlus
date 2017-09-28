@@ -306,8 +306,8 @@ TEST_CASE("container_common_test, fold")
     using namespace fplus;
     REQUIRE_EQ(fold_left(std::plus<>(), 100, xs), 110);
     REQUIRE_EQ(fold_left_1(std::plus<>(), xs), 10);
-    REQUIRE_EQ(fold_right(std::plus<int>(), 100, xs), 110);
-    REQUIRE_EQ(fold_right_1(std::plus<int>(), xs), 10);
+    REQUIRE_EQ(fold_right(std::plus<>(), 100, xs), 110);
+    REQUIRE_EQ(fold_right_1(std::plus<>(), xs), 10);
     auto appendXToStrForFoldL = [](const std::string& str, int x) { return str + std::to_string(x); };
     auto appendXToStrForFoldR = [](int x, const std::string& str) { return str + std::to_string(x); };
     std::string emptyString;
