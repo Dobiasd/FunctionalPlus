@@ -12,6 +12,7 @@
 #include <fplus/compare.hpp>
 
 #include <fplus/detail/asserts/container_common.hpp>
+#include <fplus/detail/invoke.hpp>
 
 #include <algorithm>
 #include <cassert>
@@ -832,16 +833,13 @@ Container drop_while(UnaryPredicate pred, const Container& xs)
 // Takes the second argument and the first item of the list
 // and applies the function to them,
 // then feeds the function with this result and the second argument and so on.
-template <typename F, typename Container,
-    typename Acc = typename utils::function_traits<F>::template arg<0>::type>
+template <typename F, typename Container, typename Acc>
 Acc fold_left(F f, const Acc& init, const Container& xs)
 {
-    Acc acc = init;
-    for (const auto& x : xs)
-    {
-        acc = f(acc, x);
-    }
-    return acc;
+    using std::begin;
+    using std::end;
+
+    return std::accumulate(begin(xs), end(xs), init, f);
 }
 
 // API search type: reduce : (((a, a) -> a), a, [a]) -> a
