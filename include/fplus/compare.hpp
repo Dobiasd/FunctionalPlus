@@ -448,7 +448,7 @@ auto is_less_by_than(F f, const X& x)
 // curried version of is_less
 // Provides a less check with a fixed value.
 template <typename X>
-std::function<bool(const X&)> is_less_than(const X& x)
+auto is_less_than(const X& x)
 {
     return is_less_by_than(identity<X>, x);
 }
