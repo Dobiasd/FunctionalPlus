@@ -431,13 +431,15 @@ auto is_less_by(F f)
 // f(y) < x
 // Provides a less check to a fixed value
 // after applying a transformation function.
-template <typename F, typename X,
-    typename Y = typename utils::function_traits<F>::template arg<0>::type>
-std::function<bool(const Y&)> is_less_by_than(F f, const X& x)
+template <typename F, typename X>
+auto is_less_by_than(F f, const X& x)
 {
-    return [f, x](const Y& y)
+    return [f, x](const auto& y)
     {
-        return is_less(f(y), x);
+        (void)detail::trigger_static_asserts<detail::is_less_by_tag,
+                                             F,
+                                             decltype(y)>();
+        return is_less(detail::invoke(f, y), x);
     };
 }
 

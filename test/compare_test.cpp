@@ -20,6 +20,8 @@ namespace {
     {
         return x <= y;
     }
+
+    auto squareGeneric = [](auto x) { return x * x; };
 }
 
 
@@ -59,9 +61,16 @@ TEST_CASE("compare_test, is_less_by")
 {
     using namespace fplus;
     auto square = [](int x) { return x * x; };
-    auto squareGeneric = [](auto x) { return x * x; };
     REQUIRE(is_less_by_and_by(squareGeneric, square)(2, -3));
     REQUIRE(is_less_by(squareGeneric)(2, -3));
+}
+
+TEST_CASE("compare_test, is_less_by_than")
+{
+    using namespace fplus;
+    auto square = [](int x) { return x * x; };
+    REQUIRE(is_less_by_than(square, 5)(2));
+    REQUIRE(is_less_by_than(squareGeneric, 5)(2));
 }
 
 TEST_CASE("compare_test, is_greater")
@@ -86,7 +95,6 @@ TEST_CASE("compare_test, is_equal_by")
 {
     using namespace fplus;
     auto square = [](int x) { return x * x; };
-    auto squareGeneric = [](auto x) { return x * x; };
     REQUIRE(is_equal_by_and_by(square, square)(2, -2));
     REQUIRE(is_equal_by_and_by(squareGeneric, square)(2, -2));
     REQUIRE(is_equal_by(square)(2, -2));
