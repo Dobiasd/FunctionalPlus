@@ -7,6 +7,8 @@
 #pragma once
 
 #include <fplus/function_traits.hpp>
+#include <fplus/composition.hpp>
+
 #include <fplus/detail/invoke.hpp>
 #include <fplus/detail/compare.hpp>
 #include <fplus/detail/asserts/compare.hpp>
@@ -666,20 +668,10 @@ auto ord_to_eq(Compare comp)
 // Takes a less-than function and converts it
 // into an inequality check function
 // which considers to values as unequal if one is less than the other one.
-template <typename Compare,
-          typename FIn0 =
-              typename utils::function_traits<Compare>::template arg<0>::type,
-          typename FIn1 =
-              typename utils::function_traits<Compare>::template arg<1>::type,
-          typename FOut = typename std::result_of<Compare(FIn0, FIn1)>::type>
-std::function<FOut(FIn0, FIn1)> ord_to_not_eq(Compare comp)
+template <typename Compare>
+auto ord_to_not_eq(Compare comp)
 {
-    internal::check_arity<2, Compare>();
-    static_assert(std::is_same<FOut, bool>::value,
-                  "Function must return bool.");
-    static_assert(std::is_same<FIn0, FIn1>::value,
-                  "Function must take two equal types.");
-    return [comp](FIn0 x, FIn1 y) { return comp(x, y) || comp(y, x); };
+    return logical_not(ord_to_eq(comp));
 }
 
 // API search type: ord_eq_to_eq : ((a, a) -> Bool) -> ((a, a) -> Bool)
