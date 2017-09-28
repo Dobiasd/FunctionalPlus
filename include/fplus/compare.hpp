@@ -467,18 +467,15 @@ bool is_less_or_equal(const T& x, const T& y)
 // f(x) <= g(y)
 // Provides a less-or-equal check of two values
 // after applying a transformation function each.
-template <typename F, typename G,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename GOut = typename std::result_of<G(GIn)>::type>
-std::function<bool(const FIn& x, const GIn& y)>
-        is_less_or_equal_by_and_by(F f, G g)
+template <typename F, typename G>
+auto is_less_or_equal_by_and_by(F f, G g)
 {
-    internal::check_compare_preprocessors_for_types<F, G, FIn, GIn>();
-    return [f, g](const FIn& x, const GIn& y)
+    return [f, g](const auto& x, const auto& y)
     {
-        return is_less_or_equal(f(x), g(y));
+        using FIn = decltype(x);
+        using GIn = decltype(y);
+        internal::check_compare_preprocessors_for_types<F, G, FIn, GIn>();
+        return is_less_or_equal(detail::invoke(f, x), detail::invoke(g, y));
     };
 }
 
@@ -486,11 +483,8 @@ std::function<bool(const FIn& x, const GIn& y)>
 // f(x) <= f(y)
 // Provides a less-or-equal check of two values
 // after applying the same transformation function to both.
-template <typename F,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type>
-std::function<bool(const FIn& x, const FIn& y)>
-        is_less_or_equal_by(F f)
+template <typename F>
+auto is_less_or_equal_by(F f)
 {
     return is_less_or_equal_by_and_by(f, f);
 }
