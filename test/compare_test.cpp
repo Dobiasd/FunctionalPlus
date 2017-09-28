@@ -162,6 +162,7 @@ TEST_CASE("compare_test, ord_eq_to_eq")
     REQUIRE(ord_eq_to_eq(int_less_eq)(1, 2) == false);
     REQUIRE(ord_eq_to_eq(int_less_eq)(2, 2) == true);
     REQUIRE(ord_eq_to_eq(int_less_eq)(2, 1) == false);
+    REQUIRE(ord_eq_to_eq(generic_less_eq)(2, 1) == false);
 }
 
 TEST_CASE("compare_test, ord_eq_to_not_eq")
