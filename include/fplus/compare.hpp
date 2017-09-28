@@ -680,19 +680,14 @@ auto ord_to_not_eq(Compare comp)
 // Takes a less-or-equal-than function and converts it
 // into an equality check function
 // which considers to values as equal if a <= b and b <= a.
-template <typename Compare,
-    typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
-    typename FIn1 = typename utils::function_traits<Compare>::template arg<1>::type,
-    typename FOut = typename std::result_of<Compare(FIn0, FIn1)>::type>
-std::function<FOut(FIn0, FIn1)> ord_eq_to_eq(Compare comp)
+template <typename Compare>
+auto ord_eq_to_eq(Compare comp)
 {
-    internal::check_arity<2, Compare>();
-    static_assert(std::is_same<FOut, bool>::value, "Function must return bool.");
-    static_assert(std::is_same<FIn0, FIn1>::value,
-        "Function must take two equal types.");
-    return [comp]
-           (FIn0 x, FIn1 y)
-           { return comp(x, y) && comp(y, x); };
+    return [comp](auto x, decltype(x) y)
+    {
+        auto p = detail::ord_to_impl(comp)(x, y);
+        return p.first && p.second;
+    };
 }
 
 // API search type: ord_eq_to_not_eq : ((a, a) -> Bool) -> ((a, a) -> Bool)
