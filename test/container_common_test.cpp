@@ -325,8 +325,8 @@ TEST_CASE("container_common_test, reduce")
 TEST_CASE("container_common_test, scan")
 {
     using namespace fplus;
-    REQUIRE_EQ(scan_left(std::plus<int>(), 20, xs), IntVector({ 20,21,23,25,28,30 }));
-    REQUIRE_EQ(scan_right(std::plus<int>(), 20, xs), IntVector({ 30,29,27,25,22,20 }));
+    REQUIRE_EQ(scan_left(std::plus<>(), 20, xs), IntVector({ 20,21,23,25,28,30 }));
+    REQUIRE_EQ(scan_right(std::plus<>(), 20, xs), IntVector({ 30,29,27,25,22,20 }));
     REQUIRE_EQ(scan_left_1(std::plus<int>(), xs), IntVector({ 1,3,5,8,10 }));
     REQUIRE_EQ(scan_right_1(std::plus<int>(), xs), IntVector({ 10,9,7,5,2 }));
 }
