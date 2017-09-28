@@ -24,6 +24,10 @@ struct is_greater_by_tag
 {
 };
 
+struct ord_tag
+{
+};
+
 template <typename F, typename X>
 struct function_traits_asserts<is_equal_by_and_by_tag, F, X>
 {
@@ -52,6 +56,13 @@ struct function_traits_asserts<is_greater_by_tag, F, X>
     typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
     static_assert(std::is_convertible<X, FIn0>::value,
                   "Invalid argument type for function");
+};
+
+template <typename F, typename X, typename Y>
+struct function_traits_asserts<is_greater_by_tag, F, X, Y>
+{
+    static_assert(utils::function_traits<F>::arity == 2,
+                  "Function must take two parameters.");
 };
 }
 }
