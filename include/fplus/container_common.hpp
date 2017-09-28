@@ -866,14 +866,12 @@ template <typename F, typename Container,
 Acc fold_left_1(F f, const Container& xs)
 {
     assert(!xs.empty());
-    Acc acc = xs.front();
-    auto it = std::begin(xs);
-    ++it;
-    for (; it != std::end(xs); ++it)
-    {
-        acc = f(acc, *it);
-    }
-    return acc;
+
+    using std::begin;
+    using std::end;
+
+    const auto it = begin(xs);
+    return std::accumulate(std::next(it), end(xs), *it, f);
 }
 
 // API search type: reduce_1 : (((a, a) -> a), [a]) -> a
