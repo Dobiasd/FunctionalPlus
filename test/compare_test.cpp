@@ -61,6 +61,7 @@ TEST_CASE("compare_test, is_less_by")
     auto square = [](int x) { return x * x; };
     auto squareGeneric = [](auto x) { return x * x; };
     REQUIRE(is_less_by_and_by(squareGeneric, square)(2, -3));
+    REQUIRE(is_less_by(squareGeneric)(2, -3));
 }
 
 TEST_CASE("compare_test, is_greater")
