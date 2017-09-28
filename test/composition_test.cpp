@@ -127,6 +127,7 @@ TEST_CASE("composition_test, logical")
     auto is2 = [](auto x) { return x == 2; };
     REQUIRE_FALSE((logical_not(is1)(1)));
     REQUIRE((logical_not(is1)(2)));
+    REQUIRE((logical_not(std::equal_to<>{})(2, 3)));
 
     REQUIRE((logical_or(is1, is2)(1)));
     REQUIRE((logical_or(is1, is2)(2)));

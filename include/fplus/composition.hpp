@@ -149,20 +149,23 @@ auto compose(Fs&&... fs)
 }
 
 // API search type: logical_not : (a -> Bool) -> (a -> Bool)
-// Converts a unary predicate p
-// into a new one, always returning the exact opposite of p.
+// Converts a predicate p into a new one,
+// always returning the exact opposite of p.
 // logical_not(f) = \x -> !x
-template <typename UnaryPredicate>
-auto logical_not(UnaryPredicate f)
+// Note: F can take a variadic number of parameters.
+// Equivalent to std::not_fn (C++17)
+template <typename Predicate>
+auto logical_not(Predicate f)
 {
-    return [f](auto&& x) {
+    return [f](auto&&... args) {
         (void)detail::trigger_static_asserts<detail::logical_unary_op_tag,
-                                             UnaryPredicate,
-                                             decltype(x)>();
-        using Res = std::decay_t<detail::invoke_result_t<UnaryPredicate, decltype(x)>>;
-        static_assert(std::is_same<Res, bool>::value, "Must return bool.");
+                                             Predicate,
+                                             decltype(args)...>();
+        using Res =
+            std::decay_t<detail::invoke_result_t<Predicate, decltype(args)...>>;
+        static_assert(std::is_same<Res, bool>::value, "Function must return bool.");
 
-        return !detail::invoke(f, std::forward<decltype(x)>(x));
+        return !detail::invoke(f, std::forward<decltype(args)>(args)...);
     };
 }
 
