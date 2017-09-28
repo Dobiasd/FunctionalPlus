@@ -94,6 +94,7 @@ TEST_CASE("compare_test, is_greater_or_equal")
     REQUIRE_FALSE(is_greater_or_equal_than(3)(2));
     REQUIRE(is_greater_or_equal_by_and_by(squareGeneric, squareGeneric)(3, -3));
     REQUIRE(is_greater_or_equal_by(squareGeneric)(3, -3));
+    REQUIRE(is_greater_or_equal_by_than(squareGeneric, 3)(-3));
 }
 
 TEST_CASE("compare_test, is_equal_by")

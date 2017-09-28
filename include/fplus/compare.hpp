@@ -614,13 +614,13 @@ auto is_greater_or_equal_by(F f)
 // f(y) >= x
 // Provides a greater-or-equal check to a fixed value
 // after applying a transformation function.
-template <typename F, typename X,
-    typename Y = typename utils::function_traits<F>::template arg<0>::type>
-std::function<bool(const Y&)> is_greater_or_equal_by_than(F f, const X& x)
+template <typename F, typename X>
+auto is_greater_or_equal_by_than(F f, const X& x)
 {
-    return [f, x](const Y& y)
+    return [f, x](const auto& y)
     {
-        return is_greater_or_equal(f(y), x);
+        (void)detail::trigger_static_asserts<detail::is_greater_by_tag, F, decltype(y)>();
+        return is_greater_or_equal(detail::invoke(f, y), x);
     };
 }
 
