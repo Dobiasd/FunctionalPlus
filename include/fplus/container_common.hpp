@@ -12,6 +12,7 @@
 #include <fplus/compare.hpp>
 
 #include <fplus/detail/asserts/container_common.hpp>
+#include <fplus/detail/meta.hpp>
 #include <fplus/detail/invoke.hpp>
 #include <fplus/detail/container_common.hpp>
 
@@ -951,26 +952,28 @@ auto scan_left(F f, const Acc& init, const ContainerIn& xs)
 // then feeds the function with this result and the third argument and so on.
 // It returns the list of intermediate and final results.
 // xs must be non-empty.
-template <typename F, typename ContainerIn,
-    typename Acc = typename ContainerIn::value_type,
-    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, Acc, 0>::type>
-ContainerOut scan_left_1(F f, const ContainerIn& xs)
+template <typename F, typename ContainerIn>
+auto scan_left_1(F f, const ContainerIn& xs)
 {
     assert(!xs.empty());
+
+    using std::begin;
+    using std::end;
+
+    const auto beginIt = begin(xs);
+
+    using ContainerOut = typename internal::same_cont_new_t<
+        ContainerIn,
+        detail::uncvref_t<decltype(*beginIt)>,
+        0>::type;
+
     ContainerOut result;
     internal::prepare_container(result, size_of_cont(xs));
-    auto itOut = internal::get_back_inserter(result);
-
-    Acc acc = xs.front();
-    *itOut = acc;
-
-    auto it = std::begin(xs);
-    ++it;
-    for (; it != std::end(xs); ++it)
-    {
-        acc = f(acc, *it);
-        *itOut = acc;
-    }
+    detail::scan_impl(f,
+                      *beginIt,
+                      internal::get_back_inserter(result),
+                      std::next(beginIt),
+                      end(xs));
     return result;
 }
 
