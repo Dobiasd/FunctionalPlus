@@ -21,6 +21,14 @@ namespace {
         return x <= y;
     }
 
+    auto generic_less = [](auto x, auto y) {
+      return x < y;
+    };
+
+    auto generic_less_eq = [](auto x, auto y) {
+      return x <= y;
+    };
+
     auto squareGeneric = [](auto x) { return x * x; };
 }
 
@@ -136,6 +144,7 @@ TEST_CASE("compare_test, ord_to_eq")
     REQUIRE(ord_to_eq(int_less)(1, 2) == false);
     REQUIRE(ord_to_eq(int_less)(2, 2) == true);
     REQUIRE(ord_to_eq(int_less)(2, 1) == false);
+    REQUIRE(ord_to_eq(generic_less)(2, 1) == false);
 }
 
 TEST_CASE("compare_test, ord_to_not_eq")
