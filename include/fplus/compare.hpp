@@ -509,7 +509,7 @@ auto is_less_or_equal_by_than(F f, const X& x)
 // curried version of is_less_or_equal
 // Provides a less-or-equal check with a fixed value
 template <typename X>
-std::function<bool(const X&)> is_less_or_equal_than(const X& x)
+auto is_less_or_equal_than(const X& x)
 {
     return is_less_or_equal_by_than(identity<X>, x);
 }
