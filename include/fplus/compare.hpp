@@ -555,11 +555,10 @@ auto is_greater_by(F f)
 // f(y) > x
 // Provides a greater check to a fixed value
 // after applying a transformation function.
-template <typename F, typename X,
-    typename Y = typename utils::function_traits<F>::template arg<0>::type>
-std::function<bool(const Y&)> is_greater_by_than(F f, const X& x)
+template <typename F, typename X>
+auto is_greater_by_than(F f, const X& x)
 {
-    return [f, x](const Y& y)
+    return [f, x](const auto& y)
     {
         return is_greater(f(y), x);
     };
@@ -589,18 +588,15 @@ bool is_greater_or_equal(const T& x, const T& y)
 // f(x) >= g(y)
 // Provides a greater-or-equal check of two values
 // after applying a transformation function each.
-template <typename F, typename G,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename GOut = typename std::result_of<G(GIn)>::type>
-std::function<bool(const FIn& x, const GIn& y)>
-        is_greater_or_equal_by_and_by(F f, G g)
+template <typename F, typename G>
+auto is_greater_or_equal_by_and_by(F f, G g)
 {
-    internal::check_compare_preprocessors_for_types<F, G, FIn, GIn>();
-    return [f, g](const FIn& x, const GIn& y)
+    return [f, g](const auto& x, const auto& y)
     {
-        return is_greater_or_equal(f(x), g(y));
+        using FIn = decltype(x);
+        using GIn = decltype(y);
+        internal::check_compare_preprocessors_for_types<F, G, FIn, GIn>();
+        return is_greater_or_equal(detail::invoke(f, x), detail::invoke(g, y));
     };
 }
 
