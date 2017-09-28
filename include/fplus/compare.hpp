@@ -569,7 +569,7 @@ auto is_greater_by_than(F f, const X& x)
 // curried version of is_greater
 // Provides a greater check with a fixed value.
 template <typename X>
-std::function<bool(const X&)> is_greater_than(const X& x)
+auto is_greater_than(const X& x)
 {
     return is_greater_by_than(identity<X>, x);
 }
