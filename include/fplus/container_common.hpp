@@ -13,6 +13,7 @@
 
 #include <fplus/detail/asserts/container_common.hpp>
 #include <fplus/detail/invoke.hpp>
+#include <fplus/detail/container_common.hpp>
 
 #include <algorithm>
 #include <cassert>
@@ -926,21 +927,20 @@ Acc fold_right_1(F f, const Container& xs)
 // and applies the function to them,
 // then feeds the function with this result and the second argument and so on.
 // It returns the list of intermediate and final results.
-template <typename F, typename ContainerIn,
-    typename Acc = typename utils::function_traits<F>::template arg<0>::type,
-    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, Acc, 1>::type>
-ContainerOut scan_left(F f, const Acc& init, const ContainerIn& xs)
+template <typename F, typename ContainerIn, typename Acc>
+auto scan_left(F f, const Acc& init, const ContainerIn& xs)
 {
+    using ContainerOut =
+        typename internal::same_cont_new_t<ContainerIn, Acc, 1>::type;
+
     ContainerOut result;
     internal::prepare_container(result, size_of_cont(xs) + 1);
-    auto itOut = internal::get_back_inserter(result);
-    Acc acc = init;
-    *itOut = acc;
-    for (const auto& x : xs)
-    {
-        acc = f(acc, x);
-        *itOut = acc;
-    }
+
+    using std::begin;
+    using std::end;
+
+    detail::scan_impl(
+        f, init, internal::get_back_inserter(result), begin(xs), end(xs));
     return result;
 }
 
