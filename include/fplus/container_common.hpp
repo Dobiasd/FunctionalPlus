@@ -1270,24 +1270,24 @@ namespace internal
     // workarounds for clang bug 24115
     // (std::sort and std::unique with std::function as comp)
     // https://llvm.org/bugs/show_bug.cgi?id=24115
-    template <typename F,
-        typename FIn = typename utils::function_traits<F>::template arg<0>::type>
+    template <typename F>
     struct is_less_by_struct
     {
         is_less_by_struct(F f) : f_(f) {};
-        bool operator()(const FIn& x, const FIn& y)
+        template <typename T>
+        bool operator()(const T& x, const T& y)
         {
             return f_(x) < f_(y);
         }
     private:
         F f_;
     };
-    template <typename F,
-        typename FIn = typename utils::function_traits<F>::template arg<0>::type>
+    template <typename F>
     struct is_equal_by_struct
     {
         is_equal_by_struct(F f) : f_(f) {};
-        bool operator()(const FIn& x, const FIn& y)
+        template <typename T>
+        bool operator()(const T& x, const T& y)
         {
             return f_(x) == f_(y);
         }
