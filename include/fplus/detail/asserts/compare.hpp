@@ -20,6 +20,10 @@ struct is_less_by_tag
 {
 };
 
+struct is_greater_by_tag
+{
+};
+
 template <typename F, typename X>
 struct function_traits_asserts<is_equal_by_and_by_tag, F, X>
 {
@@ -32,6 +36,16 @@ struct function_traits_asserts<is_equal_by_and_by_tag, F, X>
 
 template <typename F, typename X>
 struct function_traits_asserts<is_less_by_tag, F, X>
+{
+    static_assert(utils::function_traits<F>::arity == 1,
+                  "Function must take one parameter.");
+    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+    static_assert(std::is_convertible<X, FIn0>::value,
+                  "Invalid argument type for function");
+};
+
+template <typename F, typename X>
+struct function_traits_asserts<is_greater_by_tag, F, X>
 {
     static_assert(utils::function_traits<F>::arity == 1,
                   "Function must take one parameter.");
