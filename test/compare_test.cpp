@@ -56,6 +56,7 @@ TEST_CASE("compare_test, is_less_or_equal")
     REQUIRE_FALSE(is_less_or_equal(3, 2));
     REQUIRE(is_less_or_equal_than(3)(2));
     REQUIRE(is_less_or_equal_by_and_by(squareGeneric, squareGeneric)(2, 2));
+    REQUIRE(is_less_or_equal_by_than(squareGeneric, 5)(2));
 }
 
 TEST_CASE("compare_test, is_less_by")
