@@ -57,7 +57,8 @@ TEST_CASE("container_common_test, group")
     typedef std::vector<std::pair<int, std::vector<int>>> LabeledGroups;
     REQUIRE_EQ(group(intList), intLists);
     REQUIRE_EQ(group(xs), IntVectors({IntVector({1}),IntVector({2,2}),IntVector({3}),IntVector({2})}));
-    REQUIRE_EQ(group_on(int_mod_10, IntVector({12,22,34})), IntVectors({IntVector({12,22}),IntVector({34})}));
+    REQUIRE_EQ(group_on([](auto x) { return x % 10; }, IntVector({12,22,34})), IntVectors({IntVector({12,22}),IntVector({34})}));
+    REQUIRE_EQ(group_on_labeled(int_mod_10, IntVector({12,22,34})), LabeledGroups({{2, IntVector({12,22})}, {4, IntVector({34})}}));
     REQUIRE_EQ(group_on_labeled(int_mod_10, IntVector({12,22,34})), LabeledGroups({{2, IntVector({12,22})}, {4, IntVector({34})}}));
     REQUIRE_EQ(group_globally(xs), IntVectors({IntVector({1}),IntVector({2,2,2}),IntVector({3})}));
     REQUIRE_EQ(group_globally_on(int_mod_10, IntVector({12,34,22})), IntVectors({IntVector({12,22}),IntVector({34})}));
