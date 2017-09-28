@@ -304,7 +304,7 @@ TEST_CASE("container_common_test, intersperse")
 TEST_CASE("container_common_test, fold")
 {
     using namespace fplus;
-    REQUIRE_EQ(fold_left(std::plus<int>(), 100, xs), 110);
+    REQUIRE_EQ(fold_left(std::plus<>(), 100, xs), 110);
     REQUIRE_EQ(fold_left_1(std::plus<int>(), xs), 10);
     REQUIRE_EQ(fold_right(std::plus<int>(), 100, xs), 110);
     REQUIRE_EQ(fold_right_1(std::plus<int>(), xs), 10);
