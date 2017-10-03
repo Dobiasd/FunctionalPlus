@@ -78,7 +78,10 @@ ContainerOut group_on(F f, const ContainerIn& xs)
 template <typename F, typename ContainerIn>
 auto group_on_labeled(F f, const ContainerIn& xs)
 {
-    const auto group = [](auto f, const auto& xs) { return group_by(f, xs); };
+    const auto group = [](auto f1, const auto& xs1)
+    {
+        return group_by(f1, xs1);
+    };
 
     return detail::group_on_labeled_impl(group, f, xs);
 }
@@ -164,9 +167,9 @@ ContainerOut group_globally_on(F f, const ContainerIn& xs)
 template <typename F, typename ContainerIn>
 auto group_globally_on_labeled(F f, const ContainerIn& xs)
 {
-    const auto group = [](auto f, const auto& xs)
+    const auto group = [](auto f1, const auto& xs1)
     {
-        return group_globally_by(f, xs);
+        return group_globally_by(f1, xs1);
     };
 
     return detail::group_on_labeled_impl(group, f, xs);
