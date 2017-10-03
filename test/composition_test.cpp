@@ -91,8 +91,10 @@ TEST_CASE("composition_test, parameter_binding")
 
     auto add3 = [](int x, int y, int z) { return x + y + z; };
     auto genericAdd3 = [](auto x, auto y, auto z) { return x + y + z; };
+  
     REQUIRE_EQ(bind_1st_of_3(add3, 3)(30, 9), 42);
     REQUIRE_EQ(bind_1st_of_3(genericAdd3, 3)(30, 9), 42);
+
     REQUIRE_EQ(bind_1st_and_2nd_of_3(add3, 3, 5)(7), 15);
     REQUIRE_EQ(bind_1st_and_2nd_of_3(genericAdd3, 3, 5)(7), 15);
 }
@@ -213,6 +215,16 @@ TEST_CASE("composition_test, constructor_as_function")
     const auto my_foo = create_foo(1,2);
     REQUIRE_EQ(my_foo.a_, 1);
     REQUIRE_EQ(my_foo.b_, 4);
+
+    struct two_ctors
+    {
+        two_ctors(int, int) : val_(1) {}
+        two_ctors(std::initializer_list<int>) : val_(2) {}
+        int val_;
+    };
+    const two_ctors one_or_two =
+        constructor_as_function<two_ctors, int, int>(3, 4);
+    REQUIRE_EQ(one_or_two.val_, 1);
 }
 
 TEST_CASE("composition_test, constructor_as_function")
@@ -224,4 +236,64 @@ TEST_CASE("composition_test, constructor_as_function")
             fplus::is_greater_or_equal_than(3)),
         xs);
     REQUIRE_EQ(ys.size(), 4);
+}
+
+TEST_CASE("composition_test, get_mem")
+{
+    struct foo
+    {
+        int bar_;
+    };
+    const std::vector<foo> foos = {{1},{2},{3}};
+    const auto bars = fplus::transform(fplus_get_mem(bar_), foos);
+    REQUIRE_EQ(bars, std::vector<int>({1,2,3}));
+    REQUIRE(fplus::all_unique_on(fplus_get_c_mem_t(foo, bar_, int), foos));
+}
+
+TEST_CASE("composition_test, get_ptr_mem")
+{
+    struct foo
+    {
+        foo(int bar) : bar_(bar) {}
+        int bar_;
+    };
+    const std::vector<std::shared_ptr<foo>> foo_ptrs = {
+        std::make_shared<foo>(1),
+        std::make_shared<foo>(2),
+        std::make_shared<foo>(3)};
+    const auto bars = fplus::transform(fplus_get_ptr_mem(bar_), foo_ptrs);
+    REQUIRE_EQ(bars, std::vector<int>({1,2,3}));
+    REQUIRE(fplus::all_unique_on(
+        fplus_get_c_ptr_mem_t(std::shared_ptr<foo>, bar_, int), foo_ptrs));
+}
+
+TEST_CASE("composition_test, mem_func")
+{
+    struct foo
+    {
+        int bar_;
+        int bar() const { return bar_; }
+    };
+    const std::vector<foo> foos = {{1},{2},{3}};
+    const auto bars = fplus::transform(fplus_mem_fn(bar), foos);
+    REQUIRE_EQ(bars, std::vector<int>({1,2,3}));
+    REQUIRE(fplus::all_unique_on(fplus_c_mem_fn_t(foo, bar, int), foos));
+}
+
+TEST_CASE("composition_test, ptr_mem_func")
+{
+    struct foo
+    {
+        foo(int bar) : bar_(bar) {}
+        int bar_;
+        int bar() const { return bar_; }
+    };
+    const std::vector<std::shared_ptr<foo>> foo_ptrs = {
+        std::make_shared<foo>(1),
+        std::make_shared<foo>(2),
+        std::make_shared<foo>(3)};
+    const auto bars = fplus::transform(fplus_ptr_mem_fn(bar), foo_ptrs);
+    REQUIRE_EQ(bars, std::vector<int>({1,2,3}));
+    REQUIRE(fplus::all_unique_on(
+        fplus_c_ptr_mem_fn_t(std::shared_ptr<foo>, bar, int), foo_ptrs));
 }

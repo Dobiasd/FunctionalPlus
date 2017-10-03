@@ -68,7 +68,7 @@ bool is_in_closed_interval(const T& low, const T& high, const T& x)
 
 // API search type: is_in_closed_interval_around : (a, a, a) -> Bool
 // Checks if x is in [center - radius, center + radius],
-// i.e. left-open and right-open.
+// i.e. left-closed and right-closed.
 template <typename T>
 bool is_in_closed_interval_around(const T& radius, const T& center, const T& x)
 {

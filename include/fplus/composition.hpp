@@ -318,11 +318,55 @@ auto memoize_binary(F f)
 template <typename T, class ... Types>
 T constructor_as_function(Types ... args)
 {
-    return T{args...};
+    return T(args...);
 }
 
 } // namespace fplus
 
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
+#define fplus_get_mem(fplus_get_mem_name) \
+[](const auto& fplus_get_mem_x) \
+{ \
+    return fplus_get_mem_x.fplus_get_mem_name; \
+}
+
+#define fplus_get_ptr_mem(fplus_get_ptr_mem_name) \
+[](const auto& fplus_get_ptr_mem_x) \
+{ \
+    return fplus_get_ptr_mem_x->fplus_get_ptr_mem_name; \
+}
+
+#define fplus_get_c_mem_t(fplus_get_c_mem_t_c, fplus_get_c_mem_t_name, fplus_get_c_mem_t_t) \
+[](const fplus_get_c_mem_t_c& fplus_get_c_mem_t_x) -> fplus_get_c_mem_t_t \
+{ \
+    return fplus_get_c_mem_t_x.fplus_get_c_mem_t_name; \
+}
+
+#define fplus_get_c_ptr_mem_t(fplus_get_c_ptr_mem_t_c, fplus_get_c_ptr_mem_t_name, fplus_get_c_ptr_mem_t_t) \
+[](const fplus_get_c_ptr_mem_t_c& fplus_get_c_ptr_mem_t_x) -> fplus_get_c_ptr_mem_t_t \
+{ \
+    return fplus_get_c_ptr_mem_t_x->fplus_get_c_ptr_mem_t_name; \
+}
+
+#define fplus_mem_fn(fplus_mem_fn_name) \
+[](const auto& fplus_mem_fn_x) \
+{ \
+    return fplus_mem_fn_x.fplus_mem_fn_name(); \
+}
+
+#define fplus_ptr_mem_fn(fplus_ptr_mem_fn_name) \
+[](const auto& fplus_ptr_mem_fn_x) \
+{ \
+    return fplus_ptr_mem_fn_x->fplus_ptr_mem_fn_name(); \
+}
+
+#define fplus_c_mem_fn_t(fplus_c_mem_fn_t_c, fplus_c_mem_fn_t_name, fplus_c_mem_fn_t_t) \
+[](const fplus_c_mem_fn_t_c& fplus_c_mem_fn_t_x) -> fplus_c_mem_fn_t_t \
+{ \
+    return fplus_c_mem_fn_t_x.fplus_c_mem_fn_t_name(); \
+}
+
+#define fplus_c_ptr_mem_fn_t(fplus_c_ptr_mem_fn_t_c, fplus_c_ptr_mem_fn_t_name, fplus_c_ptr_mem_fn_t_t) \
+[](const fplus_c_ptr_mem_fn_t_c& fplus_c_ptr_mem_fn_t_x) -> fplus_c_ptr_mem_fn_t_t \
+{ \
+    return fplus_c_ptr_mem_fn_t_x->fplus_c_ptr_mem_fn_t_name(); \
+}
