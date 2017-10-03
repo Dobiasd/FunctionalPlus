@@ -20,6 +20,16 @@ namespace {
     {
         return x <= y;
     }
+
+    auto generic_less = [](auto x, auto y) {
+      return x < y;
+    };
+
+    auto generic_less_eq = [](auto x, auto y) {
+      return x <= y;
+    };
+
+    auto squareGeneric = [](auto x) { return x * x; };
 }
 
 
@@ -53,6 +63,24 @@ TEST_CASE("compare_test, is_less_or_equal")
     REQUIRE(is_less_or_equal(2, 3));
     REQUIRE_FALSE(is_less_or_equal(3, 2));
     REQUIRE(is_less_or_equal_than(3)(2));
+    REQUIRE(is_less_or_equal_by_and_by(squareGeneric, squareGeneric)(2, 2));
+    REQUIRE(is_less_or_equal_by_than(squareGeneric, 5)(2));
+}
+
+TEST_CASE("compare_test, is_less_by")
+{
+    using namespace fplus;
+    auto square = [](int x) { return x * x; };
+    REQUIRE(is_less_by_and_by(squareGeneric, square)(2, -3));
+    REQUIRE(is_less_by(squareGeneric)(2, -3));
+}
+
+TEST_CASE("compare_test, is_less_by_than")
+{
+    using namespace fplus;
+    auto square = [](int x) { return x * x; };
+    REQUIRE(is_less_by_than(square, 5)(2));
+    REQUIRE(is_less_by_than(squareGeneric, 5)(2));
 }
 
 TEST_CASE("compare_test, is_greater")
@@ -62,6 +90,7 @@ TEST_CASE("compare_test, is_greater")
     REQUIRE_FALSE(is_greater(2, 3));
     REQUIRE(is_greater(3, 2));
     REQUIRE_FALSE(is_greater_than(3)(2));
+    REQUIRE(is_greater_by_and_by(squareGeneric, squareGeneric)(3, -2));
 }
 
 TEST_CASE("compare_test, is_greater_or_equal")
@@ -71,16 +100,24 @@ TEST_CASE("compare_test, is_greater_or_equal")
     REQUIRE_FALSE(is_greater_or_equal(2, 3));
     REQUIRE(is_greater_or_equal(3, 2));
     REQUIRE_FALSE(is_greater_or_equal_than(3)(2));
+    REQUIRE(is_greater_or_equal_by_and_by(squareGeneric, squareGeneric)(3, -3));
+    REQUIRE(is_greater_or_equal_by(squareGeneric)(3, -3));
+    REQUIRE(is_greater_or_equal_by_than(squareGeneric, 3)(-3));
 }
 
 TEST_CASE("compare_test, is_equal_by")
 {
     using namespace fplus;
-    auto square = [](int x){ return x*x; };
+    auto square = [](int x) { return x * x; };
     REQUIRE(is_equal_by_and_by(square, square)(2, -2));
+    REQUIRE(is_equal_by_and_by(squareGeneric, square)(2, -2));
     REQUIRE(is_equal_by(square)(2, -2));
-    REQUIRE(is_not_equal_by_and_by(square, square)(2, 3));
+    REQUIRE(is_not_equal_by_and_by(square, squareGeneric)(2, 3));
+    REQUIRE(is_equal_by(squareGeneric)(2, -2));
     REQUIRE(is_not_equal_by(square)(2, 3));
+    REQUIRE(is_not_equal_by(squareGeneric)(2, 3));
+    REQUIRE(is_equal_by_to(squareGeneric, 4)(2));
+    REQUIRE(is_not_equal_by_to(squareGeneric, 5)(2));
 }
 
 TEST_CASE("compare_test, always")
@@ -107,6 +144,7 @@ TEST_CASE("compare_test, ord_to_eq")
     REQUIRE(ord_to_eq(int_less)(1, 2) == false);
     REQUIRE(ord_to_eq(int_less)(2, 2) == true);
     REQUIRE(ord_to_eq(int_less)(2, 1) == false);
+    REQUIRE(ord_to_eq(generic_less)(2, 1) == false);
 }
 
 TEST_CASE("compare_test, ord_to_not_eq")
@@ -115,6 +153,7 @@ TEST_CASE("compare_test, ord_to_not_eq")
     REQUIRE(ord_to_not_eq(int_less)(1, 2) == true);
     REQUIRE(ord_to_not_eq(int_less)(2, 2) == false);
     REQUIRE(ord_to_not_eq(int_less)(2, 1) == true);
+    REQUIRE(ord_to_not_eq(generic_less)(2, 1) == true);
 }
 
 TEST_CASE("compare_test, ord_eq_to_eq")
@@ -123,6 +162,7 @@ TEST_CASE("compare_test, ord_eq_to_eq")
     REQUIRE(ord_eq_to_eq(int_less_eq)(1, 2) == false);
     REQUIRE(ord_eq_to_eq(int_less_eq)(2, 2) == true);
     REQUIRE(ord_eq_to_eq(int_less_eq)(2, 1) == false);
+    REQUIRE(ord_eq_to_eq(generic_less_eq)(2, 1) == false);
 }
 
 TEST_CASE("compare_test, ord_eq_to_not_eq")

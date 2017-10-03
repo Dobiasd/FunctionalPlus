@@ -16,6 +16,9 @@
 #include <fplus/composition.hpp>
 #include <fplus/function_traits.hpp>
 
+#include <fplus/detail/asserts/transform.hpp>
+#include <fplus/detail/invoke.hpp>
+
 #include <algorithm>
 #include <future>
 #include <iterator>
@@ -50,14 +53,17 @@ ContainerOut transform_with_idx(F f, const ContainerIn& xs)
 // fwd bind count: 1
 // Map function over values and drop resulting nothings.
 // Also known as filter_map.
-template <typename F, typename ContainerIn,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn,
-        typename FOut::type>::type>
-ContainerOut transform_and_keep_justs(F f, const ContainerIn& xs)
+template <typename F, typename ContainerIn>
+auto transform_and_keep_justs(F f, const ContainerIn& xs)
 {
-    internal::check_arity<1, F>();
+    using X = typename ContainerIn::value_type;
+    (void)detail::
+        trigger_static_asserts<detail::transform_and_keep_justs_tag, F, X>();
+
+    using ContainerOut = typename internal::same_cont_new_t<
+        ContainerIn,
+        typename std::decay_t<detail::invoke_result_t<F, X>>::type>::type;
+
     auto transformed = transform(f, xs);
     return justs<decltype(transformed), ContainerOut>(transformed);
 }
@@ -65,14 +71,16 @@ ContainerOut transform_and_keep_justs(F f, const ContainerIn& xs)
 // API search type: transform_and_keep_oks : ((a -> Result b), [a]) -> [b]
 // fwd bind count: 1
 // Map function over values and drop resulting errors.
-template <typename F, typename ContainerIn,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename ContainerOut = typename internal::same_cont_new_t<
-        ContainerIn, typename FOut::ok_t>::type>
-ContainerOut transform_and_keep_oks(F f, const ContainerIn& xs)
+template <typename F, typename ContainerIn>
+auto transform_and_keep_oks(F f, const ContainerIn& xs)
 {
-    internal::check_arity<1, F>();
+    using X = typename ContainerIn::value_type;
+    (void)detail::
+        trigger_static_asserts<detail::transform_and_keep_oks_tag, F, X>();
+
+    using ContainerOut = typename internal::same_cont_new_t<
+        ContainerIn,
+        typename std::decay_t<detail::invoke_result_t<F, X>>::ok_t>::type;
     auto transformed = transform(f, xs);
     return oks<decltype(transformed), ContainerOut>(transformed);
 }
@@ -246,19 +254,22 @@ Container random_elements(
 // fwd bind count: 1
 // Applies a list of functions to a value.
 template <typename FunctionContainer,
-    typename F = typename FunctionContainer::value_type,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename ContainerOut = typename internal::same_cont_new_t<FunctionContainer, FOut, 0>::type>
-ContainerOut apply_functions(const FunctionContainer& functions, const FIn& x)
+          typename F = typename FunctionContainer::value_type,
+          typename FIn>
+auto apply_functions(const FunctionContainer& functions, const FIn& x)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    (void)detail::trigger_static_asserts<detail::apply_functions_tag, F, FIn>();
+
+    using FOut = std::decay_t<detail::invoke_result_t<F, FIn>>;
+    using ContainerOut =
+        typename internal::same_cont_new_t<FunctionContainer, FOut, 0>::type;
+
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(functions));
     auto it = internal::get_back_inserter<ContainerOut>(ys);
     for (const auto& f : functions)
     {
-        *it = f(x);
+        *it = detail::invoke(f, x);
     }
     return ys;
 }
@@ -266,22 +277,21 @@ ContainerOut apply_functions(const FunctionContainer& functions, const FIn& x)
 // API search type: apply_function_n_times : ((a -> a), Int, a) -> a
 // fwd bind count: 2
 // Applies a functional n times in a row.
-template <typename F,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type>
-FOut apply_function_n_times(const F f, std::size_t n, const FIn& x)
+template <typename F, typename FIn>
+auto apply_function_n_times(F f, std::size_t n, const FIn& x)
 {
-    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
+    (void)detail::trigger_static_asserts<detail::apply_functions_tag, F, FIn>();
+    using FOut = std::decay_t<detail::invoke_result_t<F, FIn>>;
     static_assert(std::is_same<FOut, FIn>::value,
-        "Input and output of F must be the same type.");
+                  "Input and output of F must be the same type.");
     if (n == 0)
     {
         return x;
     }
-    FOut y = f(x);
+    FOut y = detail::invoke(f, x);
     for (std::size_t i = 1; i < n; ++i)
     {
-        y = f(y);
+        y = detail::invoke(f, y);
     }
     return y;
 }

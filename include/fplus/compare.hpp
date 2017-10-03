@@ -7,6 +7,11 @@
 #pragma once
 
 #include <fplus/function_traits.hpp>
+#include <fplus/composition.hpp>
+
+#include <fplus/detail/invoke.hpp>
+#include <fplus/detail/compare.hpp>
+#include <fplus/detail/asserts/compare.hpp>
 
 namespace fplus
 {
@@ -101,8 +106,7 @@ namespace internal
     template <typename UnaryPredicate, typename T>
     void check_unary_predicate_for_type()
     {
-        internal::check_unary_predicate_for_type_helper<UnaryPredicate, T>(
-            std::integral_constant<bool, check_callable<UnaryPredicate>::value>());
+        static_assert(detail::is_invocable<UnaryPredicate, T>::value, "");
     }
 
     template <typename F, typename T>
@@ -240,10 +244,10 @@ bool is_equal(const T& x, const T& y)
 
 // API search type: always : a -> (b -> a)
 // always(x)(y) == x
-template <typename Y, typename X>
-std::function<X(const Y&)> always(const X& x)
+template <typename X>
+auto always(const X& x)
 {
-    return [x](const Y&) { return x; };
+    return [x](const auto&) { return x; };
 }
 
 // API search type: always_arg_1_of_2 : (a, b) -> a
@@ -266,18 +270,17 @@ Y always_arg_2_of_2(const X&, const Y& y)
 // f(x) == g(y)
 // Provides an equality check of two values
 // after applying a transformation function each.
-template <typename F, typename G,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename GOut = typename std::result_of<G(GIn)>::type>
-std::function<bool(const FIn& x, const GIn& y)>
-        is_equal_by_and_by(F f, G g)
+template <typename F, typename G>
+auto is_equal_by_and_by(F f, G g)
 {
-    internal::check_compare_preprocessors_for_types<F, G, FIn, GIn>();
-    return [f, g](const FIn& x, const GIn& y)
-    {
-        return is_equal(f(x), g(y));
+    return [f, g](const auto& x, const auto& y) {
+        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+                                             F,
+                                             decltype(x)>();
+        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+                                             G,
+                                             decltype(y)>();
+        return is_equal(detail::invoke(f, x), detail::invoke(g, y));
     };
 }
 
@@ -285,11 +288,8 @@ std::function<bool(const FIn& x, const GIn& y)>
 // f(x) == f(y)
 // Provides an equality check of two values
 // after applying the same transformation function to both.
-template <typename F,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type>
-std::function<bool(const FIn& x, const FIn& y)>
-        is_equal_by(F f)
+template <typename F>
+auto is_equal_by(F f)
 {
     return is_equal_by_and_by(f, f);
 }
@@ -298,13 +298,15 @@ std::function<bool(const FIn& x, const FIn& y)>
 // f(y) == x
 // Provides an equality check to a fixed value
 // after applying a transformation function.
-template <typename F, typename X,
-    typename Y = typename utils::function_traits<F>::template arg<0>::type>
-std::function<bool(const Y&)> is_equal_by_to(F f, const X& x)
+template <typename F, typename X>
+auto is_equal_by_to(F f, const X& x)
 {
-    return [f, x](const Y& y)
+    return [f, x](const auto& y)
     {
-        return is_equal(f(y), x);
+        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+                                             F,
+                                             decltype(y)>();
+        return is_equal(detail::invoke(f, y), x);
     };
 }
 
@@ -313,7 +315,7 @@ std::function<bool(const Y&)> is_equal_by_to(F f, const X& x)
 // curried version of is_equal
 // Provides an equality check with a fixed value.
 template <typename X>
-std::function<bool(const X&)> is_equal_to(const X& x)
+auto is_equal_to(const X& x)
 {
     return is_equal_by_to(identity<X>, x);
 }
@@ -332,18 +334,21 @@ bool is_not_equal(const T& x, const T& y)
 // f(x) != g(y)
 // Provides an unequality check of two values
 // after applying a transformation function eac
-template <typename F, typename G,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename GOut = typename std::result_of<G(GIn)>::type>
-std::function<bool(const FIn& x, const GIn& y)>
-        is_not_equal_by_and_by(F f, G g)
+template <typename F, typename G>
+auto is_not_equal_by_and_by(F f, G g)
 {
-    internal::check_compare_preprocessors_for_types<F, G, FIn, GIn>();
-    return [f, g](const FIn& x, const GIn& y)
-    {
-        return is_not_equal(f(x), g(y));
+    return [f, g](const auto& x, const auto& y) {
+        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+                                             F,
+                                             decltype(x)>();
+        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+                                             G,
+                                             decltype(y)>();
+        using FOut = std::decay_t<detail::invoke_result_t<F, decltype(x)>>;
+        using GOut = std::decay_t<detail::invoke_result_t<G, decltype(y)>>;
+        static_assert(std::is_same<FOut, GOut>::value,
+                      "Functions must return the same type.");
+        return is_not_equal(detail::invoke(f, x), detail::invoke(g, y));
     };
 }
 
@@ -351,11 +356,8 @@ std::function<bool(const FIn& x, const GIn& y)>
 // f(x) != f(y)
 // Provides an unequality check of two values
 // after applying the same transformation function to both.
-template <typename F,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type>
-std::function<bool(const FIn& x, const FIn& y)>
-        is_not_equal_by(F f)
+template <typename F>
+auto is_not_equal_by(F f)
 {
     return is_not_equal_by_and_by(f, f);
 }
@@ -364,13 +366,14 @@ std::function<bool(const FIn& x, const FIn& y)>
 // f(y) != x
 // Provides an unequality check to a fixed value
 // after applying a transformation function.
-template <typename F, typename X,
-    typename Y = typename utils::function_traits<F>::template arg<0>::type>
-std::function<bool(const Y&)> is_not_equal_by_to(F f, const X& x)
+template <typename F, typename X>
+auto is_not_equal_by_to(F f, const X& x)
 {
-    return [f, x](const Y& y)
-    {
-        return is_not_equal(f(y), x);
+    return [f, x](const auto& y) {
+        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+                                             F,
+                                             decltype(y)>();
+        return is_not_equal(detail::invoke(f, y), x);
     };
 }
 
@@ -379,7 +382,7 @@ std::function<bool(const Y&)> is_not_equal_by_to(F f, const X& x)
 // curried version of is_not_equal
 // Provides an unequality check with a fixed value.
 template <typename X>
-std::function<bool(const X&)> is_not_equal_to(const X& x)
+auto is_not_equal_to(const X& x)
 {
     return is_not_equal_by_to(identity<X>, x);
 }
@@ -398,18 +401,22 @@ bool is_less(const T& x, const T& y)
 // f(x) < g(y)
 // Provides a less check of two values
 // after applying a transformation function each.
-template <typename F, typename G,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename GOut = typename std::result_of<G(GIn)>::type>
-std::function<bool(const FIn& x, const GIn& y)>
-        is_less_by_and_by(F f, G g)
+template <typename F, typename G>
+auto is_less_by_and_by(F f, G g)
 {
-    internal::check_compare_preprocessors_for_types<F, G, FIn, GIn>();
-    return [f, g](const FIn& x, const GIn& y)
+    return [f, g](const auto& x, const auto& y)
     {
-        return is_less(f(x), g(y));
+        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+                                             F,
+                                             decltype(x)>();
+        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+                                             G,
+                                             decltype(y)>();
+        using FOut = std::decay_t<detail::invoke_result_t<F, decltype(x)>>;
+        using GOut = std::decay_t<detail::invoke_result_t<G, decltype(y)>>;
+        static_assert(std::is_same<FOut, GOut>::value,
+                      "Functions must return the same type.");
+        return is_less(detail::invoke(f, x), detail::invoke(g, y));
     };
 }
 
@@ -417,11 +424,8 @@ std::function<bool(const FIn& x, const GIn& y)>
 // f(x) < f(y)
 // Provides a less check of two values
 // after applying the same transformation function to both.
-template <typename F,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type>
-std::function<bool(const FIn& x, const FIn& y)>
-        is_less_by(F f)
+template <typename F>
+auto is_less_by(F f)
 {
     return is_less_by_and_by(f, f);
 }
@@ -430,13 +434,15 @@ std::function<bool(const FIn& x, const FIn& y)>
 // f(y) < x
 // Provides a less check to a fixed value
 // after applying a transformation function.
-template <typename F, typename X,
-    typename Y = typename utils::function_traits<F>::template arg<0>::type>
-std::function<bool(const Y&)> is_less_by_than(F f, const X& x)
+template <typename F, typename X>
+auto is_less_by_than(F f, const X& x)
 {
-    return [f, x](const Y& y)
+    return [f, x](const auto& y)
     {
-        return is_less(f(y), x);
+        (void)detail::trigger_static_asserts<detail::is_less_by_tag,
+                                             F,
+                                             decltype(y)>();
+        return is_less(detail::invoke(f, y), x);
     };
 }
 
@@ -445,7 +451,7 @@ std::function<bool(const Y&)> is_less_by_than(F f, const X& x)
 // curried version of is_less
 // Provides a less check with a fixed value.
 template <typename X>
-std::function<bool(const X&)> is_less_than(const X& x)
+auto is_less_than(const X& x)
 {
     return is_less_by_than(identity<X>, x);
 }
@@ -464,18 +470,15 @@ bool is_less_or_equal(const T& x, const T& y)
 // f(x) <= g(y)
 // Provides a less-or-equal check of two values
 // after applying a transformation function each.
-template <typename F, typename G,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename GOut = typename std::result_of<G(GIn)>::type>
-std::function<bool(const FIn& x, const GIn& y)>
-        is_less_or_equal_by_and_by(F f, G g)
+template <typename F, typename G>
+auto is_less_or_equal_by_and_by(F f, G g)
 {
-    internal::check_compare_preprocessors_for_types<F, G, FIn, GIn>();
-    return [f, g](const FIn& x, const GIn& y)
+    return [f, g](const auto& x, const auto& y)
     {
-        return is_less_or_equal(f(x), g(y));
+        using FIn = decltype(x);
+        using GIn = decltype(y);
+        internal::check_compare_preprocessors_for_types<F, G, FIn, GIn>();
+        return is_less_or_equal(detail::invoke(f, x), detail::invoke(g, y));
     };
 }
 
@@ -483,11 +486,8 @@ std::function<bool(const FIn& x, const GIn& y)>
 // f(x) <= f(y)
 // Provides a less-or-equal check of two values
 // after applying the same transformation function to both.
-template <typename F,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type>
-std::function<bool(const FIn& x, const FIn& y)>
-        is_less_or_equal_by(F f)
+template <typename F>
+auto is_less_or_equal_by(F f)
 {
     return is_less_or_equal_by_and_by(f, f);
 }
@@ -496,13 +496,14 @@ std::function<bool(const FIn& x, const FIn& y)>
 // f(y) <= x
 // Provides a less-or-equal check to a fixed value
 // after applying a transformation function.
-template <typename F, typename X,
-    typename Y = typename utils::function_traits<F>::template arg<0>::type>
-std::function<bool(const Y&)> is_less_or_equal_by_than(F f, const X& x)
+template <typename F, typename X>
+auto is_less_or_equal_by_than(F f, const X& x)
 {
-    return [f, x](const Y& y)
+    return [f, x](const auto& y)
     {
-        return is_less_or_equal(f(y), x);
+        (void)detail::
+            trigger_static_asserts<detail::is_less_by_tag, F, decltype(y)>();
+        return is_less_or_equal(detail::invoke(f, y), x);
     };
 }
 
@@ -511,7 +512,7 @@ std::function<bool(const Y&)> is_less_or_equal_by_than(F f, const X& x)
 // curried version of is_less_or_equal
 // Provides a less-or-equal check with a fixed value
 template <typename X>
-std::function<bool(const X&)> is_less_or_equal_than(const X& x)
+auto is_less_or_equal_than(const X& x)
 {
     return is_less_or_equal_by_than(identity<X>, x);
 }
@@ -530,18 +531,16 @@ bool is_greater(const T& x, const T& y)
 // f(x) > g(y)
 // Provides a greater check of two values
 // after applying a transformation function each.
-template <typename F, typename G,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename GOut = typename std::result_of<G(GIn)>::type>
-std::function<bool(const FIn& x, const GIn& y)>
-        is_greater_by_and_by(F f, G g)
+template <typename F, typename G>
+auto is_greater_by_and_by(F f, G g)
 {
-    internal::check_compare_preprocessors_for_types<F, G, FIn, GIn>();
-    return [f, g](const FIn& x, const GIn& y)
+    return [f, g](const auto& x, const auto& y)
     {
-        return is_greater(f(x), g(y));
+        using FIn = decltype(x);
+        using GIn = decltype(y);
+
+        internal::check_compare_preprocessors_for_types<F, G, FIn, GIn>();
+        return is_greater(detail::invoke(f, x), detail::invoke(g, y));
     };
 }
 
@@ -549,11 +548,8 @@ std::function<bool(const FIn& x, const GIn& y)>
 // f(x) > f(y)
 // Provides a greater check of two values
 // after applying the same transformation function to both.
-template <typename F,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type>
-std::function<bool(const FIn& x, const FIn& y)>
-        is_greater_by(F f)
+template <typename F>
+auto is_greater_by(F f)
 {
     return is_greater_by_and_by(f, f);
 }
@@ -562,11 +558,10 @@ std::function<bool(const FIn& x, const FIn& y)>
 // f(y) > x
 // Provides a greater check to a fixed value
 // after applying a transformation function.
-template <typename F, typename X,
-    typename Y = typename utils::function_traits<F>::template arg<0>::type>
-std::function<bool(const Y&)> is_greater_by_than(F f, const X& x)
+template <typename F, typename X>
+auto is_greater_by_than(F f, const X& x)
 {
-    return [f, x](const Y& y)
+    return [f, x](const auto& y)
     {
         return is_greater(f(y), x);
     };
@@ -577,7 +572,7 @@ std::function<bool(const Y&)> is_greater_by_than(F f, const X& x)
 // curried version of is_greater
 // Provides a greater check with a fixed value.
 template <typename X>
-std::function<bool(const X&)> is_greater_than(const X& x)
+auto is_greater_than(const X& x)
 {
     return is_greater_by_than(identity<X>, x);
 }
@@ -596,18 +591,15 @@ bool is_greater_or_equal(const T& x, const T& y)
 // f(x) >= g(y)
 // Provides a greater-or-equal check of two values
 // after applying a transformation function each.
-template <typename F, typename G,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename GIn = typename utils::function_traits<G>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename GOut = typename std::result_of<G(GIn)>::type>
-std::function<bool(const FIn& x, const GIn& y)>
-        is_greater_or_equal_by_and_by(F f, G g)
+template <typename F, typename G>
+auto is_greater_or_equal_by_and_by(F f, G g)
 {
-    internal::check_compare_preprocessors_for_types<F, G, FIn, GIn>();
-    return [f, g](const FIn& x, const GIn& y)
+    return [f, g](const auto& x, const auto& y)
     {
-        return is_greater_or_equal(f(x), g(y));
+        using FIn = decltype(x);
+        using GIn = decltype(y);
+        internal::check_compare_preprocessors_for_types<F, G, FIn, GIn>();
+        return is_greater_or_equal(detail::invoke(f, x), detail::invoke(g, y));
     };
 }
 
@@ -615,11 +607,8 @@ std::function<bool(const FIn& x, const GIn& y)>
 // f(x) >= f(y)
 // Provides a greater-or-equal check of two values
 // after applying the same transformation function to both.
-template <typename F,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type>
-std::function<bool(const FIn& x, const FIn& y)>
-        is_greater_or_equal_by(F f)
+template <typename F>
+auto is_greater_or_equal_by(F f)
 {
     return is_greater_or_equal_by_and_by(f, f);
 }
@@ -628,13 +617,13 @@ std::function<bool(const FIn& x, const FIn& y)>
 // f(y) >= x
 // Provides a greater-or-equal check to a fixed value
 // after applying a transformation function.
-template <typename F, typename X,
-    typename Y = typename utils::function_traits<F>::template arg<0>::type>
-std::function<bool(const Y&)> is_greater_or_equal_by_than(F f, const X& x)
+template <typename F, typename X>
+auto is_greater_or_equal_by_than(F f, const X& x)
 {
-    return [f, x](const Y& y)
+    return [f, x](const auto& y)
     {
-        return is_greater_or_equal(f(y), x);
+        (void)detail::trigger_static_asserts<detail::is_greater_by_tag, F, decltype(y)>();
+        return is_greater_or_equal(detail::invoke(f, y), x);
     };
 }
 
@@ -643,7 +632,7 @@ std::function<bool(const Y&)> is_greater_or_equal_by_than(F f, const X& x)
 // curried version of is_less_or_equal
 // Provides a greater-or-equal check with a fixed valu
 template <typename X>
-std::function<bool(const X&)> is_greater_or_equal_than(const X& x)
+auto is_greater_or_equal_than(const X& x)
 {
     return is_greater_or_equal_by_than(identity<X>, x);
 }
@@ -663,20 +652,15 @@ bool xor_bools(const T& x, const T& y)
 // ord_to_eq((<)) == (==)
 // Takes a less-than function and converts it
 // into an equality check function
-// which considers to values as equal if none is less than the other one.
-template <typename Compare,
-    typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
-    typename FIn1 = typename utils::function_traits<Compare>::template arg<1>::type,
-    typename FOut = typename std::result_of<Compare(FIn0, FIn1)>::type>
-std::function<FOut(FIn0, FIn1)> ord_to_eq(Compare comp)
+// which considers two values as equal if none are lesser than the other one.
+template <typename Compare>
+auto ord_to_eq(Compare comp)
 {
-    internal::check_arity<2, Compare>();
-    static_assert(std::is_same<FOut, bool>::value, "Function must return bool.");
-    static_assert(std::is_same<FIn0, FIn1>::value,
-        "Function must take two equal types.");
-    return [comp]
-           (FIn0 x, FIn1 y)
-           { return !comp(x, y) && !comp(y, x); };
+    return [comp](auto x, decltype(x) y)
+    {
+        auto p = detail::ord_to_impl(comp)(x, y);
+        return !p.first && !p.second;
+    };
 }
 
 // API search type: ord_to_not_eq : ((a, a) -> Bool) -> ((a, a) -> Bool)
@@ -684,19 +668,10 @@ std::function<FOut(FIn0, FIn1)> ord_to_eq(Compare comp)
 // Takes a less-than function and converts it
 // into an inequality check function
 // which considers to values as unequal if one is less than the other one.
-template <typename Compare,
-    typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
-    typename FIn1 = typename utils::function_traits<Compare>::template arg<1>::type,
-    typename FOut = typename std::result_of<Compare(FIn0, FIn1)>::type>
-std::function<FOut(FIn0, FIn1)> ord_to_not_eq(Compare comp)
+template <typename Compare>
+auto ord_to_not_eq(Compare comp)
 {
-    internal::check_arity<2, Compare>();
-    static_assert(std::is_same<FOut, bool>::value, "Function must return bool.");
-    static_assert(std::is_same<FIn0, FIn1>::value,
-        "Function must take two equal types.");
-    return [comp]
-           (FIn0 x, FIn1 y)
-           { return comp(x, y) || comp(y, x); };
+    return logical_not(ord_to_eq(comp));
 }
 
 // API search type: ord_eq_to_eq : ((a, a) -> Bool) -> ((a, a) -> Bool)
@@ -705,19 +680,14 @@ std::function<FOut(FIn0, FIn1)> ord_to_not_eq(Compare comp)
 // Takes a less-or-equal-than function and converts it
 // into an equality check function
 // which considers to values as equal if a <= b and b <= a.
-template <typename Compare,
-    typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
-    typename FIn1 = typename utils::function_traits<Compare>::template arg<1>::type,
-    typename FOut = typename std::result_of<Compare(FIn0, FIn1)>::type>
-std::function<FOut(FIn0, FIn1)> ord_eq_to_eq(Compare comp)
+template <typename Compare>
+auto ord_eq_to_eq(Compare comp)
 {
-    internal::check_arity<2, Compare>();
-    static_assert(std::is_same<FOut, bool>::value, "Function must return bool.");
-    static_assert(std::is_same<FIn0, FIn1>::value,
-        "Function must take two equal types.");
-    return [comp]
-           (FIn0 x, FIn1 y)
-           { return comp(x, y) && comp(y, x); };
+    return [comp](auto x, decltype(x) y)
+    {
+        auto p = detail::ord_to_impl(comp)(x, y);
+        return p.first && p.second;
+    };
 }
 
 // API search type: ord_eq_to_not_eq : ((a, a) -> Bool) -> ((a, a) -> Bool)
@@ -725,23 +695,10 @@ std::function<FOut(FIn0, FIn1)> ord_eq_to_eq(Compare comp)
 // Takes a less-or-equal-than function and converts it
 // into an inequality check function
 // which considers to values as equal if not a <= b and not b <= a.
-template <typename Compare,
-    typename FIn0 = typename utils::function_traits<Compare>::template arg<0>::type,
-    typename FIn1 = typename utils::function_traits<Compare>::template arg<1>::type,
-    typename FOut = typename std::result_of<Compare(FIn0, FIn1)>::type>
-std::function<FOut(FIn0, FIn1)> ord_eq_to_not_eq(Compare comp)
+template <typename Compare>
+auto ord_eq_to_not_eq(Compare comp)
 {
-    internal::check_arity<2, Compare>();
-    static_assert(std::is_same<FOut, bool>::value, "Function must return bool.");
-    static_assert(std::is_same<FIn0, FIn1>::value,
-        "Function must take two equal types.");
-    return [comp]
-           (FIn0 x, FIn1 y)
-           {
-                bool a = comp(x, y);
-                bool b = comp(y, x);
-                return (a && !b) || (!a && b);
-           };
+  return logical_not(ord_eq_to_eq(comp));
 }
 
 } // namespace fplus

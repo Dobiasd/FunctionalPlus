@@ -9,6 +9,7 @@
 #include <fplus/fplus.hpp>
 
 namespace {
+    typedef std::vector<int> IntVector;
     bool is_odd_int(int x)
     {
         return (x % 2 == 1);
@@ -24,9 +25,9 @@ namespace {
         return 3 * x;
     }
 
-    std::size_t as_string_length(int i)
+    int as_string_length(int i)
     {
-        return std::to_string(i).size();
+        return static_cast<int>(std::to_string(i).size());
     }
 
     const auto times_3_lambda = [](int x){return times_3(x);};
@@ -74,7 +75,7 @@ TEST_CASE("fwd_test, compose")
         bind_1st_of_2(transform<decltype(times_3), const std::vector<int>&, std::vector<int>>, times_3),
         bind_1st_of_2(drop_if<decltype(is_odd_int), const std::vector<int>&>, is_odd_int),
         bind_1st_of_2(transform<decltype(as_string_length_lambda), const std::vector<int>&>, as_string_length_lambda),
-        sum<std::vector<std::size_t>>);
+        sum<std::vector<int>>);
 
     const auto function_chain_new_style = fwd::compose(
         fwd::transform(times_3),
@@ -212,4 +213,18 @@ TEST_CASE("fwd_test, keep_if_r_value")
 {
     auto result = fplus::fwd::keep_if(is_even_int)(std::vector<int>({1,2,3,2,4,5}));
     REQUIRE_EQ(result, std::vector<int>({2, 2, 4}));
+}
+
+TEST_CASE("fwd_test, zip_with")
+{
+    using namespace fplus;
+    const auto multiply_int = [](int x, int y) -> int { return x * y; };
+    const auto multiply_generic = [](auto x, auto y){ return x * y; };
+
+    IntVector xs = {1,2,3,4,2};
+    IntVector ys = {2,2,3,1};
+    IntVector xs_mult_ys = {2,4,9,4};
+
+    REQUIRE_EQ(fwd::zip_with(multiply_int, ys)(xs), xs_mult_ys);
+    REQUIRE_EQ(fwd::zip_with(multiply_generic, ys)(xs), xs_mult_ys);
 }

@@ -12,15 +12,15 @@
 
 namespace {
 
-    bool compare_not_eq(char c1, char c2)
+    auto compare_not_eq = [](auto c1, auto c2)
     {
         return c1 != c2;
-    }
+    };
 
-    std::pair<char, char> as_pair(char c1, char c2)
+    auto as_pair = [](auto c1, auto c2)
     {
         return std::make_pair(c1, c2);
-    }
+    };
 
 }
 
@@ -37,6 +37,9 @@ TEST_CASE("generate_test, generate_by_idx")
     auto f = [](std::size_t value) { return value + 10; };
     auto result = fplus::generate_by_idx<std::vector<std::size_t>>(f, 6);
     REQUIRE_EQ(result, std::vector<std::size_t>({10, 11, 12, 13, 14 ,15}));
+    auto f2 = [f](auto value) { return f(value); };
+    auto result2 = fplus::generate_by_idx<std::vector<std::size_t>>(f2, 6);
+    REQUIRE_EQ(result2, result);
 }
 
 TEST_CASE("generate_test, repeat")
@@ -203,7 +206,7 @@ TEST_CASE("generate_test, power_set")
 
 TEST_CASE("generate_test, iterate")
 {
-    auto f = [](int value) { return value * 2; };
+    auto f = [](auto value) { return value * 2; };
     auto result = fplus::iterate(f, 5, 3);
     REQUIRE_EQ(5u, result.size());
     REQUIRE_EQ(result, std::vector<int>({3, 6, 12, 24, 48}));
@@ -211,14 +214,14 @@ TEST_CASE("generate_test, iterate")
 
 TEST_CASE("generate_test, iterate_with_size_0")
 {
-    auto f = [](int value) { return value * 2; };
+    auto f = [](auto value) { return value * 2; };
     auto result = fplus::iterate(f, 0, 3);
     REQUIRE(result.empty());
 }
 
 TEST_CASE("generate_test, iterate_maybe")
 {
-    const auto next_collatz_value = [](int x) -> fplus::maybe<int>
+    const auto next_collatz_value = [](auto x) -> fplus::maybe<int>
     {
         if (x <= 1)
             return {};
@@ -362,6 +365,7 @@ TEST_CASE("generate_test, inner_product")
     const auto mult = [](int x, int y) { return x * y; };
     REQUIRE_EQ(fplus::inner_product(0, xs, ys), 32);
     REQUIRE_EQ(fplus::inner_product_with(plus, mult, 0, xs, ys), 32);
+    REQUIRE_EQ(fplus::inner_product_with(std::plus<>{}, std::multiplies<>{}, 0, xs, ys), 32);
 }
 
 TEST_CASE("generate_test, numbers")

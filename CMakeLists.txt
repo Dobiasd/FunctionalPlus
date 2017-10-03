@@ -13,7 +13,6 @@ install(DIRECTORY include/fplus DESTINATION include)
 add_compile_options(-Wall
                     -Wextra
                     -pedantic
-                    -Wshadow
                     -Werror
                     -Weffc++
                     -Wconversion
@@ -34,7 +33,6 @@ if( UNITTEST )
     enable_testing()
     subdirs(test)
 endif()
-
 
 set(CMAKE_CXX_STANDARD 14)
 

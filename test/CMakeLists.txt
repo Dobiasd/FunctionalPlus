@@ -25,6 +25,7 @@ _add_test(function_traits_test)
 _add_test(fwd_test)
 _add_test(generate_test)
 _add_test(interpolate_test)
+_add_test(invoke_test)
 _add_test(maps_test)
 _add_test(maybe_test)
 _add_test(numeric_test)
@@ -62,6 +63,7 @@ add_custom_target(unittest show_versions
                         COMMAND fwd_test
                         COMMAND generate_test
                         COMMAND interpolate_test
+                        COMMAND invoke_test
                         COMMAND maps_test
                         COMMAND maybe_test
                         COMMAND numeric_test

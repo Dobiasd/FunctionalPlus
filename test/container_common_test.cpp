@@ -57,7 +57,8 @@ TEST_CASE("container_common_test, group")
     typedef std::vector<std::pair<int, std::vector<int>>> LabeledGroups;
     REQUIRE_EQ(group(intList), intLists);
     REQUIRE_EQ(group(xs), IntVectors({IntVector({1}),IntVector({2,2}),IntVector({3}),IntVector({2})}));
-    REQUIRE_EQ(group_on(int_mod_10, IntVector({12,22,34})), IntVectors({IntVector({12,22}),IntVector({34})}));
+    REQUIRE_EQ(group_on([](auto x) { return x % 10; }, IntVector({12,22,34})), IntVectors({IntVector({12,22}),IntVector({34})}));
+    REQUIRE_EQ(group_on_labeled(int_mod_10, IntVector({12,22,34})), LabeledGroups({{2, IntVector({12,22})}, {4, IntVector({34})}}));
     REQUIRE_EQ(group_on_labeled(int_mod_10, IntVector({12,22,34})), LabeledGroups({{2, IntVector({12,22})}, {4, IntVector({34})}}));
     REQUIRE_EQ(group_globally(xs), IntVectors({IntVector({1}),IntVector({2,2,2}),IntVector({3})}));
     REQUIRE_EQ(group_globally_on(int_mod_10, IntVector({12,34,22})), IntVectors({IntVector({12,22}),IntVector({34})}));
@@ -74,10 +75,10 @@ TEST_CASE("container_common_test, singleton_seq")
 TEST_CASE("container_common_test, filter")
 {
     using namespace fplus;
-    REQUIRE_EQ(keep_if(is_even_size_t, xs), IntVector({2,2,2}));
-    REQUIRE_EQ(drop_if(is_even_size_t, xs), IntVector({1,3}));
-    REQUIRE_EQ(keep_if(is_even_size_t, intList), IntList({ 2,2,2 }));
-    REQUIRE_EQ(drop_if(is_even_size_t, intList), IntList({ 1,3 }));
+    REQUIRE_EQ(keep_if(is_even_int, xs), IntVector({2,2,2}));
+    REQUIRE_EQ(drop_if(is_even_int, xs), IntVector({1,3}));
+    REQUIRE_EQ(keep_if(is_even_int, intList), IntList({ 2,2,2 }));
+    REQUIRE_EQ(drop_if(is_even_int, intList), IntList({ 1,3 }));
     REQUIRE_EQ(without(2, intList), IntList({ 1,3 }));
     REQUIRE_EQ(without_any(IntVector({2,3}), intList), IntList({ 1 }));
     auto sumis_even = [&](std::size_t x, int y)
@@ -303,10 +304,10 @@ TEST_CASE("container_common_test, intersperse")
 TEST_CASE("container_common_test, fold")
 {
     using namespace fplus;
-    REQUIRE_EQ(fold_left(std::plus<int>(), 100, xs), 110);
-    REQUIRE_EQ(fold_left_1(std::plus<int>(), xs), 10);
-    REQUIRE_EQ(fold_right(std::plus<int>(), 100, xs), 110);
-    REQUIRE_EQ(fold_right_1(std::plus<int>(), xs), 10);
+    REQUIRE_EQ(fold_left(std::plus<>(), 100, xs), 110);
+    REQUIRE_EQ(fold_left_1(std::plus<>(), xs), 10);
+    REQUIRE_EQ(fold_right(std::plus<>(), 100, xs), 110);
+    REQUIRE_EQ(fold_right_1(std::plus<>(), xs), 10);
     auto appendXToStrForFoldL = [](const std::string& str, int x) { return str + std::to_string(x); };
     auto appendXToStrForFoldR = [](int x, const std::string& str) { return str + std::to_string(x); };
     std::string emptyString;
@@ -324,10 +325,10 @@ TEST_CASE("container_common_test, reduce")
 TEST_CASE("container_common_test, scan")
 {
     using namespace fplus;
-    REQUIRE_EQ(scan_left(std::plus<int>(), 20, xs), IntVector({ 20,21,23,25,28,30 }));
-    REQUIRE_EQ(scan_right(std::plus<int>(), 20, xs), IntVector({ 30,29,27,25,22,20 }));
-    REQUIRE_EQ(scan_left_1(std::plus<int>(), xs), IntVector({ 1,3,5,8,10 }));
-    REQUIRE_EQ(scan_right_1(std::plus<int>(), xs), IntVector({ 10,9,7,5,2 }));
+    REQUIRE_EQ(scan_left(std::plus<>(), 20, xs), IntVector({ 20,21,23,25,28,30 }));
+    REQUIRE_EQ(scan_right(std::plus<>(), 20, xs), IntVector({ 30,29,27,25,22,20 }));
+    REQUIRE_EQ(scan_left_1(std::plus<>(), xs), IntVector({ 1,3,5,8,10 }));
+    REQUIRE_EQ(scan_right_1(std::plus<>(), xs), IntVector({ 10,9,7,5,2 }));
 }
 
 TEST_CASE("container_common_test, join")
@@ -565,8 +566,8 @@ TEST_CASE("container_common_test, segment")
     REQUIRE_EQ(take(999, xs), xs);
     REQUIRE_EQ(drop(999, xs), IntVector());
     REQUIRE_EQ(take_while(is_odd_int, xs), IntVector({ 1 }));
-    REQUIRE_EQ(take_while(always<int>(true), xs), xs);
-    REQUIRE_EQ(drop_while(always<int>(false), xs), xs);
+    REQUIRE_EQ(take_while(always(true), xs), xs);
+    REQUIRE_EQ(drop_while(always(false), xs), xs);
     REQUIRE_EQ(drop_while(is_odd_int, xs), IntVector({ 2,2,3,2 }));
     REQUIRE_EQ(span(is_odd_int, xs), std::make_pair(IntVector({ 1 }), IntVector({ 2,2,3,2 })));
     REQUIRE_EQ(set_segment(2, IntVector({8,9}), xs), IntVector({1,2,8,9,2}));

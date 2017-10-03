@@ -11,6 +11,11 @@
 #include <fplus/maybe.hpp>
 #include <fplus/compare.hpp>
 
+#include <fplus/detail/asserts/container_common.hpp>
+#include <fplus/detail/meta.hpp>
+#include <fplus/detail/invoke.hpp>
+#include <fplus/detail/container_common.hpp>
+
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -549,7 +554,9 @@ namespace internal
 template <typename Container, typename F>
 Container transform(internal::reuse_container_t, F f, Container&& xs)
 {
-    internal::check_arity<1, F>();
+    (void)detail::trigger_static_asserts<detail::transform_tag,
+                                         F,
+                                         decltype(*std::begin(xs))>();
     std::transform(std::begin(xs), std::end(xs), std::begin(xs), f);
     return std::forward<Container>(xs);
 }
@@ -558,7 +565,9 @@ template <typename ContainerOut, typename F, typename ContainerIn>
 ContainerOut transform(internal::create_new_container_t, F f,
     const ContainerIn& xs)
 {
-    internal::check_arity<1, F>();
+    (void)detail::trigger_static_asserts<detail::transform_tag,
+                                         F,
+                                         decltype(*std::begin(xs))>();
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
     auto it = internal::get_back_inserter<ContainerOut>(ys);
@@ -826,16 +835,13 @@ Container drop_while(UnaryPredicate pred, const Container& xs)
 // Takes the second argument and the first item of the list
 // and applies the function to them,
 // then feeds the function with this result and the second argument and so on.
-template <typename F, typename Container,
-    typename Acc = typename utils::function_traits<F>::template arg<0>::type>
+template <typename F, typename Container, typename Acc>
 Acc fold_left(F f, const Acc& init, const Container& xs)
 {
-    Acc acc = init;
-    for (const auto& x : xs)
-    {
-        acc = f(acc, x);
-    }
-    return acc;
+    using std::begin;
+    using std::end;
+
+    return std::accumulate(begin(xs), end(xs), init, f);
 }
 
 // API search type: reduce : (((a, a) -> a), a, [a]) -> a
@@ -862,14 +868,12 @@ template <typename F, typename Container,
 Acc fold_left_1(F f, const Container& xs)
 {
     assert(!xs.empty());
-    Acc acc = xs.front();
-    auto it = std::begin(xs);
-    ++it;
-    for (; it != std::end(xs); ++it)
-    {
-        acc = f(acc, *it);
-    }
-    return acc;
+
+    using std::begin;
+    using std::end;
+
+    const auto it = begin(xs);
+    return std::accumulate(std::next(it), end(xs), *it, f);
 }
 
 // API search type: reduce_1 : (((a, a) -> a), [a]) -> a
@@ -890,11 +894,13 @@ typename Container::value_type reduce_1(F f, const Container& xs)
 // Takes the second argument and the last item of the list
 // and applies the function,
 // then it takes the penultimate item from the end and the result, and so on.
-template <typename F, typename Container,
-    typename Acc = typename utils::function_traits<F>::template arg<1>::type>
+template <typename F, typename Container, typename Acc>
 Acc fold_right(F f, const Acc& init, const Container& xs)
 {
-    return fold_left(flip(f), init, reverse(xs));
+    using std::rbegin;
+    using std::rend;
+
+    return std::accumulate(rbegin(xs), rend(xs), init, flip(f));
 }
 
 // API search type: fold_right_1 : (((a, a) -> a), [a]) -> a
@@ -906,7 +912,13 @@ template <typename F, typename Container,
     typename Acc = typename Container::value_type>
 Acc fold_right_1(F f, const Container& xs)
 {
-    return fold_left_1(flip(f), reverse(xs));
+    assert(!xs.empty());
+
+    using std::rbegin;
+    using std::rend;
+
+    const auto it = rbegin(xs);
+    return std::accumulate(std::next(it), rend(xs), *it, flip(f));
 }
 
 // API search type: scan_left : (((a, b) -> a), a, [b]) -> [a]
@@ -916,21 +928,20 @@ Acc fold_right_1(F f, const Container& xs)
 // and applies the function to them,
 // then feeds the function with this result and the second argument and so on.
 // It returns the list of intermediate and final results.
-template <typename F, typename ContainerIn,
-    typename Acc = typename utils::function_traits<F>::template arg<0>::type,
-    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, Acc, 1>::type>
-ContainerOut scan_left(F f, const Acc& init, const ContainerIn& xs)
+template <typename F, typename ContainerIn, typename Acc>
+auto scan_left(F f, const Acc& init, const ContainerIn& xs)
 {
+    using ContainerOut =
+        typename internal::same_cont_new_t<ContainerIn, Acc, 1>::type;
+
     ContainerOut result;
     internal::prepare_container(result, size_of_cont(xs) + 1);
-    auto itOut = internal::get_back_inserter(result);
-    Acc acc = init;
-    *itOut = acc;
-    for (const auto& x : xs)
-    {
-        acc = f(acc, x);
-        *itOut = acc;
-    }
+
+    using std::begin;
+    using std::end;
+
+    detail::scan_impl(
+        f, init, internal::get_back_inserter(result), begin(xs), end(xs));
     return result;
 }
 
@@ -941,26 +952,28 @@ ContainerOut scan_left(F f, const Acc& init, const ContainerIn& xs)
 // then feeds the function with this result and the third argument and so on.
 // It returns the list of intermediate and final results.
 // xs must be non-empty.
-template <typename F, typename ContainerIn,
-    typename Acc = typename ContainerIn::value_type,
-    typename ContainerOut = typename internal::same_cont_new_t<ContainerIn, Acc, 0>::type>
-ContainerOut scan_left_1(F f, const ContainerIn& xs)
+template <typename F, typename ContainerIn>
+auto scan_left_1(F f, const ContainerIn& xs)
 {
     assert(!xs.empty());
+
+    using std::begin;
+    using std::end;
+
+    const auto beginIt = begin(xs);
+
+    using ContainerOut = typename internal::same_cont_new_t<
+        ContainerIn,
+        detail::uncvref_t<decltype(*beginIt)>,
+        0>::type;
+
     ContainerOut result;
     internal::prepare_container(result, size_of_cont(xs));
-    auto itOut = internal::get_back_inserter(result);
-
-    Acc acc = xs.front();
-    *itOut = acc;
-
-    auto it = std::begin(xs);
-    ++it;
-    for (; it != std::end(xs); ++it)
-    {
-        acc = f(acc, *it);
-        *itOut = acc;
-    }
+    detail::scan_impl(f,
+                      *beginIt,
+                      internal::get_back_inserter(result),
+                      std::next(beginIt),
+                      end(xs));
     return result;
 }
 
@@ -1257,24 +1270,24 @@ namespace internal
     // workarounds for clang bug 24115
     // (std::sort and std::unique with std::function as comp)
     // https://llvm.org/bugs/show_bug.cgi?id=24115
-    template <typename F,
-        typename FIn = typename utils::function_traits<F>::template arg<0>::type>
+    template <typename F>
     struct is_less_by_struct
     {
         is_less_by_struct(F f) : f_(f) {};
-        bool operator()(const FIn& x, const FIn& y)
+        template <typename T>
+        bool operator()(const T& x, const T& y)
         {
             return f_(x) < f_(y);
         }
     private:
         F f_;
     };
-    template <typename F,
-        typename FIn = typename utils::function_traits<F>::template arg<0>::type>
+    template <typename F>
     struct is_equal_by_struct
     {
         is_equal_by_struct(F f) : f_(f) {};
-        bool operator()(const FIn& x, const FIn& y)
+        template <typename T>
+        bool operator()(const T& x, const T& y)
         {
             return f_(x) == f_(y);
         }

@@ -51,6 +51,7 @@ TEST_CASE("composition_test, forward_apply")
 {
     using namespace fplus;
     REQUIRE_EQ(forward_apply(3, square<int>), 9);
+    REQUIRE_EQ(forward_apply(3, [](auto x) { return x * x; }), 9);
 }
 
 TEST_CASE("composition_test, lazy")
@@ -58,6 +59,7 @@ TEST_CASE("composition_test, lazy")
     using namespace fplus;
     const auto square_3_stub = lazy(square<int>, 3);
     REQUIRE_EQ(square_3_stub(), 9);
+    REQUIRE_EQ(lazy([](auto x) { return x * x; }, 3)(), 9);
 }
 
 TEST_CASE("composition_test, fixed")
@@ -75,18 +77,26 @@ TEST_CASE("composition_test, parameter_binding")
     typedef IntContCont Mat;
     Mat mat;
     auto square = [](int x){ return x*x; };
-    REQUIRE_EQ(bind_unary(square, 2)(), 4);
-    auto squareRowElems = bind_1st_of_2(
-        transform<decltype(square), const Row&>, square);
+    auto squareRowElems =
+        bind_1st_of_2(transform<decltype(square), const Row&>, square);
+    auto add = [](auto x, auto y) { return x + y; };
+    auto add4 = bind_1st_of_2(add, 4);
+    REQUIRE_EQ(add4(2), 6);
     Row squaredRow = squareRowElems(row);
     REQUIRE_EQ(squaredRow, IntCont({1,4,9}));
 
     auto int_division = [](int x, int y) { return x / y; };
     REQUIRE_EQ(bind_2nd_of_2(int_division, 2)(6), 3);
+    REQUIRE_EQ(bind_2nd_of_2([](auto x, auto y) { return x / y; }, 2)(6), 3);
 
     auto add3 = [](int x, int y, int z) { return x + y + z; };
-    REQUIRE_EQ(bind_1st_of_3(add3, 3)(5, 7), 15);
+    auto genericAdd3 = [](auto x, auto y, auto z) { return x + y + z; };
+  
+    REQUIRE_EQ(bind_1st_of_3(add3, 3)(30, 9), 42);
+    REQUIRE_EQ(bind_1st_of_3(genericAdd3, 3)(30, 9), 42);
+
     REQUIRE_EQ(bind_1st_and_2nd_of_3(add3, 3, 5)(7), 15);
+    REQUIRE_EQ(bind_1st_and_2nd_of_3(genericAdd3, 3, 5)(7), 15);
 }
 
 TEST_CASE("composition_test, compose")
@@ -97,6 +107,7 @@ TEST_CASE("composition_test, compose")
     REQUIRE_EQ((compose(square, square, square)(2)), 256);
     REQUIRE_EQ((compose(square, square, square, square)(2)), 65536);
     REQUIRE_EQ((compose(square, square, square, square, square)(1)), 1);
+    REQUIRE_EQ((compose(std::multiplies<>{}, square)(4, 2)), 64);
 }
 
 TEST_CASE("composition_test, flip")
@@ -105,23 +116,25 @@ TEST_CASE("composition_test, flip")
 
     auto APlusTwoTimesB = [](int a, int b) { return a + 2 * b; };
     auto TwoTimesAPlusB = [](int a, int b) { return 2 * a + b; };
+    auto Minus = [](auto a, auto b, auto c) { return a - b - c; };
     REQUIRE_EQ((flip(APlusTwoTimesB)(2, 1)), 5);
     REQUIRE_EQ((flip(TwoTimesAPlusB)(1, 2)), 5);
+    REQUIRE_EQ((flip(Minus)(1, 2, 3)), 0);
 }
 
 TEST_CASE("composition_test, logical")
 {
     using namespace fplus;
     auto is1 = [](int x) { return x == 1; };
-    auto is2 = [](int x) { return x == 2; };
+    auto is2 = [](auto x) { return x == 2; };
     REQUIRE_FALSE((logical_not(is1)(1)));
     REQUIRE((logical_not(is1)(2)));
+    REQUIRE((logical_not(std::equal_to<>{})(2, 3)));
 
     REQUIRE((logical_or(is1, is2)(1)));
     REQUIRE((logical_or(is1, is2)(2)));
-    REQUIRE_FALSE((logical_or(is1, is2)(3)));
     REQUIRE_FALSE((logical_and(is1, is2)(1)));
-    REQUIRE((logical_and(is1, is1)(1)));
+    REQUIRE((logical_and([](auto x){ return x == 1; }, is1)(1)));
     REQUIRE_FALSE((logical_xor(is1, is1)(1)));
     REQUIRE((logical_xor(is2, is1)(1)));
     REQUIRE_FALSE((logical_xor(is2, is2)(1)));
@@ -131,7 +144,9 @@ TEST_CASE("composition_test, apply_to_pair")
 {
     using namespace fplus;
     auto APlusTwoTimesB = [](int a, int b) { return a + 2 * b; };
+    auto APlusTwoTimesBGenericLambda = [](auto a, auto b) { return a + 2 * b; };
     REQUIRE_EQ((apply_to_pair(APlusTwoTimesB, std::make_pair(1, 2))), 5);
+    REQUIRE_EQ((apply_to_pair(APlusTwoTimesBGenericLambda, std::make_pair(1, 2))), 5);
     REQUIRE_EQ((apply_to_pair(APlusTwoTimesBFunc, std::make_pair(1, 2))), 5);
 }
 
@@ -162,7 +177,13 @@ TEST_CASE("composition_test, memoize")
     REQUIRE_EQ(f(3), 9);
     REQUIRE_EQ(f(3), 9);
 
-    const auto add = [](int x, int y) -> int
+    auto g = memoize([](auto x) { return x * x; });
+    REQUIRE_EQ(g(2), 4);
+    REQUIRE_EQ(g(2), 4);
+    REQUIRE_EQ(g(3), 9);
+    REQUIRE_EQ(g(3), 9);
+
+    const auto add = [](auto x, int y)
     {
         return x + y;
     };

@@ -13,6 +13,9 @@
 #include <fplus/numeric.hpp>
 #include <fplus/search.hpp>
 
+#include <fplus/detail/invoke.hpp>
+#include <fplus/detail/split.hpp>
+
 namespace fplus
 {
 
@@ -72,20 +75,12 @@ ContainerOut group_on(F f, const ContainerIn& xs)
 // For a version scanning the whole container see group_globally_on_labeled.
 // group_on_labeled((mod 10), [12,22,34]) == [(2,[12,22]), (4,[34])]
 // O(n)
-template <typename F, typename ContainerIn,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename ContainerOutValue = std::pair<FOut,ContainerIn>,
-    typename ContainerOut = typename std::vector<ContainerOutValue>>
-ContainerOut group_on_labeled(F f, const ContainerIn& xs)
+template <typename F, typename ContainerIn>
+auto group_on_labeled(F f, const ContainerIn& xs)
 {
-    const auto grouped = group_by(is_equal_by(f), xs);
-    typedef typename decltype(grouped)::value_type Group;
-    const auto attach_label = [f](const Group& g) -> ContainerOutValue
-    {
-        return std::make_pair(f(g.front()), g);
-    };
-    return transform(attach_label, grouped);
+    const auto group = [](auto f, const auto& xs) { return group_by(f, xs); };
+
+    return detail::group_on_labeled_impl(group, f, xs);
 }
 
 // API search type: group : [a] -> [[a]]
@@ -166,20 +161,15 @@ ContainerOut group_globally_on(F f, const ContainerIn& xs)
 // group_globally_on_labeled((mod 10), [12,34,22]) == [(2,[12,22]),(4, [34])]
 // O(n^2)
 // If you need O(n*log(n)), sort and then use group_on_labeled
-template <typename F, typename ContainerIn,
-    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
-    typename ContainerOutValue = std::pair<FOut,ContainerIn>,
-    typename ContainerOut = typename std::vector<ContainerOutValue>>
-ContainerOut group_globally_on_labeled(F f, const ContainerIn& xs)
+template <typename F, typename ContainerIn>
+auto group_globally_on_labeled(F f, const ContainerIn& xs)
 {
-    const auto grouped = group_globally_by(is_equal_by(f), xs);
-    typedef typename decltype(grouped)::value_type Group;
-    const auto attach_label = [f](const Group& g) -> ContainerOutValue
+    const auto group = [](auto f, const auto& xs)
     {
-        return std::make_pair(f(g.front()), g);
+        return group_globally_by(f, xs);
     };
-    return transform(attach_label, grouped);
+
+    return detail::group_on_labeled_impl(group, f, xs);
 }
 
 // API search type: group_globally : [a] -> [[a]]

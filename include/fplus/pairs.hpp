@@ -8,100 +8,82 @@
 
 #include <fplus/container_common.hpp>
 #include <fplus/function_traits.hpp>
+#include <fplus/detail/invoke.hpp>
+#include <fplus/detail/asserts/pairs.hpp>
 
 #include <utility>
 
 namespace fplus
 {
-
 // API search type: apply_to_pair : (((a, b) -> c), (a, b)) -> c
 // fwd bind count: 1
 // Apply binary function to parts of a pair.
-template <typename F,
-    typename FIn0 = typename utils::function_traits<F>::template arg<0>::type,
-    typename FIn1 = typename utils::function_traits<F>::template arg<1>::type,
-    typename FOut = typename std::result_of<F(FIn0, FIn1)>::type>
+template <
+    typename F,
+    typename FIn0,
+    typename FIn1,
+    bool = detail::
+        trigger_static_asserts<detail::apply_to_pair_tag, F, FIn0, FIn1>(),
+    typename FOut = std::decay_t<detail::invoke_result_t<F, FIn0, FIn1>>>
 FOut apply_to_pair(F f, const std::pair<FIn0, FIn1>& p)
 {
-    internal::check_arity<2, F>();
-    return f(p.first, p.second);
+    return detail::invoke(f, p.first, p.second);
 }
 
 // API search type: zip_with : (((a, b) -> c), [a], [b]) -> [c]
 // fwd bind count: 2
 // Zip two sequences using a binary function.
 // zip_with((+), [1, 2, 3], [5, 6]) == [1+5, 2+6] == [6, 8]
-template <typename ContainerIn1, typename ContainerIn2, typename F,
-    typename X = typename ContainerIn1::value_type,
-    typename Y = typename ContainerIn2::value_type,
-    typename TOut = typename std::result_of<F(X, Y)>::type,
-    typename ContainerOut = typename std::vector<TOut>>
-ContainerOut zip_with(F f,
-        const ContainerIn1& xs, const ContainerIn2& ys)
+template <typename ContainerIn1,
+          typename ContainerIn2,
+          typename F,
+          typename X = typename ContainerIn1::value_type,
+          typename Y = typename ContainerIn2::value_type,
+          bool = detail::trigger_static_asserts<detail::zip_with_tag, F, X, Y>(),
+          typename TOut = std::decay_t<detail::invoke_result_t<F, X, Y>>,
+          typename ContainerOut = std::vector<TOut>>
+ContainerOut zip_with(F f, const ContainerIn1& xs, const ContainerIn2& ys)
 {
-    static_assert(utils::function_traits<F>::arity == 2,
-        "Function must take two parameters.");
-    typedef typename std::result_of<F(X, Y)>::type FOut;
-    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
-    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
-    typedef typename ContainerIn1::value_type T1;
-    typedef typename ContainerIn2::value_type T2;
-    static_assert(std::is_convertible<T1, FIn0>::value,
-        "Function does not take elements from first Container as first Parameter.");
-    static_assert(std::is_convertible<T2, FIn1>::value,
-        "Function does not take elements from second Container as second Parameter.");
-    static_assert(std::is_convertible<FOut, TOut>::value,
-        "Elements produced by this function can not be stored in ContainerOut.");
-    static_assert(std::is_same<
-        typename internal::same_cont_new_t<ContainerIn1, void>::type,
-        typename internal::same_cont_new_t<ContainerIn2, void>::type>::value,
-        "Both Containers must be of same outer type.");
-    ContainerOut result;
-    std::size_t resultSize = std::min(size_of_cont(xs), size_of_cont(ys));
-    internal::prepare_container(result, resultSize);
-    auto itResult = internal::get_back_inserter(result);
-    auto itXs = std::begin(xs);
-    auto itYs = std::begin(ys);
-    for (std::size_t i = 0; i < resultSize; ++i)
-    {
-        *itResult = f(*itXs, *itYs);
-        ++itXs;
-        ++itYs;
-    }
-    return result;
+  static_assert(
+      std::is_same<
+          typename internal::same_cont_new_t<ContainerIn1, void>::type,
+          typename internal::same_cont_new_t<ContainerIn2, void>::type>::value,
+      "Both Containers must be of same outer type.");
+  ContainerOut result;
+  std::size_t resultSize = std::min(size_of_cont(xs), size_of_cont(ys));
+  internal::prepare_container(result, resultSize);
+  auto itResult = internal::get_back_inserter(result);
+  auto itXs = std::begin(xs);
+  auto itYs = std::begin(ys);
+  for (std::size_t i = 0; i < resultSize; ++i)
+  {
+    *itResult = detail::invoke(f, *itXs, *itYs);
+    ++itXs;
+    ++itYs;
+  }
+  return result;
 }
 
 // API search type: zip_with_3 : (((a, b, c) -> d), [a], [b], [c]) -> [c]
 // fwd bind count: 3
 // Zip three sequences using a ternary function.
 // zip_with_3((+), [1, 2, 3], [5, 6], [1, 1]) == [7, 9]
-template <typename ContainerIn1, typename ContainerIn2, typename ContainerIn3,
+template <
+    typename ContainerIn1,
+    typename ContainerIn2,
+    typename ContainerIn3,
     typename F,
     typename X = typename ContainerIn1::value_type,
     typename Y = typename ContainerIn2::value_type,
     typename Z = typename ContainerIn3::value_type,
-    typename TOut = typename std::result_of<F(X, Y, Z)>::type,
+    bool = detail::trigger_static_asserts<detail::zip_with_3_tag, F, X, Y, Z>(),
+    typename TOut = std::decay_t<detail::invoke_result_t<F, X, Y, Z>>,
     typename ContainerOut = typename std::vector<TOut>>
 ContainerOut zip_with_3(F f,
-    const ContainerIn1& xs, const ContainerIn2& ys, const ContainerIn3& zs)
+                        const ContainerIn1& xs,
+                        const ContainerIn2& ys,
+                        const ContainerIn3& zs)
 {
-    static_assert(utils::function_traits<F>::arity == 3,
-        "Function must take two parameters.");
-    typedef typename std::result_of<F(X, Y, Z)>::type FOut;
-    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
-    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
-    typedef typename utils::function_traits<F>::template arg<2>::type FIn2;
-    typedef typename ContainerIn1::value_type T1;
-    typedef typename ContainerIn2::value_type T2;
-    typedef typename ContainerIn3::value_type T3;
-    static_assert(std::is_convertible<T1, FIn0>::value,
-        "Function does not take elements from first Container as first Parameter.");
-    static_assert(std::is_convertible<T2, FIn1>::value,
-        "Function does not take elements from second Container as second Parameter.");
-    static_assert(std::is_convertible<T3, FIn2>::value,
-        "Function does not take elements from third Container as third Parameter.");
-    static_assert(std::is_convertible<FOut, TOut>::value,
-        "Elements produced by this function can not be stored in ContainerOut.");
     static_assert(std::is_same<
         typename internal::same_cont_new_t<ContainerIn1, void>::type,
         typename internal::same_cont_new_t<ContainerIn2, void>::type>::value,
@@ -119,7 +101,7 @@ ContainerOut zip_with_3(F f,
     auto itZs = std::begin(zs);
     for (std::size_t i = 0; i < resultSize; ++i)
     {
-        *itResult = f(*itXs, *itYs, *itZs);
+        *itResult = detail::invoke(f, *itXs, *itYs, *itZs);
         ++itXs;
         ++itYs;
         ++itZs;
@@ -133,14 +115,20 @@ ContainerOut zip_with_3(F f,
 // and extrapolate the shorter sequence with a default value.
 // zip_with_defaults((+), 6, 7, [1,2,3], [1,2]) == [2,4,10]
 // zip_with_defaults((+), 6, 7, [1,2], [1,2,3]) == [2,4,9]
-template <typename ContainerIn1, typename ContainerIn2, typename F,
+template <
+    typename ContainerIn1,
+    typename ContainerIn2,
+    typename F,
     typename X = typename ContainerIn1::value_type,
     typename Y = typename ContainerIn2::value_type,
-    typename TOut = typename std::result_of<F(X, Y)>::type,
+    bool = detail::trigger_static_asserts<detail::zip_with_tag, F, X, Y>(),
+    typename TOut = std::decay_t<detail::invoke_result_t<F, X, Y>>,
     typename ContainerOut = typename std::vector<TOut>>
 ContainerOut zip_with_defaults(F f,
-        const X& default_x, const Y& default_y,
-        const ContainerIn1& xs, const ContainerIn2& ys)
+                               const X& default_x,
+                               const Y& default_y,
+                               const ContainerIn1& xs,
+                               const ContainerIn2& ys)
 {
     const auto size_xs = size_of_cont(xs);
     const auto size_ys = size_of_cont(ys);
@@ -227,35 +215,51 @@ Y snd(const std::pair<X, Y>& pair)
 // fwd bind count: 1
 // Apply a function to the first element of a pair.
 // transform_fst(square, (4, 5)) == (16, 5)
-template <typename X, typename Y, typename F,
-    typename ResultFirst = typename std::result_of<F(X)>::type>
+template <
+    typename X,
+    typename Y,
+    typename F,
+    bool = detail::trigger_static_asserts<detail::transform_fst_tag, F, X>(),
+    typename ResultFirst = std::decay_t<detail::invoke_result_t<F, X>>>
 std::pair<ResultFirst, Y> transform_fst(F f, const std::pair<X, Y>& pair)
 {
-    return std::make_pair(f(pair.first), pair.second);
+    return std::make_pair(detail::invoke(f, pair.first), pair.second);
 }
 
 // API search type: transform_snd : ((b -> c), (a, b)) -> (a, c)
 // fwd bind count: 1
 // Apply a function to the second element of a pair.
 // transform_snd(square, (4, 5)) == (4, 25)
-template <typename X, typename Y, typename F,
-    typename ResultSecond = typename std::result_of<F(Y)>::type>
+template <
+    typename X,
+    typename Y,
+    typename F,
+    bool = detail::trigger_static_asserts<detail::transform_snd_tag, F, Y>(),
+    typename ResultSecond = std::decay_t<detail::invoke_result_t<F, Y>>>
 std::pair<X, ResultSecond> transform_snd(F f, const std::pair<X, Y>& pair)
 {
-    return std::make_pair(pair.first, f(pair.second));
+    return std::make_pair(pair.first, detail::invoke(f, pair.second));
 }
 
 // API search type: transform_pair : ((a -> c), (b -> d), (a, b)) -> (c, d)
 // fwd bind count: 2
 // Apply functions the both parts of a pair.
 // transform_pair(square, square, (4, 5)) == (16, 25)
-template <typename X, typename Y, typename F, typename G,
-    typename ResultFirst = typename std::result_of<F(X)>::type,
-    typename ResultSecond = typename std::result_of<G(Y)>::type>
-std::pair<ResultFirst, ResultSecond> transform_pair(
-    F f, G g, const std::pair<X, Y>& pair)
+template <
+    typename X,
+    typename Y,
+    typename F,
+    typename G,
+    bool = detail::trigger_static_asserts<detail::transform_fst_tag, F, X>(),
+    bool = detail::trigger_static_asserts<detail::transform_snd_tag, G, Y>(),
+    typename ResultFirst = std::decay_t<detail::invoke_result_t<F, X>>,
+    typename ResultSecond = std::decay_t<detail::invoke_result_t<G, Y>>>
+std::pair<ResultFirst, ResultSecond> transform_pair(F f,
+                                                    G g,
+                                                    const std::pair<X, Y>& pair)
 {
-    return std::make_pair(f(pair.first), g(pair.second));
+    return std::make_pair(detail::invoke(f, pair.first),
+                          detail::invoke(g, pair.second));
 }
 
 // API search type: swap_pair_elems : (a, b) -> (b, a)
@@ -400,14 +404,27 @@ std::vector<std::pair<std::size_t, T>> enumerate(const Container& xs)
 // fwd bind count: 4
 // Calculate the inner product of two sequences using custom operations.
 // inner_product_with((+), (*), [1, 2, 3], [4, 5, 6]) == [32]
-template <typename ContainerIn1, typename ContainerIn2,
-    typename OP1, typename OP2,
-    typename Z,
-    typename OP1In0 = typename utils::function_traits<OP1>::template arg<0>::type,
-    typename OP1In1 = typename utils::function_traits<OP1>::template arg<1>::type,
-    typename TOut = typename std::result_of<OP1(OP1In0, OP1In1)>::type>
-TOut inner_product_with(OP1 op1, OP2 op2, const Z& value,
-        const ContainerIn1& xs, const ContainerIn2& ys)
+template <
+    typename ContainerIn1,
+    typename ContainerIn2,
+    typename OP1,
+    typename OP2,
+    typename Acc,
+    typename X = typename ContainerIn1::value_type,
+    typename Y = typename ContainerIn2::value_type,
+    bool = detail::
+        trigger_static_asserts<detail::inner_product_with_tag, OP2, X, Y>(),
+    typename OP2Out = detail::invoke_result_t<OP2, X, Y>,
+    bool = detail::trigger_static_asserts<detail::inner_product_with_tag,
+                                          OP1,
+                                          Acc,
+                                          OP2Out>(),
+    typename TOut = std::decay_t<detail::invoke_result_t<OP1, Acc, OP2Out>>>
+TOut inner_product_with(OP1 op1,
+                        OP2 op2,
+                        const Acc& value,
+                        const ContainerIn1& xs,
+                        const ContainerIn2& ys)
 {
     assert(size_of_cont(xs) == size_of_cont(ys));
     return std::inner_product(
