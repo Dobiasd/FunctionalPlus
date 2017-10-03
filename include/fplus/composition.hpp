@@ -18,11 +18,6 @@
 #include <unordered_map>
 #include <utility>
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wshadow"
-#endif
-
 namespace fplus
 {
 
