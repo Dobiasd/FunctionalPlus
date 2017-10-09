@@ -15,6 +15,8 @@
 #include <fplus/composition.hpp>
 #include <fplus/sets.hpp>
 
+#include <fplus/detail/invoke.hpp>
+
 #include <algorithm>
 #include <numeric>
 #include <type_traits>
@@ -187,10 +189,10 @@ maybe<typename std::size_t> maximum_idx_maybe(const Container& xs)
 // minimum_idx_on(length, ["123", "12", "1234", "123"]) -> "1"
 // Unsafe! Crashes on an empty sequence.
 template <typename F, typename Container>
-typename std::size_t minimum_idx_on(F f, const Container& xs)
+std::size_t minimum_idx_on(F f, const Container& xs)
 {
-    typedef typename std::result_of<F(typename Container::value_type)>::type Result;
-    auto transformed = transform_convert<std::vector<Result>>(f, xs);
+    using Result = detail::invoke_result_t<F, typename Container::value_type>;
+    auto transformed = transform_convert<std::vector<std::decay_t<Result>>>(f, xs);
     return minimum_idx(transformed);
 }
 
@@ -215,10 +217,10 @@ maybe<typename std::size_t> minimum_idx_on_maybe(F f, const Container& xs)
 // maximum_idx_on(length, ["123", "12", "1234", "123"]) == "2"
 // Unsafe! Crashes on an empty sequence.
 template <typename F, typename Container>
-typename std::size_t maximum_idx_on(F f, const Container& xs)
+std::size_t maximum_idx_on(F f, const Container& xs)
 {
-    typedef typename std::result_of<F(typename Container::value_type)>::type Result;
-    auto transformed = transform_convert<std::vector<Result>>(f, xs);
+    using Result = detail::invoke_result_t<F, typename Container::value_type>;
+    auto transformed = transform_convert<std::vector<std::decay_t<Result>>>(f, xs);
     return maximum_idx(transformed);
 }
 
