@@ -2,7 +2,7 @@
 
 # source: https://github.com/ericniebler/range-v3
 
-TRUNK_VERSION="5.0.1"
+TRUNK_VERSION="5.*"
 
 set -e
 
@@ -46,7 +46,7 @@ if [ -z ${VERSION+x} ]; then
     exit 4
 fi
 
-if [ ${VERSION} == $TRUNK_VERSION ]; then
+if [[ ${VERSION} == $TRUNK_VERSION ]]; then
     echo "Fetching libc++ and libc++abi tip-of-trunk..."
 
     # Checkout LLVM sources
