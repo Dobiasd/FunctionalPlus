@@ -94,7 +94,7 @@ namespace internal
             typename utils::function_traits<UnaryPredicate>::template arg<0>::type>::value,
             "Unary predicate can not take these values.");
         static_assert(check_callable<UnaryPredicate>::value && std::is_convertible<
-            typename std::result_of<UnaryPredicate(T)>::type, bool>::value,
+            detail::invoke_result_t<UnaryPredicate, T>, bool>::value,
             "Predicate must return bool.");
     }
 
@@ -118,7 +118,7 @@ namespace internal
         static_assert(std::is_same<FIn0, std::size_t>::value,
             "First parameter of function must be std::size_t.");
         static_assert(std::is_convertible<
-            typename std::result_of<F(std::size_t, T)>::type, bool>::value,
+            detail::invoke_result_t<F, std::size_t, T>, bool>::value,
             "Function must return bool.");
         static_assert(std::is_convertible<T, FIn1>::value,
             "Function does not work with elements of Container.");
@@ -146,7 +146,7 @@ namespace internal
         static_assert(std::is_same<FIn, FIn1>::value,
             "BinaryPredicate must take two similar types");
         static_assert(std::is_convertible<
-            typename std::result_of<BinaryPredicate(T, T)>::type, bool>::value,
+            detail::invoke_result_t<BinaryPredicate, T, T>, bool>::value,
             "BinaryPredicate must return bool.");
         static_assert(std::is_convertible<T, FIn>::value,
             "BinaryPredicate does not work with elements of Container.");
@@ -173,7 +173,7 @@ namespace internal
         static_assert(std::is_same<FIn, FIn1>::value,
             "Compare must take two similar types");
         static_assert(std::is_convertible<
-            typename std::result_of<Compare(T, T)>::type, bool>::value,
+            detail::invoke_result_t<Compare, T, T>, bool>::value,
             "Compare must return bool.");
         static_assert(std::is_convertible<T, FIn>::value,
             "Compare does not work with elements of Container.");
@@ -203,8 +203,9 @@ namespace internal
         static_assert(std::is_convertible<Y,
             typename utils::function_traits<G>::template arg<0>::type>::value,
             "Function can note take elements of this type.");
-        static_assert(std::is_same<typename std::result_of<F(X)>::type,
-            typename std::result_of<G(Y)>::type>::value,
+        static_assert(
+            std::is_same<std::decay_t<detail::invoke_result_t<F, X>>,
+                         std::decay_t<detail::invoke_result_t<G, Y>>>::value,
             "Both functions must return same type.");
     }
 
