@@ -2029,16 +2029,18 @@ std::pair<Result, Result> mean_stddev(const Container& xs)
 // applying a specific transformer.
 // count_occurrences_by(floor, [1.1, 2.3, 2.7, 3.6, 2.4]) == [(1, 1), (2, 3), (3, 1)]
 // O(n)
-template <typename F, typename ContainerIn,
-        typename MapOut = typename std::map<
-            typename std::result_of<F(typename ContainerIn::value_type)>::type, std::size_t>>
-MapOut count_occurrences_by(F f, const ContainerIn& xs)
+template <typename F, typename ContainerIn>
+auto count_occurrences_by(F f, const ContainerIn& xs)
 {
+    using In = typename ContainerIn::value_type;
+    using MapOut =
+        std::map<std::decay_t<detail::invoke_result_t<F, In>>, std::size_t>;
+
     internal::check_arity<1, F>();
     MapOut result;
     for (const auto& x : xs)
     {
-        ++result[f(x)];
+        ++result[detail::invoke(f, x)];
     }
     return result;
 }

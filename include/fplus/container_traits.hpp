@@ -20,6 +20,8 @@
 #include <string>
 #include <vector>
 
+#include <fplus/detail/invoke.hpp>
+
 namespace fplus
 {
 
@@ -73,7 +75,7 @@ template<
     typename F,
     int SizeOffset = std::numeric_limits<int>::lowest(),
     typename T = typename ContIn::value_type,
-    typename ContOut = typename same_cont_new_t<ContIn, typename std::result_of<F(T)>::type, SizeOffset>::type>
+    typename ContOut = typename same_cont_new_t<ContIn, std::decay_t<detail::invoke_result_t<F, T>>, SizeOffset>::type>
 struct same_cont_new_t_from_unary_f
 {
     typedef ContOut type;
@@ -85,7 +87,7 @@ template<
     typename T1,
     typename T2,
     int SizeOffset = std::numeric_limits<int>::lowest(),
-    typename ContOut = typename same_cont_new_t<ContIn, typename std::result_of<F(T1, T2)>::type, SizeOffset>::type>
+    typename ContOut = typename same_cont_new_t<ContIn, std::decay_t<detail::invoke_result_t<F, T1, T2>>, SizeOffset>::type>
 struct same_cont_new_t_from_binary_f
 {
     typedef ContOut type;

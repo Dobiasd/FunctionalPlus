@@ -10,6 +10,7 @@
 #include <fplus/function_traits.hpp>
 #include <fplus/generate.hpp>
 #include <fplus/string_tools.hpp>
+#include <fplus/detail/invoke.hpp>
 
 #include <atomic>
 #include <chrono>
@@ -179,17 +180,18 @@ std::function<void()> sleep_for_n_microseconds(std::size_t microseconds)
 // API search type: execute_serially : [Io ()] -> Io ()
 // Returns a function that executes
 // the given side effects one after another when called.
-template <typename Container,
-        typename Effect = typename Container::value_type,
-        typename Result = typename std::result_of<Effect()>::type>
-std::function<std::vector<Result>()> execute_serially(const Container& effs)
+template <typename Container>
+auto execute_serially(const Container& effs)
 {
-    return [effs]() -> std::vector<Result>
+    using Effect = typename Container::value_type;
+    using Result = detail::invoke_result_t<Effect>;
+
+    return [effs]
     {
-        std::vector<Result> results;
+        std::vector<std::decay_t<Result>> results;
         for (const Effect& e : effs)
         {
-            results.push_back(e());
+            results.push_back(detail::invoke(e));
         }
         return results;
     };
@@ -198,18 +200,18 @@ std::function<std::vector<Result>()> execute_serially(const Container& effs)
 // API search type: execute_serially_until_success : [Io Bool] -> Io Bool
 // Returns a function that (when called) executes
 // the given side effects one after another until one of it returns true.
-template <typename Container,
-        typename Effect = typename Container::value_type,
-        typename Result = typename std::result_of<Effect()>::type>
-std::function<bool()> execute_serially_until_success(const Container& effs)
+template <typename Container>
+auto execute_serially_until_success(const Container& effs)
 {
+    using Effect = typename Container::value_type;
+    using Result = detail::invoke_result_t<Effect>;
     static_assert(std::is_convertible<Result, bool>::value,
-        "Effects must return a boolish type.");
+                  "Effects must return a boolish type.");
     return [effs]() -> bool
     {
         for (const Effect& e : effs)
         {
-            if (e())
+            if (detail::invoke(e))
             {
                 return true;
             }
@@ -234,13 +236,12 @@ std::function<Result()> execute_and_return_fixed_value(
 }
 
 // Converts an arbitrary callable effect to an std::function.
-template <typename Effect,
-        typename Result = typename std::result_of<Effect()>::type>
-std::function<Result()> effect_to_std_function(Effect eff)
+template <typename Effect>
+std::function<detail::invoke_result_t<Effect> ()> effect_to_std_function(Effect eff)
 {
-    return [eff]() -> Result
+    return [eff]
     {
-        return eff();
+        return detail::invoke(eff);
     };
 }
 
@@ -248,12 +249,10 @@ std::function<Result()> effect_to_std_function(Effect eff)
 // Returns a function that (when called) executes a side effect
 // until it succeds once or the maximum number
 // of attempts with an optional pause in between.
-template <typename Effect,
-        typename Result = typename std::result_of<Effect()>::type>
-std::function<bool()> execute_max_n_times_until_success(
-        std::size_t n,
-        const Effect& eff,
-        std::size_t pause_in_milliseconds = 0)
+template <typename Effect>
+auto execute_max_n_times_until_success(std::size_t n,
+                                       const Effect& eff,
+                                       std::size_t pause_in_milliseconds = 0)
 {
     if (pause_in_milliseconds > 0)
     {
@@ -273,18 +272,18 @@ std::function<bool()> execute_max_n_times_until_success(
 // API search type: execute_serially_until_failure : [Io Bool] -> Io Bool
 // Returns a function that (when called) executes the given side effects
 // one after another until one of them returns false.
-template <typename Container,
-        typename Effect = typename Container::value_type,
-        typename Result = typename std::result_of<Effect()>::type>
+template <typename Container>
 std::function<bool()> execute_serially_until_failure(const Container& effs)
 {
+    using Effect = typename Container::value_type;
+    using Result = detail::invoke_result_t<Effect>;
     static_assert(std::is_convertible<Result, bool>::value,
         "Effects must return a boolish type.");
     return [effs]() -> bool
     {
         for (const Effect& e : effs)
         {
-            if (!e())
+            if (!detail::invoke(e))
             {
                 return false;
             }
@@ -296,22 +295,18 @@ std::function<bool()> execute_serially_until_failure(const Container& effs)
 // API search type: execute_parallelly : [Io a] -> Io [a]
 // Returns a function that (when called) executes the given side effects
 // in parallel and returns the collected results.
-template <typename Container,
-        typename Effect = typename Container::value_type,
-        typename Result = typename std::result_of<Effect()>::type>
-std::function<std::vector<Result>()> execute_parallelly(const Container& effs)
+template <typename Container>
+auto execute_parallelly(const Container& effs)
 {
-    return [effs]() -> std::vector<Result>
-    {
-        std::vector<std::future<Result>> handles =
-            transform([](Effect e) -> std::future<Result>
-            {
-                return std::async(std::launch::async, e);
-            }, effs);
+    using Effect = typename Container::value_type;
+    using Result = detail::invoke_result_t<Effect>;
+    return [effs] {
+        auto handles = transform(
+            [](Effect e) { return std::async(std::launch::async, e); }, effs);
 
-        std::vector<Result> results;
+        std::vector<std::decay_t<Result>> results;
         results.reserve(size_of_cont(handles));
-        for (std::future<Result>& handle : handles)
+        for (auto& handle : handles)
         {
             results.push_back(handle.get());
         }
@@ -487,11 +482,10 @@ std::function<bool()> write_text_file_lines(bool trailing_newline,
 // Simply run a side effect (call a function without parameters)
 // and returns the result.
 // Can be useful for chaining.
-template <typename F,
-    typename FOut = typename std::result_of<F()>::type>
-FOut execute_effect(const F f)
+template <typename F>
+auto execute_effect(const F f)
 {
-    return f();
+    return detail::invoke(f);
 }
 
 // API search type: interact : (String -> String) -> Io ()

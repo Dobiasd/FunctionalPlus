@@ -142,7 +142,7 @@ namespace internal
         static_assert(utils::function_traits<F>::arity == 1,
                 "Wrong arity.");
         typedef typename function_first_input_type<F>::type T;
-        typedef typename std::result_of<F(T)>::type type;
+        typedef std::decay_t<detail::invoke_result_t<F, T>> type;
     };
 
 
@@ -233,11 +233,11 @@ struct variant
         return a.shared_ptrs_ != b.shared_ptrs_;
     }
 
-    template <typename F,
-        typename T = typename internal::function_first_input_type<F>::type,
-        typename Res = typename std::result_of<F(T)>::type>
-    fplus::maybe<Res> visit_one(F f) const
+    template <typename F>
+    auto visit_one(F f) const
     {
+        using T = typename internal::function_first_input_type<F>::type;
+        using Ret = detail::invoke_result_t<F, T>;
         internal::check_arity<1, F>();
 
         static_assert(
@@ -246,19 +246,18 @@ struct variant
                 Types...>::value
             , "Function input must match one variant type.");
 
-        static_assert(
-            !std::is_same<typename std::result_of<F(T)>::type, void>::value,
-            "Function must return non-void type.");
+        static_assert(!std::is_same<std::decay_t<Ret>, void>::value,
+                      "Function must return non-void type.");
 
         const auto ptr =
             std::get<internal::get_index<T, Types...>::value>(shared_ptrs_);
 
         if (ptr)
         {
-            return f(*ptr);
+            return just(detail::invoke(f, *ptr));
         }
 
-        return {};
+        return nothing<std::decay_t<Ret>>();
     }
 
     template <typename ...Fs>
