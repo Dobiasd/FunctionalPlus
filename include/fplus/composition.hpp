@@ -238,23 +238,24 @@ auto memoize(F f)
 
 namespace internal
 {
-    template <typename F, typename Cache,
-        typename FIn1 = typename utils::function_traits<F>::template arg<0>::type,
-        typename FIn2 = typename utils::function_traits<F>::template arg<1>::type,
-        typename FOut = typename std::result_of<F(FIn1, FIn2)>::type,
-        typename ResultF = std::function<FOut(FIn2)>>
-    ResultF memoize_recursive_helper(const F f, std::shared_ptr<Cache> storage)
-    {
-        return [f, storage](FIn2 x)
+template <
+    typename F,
+    typename Cache,
+    typename FIn1 = typename utils::function_traits<F>::template arg<0>::type,
+    typename FIn2 = typename utils::function_traits<F>::template arg<1>::type,
+    typename FOut = detail::invoke_result_t<F, FIn1, FIn2>,
+    typename ResultF = std::function<FOut(FIn2)>>
+ResultF memoize_recursive_helper(const F f, std::shared_ptr<Cache> storage)
+{
+    return [f, storage](FIn2 x) {
+        const auto it = storage->find(x);
+        if (it == storage->end())
         {
-            const auto it = storage->find(x);
-            if (it == storage->end())
-            {
-                const auto g = memoize_recursive_helper(f, storage);
-                (*storage)[x] = f(g, x);
-            }
-            return (*storage)[x];
-        };
+            const auto g = memoize_recursive_helper(f, storage);
+            (*storage)[x] = detail::invoke(f, g, x);
+        }
+        return (*storage)[x];
+    };
     }
 } // namespace internal
 
@@ -269,16 +270,15 @@ namespace internal
 // }
 // Returns a closure mutating an internally held dictionary
 // mapping input values to output values.
-template <typename F,
-    typename FIn1 = typename utils::function_traits<F>::template arg<0>::type,
-    typename FIn2 = typename utils::function_traits<F>::template arg<1>::type,
-    typename FOut = typename std::result_of<F(FIn1, FIn2)>::type,
-    typename MemoMap = std::unordered_map<
-        typename std::remove_reference<typename std::remove_const<FIn2>::type>::type,
-        FOut>>
-std::function<FOut(FIn2)> memoize_recursive(F f)
+template <typename F>
+auto memoize_recursive(F f)
 {
-    std::shared_ptr<MemoMap> storage = std::make_shared<MemoMap>();
+    using FIn1 = typename utils::function_traits<F>::template arg<0>::type;
+    using FIn2 = typename utils::function_traits<F>::template arg<1>::type;
+    using FOut = detail::invoke_result_t<F, FIn1, FIn2>;
+    using MemoMap =
+        std::unordered_map<detail::uncvref_t<FIn2>, std::decay_t<FOut>>;
+    auto storage = std::make_shared<MemoMap>();
     return internal::memoize_recursive_helper(f, storage);
 }
 

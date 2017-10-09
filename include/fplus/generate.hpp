@@ -101,17 +101,17 @@ ContainerOut infixes(std::size_t length, const ContainerIn& xs)
 //   SELECT f(xs.x, ys.y)
 //   FROM xs, ys
 //   WHERE pred(xs.x, ys.y);
-template <typename F,
-    typename Pred,
-    typename Container1,
-    typename Container2,
-    typename X = typename Container1::value_type,
-    typename Y = typename Container2::value_type,
-    typename FOut = typename std::result_of<F(X, Y)>::type,
-    typename ContainerOut = std::vector<FOut>>
-ContainerOut carthesian_product_with_where(F f, Pred pred,
-    const Container1& xs, const Container2& ys)
+template <typename F, typename Pred, typename Container1, typename Container2>
+auto carthesian_product_with_where(F f,
+                                   Pred pred,
+                                   const Container1& xs,
+                                   const Container2& ys)
 {
+    using X = typename Container1::value_type;
+    using Y = typename Container2::value_type;
+    using FOut = detail::invoke_result_t<F, X, Y>;
+    using ContainerOut = std::vector<std::decay_t<FOut>>;
+
     ContainerOut result;
     auto itOut = internal::get_back_inserter(result);
     for (const auto& x : xs)
@@ -136,17 +136,10 @@ ContainerOut carthesian_product_with_where(F f, Pred pred,
 // same as (in pseudo SQL):
 //   SELECT f(xs.x, ys.y)
 //   FROM xs, ys;
-template <typename F,
-    typename Container1,
-    typename Container2,
-    typename X = typename Container1::value_type,
-    typename Y = typename Container2::value_type,
-    typename FOut = typename std::result_of<F(X, Y)>::type,
-    typename ContainerOut = std::vector<FOut>>
-ContainerOut carthesian_product_with(F f,
-    const Container1& xs, const Container2& ys)
+template <typename F, typename Container1, typename Container2>
+auto carthesian_product_with(F f, const Container1& xs, const Container2& ys)
 {
-    auto always_true_x_y = [](const X&, const Y&) { return true; };
+    auto always_true_x_y = [](const auto&, const auto&) { return true; };
     return carthesian_product_with_where(f, always_true_x_y, xs, ys);
 }
 
@@ -408,16 +401,19 @@ ContainerOut iterate_maybe(F f, const T& x)
 // and the first of each adjacent pair of elements of the sequence
 // using a binary function.
 // adjacent_difference_by([0,4,1,2,5]) == [0,4,-3,1,3]
-template <typename ContainerIn, typename F,
-    typename X = typename ContainerIn::value_type,
-    typename TOut = typename std::result_of<F(X, X)>::type,
-    typename ContainerOut = typename std::vector<TOut>>
-ContainerOut adjacent_difference_by(F f, const ContainerIn& xs)
+template <typename ContainerIn, typename F>
+auto adjacent_difference_by(F f, const ContainerIn& xs)
 {
+    using X = typename ContainerIn::value_type;
+    using TOut = detail::invoke_result_t<F, X, X>;
+    using ContainerOut = std::vector<std::decay_t<TOut>>;
+
     ContainerOut result;
+
+    using std::begin;
+    using std::end;
     internal::prepare_container(result, size_of_cont(xs));
-    std::adjacent_difference(std::begin(xs), std::end(xs),
-        back_inserter(result), f);
+    std::adjacent_difference(begin(xs), end(xs), back_inserter(result), f);
     return result;
 }
 

@@ -302,26 +302,25 @@ auto apply_function_n_times(F f, std::size_t n, const FIn& x)
 // Same as transform, but can utilize multiple CPUs by using std::async.
 // Only makes sense if one run of the provided function
 // takes enough time to justify the synchronization overhead.
-template <typename F, typename ContainerIn,
-    typename ContainerOut = typename internal::same_cont_new_t_from_unary_f<
-        ContainerIn, F, 0>::type,
-    typename X = typename ContainerIn::value_type,
-    typename Y = typename std::result_of<F(X)>::type>
-ContainerOut transform_parallelly(F f, const ContainerIn& xs)
+template <typename F, typename ContainerIn>
+auto transform_parallelly(F f, const ContainerIn& xs)
 {
+    using ContainerOut = typename internal::
+        same_cont_new_t_from_unary_f<ContainerIn, F, 0>::type;
+    using X = typename ContainerIn::value_type;
     internal::check_arity<1, F>();
-    auto handles = transform([&f](const X& x) -> std::future<Y>
+    auto handles = transform([&f](const X& x)
     {
         return std::async(std::launch::async, [&x, &f]()
             {
-                return f(x);
+                return detail::invoke(f, x);
             });
     }, xs);
 
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
     auto it = internal::get_back_inserter<ContainerOut>(ys);
-    for (std::future<Y>& handle : handles)
+    for (auto& handle : handles)
     {
         *it = handle.get();
     }
@@ -414,16 +413,13 @@ Container keep_if_parallelly(Pred pred, const Container& xs)
 // transform_reduce(square, add, 0, [1,2,3]) == 0+1+4+9 = 14
 // The set of binary_f, init and unary_f::output should form a
 // commutative monoid.
-template <typename UnaryF, typename BinaryF, typename Container,
-    typename Acc = typename std::result_of<
-        UnaryF(typename Container::value_type)>::type,
-    typename Out = typename std::result_of<
-        BinaryF(Acc, Acc)>::type>
-Out transform_reduce(
-    UnaryF unary_f, BinaryF binary_f, const Acc& init, const Container& xs)
+template <typename UnaryF, typename BinaryF, typename Container, typename Acc>
+auto transform_reduce(UnaryF unary_f,
+                      BinaryF binary_f,
+                      const Acc& init,
+                      const Container& xs)
 {
-    return reduce(binary_f, init,
-        transform(unary_f, xs));
+    return reduce(binary_f, init, transform(unary_f, xs));
 }
 
 // API search type: transform_reduce_1 : ((a -> b), ((b, b) -> b), [a]) -> b
@@ -431,16 +427,10 @@ Out transform_reduce(
 // transform_reduce_1(square, add, [1,2,3]) == 0+1+4+9 = 14
 // The set of binary_f, and unary_f::output should form
 // a commutative semigroup.
-template <typename UnaryF, typename BinaryF, typename Container,
-    typename Acc = typename std::result_of<
-        UnaryF(typename Container::value_type)>::type,
-    typename Out = typename std::result_of<
-        BinaryF(Acc, Acc)>::type>
-Out transform_reduce_1(
-    UnaryF unary_f, BinaryF binary_f, const Container& xs)
+template <typename UnaryF, typename BinaryF, typename Container>
+auto transform_reduce_1(UnaryF unary_f, BinaryF binary_f, const Container& xs)
 {
-    return reduce_1(binary_f,
-        transform(unary_f, xs));
+    return reduce_1(binary_f, transform(unary_f, xs));
 }
 
 // API search type: transform_reduce_parallelly : ((a -> b), ((b, b) -> b), b, [a]) -> b
@@ -449,16 +439,13 @@ Out transform_reduce_1(
 // Also Known as map_reduce.
 // The set of binary_f, init and unary_f::output
 // should form a commutative monoid.
-template <typename UnaryF, typename BinaryF, typename Container,
-    typename Acc = typename std::result_of<
-        UnaryF(typename Container::value_type)>::type,
-    typename Out = typename std::result_of<
-        BinaryF(Acc, Acc)>::type>
-Out transform_reduce_parallelly(
-    UnaryF unary_f, BinaryF binary_f, const Acc& init, const Container& xs)
+template <typename UnaryF, typename BinaryF, typename Container, typename Acc>
+auto transform_reduce_parallelly(UnaryF unary_f,
+                                 BinaryF binary_f,
+                                 const Acc& init,
+                                 const Container& xs)
 {
-    return reduce_parallelly(binary_f, init,
-        transform_parallelly(unary_f, xs));
+    return reduce_parallelly(binary_f, init, transform_parallelly(unary_f, xs));
 }
 
 // API search type: transform_reduce_1_parallelly : ((a -> b), ((b, b) -> b), [a]) -> b
@@ -467,16 +454,12 @@ Out transform_reduce_parallelly(
 // Also Known as map_reduce.
 // The set of binary_f, and unary_f::output
 // should form a commutative semigroup.
-template <typename UnaryF, typename BinaryF, typename Container,
-    typename Acc = typename std::result_of<
-        UnaryF(typename Container::value_type)>::type,
-    typename Out = typename std::result_of<
-        BinaryF(Acc, Acc)>::type>
-Out transform_reduce_1_parallelly(
-    UnaryF unary_f, BinaryF binary_f, const Container& xs)
+template <typename UnaryF, typename BinaryF, typename Container>
+auto transform_reduce_1_parallelly(UnaryF unary_f,
+                                   BinaryF binary_f,
+                                   const Container& xs)
 {
-    return reduce_1_parallelly(binary_f,
-        transform_parallelly(unary_f, xs));
+    return reduce_1_parallelly(binary_f, transform_parallelly(unary_f, xs));
 }
 
 // API search type: transform_parallelly_n_threads : (Int, (a -> b), [a]) -> [b]
@@ -486,15 +469,14 @@ Out transform_reduce_1_parallelly(
 // Only makes sense if one run of the provided function
 // takes enough time to justify the synchronization overhead.
 // Can be used for applying the MapReduce pattern.
-template <typename F, typename ContainerIn,
-    typename ContainerOut = typename internal::same_cont_new_t_from_unary_f<
-        ContainerIn, F, 0>::type,
-    typename X = typename ContainerIn::value_type,
-    typename Y = typename std::result_of<F(X)>::type>
-ContainerOut transform_parallelly_n_threads(
-    std::size_t n, F f, const ContainerIn& xs)
+template <typename F, typename ContainerIn>
+auto transform_parallelly_n_threads(std::size_t n, F f, const ContainerIn& xs)
 {
-    typedef const X * x_ptr_t;
+    using ContainerOut = typename internal::
+        same_cont_new_t_from_unary_f<ContainerIn, F, 0>::type;
+    using X = typename ContainerIn::value_type;
+    using Y = detail::invoke_result_t<F, X>;
+    using x_ptr_t =  const X*;
     auto queue = transform_convert<std::vector<x_ptr_t>>(
         [](const X& x) -> x_ptr_t
         {
@@ -503,7 +485,7 @@ ContainerOut transform_parallelly_n_threads(
 
     std::mutex queue_mutex;
     std::mutex thread_results_mutex;
-    std::map<std::size_t, Y> thread_results;
+    std::map<std::size_t, std::decay_t<Y>> thread_results;
     std::size_t queue_idx = 0;
 
     const auto worker_func = [&]()

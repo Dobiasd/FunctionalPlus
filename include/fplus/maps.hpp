@@ -10,6 +10,8 @@
 #include <fplus/container_common.hpp>
 #include <fplus/pairs.hpp>
 
+#include <fplus/detail/invoke.hpp>
+
 #include <map>
 #include <unordered_map>
 
@@ -63,15 +65,15 @@ ContainerOut map_to_pairs(const MapType& dict)
 // fwd bind count: 1
 // Manipulate the values in a dictionary, keeping the key-value relationship.
 // transform_map_values((*2), {0: 2, 1: 3}) == {0: 4, 1: 6}
-template <typename F, typename MapIn,
-    typename MapInPair = typename MapIn::value_type,
-    typename Key = typename std::remove_const<typename MapInPair::first_type>::type,
-    typename InVal = typename std::remove_const<typename MapInPair::second_type>::type,
-    typename OutVal = typename std::remove_reference<typename std::remove_const<
-        typename std::result_of<F(InVal)>::type>::type>::type,
-    typename MapOut = typename internal::SameMapTypeNewTypes<MapIn, Key, OutVal>::type>
-MapOut transform_map_values(F f, const MapIn& map)
+template <typename F, typename MapIn>
+auto transform_map_values(F f, const MapIn& map)
 {
+    using MapInPair = typename MapIn::value_type;
+    using Key = std::remove_const_t<typename MapInPair::first_type>;
+    using InVal = std::remove_const_t<typename MapInPair::second_type>;
+    using OutVal = std::decay_t<detail::invoke_result_t<F, InVal>>;
+    using MapOut = typename internal::SameMapTypeNewTypes<MapIn, Key, OutVal>::type;
+
     return pairs_to_map<MapOut>(
         transform(
             bind_1st_of_2(transform_snd<Key, InVal, F>, f),
@@ -82,18 +84,12 @@ MapOut transform_map_values(F f, const MapIn& map)
 // fwd bind count: 2
 // Combine two dictionaries using a binary function for the values.
 // map_union_with((++), {0: a, 1: b}, {0: c, 2: d}) == {0: ac, 1: b, 2: d}
-template <typename F, typename MapIn,
-    typename MapInPair = typename MapIn::value_type,
-    typename Key = typename std::remove_const<typename MapInPair::first_type>::type,
-    typename Val = typename std::remove_const<typename MapInPair::second_type>::type,
-    typename OutVal = typename std::remove_reference<typename std::remove_const<
-        typename std::result_of<F(Val, Val)>::type>::type>::type,
-    typename MapOut = typename internal::SameMapTypeNewTypes<MapIn, Key, OutVal>::type>
-MapOut map_union_with(F f, const MapIn& dict1, const MapIn& dict2)
+template <typename F, typename MapIn>
+auto map_union_with(F f, const MapIn& dict1, const MapIn& dict2)
 {
     auto full_map = pairs_to_map_grouped(
             append(map_to_pairs(dict1), map_to_pairs(dict2)));
-    const auto group_f = [f](const std::vector<Val>& vals) -> OutVal
+    const auto group_f = [f](const auto& vals)
     {
         return fold_left_1(f, vals);
     };
@@ -105,13 +101,12 @@ MapOut map_union_with(F f, const MapIn& dict1, const MapIn& dict2)
 // Combine two dictionaries keeping the value of the first map
 // in case of key collissions.
 // map_union({0: a, 1: b}, {0: c, 2: d}) == {0: a, 1: b, 2: d}
-template <typename MapType,
-    typename MapInPair = typename MapType::value_type,
-    typename InVal = typename std::remove_const<typename MapInPair::second_type>::type>
+template <typename MapType>
 MapType map_union(const MapType& dict1, const MapType& dict2)
 {
-    typedef typename MapType::value_type::second_type value;
-    const auto get_first = [](const value& a, const value&) -> value
+    using Value = typename MapType::value_type::second_type;
+
+    const auto get_first = [](const Value& a, const Value&) -> Value
     {
         return a;
     };
@@ -185,12 +180,8 @@ MapOut create_map(const ContainerIn1& keys, const ContainerIn2& values)
 // Take a list of keys and create a dictionary
 // generating the values by applying f to each key.
 // create_map_with(show, [1,2]) == {1: "1", 2: "2"}
-template <typename ContainerIn,
-    typename F,
-    typename Key = typename std::remove_const<typename ContainerIn::value_type>::type,
-    typename Val = typename std::result_of<F(Key)>::type,
-    typename MapOut = std::map<Key, Val>>
-MapOut create_map_with(F f, const ContainerIn& keys)
+template <typename ContainerIn, typename F>
+auto create_map_with(F f, const ContainerIn& keys)
 {
     return create_map(keys, transform(f, keys));
 }
@@ -216,13 +207,8 @@ MapOut create_unordered_map(
 // Take a list of keys and create a dictionary
 // generating the values by applying f to each key.
 // create_unordered_map_with(show, [1,2]) == {1: "1", 2: "2"}
-template <typename ContainerIn,
-    typename F,
-    typename Key = typename std::remove_const<typename ContainerIn::value_type>::type,
-    typename Val = typename std::remove_reference<typename std::remove_const<
-        typename std::result_of<F(Key)>::type>::type>::type,
-    typename MapOut = std::unordered_map<Key, Val>>
-MapOut create_unordered_map_with(F f, const ContainerIn& keys)
+template <typename ContainerIn, typename F>
+auto create_unordered_map_with(F f, const ContainerIn& keys)
 {
     return create_unordered_map(keys, transform(f, keys));
 }
@@ -420,16 +406,16 @@ maybe<Val> choose_by(
 // choose_lazy([(1,a), (2,b)], 2) == Just b();
 // choose_lazy([(1,a), (1,b)], 2) == Nothing;
 // choose_lazy([(1,a), (2,b)], 3) == Nothing;
-template<typename Key, typename ValStub,
-    typename Val = typename std::result_of<ValStub()>::type>
-maybe<Val> choose_lazy(const std::vector<std::pair<Key, ValStub>>& pairs,
-    const Key& x)
+template <typename Key, typename ValStub>
+auto choose_lazy(const std::vector<std::pair<Key, ValStub>>& pairs,
+                 const Key& x)
 {
+    using Ret = maybe<std::decay_t<detail::invoke_result_t<ValStub>>>;
     const auto res = choose(pairs, x);
     if (res.is_nothing())
-        return {};
+        return Ret{};
     else
-        return res.unsafe_get_just()();
+        return Ret{res.unsafe_get_just()()};
 }
 
 // API search type: choose_by_lazy : ([((a -> Bool), (() -> b))], a) -> Maybe b
@@ -440,17 +426,18 @@ maybe<Val> choose_lazy(const std::vector<std::pair<Key, ValStub>>& pairs,
 // choose_by_lazy([(is_even,a), (is_bigger_than_3,b)], 5) == Just b();
 // choose_by_lazy([(is_even,a), (is_bigger_than_3,b)], 1) == Nothing;
 // choose_by_lazy([(is_even,a), (is_bigger_than_3,b)], 4) == Nothing;
-template<typename Key, typename ValStub,
-    typename Val = typename std::result_of<ValStub()>::type>
-maybe<Val> choose_by_lazy(
+template <typename Key, typename ValStub>
+auto choose_by_lazy(
     const std::vector<std::pair<std::function<bool(const Key&)>, ValStub>>& pairs,
     const Key& x)
 {
+    using Ret = maybe<std::decay_t<detail::invoke_result_t<ValStub>>>;
+
     const auto res = choose_by(pairs, x);
     if (res.is_nothing())
-        return {};
+        return Ret{};
     else
-        return res.unsafe_get_just()();
+        return Ret{res.unsafe_get_just()()};
 }
 
 // API search type: choose_def : (b, [(a, b)], a) -> b
@@ -494,10 +481,10 @@ Val choose_by_def(const Val& def,
 // choose_def_lazy(c, [(1,a), (2,b)], 2) == b();
 // choose_def_lazy(c, [(1,a), (1,b)], 2) == c();
 // choose_def_lazy(c, [(1,a), (2,b)], 3) == c();
-template<typename Key, typename ValStub,
-    typename Val = typename std::result_of<ValStub()>::type>
-Val choose_def_lazy(const ValStub& def,
-    const std::vector<std::pair<Key, ValStub>>& pairs, const Key& x)
+template <typename Key, typename ValStub>
+auto choose_def_lazy(const ValStub& def,
+                     const std::vector<std::pair<Key, ValStub>>& pairs,
+                     const Key& x)
 {
     return choose_def(def, pairs, x)();
 }
@@ -511,10 +498,11 @@ Val choose_def_lazy(const ValStub& def,
 // choose_by_def_lazy(c, [(is_even,a), (is_bigger_than_3,b)], 5) == Just b();
 // choose_by_def_lazy(c, [(is_even,a), (is_bigger_than_3,b)], 1) == c();
 // choose_by_def_lazy(c, [(is_even,a), (is_bigger_than_3,b)], 4) == c();
-template<typename Key, typename ValStub,
-    typename Val = typename std::result_of<ValStub()>::type>
-Val choose_by_def_lazy(const ValStub& def,
-    const std::vector<std::pair<std::function<bool(const Key&)>, ValStub>>& pairs, const Key& x)
+template <typename Key, typename ValStub>
+auto choose_by_def_lazy(
+    const ValStub& def,
+    const std::vector<std::pair<std::function<bool(const Key&)>, ValStub>>& pairs,
+    const Key& x)
 {
     return choose_by_def(def, pairs, x)();
 }
