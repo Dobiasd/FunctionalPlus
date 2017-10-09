@@ -9,6 +9,7 @@
 #include <fplus/function_traits.hpp>
 #include <fplus/container_common.hpp>
 #include <fplus/pairs.hpp>
+#include <fplus/detail/invoke.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -298,7 +299,7 @@ namespace internal
         typename std::common_type<FirstT, FIn...>::type
     {
       using rettype = typename std::common_type<FirstT, FIn...>::type;
-      using f_rettype = typename std::result_of<F(decltype(first))>::type;
+      using f_rettype = std::decay_t<detail::invoke_result_t<F, decltype(first)>>;
 
       rettype result = first;
       f_rettype result_trans = f(first);
