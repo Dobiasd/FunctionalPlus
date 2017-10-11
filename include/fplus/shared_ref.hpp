@@ -16,7 +16,7 @@ namespace fplus
 // and shared ownership that can be transferred.
 // A std::optional expresses optionality only.
 // The standard does not provide a class to
-// express only shared_ownership without optionality.
+// express only shared ownership without optionality.
 // shared_ref fills this gap.
 template <typename T>
 class shared_ref
