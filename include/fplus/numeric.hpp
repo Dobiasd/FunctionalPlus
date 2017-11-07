@@ -81,6 +81,8 @@ bool is_in_closed_interval_around(const T& radius, const T& center, const T& x)
 // Linearly projects a value from [old_low, old_high] into [new_low, new_high]
 // into_interval(2, 6, 0, 4, 3) == 5
 // into_interval(2, 10, 0, 4, 3) == 8
+// into_interval(2, 6, 0, 4, -1) == 1
+// into_interval(2, 10, 0, 4, -1) == 0
 template <typename T>
 T into_interval(const T& new_low, const T& new_high,
     const T& old_low, const T& old_high, const T& x)
