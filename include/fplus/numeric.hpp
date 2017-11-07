@@ -76,6 +76,19 @@ bool is_in_closed_interval_around(const T& radius, const T& center, const T& x)
     return is_in_closed_interval(center - radius, center + radius, x);
 }
 
+// API search type: into_interval : (Float, Float, Float, Float, Float) -> Float
+// fwd bind count: 4
+// Linearly projects a value from [old_low, old_high] into [new_low, new_high]
+// into_interval(2, 6, 0, 4, 3) == 5
+// into_interval(2, 10, 0, 4, 3) == 8
+template <typename T>
+T into_interval(const T& new_low, const T& new_high,
+    const T& old_low, const T& old_high, const T& x)
+{
+    const T scale = (new_high - new_low) / (old_high - old_low);
+    return scale * (x - old_low) + new_low;
+}
+
 // API search type: clamp : (a, a, a) -> a
 // fwd bind count: 2
 // Puts value into [low, high], i.e. left-closed and right-closed.

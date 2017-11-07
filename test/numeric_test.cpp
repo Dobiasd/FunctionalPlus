@@ -241,6 +241,13 @@ TEST_CASE("numeric_test, ceil_to_int_mult")
     REQUIRE_EQ(ceil_to_int_mult(1, 1), 1);
 }
 
+TEST_CASE("numeric_test, into_interval")
+{
+    using namespace fplus;
+    REQUIRE_EQ(into_interval(2, 6, 0, 4, 3), 5);
+    REQUIRE_EQ(into_interval(2, 10, 0, 4, 3), 8);
+}
+
 TEST_CASE("numeric_test, clamp")
 {
     using namespace fplus;
