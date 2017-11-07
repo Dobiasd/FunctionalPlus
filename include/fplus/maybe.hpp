@@ -18,59 +18,33 @@
 
 namespace fplus
 {
+
 // Can hold a value of type T or nothing.
 template <typename T>
 class maybe
 {
 public:
-    bool is_just() const { return is_present_; }
+    bool is_just() const { return static_cast<bool>(ptr_); }
     bool is_nothing() const { return !is_just(); }
-    const T& unsafe_get_just() const
-    {
-        assert(is_just());
-        return *reinterpret_cast<const T*>(&mem_[0]);
-    }
-    T& unsafe_get_just()
-    {
-        assert(is_just());
-        return *reinterpret_cast<T*>(&mem_[0]);
-    }
+    const T& unsafe_get_just() const { assert(is_just()); return *ptr_; }
+    T& unsafe_get_just() { assert(is_just()); return *ptr_; }
     typedef T type;
-#ifdef __GNUC__ // workaround for bug in GCC 4.9
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-#endif
-    maybe() : is_present_(false), mem_({}) {};
-    ~maybe()
-    {
-        if (is_present_)
-        {
-            T* ptr = reinterpret_cast<T*>(&mem_[0]);
-            ptr->~T();
-        }
-    }
-    maybe(const T& val_just) : is_present_(true), mem_({})
-    {
-        new (&mem_[0]) T(val_just);
-    }
-    maybe(const maybe<T>& other) : is_present_(other.is_just()), mem_({})
-    {
-        if (other.is_just())
-            new (&mem_[0]) T(other.unsafe_get_just());
-    }
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
+
+    maybe() : ptr_(ptr_t()) {};
+    maybe(const T& val_just) :
+        ptr_(new T(val_just))
+    {}
+    maybe(const maybe<T>& other) :
+        ptr_(other.is_just() ? ptr_t(new T(other.unsafe_get_just())) : ptr_t())
+    {}
     maybe<T>& operator = (const maybe<T>& other)
     {
-        is_present_ = other.is_just();
-        if (other.is_just())
-            new (&mem_[0]) T(other.unsafe_get_just());
+        ptr_ = other.is_just() ? ptr_t(new T(other.unsafe_get_just())) : ptr_t();
         return *this;
     }
 private:
-    bool is_present_;
-    std::array<unsigned char, sizeof(T)> mem_;
+    typedef std::unique_ptr<T> ptr_t;
+    ptr_t ptr_;
 };
 
 namespace detail
