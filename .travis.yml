@@ -101,4 +101,4 @@ install:
 script:
   - which $CXX
   - $CXX --version
-  - cmake --build . --target unittest --config Release -j4
+  - cmake --build . --target unittest --config Release -- -j4
