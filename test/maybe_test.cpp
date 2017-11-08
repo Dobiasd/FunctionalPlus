@@ -124,7 +124,15 @@ TEST_CASE("maybe_test, lift")
     REQUIRE_EQ(lift_maybe_2_def(3, std::plus<>(), y, y), 3);
 }
 
-TEST_CASE("maybe_test, and_then")
+TEST_CASE("maybe_test, join_maybe")
+{
+    using namespace fplus;
+    REQUIRE_EQ(join_maybe(just(just(2))), just(2));
+    REQUIRE_EQ(join_maybe(just(nothing<int>())), nothing<int>());
+    REQUIRE_EQ(join_maybe(nothing<maybe<int>>()), nothing<int>());
+}
+
+TEST_CASE("maybe_test, and_then_maybe")
 {
     using namespace fplus;
     REQUIRE_EQ(and_then_maybe(sqrtToMaybeInt, just(4)), just(2));

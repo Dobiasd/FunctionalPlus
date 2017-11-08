@@ -298,6 +298,20 @@ auto lift_maybe_2_def(const Default& def,
     return C(def);
 }
 
+// API search type: join_maybe : Maybe Maybe a -> Maybe a
+// Flattens a nested maybe.
+// join_maybe(Just Just x) == Just x
+// join_maybe(Just Nothing) == Nothing
+// join_maybe(Nothing) == Nothing
+template <typename A>
+maybe<A> join_maybe(const maybe<maybe<A>>& m)
+{
+    if (is_just(m))
+        return unsafe_get_just(m);
+    else
+        return nothing<A>();
+}
+
 // API search type: and_then_maybe : ((a -> Maybe b), (Maybe a)) -> Maybe b
 // fwd bind count: 1
 // Monadic bind.

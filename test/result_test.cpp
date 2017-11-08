@@ -52,6 +52,17 @@ TEST_CASE("result_test, ok_with_default")
     REQUIRE_EQ(Or42(y), 42);
 }
 
+TEST_CASE("maybe_test, join_result")
+{
+    using namespace fplus;
+    using Ok = int;
+    using Err = std::string;
+    using Res = result<Ok, Err>;
+    REQUIRE_EQ(join_result(ok<Res, Err>(ok<Ok, Err>(2))), ok<Ok, Err>(2));
+    REQUIRE_EQ(join_result(ok<Res, Err>(error<Ok, Err>("e"))), error<Ok, Err>("e"));
+    REQUIRE_EQ(join_result(error<Res, Err>("e")), error<Ok, Err>("e"));
+}
+
 TEST_CASE("result_test, and_then_result")
 {
     using namespace fplus;

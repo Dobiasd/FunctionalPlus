@@ -257,6 +257,20 @@ auto unify_result(F f, G g, const result<A, B>& r)
     return detail::invoke(g, unsafe_get_error(r));
 }
 
+// API search type: join_result : Result (Result a b) b -> Result a b
+// Flattens a nested result.
+// join_result(Ok Ok x) == Ok x
+// join_result(Ok Error e) == Error e
+// join_result(Error e) == Error e
+template <typename OK, typename Error>
+result<OK, Error> join_result(const result<result<OK, Error>, Error>& r)
+{
+    if (is_ok(r))
+        return unsafe_get_ok(r);
+    else
+        return error<OK, Error>(r.unsafe_get_error());
+}
+
 // API search type: and_then_result : ((a -> Result c b), (Result a b)) -> Result c b
 // fwd bind count: 1
 // Monadic bind.
