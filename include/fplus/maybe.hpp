@@ -24,27 +24,59 @@ template <typename T>
 class maybe
 {
 public:
-    bool is_just() const { return static_cast<bool>(ptr_); }
+    bool is_just() const { return is_present_; }
     bool is_nothing() const { return !is_just(); }
-    const T& unsafe_get_just() const { assert(is_just()); return *ptr_; }
-    T& unsafe_get_just() { assert(is_just()); return *ptr_; }
+    const T& unsafe_get_just() const
+    {
+        assert(is_just());
+        return *reinterpret_cast<const T*>(&mem_[0]);
+    }
+    T& unsafe_get_just()
+    {
+        assert(is_just());
+        return *reinterpret_cast<T*>(&mem_[0]);
+    }
     typedef T type;
-
-    maybe() : ptr_(ptr_t()) {};
-    maybe(const T& val_just) :
-        ptr_(new T(val_just))
-    {}
-    maybe(const maybe<T>& other) :
-        ptr_(other.is_just() ? ptr_t(new T(other.unsafe_get_just())) : ptr_t())
-    {}
+#ifdef __GNUC__ // workaround for bug in GCC 4.9
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
+    maybe() : is_present_(false), mem_({}) {};
+    ~maybe()
+    {
+        destruct_content();
+    }
+    maybe(const T& val_just) : is_present_(true), mem_({})
+    {
+        new (&mem_[0]) T(val_just);
+    }
+    maybe(const maybe<T>& other) : is_present_(other.is_just()), mem_({})
+    {
+        if (other.is_just())
+            new (&mem_[0]) T(other.unsafe_get_just());
+    }
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
     maybe<T>& operator = (const maybe<T>& other)
     {
-        ptr_ = other.is_just() ? ptr_t(new T(other.unsafe_get_just())) : ptr_t();
+        destruct_content();
+        is_present_ = other.is_just();
+        if (other.is_just())
+            new (&mem_[0]) T(other.unsafe_get_just());
         return *this;
     }
 private:
-    typedef std::unique_ptr<T> ptr_t;
-    ptr_t ptr_;
+    void destruct_content()
+    {
+        if (is_present_)
+        {
+            T* ptr = reinterpret_cast<T*>(&mem_[0]);
+            ptr->~T();
+        }
+    }
+    bool is_present_;
+    std::array<unsigned char, sizeof(T)> mem_;
 };
 
 namespace detail
