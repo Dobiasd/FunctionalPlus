@@ -78,7 +78,9 @@ bool is_in_closed_interval_around(const T& radius, const T& center, const T& x)
 
 // API search type: reference_interval : (Float, Float, Float, Float, Float) -> Float
 // fwd bind count: 4
-// Linearly projects a value from [old_low, old_high] into [new_low, new_high]
+// Linearly projects a value
+// from [old_low, old_high] into [new_low, new_high].
+// Does not clamp.
 // reference_interval(2, 6, 0, 4, 3) == 5
 // reference_interval(2, 10, 0, 4, 3) == 8
 // reference_interval(2, 6, 0, 4, -1) == 1
