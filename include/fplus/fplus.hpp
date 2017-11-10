@@ -34,6 +34,7 @@
 #include <fplus/transform.hpp>
 #include <fplus/tree.hpp>
 #include <fplus/side_effects.hpp>
+#include <fplus/stopwatch.hpp>
 #include <fplus/variant.hpp>
 
 #include <fplus/curry.hpp>
