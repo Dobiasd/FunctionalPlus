@@ -328,8 +328,12 @@ template <typename Container>
 Container get_segment(internal::reuse_container_t,
     std::size_t idx_begin, std::size_t idx_end, Container&& xs)
 {
-    assert(idx_begin <= idx_end);
     idx_end = std::min(idx_end, size_of_cont(xs));
+    if (idx_end <= idx_begin)
+    {
+        xs.clear();
+        return xs;
+    }
     auto itBegin = std::begin(xs);
     internal::advance_iterator(itBegin, idx_begin);
     auto itEnd = itBegin;
@@ -342,8 +346,11 @@ template <typename Container>
 Container get_segment(internal::create_new_container_t,
     std::size_t idx_begin, std::size_t idx_end, const Container& xs)
 {
-    assert(idx_begin <= idx_end);
     idx_end = std::min(idx_end, size_of_cont(xs));
+    if (idx_end <= idx_begin)
+    {
+        return {};
+    }
     Container result;
     auto itBegin = std::begin(xs);
     internal::advance_iterator(itBegin, idx_begin);
@@ -360,6 +367,7 @@ Container get_segment(internal::create_new_container_t,
 // Return a defined segment from the sequence.
 // get_segment(2, 5, [0,1,2,3,4,5,6,7,8]) == [2,3,4]
 // get_segment(2, 15, [0,1,2,3,4,5,6,7,8]) == [2,3,4,5,6,7,8]
+// get_segment(5, 2, [0,1,2,3,4,5,6,7,8]) == []
 // Also known as slice.
 template <typename Container,
     typename ContainerOut = internal::remove_const_and_ref_t<Container>>
