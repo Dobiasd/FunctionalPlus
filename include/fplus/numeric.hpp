@@ -15,6 +15,7 @@
 #include <cmath>
 #include <functional>
 #include <limits>
+#include <stdexcept>
 #include <type_traits>
 
 namespace fplus
@@ -217,7 +218,66 @@ int sign_with_zero(X x)
     return x == 0 ? 0 : sign(x);
 }
 
-// API search type: round : a -> b
+// API search type: integral_cast_throw : Int -> Int
+// fwd bind count: 0
+// Converts one integer type into another.
+// Throws an std::underflow_error or std::overflow_error
+// if the value does not fit into the destination type.
+template <typename Out, typename X>
+Out integral_cast_throw(X x)
+{
+    static_assert(std::is_integral<X>::value, "type must be integral");
+    static_assert(std::is_integral<Out>::value, "type must be integral");
+    const Out result = static_cast<Out>(x);
+    if (result != x)
+    {
+        if (x < std::numeric_limits<Out>::lowest())
+        {
+            throw std::underflow_error("");
+        }
+        else if (x > std::numeric_limits<Out>::max())
+        {
+            throw std::overflow_error("");
+        }
+        else
+        {
+            assert(false);
+        }
+    }
+    return result;
+}
+
+// API search type: integral_cast_clamp : Int -> Int
+// fwd bind count: 0
+// Converts one integer type into another.
+// If the value does not fit into the destination type,
+// the nearest possible value is used.
+// Also known as saturate_cast.
+template <typename Out, typename X>
+Out integral_cast_clamp(X x)
+{
+    static_assert(std::is_integral<X>::value, "type must be integral");
+    static_assert(std::is_integral<Out>::value, "type must be integral");
+    const Out result = static_cast<Out>(x);
+    if (result != x)
+    {
+        if (x < std::numeric_limits<Out>::lowest())
+        {
+            return std::numeric_limits<Out>::lowest();
+        }
+        else if (x > std::numeric_limits<Out>::max())
+        {
+            return std::numeric_limits<Out>::max();
+        }
+        else
+        {
+            assert(false);
+        }
+    }
+    return result;
+}
+
+// API search type: round : a -> Int
 // fwd bind count: 0
 // Converts a value to the nearest integer.
 template <typename X, typename Out = int>

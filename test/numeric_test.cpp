@@ -187,6 +187,22 @@ TEST_CASE("numeric_test, round")
     REQUIRE_EQ(round(-1.6), -2);
 }
 
+TEST_CASE("numeric_test, integral_cast_clamp")
+{
+    using namespace fplus;
+    REQUIRE_EQ(integral_cast_clamp<std::uint8_t>(-1), 0);
+    REQUIRE_EQ(integral_cast_clamp<std::uint8_t>(0), 0);
+    REQUIRE_EQ(integral_cast_clamp<std::uint8_t>(3), 3);
+    REQUIRE_EQ(integral_cast_clamp<std::uint8_t>(255), 255);
+    REQUIRE_EQ(integral_cast_clamp<std::uint8_t>(256), 255);
+
+    REQUIRE_EQ(integral_cast_clamp<std::int8_t>(-129), -128);
+    REQUIRE_EQ(integral_cast_clamp<std::int8_t>(-128), -128);
+    REQUIRE_EQ(integral_cast_clamp<std::int8_t>(3), 3);
+    REQUIRE_EQ(integral_cast_clamp<std::int8_t>(127), 127);
+    REQUIRE_EQ(integral_cast_clamp<std::int8_t>(128), 127);
+}
+
 TEST_CASE("numeric_test, ceil")
 {
     using namespace fplus;
