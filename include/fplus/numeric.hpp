@@ -231,11 +231,11 @@ Out integral_cast_throw(X x)
     const Out result = static_cast<Out>(x);
     if (result != x)
     {
-        if (x < std::numeric_limits<Out>::lowest())
+        if (x < static_cast<X>(std::numeric_limits<Out>::lowest()))
         {
             throw std::underflow_error("");
         }
-        else if (x > std::numeric_limits<Out>::max())
+        else if (x > static_cast<X>(std::numeric_limits<Out>::max()))
         {
             throw std::overflow_error("");
         }
@@ -261,11 +261,11 @@ Out integral_cast_clamp(X x)
     const Out result = static_cast<Out>(x);
     if (result != x)
     {
-        if (x < std::numeric_limits<Out>::lowest())
+        if (x < static_cast<X>(std::numeric_limits<Out>::lowest()))
         {
             return std::numeric_limits<Out>::lowest();
         }
-        else if (x > std::numeric_limits<Out>::max())
+        else if (x > static_cast<X>(std::numeric_limits<Out>::max()))
         {
             return std::numeric_limits<Out>::max();
         }
