@@ -190,17 +190,29 @@ TEST_CASE("numeric_test, round")
 TEST_CASE("numeric_test, integral_cast_clamp")
 {
     using namespace fplus;
-    REQUIRE_EQ(integral_cast_clamp<std::uint8_t>(-1), 0);
-    REQUIRE_EQ(integral_cast_clamp<std::uint8_t>(0), 0);
-    REQUIRE_EQ(integral_cast_clamp<std::uint8_t>(3), 3);
-    REQUIRE_EQ(integral_cast_clamp<std::uint8_t>(255), 255);
-    REQUIRE_EQ(integral_cast_clamp<std::uint8_t>(256), 255);
+    REQUIRE_EQ(integral_cast_clamp<std::uint8_t>(std::int32_t(-1)), std::uint8_t(0));
+    REQUIRE_EQ(integral_cast_clamp<std::uint8_t>(std::int32_t(0)), std::uint8_t(0));
+    REQUIRE_EQ(integral_cast_clamp<std::uint8_t>(std::int32_t(3)), std::uint8_t(3));
+    REQUIRE_EQ(integral_cast_clamp<std::uint8_t>(std::int32_t(255)), std::uint8_t(255));
+    REQUIRE_EQ(integral_cast_clamp<std::uint8_t>(std::int32_t(256)), std::uint8_t(255));
 
-    REQUIRE_EQ(integral_cast_clamp<std::int8_t>(-129), -128);
-    REQUIRE_EQ(integral_cast_clamp<std::int8_t>(-128), -128);
-    REQUIRE_EQ(integral_cast_clamp<std::int8_t>(3), 3);
-    REQUIRE_EQ(integral_cast_clamp<std::int8_t>(127), 127);
-    REQUIRE_EQ(integral_cast_clamp<std::int8_t>(128), 127);
+    REQUIRE_EQ(integral_cast_clamp<std::int8_t>(std::int32_t(-129)), std::int8_t(-128));
+    REQUIRE_EQ(integral_cast_clamp<std::int8_t>(std::int32_t(-128)), std::int8_t(-128));
+    REQUIRE_EQ(integral_cast_clamp<std::int8_t>(std::int32_t(3)), std::int8_t(3));
+    REQUIRE_EQ(integral_cast_clamp<std::int8_t>(std::int32_t(127)), std::int8_t(127));
+    REQUIRE_EQ(integral_cast_clamp<std::int8_t>(std::int32_t(128)), std::int8_t(127));
+
+    REQUIRE_EQ(integral_cast_clamp<std::int8_t>(std::uint8_t(0)), std::int8_t(0));
+    REQUIRE_EQ(integral_cast_clamp<std::int8_t>(std::uint8_t(127)), std::int8_t(127));
+    REQUIRE_EQ(integral_cast_clamp<std::int8_t>(std::uint8_t(128)), std::int8_t(127));
+
+    REQUIRE_EQ(integral_cast_clamp<std::uint64_t>(std::numeric_limits<std::uint16_t>::lowest()), static_cast<std::int64_t>(std::numeric_limits<std::uint16_t>::lowest()));
+    REQUIRE_EQ(integral_cast_clamp<std::uint64_t>(std::uint16_t(0)), std::uint64_t(0));
+    REQUIRE_EQ(integral_cast_clamp<std::uint64_t>(std::numeric_limits<std::uint16_t>::max()), static_cast<std::int64_t>(std::numeric_limits<std::uint16_t>::max()));
+
+    REQUIRE_EQ(integral_cast_clamp<std::int64_t>(std::numeric_limits<std::int16_t>::lowest()), static_cast<std::int64_t>(std::numeric_limits<std::int16_t>::lowest()));
+    REQUIRE_EQ(integral_cast_clamp<std::int64_t>(std::int16_t(0)), std::int64_t(0));
+    REQUIRE_EQ(integral_cast_clamp<std::int64_t>(std::numeric_limits<std::int16_t>::max()), static_cast<std::int64_t>(std::numeric_limits<std::int16_t>::max()));
 }
 
 TEST_CASE("numeric_test, ceil")

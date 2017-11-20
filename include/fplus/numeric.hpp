@@ -228,23 +228,59 @@ Out integral_cast_throw(X x)
 {
     static_assert(std::is_integral<X>::value, "type must be integral");
     static_assert(std::is_integral<Out>::value, "type must be integral");
-    const Out result = static_cast<Out>(x);
-    if (result != x)
+    if (std::is_signed<X>::value && std::is_signed<Out>::value)
     {
-        if (x < static_cast<X>(std::numeric_limits<Out>::lowest()))
+        if (static_cast<std::int64_t>(x) <
+            static_cast<std::int64_t>(std::numeric_limits<Out>::lowest()))
         {
             throw std::underflow_error("");
         }
-        else if (x > static_cast<X>(std::numeric_limits<Out>::max()))
+        if (static_cast<std::int64_t>(x) >
+            static_cast<std::int64_t>(std::numeric_limits<Out>::max()))
         {
             throw std::overflow_error("");
         }
-        else
-        {
-            assert(false);
-        }
+        return static_cast<Out>(x);
     }
-    return result;
+    else if (!std::is_signed<X>::value && !std::is_signed<Out>::value)
+    {
+        if (static_cast<std::uint64_t>(x) <
+            static_cast<std::uint64_t>(std::numeric_limits<Out>::lowest()))
+        {
+            throw std::underflow_error("");
+        }
+        if (static_cast<std::uint64_t>(x) >
+            static_cast<std::uint64_t>(std::numeric_limits<Out>::max()))
+        {
+            throw std::overflow_error("");
+        }
+        return static_cast<Out>(x);
+    }
+    else if (std::is_signed<X>::value && !std::is_signed<Out>::value)
+    {
+        if (x < 0)
+            return 0;
+        if (static_cast<std::uint64_t>(x) >
+            static_cast<std::uint64_t>(std::numeric_limits<Out>::max()))
+        {
+            throw std::overflow_error("");
+        }
+        return static_cast<Out>(x);
+    }
+    else if (!std::is_signed<X>::value && std::is_signed<Out>::value)
+    {
+        if (static_cast<std::uint64_t>(x) >
+            static_cast<std::uint64_t>(std::numeric_limits<Out>::max()))
+        {
+            throw std::overflow_error("");
+        }
+        return static_cast<Out>(x);
+    }
+    else
+    {
+        assert(false);
+        return static_cast<Out>(x);
+    }
 }
 
 // API search type: integral_cast_clamp : Int -> Int
@@ -258,23 +294,59 @@ Out integral_cast_clamp(X x)
 {
     static_assert(std::is_integral<X>::value, "type must be integral");
     static_assert(std::is_integral<Out>::value, "type must be integral");
-    const Out result = static_cast<Out>(x);
-    if (result != x)
+    if (std::is_signed<X>::value && std::is_signed<Out>::value)
     {
-        if (x < static_cast<X>(std::numeric_limits<Out>::lowest()))
+        if (static_cast<std::int64_t>(x) <
+            static_cast<std::int64_t>(std::numeric_limits<Out>::lowest()))
         {
             return std::numeric_limits<Out>::lowest();
         }
-        else if (x > static_cast<X>(std::numeric_limits<Out>::max()))
+        if (static_cast<std::int64_t>(x) >
+            static_cast<std::int64_t>(std::numeric_limits<Out>::max()))
         {
             return std::numeric_limits<Out>::max();
         }
-        else
-        {
-            assert(false);
-        }
+        return static_cast<Out>(x);
     }
-    return result;
+    else if (!std::is_signed<X>::value && !std::is_signed<Out>::value)
+    {
+        if (static_cast<std::uint64_t>(x) <
+            static_cast<std::uint64_t>(std::numeric_limits<Out>::lowest()))
+        {
+            return std::numeric_limits<Out>::lowest();
+        }
+        if (static_cast<std::uint64_t>(x) >
+            static_cast<std::uint64_t>(std::numeric_limits<Out>::max()))
+        {
+            return std::numeric_limits<Out>::max();
+        }
+        return static_cast<Out>(x);
+    }
+    else if (std::is_signed<X>::value && !std::is_signed<Out>::value)
+    {
+        if (x < 0)
+            return 0;
+        if (static_cast<std::uint64_t>(x) >
+            static_cast<std::uint64_t>(std::numeric_limits<Out>::max()))
+        {
+            return std::numeric_limits<Out>::max();
+        }
+        return static_cast<Out>(x);
+    }
+    else if (!std::is_signed<X>::value && std::is_signed<Out>::value)
+    {
+        if (static_cast<std::uint64_t>(x) >
+            static_cast<std::uint64_t>(std::numeric_limits<Out>::max()))
+        {
+            return std::numeric_limits<Out>::max();
+        }
+        return static_cast<Out>(x);
+    }
+    else
+    {
+        assert(false);
+        return static_cast<Out>(x);
+    }
 }
 
 // API search type: round : a -> Int
