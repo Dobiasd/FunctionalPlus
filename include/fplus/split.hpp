@@ -13,8 +13,8 @@
 #include <fplus/numeric.hpp>
 #include <fplus/search.hpp>
 
-#include <fplus/detail/invoke.hpp>
-#include <fplus/detail/split.hpp>
+#include <fplus/internal/invoke.hpp>
+#include <fplus/internal/split.hpp>
 
 namespace fplus
 {

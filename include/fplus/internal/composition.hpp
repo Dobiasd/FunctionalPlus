@@ -9,7 +9,7 @@
 #include <tuple>
 #include <utility>
 
-#include <fplus/detail/invoke.hpp>
+#include <fplus/internal/invoke.hpp>
 
 namespace fplus
 {

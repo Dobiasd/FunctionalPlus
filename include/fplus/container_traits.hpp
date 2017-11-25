@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 
-#include <fplus/detail/invoke.hpp>
+#include <fplus/internal/invoke.hpp>
 
 namespace fplus
 {

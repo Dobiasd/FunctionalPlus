@@ -9,9 +9,9 @@
 #include <fplus/function_traits.hpp>
 #include <fplus/maybe.hpp>
 
-#include <fplus/detail/asserts/functions.hpp>
-#include <fplus/detail/composition.hpp>
-#include <fplus/detail/invoke.hpp>
+#include <fplus/internal/asserts/functions.hpp>
+#include <fplus/internal/composition.hpp>
+#include <fplus/internal/invoke.hpp>
 
 #include <cassert>
 #include <functional>

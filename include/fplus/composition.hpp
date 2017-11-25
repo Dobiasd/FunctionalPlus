@@ -7,10 +7,10 @@
 #pragma once
 
 #include <fplus/function_traits.hpp>
-#include <fplus/detail/apply.hpp>
-#include <fplus/detail/asserts/functions.hpp>
-#include <fplus/detail/asserts/composition.hpp>
-#include <fplus/detail/composition.hpp>
+#include <fplus/internal/apply.hpp>
+#include <fplus/internal/asserts/functions.hpp>
+#include <fplus/internal/asserts/composition.hpp>
+#include <fplus/internal/composition.hpp>
 
 #include <functional>
 #include <map>

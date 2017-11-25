@@ -25,7 +25,7 @@ the standard library.
 #include <functional>
 #include <type_traits>
 
-#include <fplus/detail/meta.hpp>
+#include <fplus/internal/meta.hpp>
 
 namespace fplus {
 

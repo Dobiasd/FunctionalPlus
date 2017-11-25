@@ -8,8 +8,8 @@
 
 #include <fplus/function_traits.hpp>
 #include <fplus/container_common.hpp>
-#include <fplus/detail/composition.hpp>
-#include <fplus/detail/asserts/composition.hpp>
+#include <fplus/internal/composition.hpp>
+#include <fplus/internal/asserts/composition.hpp>
 
 #include <cassert>
 #include <exception>

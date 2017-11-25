@@ -12,7 +12,7 @@
 #include <fplus/compare.hpp>
 #include <fplus/container_common.hpp>
 
-#include <fplus/detail/invoke.hpp>
+#include <fplus/internal/invoke.hpp>
 
 namespace fplus
 {

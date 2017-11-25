@@ -15,7 +15,7 @@
 #include <fplus/composition.hpp>
 #include <fplus/sets.hpp>
 
-#include <fplus/detail/invoke.hpp>
+#include <fplus/internal/invoke.hpp>
 
 #include <algorithm>
 #include <numeric>

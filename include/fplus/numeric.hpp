@@ -9,7 +9,7 @@
 #include <fplus/function_traits.hpp>
 #include <fplus/container_common.hpp>
 #include <fplus/pairs.hpp>
-#include <fplus/detail/invoke.hpp>
+#include <fplus/internal/invoke.hpp>
 
 #include <algorithm>
 #include <cmath>

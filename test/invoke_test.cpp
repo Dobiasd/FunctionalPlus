@@ -7,7 +7,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 #include <functional>
-#include <fplus/detail/invoke.hpp>
+#include <fplus/internal/invoke.hpp>
 
 #include <initializer_list>
 #include <stdexcept>

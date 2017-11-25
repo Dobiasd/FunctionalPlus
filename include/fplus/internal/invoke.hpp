@@ -10,7 +10,7 @@
 #include <type_traits>
 #include <utility>
 
-#include <fplus/detail/meta.hpp>
+#include <fplus/internal/meta.hpp>
 
 // borrowed to libc++
 #define FPLUS_INVOKE_RETURN(...) \

@@ -8,8 +8,8 @@
 
 #include <fplus/container_common.hpp>
 #include <fplus/function_traits.hpp>
-#include <fplus/detail/invoke.hpp>
-#include <fplus/detail/asserts/pairs.hpp>
+#include <fplus/internal/invoke.hpp>
+#include <fplus/internal/asserts/pairs.hpp>
 
 #include <utility>
 

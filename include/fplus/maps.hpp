@@ -10,7 +10,7 @@
 #include <fplus/container_common.hpp>
 #include <fplus/pairs.hpp>
 
-#include <fplus/detail/invoke.hpp>
+#include <fplus/internal/invoke.hpp>
 
 #include <map>
 #include <unordered_map>

@@ -9,7 +9,7 @@
 #include <numeric>
 #include <type_traits>
 
-#include <fplus/detail/invoke.hpp>
+#include <fplus/internal/invoke.hpp>
 
 namespace fplus
 {

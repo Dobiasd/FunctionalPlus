@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <fplus/detail/invoke.hpp>
+#include <fplus/internal/invoke.hpp>
 #include <fplus/function_traits.hpp>
 
 namespace fplus

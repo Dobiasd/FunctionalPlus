@@ -16,8 +16,8 @@
 #include <fplus/composition.hpp>
 #include <fplus/function_traits.hpp>
 
-#include <fplus/detail/asserts/functions.hpp>
-#include <fplus/detail/invoke.hpp>
+#include <fplus/internal/asserts/functions.hpp>
+#include <fplus/internal/invoke.hpp>
 
 #include <algorithm>
 #include <future>

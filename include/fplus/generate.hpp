@@ -10,7 +10,7 @@
 #include <fplus/numeric.hpp>
 #include <fplus/composition.hpp>
 
-#include <fplus/detail/asserts/functions.hpp>
+#include <fplus/internal/asserts/functions.hpp>
 
 namespace fplus
 {

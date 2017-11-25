@@ -11,9 +11,9 @@
 #include <fplus/maybe.hpp>
 #include <fplus/compare.hpp>
 
-#include <fplus/detail/meta.hpp>
-#include <fplus/detail/invoke.hpp>
-#include <fplus/detail/container_common.hpp>
+#include <fplus/internal/meta.hpp>
+#include <fplus/internal/invoke.hpp>
+#include <fplus/internal/container_common.hpp>
 
 #include <algorithm>
 #include <cassert>

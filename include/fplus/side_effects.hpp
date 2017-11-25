@@ -10,7 +10,7 @@
 #include <fplus/function_traits.hpp>
 #include <fplus/generate.hpp>
 #include <fplus/string_tools.hpp>
-#include <fplus/detail/invoke.hpp>
+#include <fplus/internal/invoke.hpp>
 
 #include <atomic>
 #include <chrono>
