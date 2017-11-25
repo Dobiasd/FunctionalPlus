@@ -34,24 +34,28 @@ namespace internal
             typename Container::value_type>();
     }
 
-    template <typename UnaryPredicate, typename Container>
+    template <typename F, typename Container>
     void check_index_with_type_predicate_for_container()
     {
-        internal::check_index_with_type_predicate_for_type<UnaryPredicate,
-            typename Container::value_type>();
+        typedef typename Container::value_type T;
+        internal::trigger_static_asserts<internal::binary_function_tag, F, std::size_t, T>();
+        static_assert(std::is_convertible<
+            internal::invoke_result_t<F, std::size_t, T>, bool>::value,
+            "Function must return bool.");
     }
 
     template <typename Compare, typename Container>
     void check_compare_for_container()
     {
-        internal::check_compare_for_type<Compare, typename Container::value_type>();
+        typedef typename Container::value_type T;
+        internal::trigger_static_asserts<internal::binary_predicate_tag, Compare, T, T>();
     }
 
     template <typename BinaryPredicate, typename Container>
     void check_binary_predicate_for_container()
     {
-        internal::check_binary_predicate_for_type<BinaryPredicate,
-            typename Container::value_type>();
+        typedef typename Container::value_type T;
+        internal::trigger_static_asserts<internal::binary_predicate_tag, BinaryPredicate, T, T>();
     }
 
     // PrepareContainer and BackInserter are overloaded
@@ -560,7 +564,7 @@ namespace internal
 template <typename Container, typename F>
 Container transform(internal::reuse_container_t, F f, Container&& xs)
 {
-    detail::trigger_static_asserts<detail::unary_function_tag,
+    internal::trigger_static_asserts<internal::unary_function_tag,
                                          F,
                                          decltype(*std::begin(xs))>();
     std::transform(std::begin(xs), std::end(xs), std::begin(xs), f);
@@ -571,7 +575,7 @@ template <typename ContainerOut, typename F, typename ContainerIn>
 ContainerOut transform(internal::create_new_container_t, F f,
     const ContainerIn& xs)
 {
-    detail::trigger_static_asserts<detail::unary_function_tag,
+    internal::trigger_static_asserts<internal::unary_function_tag,
                                          F,
                                          decltype(*std::begin(xs))>();
     ContainerOut ys;
@@ -617,7 +621,7 @@ ContainerOut transform(F f, ContainerIn&& xs)
 template <typename ContainerOut, typename F, typename ContainerIn>
 ContainerOut transform_convert(F f, const ContainerIn& xs)
 {
-    internal::check_arity<1, F>();
+    internal::trigger_static_asserts<internal::unary_function_tag, F, typename ContainerIn::value_type>();
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
     auto it = internal::get_back_inserter<ContainerOut>(ys);
@@ -641,7 +645,7 @@ template <typename F, typename ContainerIn,
         >::type>
 ContainerOut transform_inner(F f, const ContainerIn& xs)
 {
-    internal::check_arity<1, F>();
+    internal::trigger_static_asserts<internal::unary_function_tag, F, typename ContainerIn::value_type::value_type>();
     return fplus::transform(
         fplus::bind_1st_of_2(
             fplus::transform<F, const typename ContainerIn::value_type&>, f),
@@ -944,7 +948,7 @@ auto scan_left(F f, const Acc& init, const ContainerIn& xs)
     using std::begin;
     using std::end;
 
-    detail::scan_impl(
+    internal::scan_impl(
         f, init, internal::get_back_inserter(result), begin(xs), end(xs));
     return result;
 }
@@ -968,12 +972,12 @@ auto scan_left_1(F f, const ContainerIn& xs)
 
     using ContainerOut = typename internal::same_cont_new_t<
         ContainerIn,
-        detail::uncvref_t<decltype(*beginIt)>,
+        internal::uncvref_t<decltype(*beginIt)>,
         0>::type;
 
     ContainerOut result;
     internal::prepare_container(result, size_of_cont(xs));
-    detail::scan_impl(f,
+    internal::scan_impl(f,
                       *beginIt,
                       internal::get_back_inserter(result),
                       std::next(beginIt),
@@ -1736,7 +1740,7 @@ bool is_strictly_sorted_by(Compare comp, const Container& xs)
         return true;
     auto it1 = std::begin(xs);
     for (auto it2 = it1 + 1; it2 < std::end(xs); ++it1, ++it2)
-        if (!detail::invoke(comp, *it1, *it2))
+        if (!internal::invoke(comp, *it1, *it2))
             return false;
     return true;
 }
@@ -1777,7 +1781,7 @@ bool is_sorted_by(Compare comp, const Container& xs)
         return true;
     auto it1 = std::begin(xs);
     for (auto it2 = it1 + 1; it2 < std::end(xs); ++it1, ++it2)
-        if (detail::invoke(comp, *it2, *it1))
+        if (internal::invoke(comp, *it2, *it1))
             return false;
     return true;
 }
@@ -2038,13 +2042,13 @@ auto count_occurrences_by(F f, const ContainerIn& xs)
 {
     using In = typename ContainerIn::value_type;
     using MapOut =
-        std::map<std::decay_t<detail::invoke_result_t<F, In>>, std::size_t>;
+        std::map<std::decay_t<internal::invoke_result_t<F, In>>, std::size_t>;
 
-    internal::check_arity<1, F>();
+    internal::trigger_static_asserts<internal::unary_function_tag, F, typename ContainerIn::value_type>();
     MapOut result;
     for (const auto& x : xs)
     {
-        ++result[detail::invoke(f, x)];
+        ++result[internal::invoke(f, x)];
     }
     return result;
 }
@@ -2081,11 +2085,11 @@ bool lexicographical_less_by(BinaryPredicate p,
     auto itYs = std::begin(ys);
     while (itXs != std::end(xs) && itYs != std::end(ys))
     {
-        if (detail::invoke(p, *itXs, *itYs))
+        if (internal::invoke(p, *itXs, *itYs))
         {
             return true;
         }
-        if (detail::invoke(p, *itYs, *itXs))
+        if (internal::invoke(p, *itYs, *itXs))
         {
             return false;
         }
@@ -2143,7 +2147,7 @@ template <typename UnaryPredicate, typename T>
 T instead_of_if(internal::reuse_container_t, UnaryPredicate pred,
     const T& alt, T&& x)
 {
-    if (detail::invoke(pred, x))
+    if (internal::invoke(pred, x))
         return alt;
     else
         return std::forward<T>(x);
@@ -2153,7 +2157,7 @@ template <typename UnaryPredicate, typename T>
 T instead_of_if(internal::create_new_container_t, UnaryPredicate pred,
     const T& alt, const T& x)
 {
-    if (detail::invoke(pred, x))
+    if (internal::invoke(pred, x))
         return alt;
     else
         return x;

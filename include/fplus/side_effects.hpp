@@ -184,14 +184,14 @@ template <typename Container>
 auto execute_serially(const Container& effs)
 {
     using Effect = typename Container::value_type;
-    using Result = detail::invoke_result_t<Effect>;
+    using Result = internal::invoke_result_t<Effect>;
 
     return [effs]
     {
         std::vector<std::decay_t<Result>> results;
         for (const Effect& e : effs)
         {
-            results.push_back(detail::invoke(e));
+            results.push_back(internal::invoke(e));
         }
         return results;
     };
@@ -204,14 +204,14 @@ template <typename Container>
 auto execute_serially_until_success(const Container& effs)
 {
     using Effect = typename Container::value_type;
-    using Result = detail::invoke_result_t<Effect>;
+    using Result = internal::invoke_result_t<Effect>;
     static_assert(std::is_convertible<Result, bool>::value,
                   "Effects must return a boolish type.");
     return [effs]() -> bool
     {
         for (const Effect& e : effs)
         {
-            if (detail::invoke(e))
+            if (internal::invoke(e))
             {
                 return true;
             }
@@ -237,11 +237,11 @@ std::function<Result()> execute_and_return_fixed_value(
 
 // Converts an arbitrary callable effect to an std::function.
 template <typename Effect>
-std::function<detail::invoke_result_t<Effect> ()> effect_to_std_function(Effect eff)
+std::function<internal::invoke_result_t<Effect> ()> effect_to_std_function(Effect eff)
 {
     return [eff]
     {
-        return detail::invoke(eff);
+        return internal::invoke(eff);
     };
 }
 
@@ -276,14 +276,14 @@ template <typename Container>
 std::function<bool()> execute_serially_until_failure(const Container& effs)
 {
     using Effect = typename Container::value_type;
-    using Result = detail::invoke_result_t<Effect>;
+    using Result = internal::invoke_result_t<Effect>;
     static_assert(std::is_convertible<Result, bool>::value,
         "Effects must return a boolish type.");
     return [effs]() -> bool
     {
         for (const Effect& e : effs)
         {
-            if (!detail::invoke(e))
+            if (!internal::invoke(e))
             {
                 return false;
             }
@@ -299,7 +299,7 @@ template <typename Container>
 auto execute_parallelly(const Container& effs)
 {
     using Effect = typename Container::value_type;
-    using Result = detail::invoke_result_t<Effect>;
+    using Result = internal::invoke_result_t<Effect>;
     return [effs] {
         auto handles = transform(
             [](Effect e) { return std::async(std::launch::async, e); }, effs);
@@ -485,7 +485,7 @@ std::function<bool()> write_text_file_lines(bool trailing_newline,
 template <typename F>
 auto execute_effect(const F f)
 {
-    return detail::invoke(f);
+    return internal::invoke(f);
 }
 
 // API search type: interact : (String -> String) -> Io ()

@@ -13,7 +13,7 @@
 
 namespace fplus
 {
-namespace detail
+namespace internal
 {
 // source: https://codereview.stackexchange.com/a/63893
 // note: the code in the link above is called with the arguments in reverse order
@@ -47,7 +47,7 @@ class compose_impl
     template <typename... Ts>
     auto _apply(std::integral_constant<std::size_t, size - 1>, Ts&&... ts) const
     {
-        return detail::invoke(std::get<size - 1>(_functionTuple),
+        return internal::invoke(std::get<size - 1>(_functionTuple),
                               std::forward<Ts>(ts)...);
     }
 
@@ -93,14 +93,14 @@ auto logical_binary_op(Lambda op, F f, G g)
     // Perfect-forwarding might move twice, if we add a requirement on F and G,
     // that might not be an issue.
     return [op, f, g](auto x) {
-        detail::trigger_static_asserts<detail::unary_function_tag,
+        internal::trigger_static_asserts<internal::unary_function_tag,
                                              F,
                                              decltype(x)>();
-        detail::trigger_static_asserts<detail::unary_function_tag,
+        internal::trigger_static_asserts<internal::unary_function_tag,
                                              G,
                                              decltype(x)>();
-        using FRes = std::decay_t<detail::invoke_result_t<F, decltype(x)>>;
-        using GRes = std::decay_t<detail::invoke_result_t<G, decltype(x)>>;
+        using FRes = std::decay_t<internal::invoke_result_t<F, decltype(x)>>;
+        using GRes = std::decay_t<internal::invoke_result_t<G, decltype(x)>>;
         static_assert(std::is_same<FRes, bool>::value, "Must return bool.");
         static_assert(std::is_same<GRes, bool>::value, "Must return bool.");
 

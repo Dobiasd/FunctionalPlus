@@ -51,7 +51,7 @@ pos_t minimize_downhill(
     std::size_t iteration = 0;
     double step_factor = 1.0;
     pos_t position = init_pos;
-    double value = detail::invoke(objective_function, position);
+    double value = internal::invoke(objective_function, position);
 
     const auto start_time = std::chrono::steady_clock::now();
     const auto is_done = [&]() -> bool
@@ -82,8 +82,8 @@ pos_t minimize_downhill(
             auto test_pos_2 = pos;
             test_pos_1[dim] -= epsilon / 2.0;
             test_pos_2[dim] += epsilon / 2.0;
-            const auto val_1 = detail::invoke(objective_function, test_pos_1);
-            const auto val_2 = detail::invoke(objective_function, test_pos_2);
+            const auto val_1 = internal::invoke(objective_function, test_pos_1);
+            const auto val_2 = internal::invoke(objective_function, test_pos_2);
             result[dim] = (val_2 - val_1) / epsilon;
         }
         return result;
@@ -157,7 +157,7 @@ pos_t minimize_downhill(
             break;
         }
         const auto new_position = add(position, new_momentum);
-        const auto new_value = detail::invoke(objective_function, new_position);
+        const auto new_value = internal::invoke(objective_function, new_position);
         if (new_value >= value)
         {
             step_factor /= 2.0;

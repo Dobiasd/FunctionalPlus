@@ -116,7 +116,7 @@ ContainerOut find_all_idxs_by(UnaryPredicate p, const Container& xs)
     auto itOut = internal::get_back_inserter(result);
     for (const auto& x : xs)
     {
-        if (detail::invoke(p, x))
+        if (internal::invoke(p, x))
             *itOut = idx;
         ++idx;
     }

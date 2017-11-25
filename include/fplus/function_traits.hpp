@@ -327,7 +327,7 @@ typename std::add_rvalue_reference<T>::type rt_val() noexcept
 
 namespace fplus
 {
-namespace detail
+namespace internal
 {
 template <typename>
 struct is_std_function : std::false_type

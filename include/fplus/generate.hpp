@@ -23,13 +23,13 @@ namespace fplus
 template <typename ContainerOut, typename F>
 ContainerOut generate(F f, std::size_t amount)
 {
-    internal::check_arity<0, F>();
+    internal::trigger_static_asserts<internal::nullary_function_tag, F>();
     ContainerOut ys;
     internal::prepare_container(ys, amount);
     auto it = internal::get_back_inserter<ContainerOut>(ys);
     for (std::size_t i = 0; i < amount; ++i)
     {
-        *it = detail::invoke(f);
+        *it = internal::invoke(f);
     }
     return ys;
 }
@@ -42,15 +42,15 @@ ContainerOut generate(F f, std::size_t amount)
 template <typename ContainerOut, typename F>
 ContainerOut generate_by_idx(F f, std::size_t amount)
 {
-    detail::
-        trigger_static_asserts<detail::unary_function_tag, F, std::size_t>();
+    internal::
+        trigger_static_asserts<internal::unary_function_tag, F, std::size_t>();
 
     ContainerOut ys;
     internal::prepare_container(ys, amount);
     auto it = internal::get_back_inserter<ContainerOut>(ys);
     for (std::size_t i = 0; i < amount; ++i)
     {
-        *it = detail::invoke(f, i);
+        *it = internal::invoke(f, i);
     }
     return ys;
 }
@@ -109,7 +109,7 @@ auto carthesian_product_with_where(F f,
 {
     using X = typename Container1::value_type;
     using Y = typename Container2::value_type;
-    using FOut = detail::invoke_result_t<F, X, Y>;
+    using FOut = internal::invoke_result_t<F, X, Y>;
     using ContainerOut = std::vector<std::decay_t<FOut>>;
 
     ContainerOut result;
@@ -118,7 +118,7 @@ auto carthesian_product_with_where(F f,
     {
         for (const auto& y : ys)
         {
-            if (detail::invoke(pred, x, y))
+            if (internal::invoke(pred, x, y))
             {
                 itOut = f(x, y);
             }
@@ -356,7 +356,7 @@ ContainerOut iterate(F f, std::size_t size, const T& x)
     *it_out = current;
     for (std::size_t i = 1; i < size; ++i)
     {
-        current = detail::invoke(f, current);
+        current = internal::invoke(f, current);
         *it_out = current;
     }
     return result;
@@ -379,7 +379,7 @@ ContainerOut iterate_maybe(F f, const T& x)
     while (current.is_just())
     {
         *it_out = current.unsafe_get_just();
-        current = detail::invoke(f, current.unsafe_get_just());
+        current = internal::invoke(f, current.unsafe_get_just());
     }
     return result;
 }
@@ -394,7 +394,7 @@ template <typename ContainerIn, typename F>
 auto adjacent_difference_by(F f, const ContainerIn& xs)
 {
     using X = typename ContainerIn::value_type;
-    using TOut = detail::invoke_result_t<F, X, X>;
+    using TOut = internal::invoke_result_t<F, X, X>;
     using ContainerOut = std::vector<std::decay_t<TOut>>;
 
     ContainerOut result;

@@ -191,7 +191,7 @@ maybe<typename std::size_t> maximum_idx_maybe(const Container& xs)
 template <typename F, typename Container>
 std::size_t minimum_idx_on(F f, const Container& xs)
 {
-    using Result = detail::invoke_result_t<F, typename Container::value_type>;
+    using Result = internal::invoke_result_t<F, typename Container::value_type>;
     auto transformed = transform_convert<std::vector<std::decay_t<Result>>>(f, xs);
     return minimum_idx(transformed);
 }
@@ -219,7 +219,7 @@ maybe<typename std::size_t> minimum_idx_on_maybe(F f, const Container& xs)
 template <typename F, typename Container>
 std::size_t maximum_idx_on(F f, const Container& xs)
 {
-    using Result = detail::invoke_result_t<F, typename Container::value_type>;
+    using Result = internal::invoke_result_t<F, typename Container::value_type>;
     auto transformed = transform_convert<std::vector<std::decay_t<Result>>>(f, xs);
     return maximum_idx(transformed);
 }
@@ -361,7 +361,7 @@ maybe<typename Container::value_type> maximum_maybe(const Container& xs)
 template <typename F, typename Container>
 typename Container::value_type minimum_on(F f, const Container& xs)
 {
-    internal::check_arity<1, F>();
+    internal::trigger_static_asserts<internal::unary_function_tag, F, typename Container::value_type>();
     return elem_at_idx(minimum_idx_on(f, xs), xs);
 }
 
@@ -389,7 +389,7 @@ maybe<typename Container::value_type> minimum_on_maybe(
 template <typename F, typename Container>
 typename Container::value_type maximum_on(F f, const Container& xs)
 {
-    internal::check_arity<1, F>();
+    internal::trigger_static_asserts<internal::unary_function_tag, F, typename Container::value_type>();
     return elem_at_idx(maximum_idx_on(f, xs), xs);
 }
 
@@ -593,7 +593,7 @@ bool is_unique_in_by
     std::size_t count = 0;
     for (const auto& x : xs)
     {
-        if (detail::invoke(pred, x))
+        if (internal::invoke(pred, x))
         {
             ++count;
             if (count > 1)

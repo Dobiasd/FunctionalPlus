@@ -16,19 +16,18 @@
 
 namespace fplus
 {
-namespace detail
+namespace internal
 {
 template <typename GroupByCallable, typename F, typename ContainerIn>
 auto group_on_labeled_impl(GroupByCallable group, F f, const ContainerIn& xs)
 {
     const auto grouped = group(is_equal_by(f), xs);
-    typedef typename decltype(grouped)::value_type Group;
-    const auto attach_label = [f](const Group& g)
+    const auto attach_label = [f](const auto& g)
     {
         using std::begin;
-        return std::make_pair(detail::invoke(f, *begin(g)), g);
+        return std::make_pair(internal::invoke(f, *begin(g)), g);
     };
-    return transform(attach_label, grouped);
+    return fplus::transform(attach_label, grouped);
 }
 }
 }

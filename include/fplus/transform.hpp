@@ -37,14 +37,14 @@ template <typename F, typename ContainerIn,
         ContainerIn, F, std::size_t, typename ContainerIn::value_type, 0>::type>
 ContainerOut transform_with_idx(F f, const ContainerIn& xs)
 {
-    internal::check_arity<2, F>();
+    internal::trigger_static_asserts<internal::binary_function_tag, F>();
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
     auto it = internal::get_back_inserter<ContainerOut>(ys);
     std::size_t idx = 0;
     for (const auto& x : xs)
     {
-        *it = detail::invoke(f, idx++, x);
+        *it = internal::invoke(f, idx++, x);
     }
     return ys;
 }
@@ -57,12 +57,12 @@ template <typename F, typename ContainerIn>
 auto transform_and_keep_justs(F f, const ContainerIn& xs)
 {
     using X = typename ContainerIn::value_type;
-    detail::
-        trigger_static_asserts<detail::unary_function_tag, F, X>();
+    internal::
+        trigger_static_asserts<internal::unary_function_tag, F, X>();
 
     using ContainerOut = typename internal::same_cont_new_t<
         ContainerIn,
-        typename std::decay_t<detail::invoke_result_t<F, X>>::type>::type;
+        typename std::decay_t<internal::invoke_result_t<F, X>>::type>::type;
 
     auto transformed = transform(f, xs);
     return justs<decltype(transformed), ContainerOut>(transformed);
@@ -75,12 +75,12 @@ template <typename F, typename ContainerIn>
 auto transform_and_keep_oks(F f, const ContainerIn& xs)
 {
     using X = typename ContainerIn::value_type;
-    detail::
-        trigger_static_asserts<detail::unary_function_tag, F, X>();
+    internal::
+        trigger_static_asserts<internal::unary_function_tag, F, X>();
 
     using ContainerOut = typename internal::same_cont_new_t<
         ContainerIn,
-        typename std::decay_t<detail::invoke_result_t<F, X>>::ok_t>::type;
+        typename std::decay_t<internal::invoke_result_t<F, X>>::ok_t>::type;
     auto transformed = transform(f, xs);
     return oks<decltype(transformed), ContainerOut>(transformed);
 }
@@ -92,7 +92,7 @@ auto transform_and_keep_oks(F f, const ContainerIn& xs)
 template <typename F, typename ContainerIn>
 auto transform_and_concat(F f, const ContainerIn& xs)
 {
-    internal::check_arity<1, F>();
+    internal::trigger_static_asserts<internal::unary_function_tag, F, typename ContainerIn::value_type>();
     return concat(transform(f, xs));
 }
 
@@ -255,9 +255,9 @@ template <typename FunctionContainer,
           typename FIn>
 auto apply_functions(const FunctionContainer& functions, const FIn& x)
 {
-    detail::trigger_static_asserts<detail::unary_function_tag, F, FIn>();
+    internal::trigger_static_asserts<internal::unary_function_tag, F, FIn>();
 
-    using FOut = std::decay_t<detail::invoke_result_t<F, FIn>>;
+    using FOut = std::decay_t<internal::invoke_result_t<F, FIn>>;
     using ContainerOut =
         typename internal::same_cont_new_t<FunctionContainer, FOut, 0>::type;
 
@@ -266,7 +266,7 @@ auto apply_functions(const FunctionContainer& functions, const FIn& x)
     auto it = internal::get_back_inserter<ContainerOut>(ys);
     for (const auto& f : functions)
     {
-        *it = detail::invoke(f, x);
+        *it = internal::invoke(f, x);
     }
     return ys;
 }
@@ -277,18 +277,18 @@ auto apply_functions(const FunctionContainer& functions, const FIn& x)
 template <typename F, typename FIn>
 auto apply_function_n_times(F f, std::size_t n, const FIn& x)
 {
-    detail::trigger_static_asserts<detail::unary_function_tag, F, FIn>();
-    using FOut = std::decay_t<detail::invoke_result_t<F, FIn>>;
+    internal::trigger_static_asserts<internal::unary_function_tag, F, FIn>();
+    using FOut = std::decay_t<internal::invoke_result_t<F, FIn>>;
     static_assert(std::is_same<FOut, FIn>::value,
                   "Input and output of F must be the same type.");
     if (n == 0)
     {
         return x;
     }
-    FOut y = detail::invoke(f, x);
+    FOut y = internal::invoke(f, x);
     for (std::size_t i = 1; i < n; ++i)
     {
-        y = detail::invoke(f, y);
+        y = internal::invoke(f, y);
     }
     return y;
 }
@@ -305,12 +305,12 @@ auto transform_parallelly(F f, const ContainerIn& xs)
     using ContainerOut = typename internal::
         same_cont_new_t_from_unary_f<ContainerIn, F, 0>::type;
     using X = typename ContainerIn::value_type;
-    internal::check_arity<1, F>();
+    internal::trigger_static_asserts<internal::unary_function_tag, F, X>();
     auto handles = transform([&f](const X& x)
     {
         return std::async(std::launch::async, [&x, &f]()
         {
-            return detail::invoke(f, x);
+            return internal::invoke(f, x);
         });
     }, xs);
 
@@ -341,14 +341,14 @@ typename Container::value_type reduce_parallelly(
     }
     else if (size_of_cont(xs) == 1)
     {
-        return detail::invoke(f, init, xs.front());
+        return internal::invoke(f, init, xs.front());
     }
     else
     {
         typedef typename Container::value_type T;
         const auto f_on_pair = [f](const std::pair<T, T>& p) -> T
         {
-            return detail::invoke(f, p.first, p.second);
+            return internal::invoke(f, p.first, p.second);
         };
         auto transform_result =
             transform_parallelly(f_on_pair, adjacent_pairs(xs));
@@ -380,7 +380,7 @@ typename Container::value_type reduce_1_parallelly(F f, const Container& xs)
         typedef typename Container::value_type T;
         const auto f_on_pair = [f](const std::pair<T, T>& p) -> T
         {
-            return detail::invoke(f, p.first, p.second);
+            return internal::invoke(f, p.first, p.second);
         };
         auto transform_result =
             transform_parallelly(f_on_pair, adjacent_pairs(xs));
@@ -472,7 +472,7 @@ auto transform_parallelly_n_threads(std::size_t n, F f, const ContainerIn& xs)
     using ContainerOut = typename internal::
         same_cont_new_t_from_unary_f<ContainerIn, F, 0>::type;
     using X = typename ContainerIn::value_type;
-    using Y = detail::invoke_result_t<F, X>;
+    using Y = internal::invoke_result_t<F, X>;
     using x_ptr_t =  const X*;
     auto queue = transform_convert<std::vector<x_ptr_t>>(
         [](const X& x) -> x_ptr_t
@@ -502,7 +502,7 @@ auto transform_parallelly_n_threads(std::size_t n, F f, const ContainerIn& xs)
                 ++queue_idx;
             }
 
-            const auto y = detail::invoke(f, *x_ptr);
+            const auto y = internal::invoke(f, *x_ptr);
 
             {
                 std::lock_guard<std::mutex> thread_results_lock(

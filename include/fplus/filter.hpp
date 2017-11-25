@@ -107,7 +107,7 @@ Container keep_if_with_idx(Pred pred, const Container& xs)
     std::size_t idx = 0;
     for (const auto& x : xs)
     {
-        if (detail::invoke(pred, idx++, x))
+        if (internal::invoke(pred, idx++, x))
             *it = x;
     }
     return ys;
@@ -124,7 +124,7 @@ Container drop_if_with_idx(Pred pred, const Container& xs)
     internal::check_index_with_type_predicate_for_container<Pred, Container>();
     const auto inverse_pred = [pred](auto idx, const auto& x)
     {
-        return !detail::invoke(pred, idx, x);
+        return !internal::invoke(pred, idx, x);
     };
     return keep_if_with_idx(inverse_pred, xs);
 }
@@ -140,7 +140,7 @@ Container keep_by_idx(internal::reuse_container_t,
     std::size_t i = 0;
     for (auto it = std::begin(xs); it != std::end(xs); ++it)
     {
-        if (detail::invoke(pred, i++))
+        if (internal::invoke(pred, i++))
             *itOut++ = std::move(*it);
     }
     xs.erase(itOut, std::end(xs));
@@ -460,7 +460,7 @@ Container adjacent_drop_fst_if(BinaryPredicate p, const Container& xs)
     auto it_in = std::begin(xs);
     while (internal::add_to_iterator(it_in) != std::end(xs))
     {
-        if (!detail::invoke(p, *it_in, *internal::add_to_iterator(it_in)))
+        if (!internal::invoke(p, *it_in, *internal::add_to_iterator(it_in)))
         {
             *it = *it_in;
         }
@@ -484,7 +484,7 @@ Container adjacent_drop_snd_if(BinaryPredicate p, const Container& xs)
     typedef typename Container::value_type T;
     const auto not_p = [&p](const T& x, const T& y) -> bool
     {
-        return !detail::invoke(p, x, y);
+        return !internal::invoke(p, x, y);
     };
     return adjacent_keep_snd_if(not_p, xs);
 }
@@ -503,7 +503,7 @@ Container adjacent_keep_fst_if(BinaryPredicate p, const Container& xs)
     typedef typename Container::value_type T;
     const auto not_p = [&p](const T& x, const T& y) -> bool
     {
-        return !detail::invoke(p, x, y);
+        return !internal::invoke(p, x, y);
     };
     return adjacent_drop_fst_if(not_p, xs);
 }

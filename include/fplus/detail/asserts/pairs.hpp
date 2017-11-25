@@ -10,7 +10,7 @@
 
 namespace fplus
 {
-namespace detail
+namespace internal
 {
 struct apply_to_pair_tag
 {

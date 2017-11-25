@@ -7,7 +7,7 @@
 #pragma once
 
 #include <fplus/function_traits.hpp>
-
+#include <fplus/container_common.hpp>
 #include <fplus/detail/composition.hpp>
 #include <fplus/detail/asserts/composition.hpp>
 
@@ -79,7 +79,7 @@ private:
     std::array<unsigned char, sizeof(T)> mem_;
 };
 
-namespace detail
+namespace internal
 {
 template <typename>
 struct is_maybe : std::false_type
@@ -225,11 +225,11 @@ bool operator != (const maybe<T>& x, const maybe<T>& y)
 template <typename F, typename A>
 auto lift_maybe(F f, const maybe<A>& m)
 {
-    detail::trigger_static_asserts<detail::check_arity_tag, F, A>();
+    internal::trigger_static_asserts<internal::check_arity_tag, F, A>();
 
-    using B = std::decay_t<detail::invoke_result_t<F, A>>;
+    using B = std::decay_t<internal::invoke_result_t<F, A>>;
     if (is_just(m))
-        return just<B>(detail::invoke(f, unsafe_get_just(m)));
+        return just<B>(internal::invoke(f, unsafe_get_just(m)));
     return nothing<B>();
 }
 
@@ -243,14 +243,14 @@ auto lift_maybe(F f, const maybe<A>& m)
 template <typename F, typename A, typename Default>
 auto lift_maybe_def(const Default& def, F f, const maybe<A>& m)
 {
-    detail::trigger_static_asserts<detail::check_arity_tag, F, A>();
+    internal::trigger_static_asserts<internal::check_arity_tag, F, A>();
 
-    using B = std::decay_t<detail::invoke_result_t<F, A>>;
+    using B = std::decay_t<internal::invoke_result_t<F, A>>;
     static_assert(
         std::is_convertible<Default, B>::value,
         "Default value must be convertible to Function's return type");
     if (is_just(m))
-        return B(detail::invoke(f, unsafe_get_just(m)));
+        return B(internal::invoke(f, unsafe_get_just(m)));
     return B(def);
 }
 
@@ -262,13 +262,13 @@ auto lift_maybe_def(const Default& def, F f, const maybe<A>& m)
 template <typename F, typename A, typename B>
 auto lift_maybe_2(F f, const maybe<A>& m_a, const maybe<B>& m_b)
 {
-    detail::trigger_static_asserts<detail::check_arity_tag, F, A, B>();
+    internal::trigger_static_asserts<internal::check_arity_tag, F, A, B>();
 
-    using FOut = std::decay_t<detail::invoke_result_t<F, A, B>>;
+    using FOut = std::decay_t<internal::invoke_result_t<F, A, B>>;
     if (is_just(m_a) && is_just(m_b))
     {
         return just<FOut>(
-            detail::invoke(f, unsafe_get_just(m_a), unsafe_get_just(m_b)));
+            internal::invoke(f, unsafe_get_just(m_a), unsafe_get_just(m_b)));
     }
     return nothing<FOut>();
 }
@@ -287,14 +287,14 @@ auto lift_maybe_2_def(const Default& def,
                       const maybe<A>& m_a,
                       const maybe<B>& m_b)
 {
-    detail::trigger_static_asserts<detail::check_arity_tag, F, A, B>();
+    internal::trigger_static_asserts<internal::check_arity_tag, F, A, B>();
 
-    using C = std::decay_t<detail::invoke_result_t<F, A, B>>;
+    using C = std::decay_t<internal::invoke_result_t<F, A, B>>;
     static_assert(
         std::is_convertible<Default, C>::value,
         "Default value must be convertible to Function's return type");
     if (is_just(m_a) && is_just(m_b))
-        return C(detail::invoke(f, unsafe_get_just(m_a), unsafe_get_just(m_b)));
+        return C(internal::invoke(f, unsafe_get_just(m_a), unsafe_get_just(m_b)));
     return C(def);
 }
 
@@ -321,12 +321,12 @@ maybe<A> join_maybe(const maybe<maybe<A>>& m)
 template <typename T, typename F>
 auto and_then_maybe(F f, const maybe<T>& m)
 {
-    detail::trigger_static_asserts<detail::check_arity_tag, F, T>();
-    using FOut = std::decay_t<detail::invoke_result_t<F, T>>;
-    static_assert(detail::is_maybe<FOut>::value,
+    internal::trigger_static_asserts<internal::check_arity_tag, F, T>();
+    using FOut = std::decay_t<internal::invoke_result_t<F, T>>;
+    static_assert(internal::is_maybe<FOut>::value,
                   "Function must return a maybe<> type");
     if (is_just(m))
-        return detail::invoke(f, unsafe_get_just(m));
+        return internal::invoke(f, unsafe_get_just(m));
     else
         return nothing<typename FOut::type>();
 }
@@ -347,23 +347,23 @@ auto compose_maybe(Callables&&... callables)
         return [f = std::move(f), g = std::move(g)](auto&&... args)
         {
             using FOut = std::decay_t<
-                detail::invoke_result_t<decltype(f), decltype(args)...>>;
-            static_assert(detail::is_maybe<FOut>::value,
+                internal::invoke_result_t<decltype(f), decltype(args)...>>;
+            static_assert(internal::is_maybe<FOut>::value,
                           "Functions must return a maybe<> type");
             using GOut = std::decay_t<
-                detail::invoke_result_t<decltype(g), typename FOut::type>>;
-            static_assert(detail::is_maybe<GOut>::value,
+                internal::invoke_result_t<decltype(g), typename FOut::type>>;
+            static_assert(internal::is_maybe<GOut>::value,
                           "Functions must return a maybe<> type");
 
             auto maybeB =
-                detail::invoke(f, std::forward<decltype(args)>(args)...);
+                internal::invoke(f, std::forward<decltype(args)>(args)...);
             if (is_just(maybeB))
-                return detail::invoke(g, unsafe_get_just(maybeB));
+                return internal::invoke(g, unsafe_get_just(maybeB));
             return GOut{};
         };
     };
 
-    return detail::compose_binary_lift(bind_maybe,
+    return internal::compose_binary_lift(bind_maybe,
                                        std::forward<Callables>(callables)...);
 }
 

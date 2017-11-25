@@ -11,7 +11,7 @@
 
 namespace fplus
 {
-namespace detail
+namespace internal
 {
 template <typename T, typename...>
 struct function_traits_asserts;

@@ -10,7 +10,7 @@
 
 namespace fplus
 {
-namespace detail
+namespace internal
 {
 
 struct bind_1st_of_2_tag

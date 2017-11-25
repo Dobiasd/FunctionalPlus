@@ -13,7 +13,7 @@
 
 namespace fplus
 {
-namespace detail
+namespace internal
 {
 template <typename F,
           typename Acc,
@@ -29,7 +29,7 @@ void scan_impl(F f,
 
     auto g = [itOut, f](auto acc, auto x) mutable
     {
-        acc = detail::invoke(f, acc, x);
+        acc = internal::invoke(f, acc, x);
         *itOut = acc;
         return acc;
     };

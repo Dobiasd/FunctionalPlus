@@ -45,7 +45,7 @@ ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
     *internal::get_back_inserter(result) = InnerContainerOut(1, xs.front());
     for (auto it = ++std::begin(xs); it != std::end(xs); ++it)
     {
-        if (detail::invoke(p, result.back().back(), *it))
+        if (internal::invoke(p, result.back().back(), *it))
             *internal::get_back_inserter(result.back()) = *it;
         else
             *internal::get_back_inserter(result) = InnerContainerOut(1, *it);
@@ -82,7 +82,7 @@ auto group_on_labeled(F f, const ContainerIn& xs)
         return group_by(f1, xs1);
     };
 
-    return detail::group_on_labeled_impl(group, f, xs);
+    return internal::group_on_labeled_impl(group, f, xs);
 }
 
 // API search type: group : [a] -> [[a]]
@@ -128,7 +128,7 @@ ContainerOut group_globally_by(BinaryPredicate p, const ContainerIn& xs)
         bool found = false;
         for (auto& ys : result)
         {
-            if (detail::invoke(p, x, ys.back()))
+            if (internal::invoke(p, x, ys.back()))
             {
                 *internal::get_back_inserter(ys) = x;
                 found = true;
@@ -170,7 +170,7 @@ auto group_globally_on_labeled(F f, const ContainerIn& xs)
         return group_globally_by(f1, xs1);
     };
 
-    return detail::group_on_labeled_impl(group, f, xs);
+    return internal::group_on_labeled_impl(group, f, xs);
 }
 
 // API search type: group_globally : [a] -> [[a]]
@@ -225,7 +225,7 @@ ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
         {
             auto idx_x = idx_and_val_x.first;
             auto val_x = idx_and_val_x.second;
-            if (detail::invoke(p, val_y, val_x))
+            if (internal::invoke(p, val_y, val_x))
             {
                 adj_mat[idx_y][idx_x] = 1;
             }
@@ -474,7 +474,7 @@ std::pair<Container, Container> partition
     auto itOutNotMatching = internal::get_back_inserter(notMatching);
     for (const auto& x : xs)
     {
-        if (detail::invoke(pred, x))
+        if (internal::invoke(pred, x))
             *itOutMatching = x;
         else
             *itOutNotMatching = x;

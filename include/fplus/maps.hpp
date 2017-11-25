@@ -71,7 +71,7 @@ auto transform_map_values(F f, const MapIn& map)
     using MapInPair = typename MapIn::value_type;
     using Key = std::remove_const_t<typename MapInPair::first_type>;
     using InVal = std::remove_const_t<typename MapInPair::second_type>;
-    using OutVal = std::decay_t<detail::invoke_result_t<F, InVal>>;
+    using OutVal = std::decay_t<internal::invoke_result_t<F, InVal>>;
     using MapOut = typename internal::SameMapTypeNewTypes<MapIn, Key, OutVal>::type;
 
     return pairs_to_map<MapOut>(
@@ -280,7 +280,7 @@ MapType map_keep_if(Pred pred, const MapType& map)
     MapType result;
     for (const auto& key_and_value : map)
     {
-        if (detail::invoke(pred, key_and_value.first))
+        if (internal::invoke(pred, key_and_value.first))
         {
             result.insert(key_and_value);
         }
@@ -376,7 +376,7 @@ maybe<Val> choose_by(
     maybe<Val> result;
     for (const auto& p : pairs)
     {
-        if (detail::invoke(p.first, x))
+        if (internal::invoke(p.first, x))
         {
             if (is_just(result))
             {
@@ -398,7 +398,7 @@ template <typename Key, typename ValStub>
 auto choose_lazy(const std::vector<std::pair<Key, ValStub>>& pairs,
                  const Key& x)
 {
-    using Ret = maybe<std::decay_t<detail::invoke_result_t<ValStub>>>;
+    using Ret = maybe<std::decay_t<internal::invoke_result_t<ValStub>>>;
     const auto res = choose(pairs, x);
     if (res.is_nothing())
         return Ret{};
@@ -419,7 +419,7 @@ auto choose_by_lazy(
     const std::vector<std::pair<std::function<bool(const Key&)>, ValStub>>& pairs,
     const Key& x)
 {
-    using Ret = maybe<std::decay_t<detail::invoke_result_t<ValStub>>>;
+    using Ret = maybe<std::decay_t<internal::invoke_result_t<ValStub>>>;
 
     const auto res = choose_by(pairs, x);
     if (res.is_nothing())

@@ -14,7 +14,7 @@
 
 namespace fplus
 {
-namespace detail
+namespace internal
 {
 template <typename Compare>
 auto ord_to_impl(Compare comp)
@@ -22,13 +22,13 @@ auto ord_to_impl(Compare comp)
     return [comp](auto x, decltype(x) y)
     {
         using In = decltype(x);
-        detail::trigger_static_asserts<detail::binary_predicate_tag, Compare, In, In>();
+        internal::trigger_static_asserts<internal::binary_predicate_tag, Compare, In, In>();
 
-        using CompareOut = std::decay_t<detail::invoke_result_t<Compare, In, In>>;
+        using CompareOut = std::decay_t<internal::invoke_result_t<Compare, In, In>>;
         static_assert(std::is_same<CompareOut, bool>::value,
                       "Function must return bool.");
-        return std::make_pair(detail::invoke(comp, x, y),
-                              detail::invoke(comp, y, x));
+        return std::make_pair(internal::invoke(comp, x, y),
+                              internal::invoke(comp, y, x));
     };
 }
 }

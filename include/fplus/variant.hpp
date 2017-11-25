@@ -140,7 +140,7 @@ namespace internal
         static_assert(utils::function_traits<F>::arity == 1,
                 "Wrong arity.");
         typedef typename function_first_input_type<F>::type T;
-        typedef std::decay_t<detail::invoke_result_t<F, T>> type;
+        typedef std::decay_t<internal::invoke_result_t<F, T>> type;
     };
 
 
@@ -235,8 +235,8 @@ struct variant
     auto visit_one(F f) const
     {
         using T = typename internal::function_first_input_type<F>::type;
-        using Ret = detail::invoke_result_t<F, T>;
-        internal::check_arity<1, F>();
+        using Ret = internal::invoke_result_t<F, T>;
+        internal::trigger_static_asserts<internal::unary_function_tag, F, T>();
 
         static_assert(
             internal::is_one_of<
@@ -252,7 +252,7 @@ struct variant
 
         if (ptr)
         {
-            return just(detail::invoke(f, *ptr));
+            return just(internal::invoke(f, *ptr));
         }
 
         return nothing<std::decay_t<Ret>>();

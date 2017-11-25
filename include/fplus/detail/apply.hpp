@@ -14,20 +14,20 @@
 
 namespace fplus
 {
-namespace detail
+namespace internal
 {
 // C++17 std::apply (http://en.cppreference.com/w/cpp/utility/apply)
 template <typename F, typename Tuple, std::size_t... I>
 constexpr decltype(auto) apply_impl(F&& f, Tuple&& t, std::index_sequence<I...>)
 {
-    return detail::invoke(std::forward<F>(f),
+    return internal::invoke(std::forward<F>(f),
                           std::get<I>(std::forward<Tuple>(t))...);
 }
- 
+
 template <typename F, typename Tuple>
 constexpr decltype(auto) apply(F&& f, Tuple&& t)
 {
-    return detail::apply_impl(
+    return internal::apply_impl(
         std::forward<F>(f),
         std::forward<Tuple>(t),
         std::make_index_sequence<

@@ -21,7 +21,7 @@
 
 namespace fplus
 {
-namespace detail
+namespace internal
 {
 // We need std::invoke to detect callable objects
 //

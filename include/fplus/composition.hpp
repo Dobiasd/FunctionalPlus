@@ -28,11 +28,11 @@ template <typename F, typename T>
 auto bind_1st_of_2(F f, T x)
 {
     return [f, x](auto&& y) {
-        detail::trigger_static_asserts<detail::bind_1st_of_2_tag,
+        internal::trigger_static_asserts<internal::bind_1st_of_2_tag,
                                              F,
                                              T,
                                              decltype(y)>();
-        return detail::invoke(f, x, std::forward<decltype(y)>(y));
+        return internal::invoke(f, x, std::forward<decltype(y)>(y));
     };
 }
 
@@ -42,11 +42,11 @@ template <typename F, typename T>
 auto bind_2nd_of_2(F f, T y)
 {
     return [f, y](auto&& x) {
-        detail::trigger_static_asserts<detail::bind_2nd_of_2_tag,
+        internal::trigger_static_asserts<internal::bind_2nd_of_2_tag,
                                              F,
                                              decltype(x),
                                              T>();
-        return detail::invoke(f, std::forward<decltype(x)>(x), y);
+        return internal::invoke(f, std::forward<decltype(x)>(x), y);
     };
 }
 
@@ -56,12 +56,12 @@ template <typename F, typename X>
 auto bind_1st_of_3(F f, X x)
 {
     return [f, x](auto&& y, auto&& z) {
-        detail::trigger_static_asserts<detail::bind_1st_of_3_tag,
+        internal::trigger_static_asserts<internal::bind_1st_of_3_tag,
                                              F,
                                              X,
                                              decltype(y),
                                              decltype(z)>();
-        return detail::invoke(
+        return internal::invoke(
             f, x, std::forward<decltype(y)>(y), std::forward<decltype(z)>(z));
     };
 }
@@ -72,12 +72,12 @@ template <typename F, typename X, typename Y>
 auto bind_1st_and_2nd_of_3(F f, X x, Y y)
 {
     return [f, x, y](auto&& z) {
-        detail::trigger_static_asserts<detail::bind_1st_and_2nd_of_3_tag,
+        internal::trigger_static_asserts<internal::bind_1st_and_2nd_of_3_tag,
                                              F,
                                              X,
                                              Y,
                                              decltype(z)>();
-        return detail::invoke(f, x, y, std::forward<decltype(z)>(z));
+        return internal::invoke(f, x, y, std::forward<decltype(z)>(z));
     };
 }
 
@@ -88,10 +88,10 @@ template <typename F>
 auto flip(F f)
 {
     return [f](auto&&... args) {
-        return detail::apply_impl(
+        return internal::apply_impl(
             f,
             std::forward_as_tuple(std::forward<decltype(args)>(args)...),
-            detail::make_reverse_index_sequence<sizeof...(args)>{});
+            internal::make_reverse_index_sequence<sizeof...(args)>{});
     };
 }
 
@@ -101,8 +101,8 @@ auto flip(F f)
 template <typename X, typename F>
 auto forward_apply(X&& x, F f)
 {
-    detail::trigger_static_asserts<detail::unary_function_tag, F, X>();
-    return detail::invoke(f, std::forward<X>(x));
+    internal::trigger_static_asserts<internal::unary_function_tag, F, X>();
+    return internal::invoke(f, std::forward<X>(x));
 }
 
 // API search type: lazy : ((a -> b), a) -> (() -> b)
@@ -114,8 +114,8 @@ template<typename F, typename... Args>
 auto lazy(F f, Args ... args)
 {
     return [f, args...] {
-        detail::trigger_static_asserts<detail::check_arity_tag, F, Args...>();
-        return detail::invoke(f, args...);
+        internal::trigger_static_asserts<internal::check_arity_tag, F, Args...>();
+        return internal::invoke(f, args...);
     };
 }
 
@@ -141,7 +141,7 @@ auto fixed(T x)
 template <typename... Fs>
 auto compose(Fs&&... fs)
 {
-    return detail::compose_impl<Fs...>(std::forward<Fs>(fs)...);
+    return internal::compose_impl<Fs...>(std::forward<Fs>(fs)...);
 }
 
 // API search type: logical_not : (a -> Bool) -> (a -> Bool)
@@ -154,14 +154,14 @@ template <typename Predicate>
 auto logical_not(Predicate f)
 {
     return [f](auto&&... args) {
-        detail::trigger_static_asserts<detail::unary_function_tag,
+        internal::trigger_static_asserts<internal::unary_function_tag,
                                              Predicate,
                                              decltype(args)...>();
         using Res =
-            std::decay_t<detail::invoke_result_t<Predicate, decltype(args)...>>;
+            std::decay_t<internal::invoke_result_t<Predicate, decltype(args)...>>;
         static_assert(std::is_same<Res, bool>::value, "Function must return bool.");
 
-        return !detail::invoke(f, std::forward<decltype(args)>(args)...);
+        return !internal::invoke(f, std::forward<decltype(args)>(args)...);
     };
 }
 
@@ -173,10 +173,10 @@ template <typename UnaryPredicateF, typename UnaryPredicateG>
 auto logical_or(UnaryPredicateF f, UnaryPredicateG g)
 {
     auto op = [](auto f1, auto f2, auto x) {
-        return detail::invoke(f1, x) || detail::invoke(f2, x);
+        return internal::invoke(f1, x) || internal::invoke(f2, x);
     };
 
-    return detail::logical_binary_op(op, f, g);
+    return internal::logical_binary_op(op, f, g);
 }
 
 // API search type: logical_and : ((a -> Bool), (a -> Bool)) -> (a -> Bool)
@@ -187,10 +187,10 @@ template <typename UnaryPredicateF, typename UnaryPredicateG>
 auto logical_and(UnaryPredicateF f, UnaryPredicateG g)
 {
   auto op = [](auto f1, auto f2, auto x) {
-    return detail::invoke(f1, x) && detail::invoke(f2, x);
+    return internal::invoke(f1, x) && internal::invoke(f2, x);
   };
 
-  return detail::logical_binary_op(op, f, g);
+  return internal::logical_binary_op(op, f, g);
 }
 
 // API search type: logical_xor : ((a -> Bool), (a -> Bool)) -> (a -> Bool)
@@ -201,10 +201,10 @@ template <typename UnaryPredicateF, typename UnaryPredicateG>
 auto logical_xor(UnaryPredicateF f, UnaryPredicateG g)
 {
   auto op = [](auto f1, auto f2, auto x) {
-    return detail::invoke(f1, x) != detail::invoke(f2, x);
+    return internal::invoke(f1, x) != internal::invoke(f2, x);
   };
 
-  return detail::logical_binary_op(op, f, g);
+  return internal::logical_binary_op(op, f, g);
 }
 
 // API search type: memoize : (a -> b) -> (a -> b)
@@ -216,19 +216,19 @@ template <typename F>
 auto memoize(F f)
 {
     return [f](auto x) mutable {
-        detail::
-            trigger_static_asserts<detail::unary_function_tag, F, decltype(x)>();
+        internal::
+            trigger_static_asserts<internal::unary_function_tag, F, decltype(x)>();
 
         using X = decltype(x);
-        using FOut = detail::invoke_result_t<F, X>;
-        using MemoMap = std::map<detail::uncvref_t<X>, std::decay_t<FOut>>;
+        using FOut = internal::invoke_result_t<F, X>;
+        using MemoMap = std::map<internal::uncvref_t<X>, std::decay_t<FOut>>;
 
         MemoMap storage;
 
         const auto it = storage.find(x);
         if (it == storage.end())
         {
-            return storage.emplace(x, detail::invoke(f, x)).first->second;
+            return storage.emplace(x, internal::invoke(f, x)).first->second;
         }
         else
         {
@@ -244,7 +244,7 @@ template <
     typename Cache,
     typename FIn1 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn2 = typename utils::function_traits<F>::template arg<1>::type,
-    typename FOut = detail::invoke_result_t<F, FIn1, FIn2>,
+    typename FOut = internal::invoke_result_t<F, FIn1, FIn2>,
     typename ResultF = std::function<FOut(FIn2)>>
 ResultF memoize_recursive_helper(const F f, std::shared_ptr<Cache> storage)
 {
@@ -253,7 +253,7 @@ ResultF memoize_recursive_helper(const F f, std::shared_ptr<Cache> storage)
         if (it == storage->end())
         {
             const auto g = memoize_recursive_helper(f, storage);
-            (*storage)[x] = detail::invoke(f, g, x);
+            (*storage)[x] = internal::invoke(f, g, x);
         }
         return (*storage)[x];
     };
@@ -276,9 +276,9 @@ auto memoize_recursive(F f)
 {
     using FIn1 = typename utils::function_traits<F>::template arg<0>::type;
     using FIn2 = typename utils::function_traits<F>::template arg<1>::type;
-    using FOut = detail::invoke_result_t<F, FIn1, FIn2>;
+    using FOut = internal::invoke_result_t<F, FIn1, FIn2>;
     using MemoMap =
-        std::unordered_map<detail::uncvref_t<FIn2>, std::decay_t<FOut>>;
+        std::unordered_map<internal::uncvref_t<FIn2>, std::decay_t<FOut>>;
     auto storage = std::make_shared<MemoMap>();
     return internal::memoize_recursive_helper(f, storage);
 }
@@ -293,7 +293,7 @@ auto memoize_binary(F f)
 {
     const auto unary_f = [f](const auto& params)
     {
-        return detail::invoke(f, params.first, params.second);
+        return internal::invoke(f, params.first, params.second);
     };
     auto unary_f_memoized = memoize(unary_f);
     return [unary_f_memoized](auto a, auto b) mutable

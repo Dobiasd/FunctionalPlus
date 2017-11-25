@@ -214,12 +214,12 @@ bool operator != (const result<Ok, Error>& x, const result<Ok, Error>& y)
 template <typename Error, typename F, typename A>
 auto lift_result(F f, const result<A, Error>& r)
 {
-    detail::trigger_static_asserts<detail::unary_function_tag, F, A>();
+    internal::trigger_static_asserts<internal::unary_function_tag, F, A>();
 
-    using B = std::decay_t<detail::invoke_result_t<F, A>>;
+    using B = std::decay_t<internal::invoke_result_t<F, A>>;
 
     if (is_ok(r))
-        return ok<B, Error>(detail::invoke(f, unsafe_get_ok(r)));
+        return ok<B, Error>(internal::invoke(f, unsafe_get_ok(r)));
     return error<B, Error>(unsafe_get_error(r));
 }
 
@@ -229,15 +229,15 @@ auto lift_result(F f, const result<A, Error>& r)
 template <typename F, typename G, typename A, typename B>
 auto lift_result_both(F f, G g, const result<A, B>& r)
 {
-    detail::trigger_static_asserts<detail::unary_function_tag, F, A>();
-    detail::trigger_static_asserts<detail::unary_function_tag, G, B>();
+    internal::trigger_static_asserts<internal::unary_function_tag, F, A>();
+    internal::trigger_static_asserts<internal::unary_function_tag, G, B>();
 
-    using C = std::decay_t<detail::invoke_result_t<F, A>>;
-    using D = std::decay_t<detail::invoke_result_t<G, B>>;
+    using C = std::decay_t<internal::invoke_result_t<F, A>>;
+    using D = std::decay_t<internal::invoke_result_t<G, B>>;
 
     if (is_ok(r))
-        return ok<C, D>(detail::invoke(f, unsafe_get_ok(r)));
-    return error<C, D>(detail::invoke(g, unsafe_get_error(r)));
+        return ok<C, D>(internal::invoke(f, unsafe_get_ok(r)));
+    return error<C, D>(internal::invoke(g, unsafe_get_error(r)));
 }
 
 // API search type: unify_result : ((a -> c), (b -> c), Result a b) -> c
@@ -247,14 +247,14 @@ auto lift_result_both(F f, G g, const result<A, B>& r)
 template <typename F, typename G, typename A, typename B>
 auto unify_result(F f, G g, const result<A, B>& r)
 {
-    detail::trigger_static_asserts<detail::unary_function_tag, F, A>();
-    detail::trigger_static_asserts<detail::unary_function_tag, G, B>();
-    static_assert(std::is_same<detail::invoke_result_t<F, A>,
-                               detail::invoke_result_t<G, B>>::value,
+    internal::trigger_static_asserts<internal::unary_function_tag, F, A>();
+    internal::trigger_static_asserts<internal::unary_function_tag, G, B>();
+    static_assert(std::is_same<internal::invoke_result_t<F, A>,
+                               internal::invoke_result_t<G, B>>::value,
                   "Both functions must return the same type.");
     if (is_ok(r))
-        return detail::invoke(f, unsafe_get_ok(r));
-    return detail::invoke(g, unsafe_get_error(r));
+        return internal::invoke(f, unsafe_get_ok(r));
+    return internal::invoke(g, unsafe_get_error(r));
 }
 
 // API search type: join_result : Result (Result a b) b -> Result a b
@@ -280,13 +280,13 @@ result<OK, Error> join_result(const result<result<OK, Error>, Error>& r)
 template <typename Ok, typename Error, typename F>
 auto and_then_result(F f, const result<Ok, Error>& r)
 {
-    detail::trigger_static_asserts<detail::unary_function_tag, F, Ok>();
+    internal::trigger_static_asserts<internal::unary_function_tag, F, Ok>();
 
-    using FOut = std::decay_t<detail::invoke_result_t<F, Ok>>;
+    using FOut = std::decay_t<internal::invoke_result_t<F, Ok>>;
     static_assert(std::is_same<Error, typename FOut::error_t>::value,
                   "Error type must stay the same.");
     if (is_ok(r))
-        return detail::invoke(f, unsafe_get_ok(r));
+        return internal::invoke(f, unsafe_get_ok(r));
     else
         return error<typename FOut::ok_t, typename FOut::error_t>(r.unsafe_get_error());
 }
@@ -301,30 +301,30 @@ auto compose_result(Callables&&... callables)
     auto bind_result = [](auto f, auto g) {
         return [f = std::move(f), g = std::move(g)](auto&&... args)
         {
-            detail::trigger_static_asserts<detail::check_arity_tag,
+            internal::trigger_static_asserts<internal::check_arity_tag,
                                                  decltype(f),
                                                  decltype(args)...>();
             using FOut = std::decay_t<
-                detail::invoke_result_t<decltype(f), decltype(args)...>>;
+                internal::invoke_result_t<decltype(f), decltype(args)...>>;
 
-            detail::trigger_static_asserts<detail::unary_function_tag,
+            internal::trigger_static_asserts<internal::unary_function_tag,
                                                  decltype(g),
                                                  typename FOut::ok_t>();
             using GOut = std::decay_t<
-                detail::invoke_result_t<decltype(g), typename FOut::ok_t>>;
+                internal::invoke_result_t<decltype(g), typename FOut::ok_t>>;
             static_assert(std::is_same<typename FOut::error_t,
                                        typename GOut::error_t>::value,
                           "Error type must stay the same.");
 
             auto resultB =
-                detail::invoke(f, std::forward<decltype(args)>(args)...);
+                internal::invoke(f, std::forward<decltype(args)>(args)...);
             if (is_ok(resultB))
-                return detail::invoke(g, unsafe_get_ok(resultB));
+                return internal::invoke(g, unsafe_get_ok(resultB));
             return error<typename GOut::ok_t, typename GOut::error_t>(
                 unsafe_get_error(resultB));
         };
     };
-    return detail::compose_binary_lift(bind_result,
+    return internal::compose_binary_lift(bind_result,
                                        std::forward<Callables>(callables)...);
 }
 } // namespace fplus

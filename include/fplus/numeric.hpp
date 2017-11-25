@@ -448,16 +448,16 @@ namespace internal
         typename std::common_type<FirstT, FIn...>::type
     {
       using rettype = typename std::common_type<FirstT, FIn...>::type;
-      using f_rettype = std::decay_t<detail::invoke_result_t<F, decltype(first)>>;
+      using f_rettype = std::decay_t<internal::invoke_result_t<F, decltype(first)>>;
 
       rettype result = first;
-      f_rettype result_trans = detail::invoke(f, first);
+      f_rettype result_trans = internal::invoke(f, first);
       f_rettype v_trans;
       unused(result_trans);
       unused(v_trans);
 
       (void)std::initializer_list<int>{
-          ((v_trans = detail::invoke(f, v), v_trans < result_trans)
+          ((v_trans = internal::invoke(f, v), v_trans < result_trans)
                ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
                : 0)...};
       return result;
@@ -494,7 +494,7 @@ auto min_on(F f) -> internal::helper_min_on_t<F>
 template <typename F, typename T>
 T min_2_on(F f, const T& x, const T& y)
 {
-    return detail::invoke(f, y) < detail::invoke(f, x) ? y : x;
+    return internal::invoke(f, y) < internal::invoke(f, x) ? y : x;
 }
 
 namespace internal
@@ -511,13 +511,13 @@ namespace internal
       using f_rettype = decltype(f(first));
 
       rettype result = first;
-      f_rettype result_trans = detail::invoke(f, first);
+      f_rettype result_trans = internal::invoke(f, first);
       f_rettype v_trans;
       unused(result_trans);
       unused(v_trans);
 
       (void)std::initializer_list<int>{
-          ((v_trans = detail::invoke(f, v), v_trans > result_trans)
+          ((v_trans = internal::invoke(f, v), v_trans > result_trans)
                ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
                : 0)...};
       return result;
@@ -555,7 +555,7 @@ auto max_on(F f) -> internal::helper_max_on_t<F>
 template <typename F, typename T>
 T max_2_on(F f, const T& x, const T& y)
 {
-    return detail::invoke(f, y) > detail::invoke(f, x) ? y : x;
+    return internal::invoke(f, y) > internal::invoke(f, x) ? y : x;
 }
 
 // API search type: min : (a, a) -> a
