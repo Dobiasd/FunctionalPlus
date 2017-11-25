@@ -9,7 +9,7 @@
 #include <fplus/function_traits.hpp>
 
 #include <fplus/detail/composition.hpp>
-#include <fplus/detail/asserts/maybe.hpp>
+#include <fplus/detail/asserts/composition.hpp>
 
 #include <cassert>
 #include <exception>
@@ -225,7 +225,7 @@ bool operator != (const maybe<T>& x, const maybe<T>& y)
 template <typename F, typename A>
 auto lift_maybe(F f, const maybe<A>& m)
 {
-    (void)detail::trigger_static_asserts<detail::lift_maybe_tag, F, A>();
+    detail::trigger_static_asserts<detail::check_arity_tag, F, A>();
 
     using B = std::decay_t<detail::invoke_result_t<F, A>>;
     if (is_just(m))
@@ -243,7 +243,7 @@ auto lift_maybe(F f, const maybe<A>& m)
 template <typename F, typename A, typename Default>
 auto lift_maybe_def(const Default& def, F f, const maybe<A>& m)
 {
-    (void)detail::trigger_static_asserts<detail::lift_maybe_tag, F, A>();
+    detail::trigger_static_asserts<detail::check_arity_tag, F, A>();
 
     using B = std::decay_t<detail::invoke_result_t<F, A>>;
     static_assert(
@@ -262,7 +262,7 @@ auto lift_maybe_def(const Default& def, F f, const maybe<A>& m)
 template <typename F, typename A, typename B>
 auto lift_maybe_2(F f, const maybe<A>& m_a, const maybe<B>& m_b)
 {
-    (void)detail::trigger_static_asserts<detail::lift_maybe_tag, F, A, B>();
+    detail::trigger_static_asserts<detail::check_arity_tag, F, A, B>();
 
     using FOut = std::decay_t<detail::invoke_result_t<F, A, B>>;
     if (is_just(m_a) && is_just(m_b))
@@ -287,7 +287,7 @@ auto lift_maybe_2_def(const Default& def,
                       const maybe<A>& m_a,
                       const maybe<B>& m_b)
 {
-    (void)detail::trigger_static_asserts<detail::lift_maybe_tag, F, A, B>();
+    detail::trigger_static_asserts<detail::check_arity_tag, F, A, B>();
 
     using C = std::decay_t<detail::invoke_result_t<F, A, B>>;
     static_assert(
@@ -321,7 +321,7 @@ maybe<A> join_maybe(const maybe<maybe<A>>& m)
 template <typename T, typename F>
 auto and_then_maybe(F f, const maybe<T>& m)
 {
-    (void)detail::trigger_static_asserts<detail::lift_maybe_tag, F, T>();
+    detail::trigger_static_asserts<detail::check_arity_tag, F, T>();
     using FOut = std::decay_t<detail::invoke_result_t<F, T>>;
     static_assert(detail::is_maybe<FOut>::value,
                   "Function must return a maybe<> type");

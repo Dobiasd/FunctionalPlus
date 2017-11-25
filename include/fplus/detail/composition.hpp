@@ -93,10 +93,10 @@ auto logical_binary_op(Lambda op, F f, G g)
     // Perfect-forwarding might move twice, if we add a requirement on F and G,
     // that might not be an issue.
     return [op, f, g](auto x) {
-        (void)detail::trigger_static_asserts<detail::logical_unary_op_tag,
+        detail::trigger_static_asserts<detail::unary_function_tag,
                                              F,
                                              decltype(x)>();
-        (void)detail::trigger_static_asserts<detail::logical_unary_op_tag,
+        detail::trigger_static_asserts<detail::unary_function_tag,
                                              G,
                                              decltype(x)>();
         using FRes = std::decay_t<detail::invoke_result_t<F, decltype(x)>>;

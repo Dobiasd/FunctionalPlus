@@ -561,7 +561,7 @@ namespace internal
 template <typename Container, typename F>
 Container transform(internal::reuse_container_t, F f, Container&& xs)
 {
-    (void)detail::trigger_static_asserts<detail::transform_tag,
+    detail::trigger_static_asserts<detail::unary_function_tag,
                                          F,
                                          decltype(*std::begin(xs))>();
     std::transform(std::begin(xs), std::end(xs), std::begin(xs), f);
@@ -572,7 +572,7 @@ template <typename ContainerOut, typename F, typename ContainerIn>
 ContainerOut transform(internal::create_new_container_t, F f,
     const ContainerIn& xs)
 {
-    (void)detail::trigger_static_asserts<detail::transform_tag,
+    detail::trigger_static_asserts<detail::unary_function_tag,
                                          F,
                                          decltype(*std::begin(xs))>();
     ContainerOut ys;

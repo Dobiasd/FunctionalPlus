@@ -16,7 +16,7 @@
 #include <fplus/composition.hpp>
 #include <fplus/function_traits.hpp>
 
-#include <fplus/detail/asserts/transform.hpp>
+#include <fplus/detail/asserts/functions.hpp>
 #include <fplus/detail/invoke.hpp>
 
 #include <algorithm>
@@ -57,8 +57,8 @@ template <typename F, typename ContainerIn>
 auto transform_and_keep_justs(F f, const ContainerIn& xs)
 {
     using X = typename ContainerIn::value_type;
-    (void)detail::
-        trigger_static_asserts<detail::transform_and_keep_justs_tag, F, X>();
+    detail::
+        trigger_static_asserts<detail::unary_function_tag, F, X>();
 
     using ContainerOut = typename internal::same_cont_new_t<
         ContainerIn,
@@ -75,8 +75,8 @@ template <typename F, typename ContainerIn>
 auto transform_and_keep_oks(F f, const ContainerIn& xs)
 {
     using X = typename ContainerIn::value_type;
-    (void)detail::
-        trigger_static_asserts<detail::transform_and_keep_oks_tag, F, X>();
+    detail::
+        trigger_static_asserts<detail::unary_function_tag, F, X>();
 
     using ContainerOut = typename internal::same_cont_new_t<
         ContainerIn,
@@ -255,7 +255,7 @@ template <typename FunctionContainer,
           typename FIn>
 auto apply_functions(const FunctionContainer& functions, const FIn& x)
 {
-    (void)detail::trigger_static_asserts<detail::apply_functions_tag, F, FIn>();
+    detail::trigger_static_asserts<detail::unary_function_tag, F, FIn>();
 
     using FOut = std::decay_t<detail::invoke_result_t<F, FIn>>;
     using ContainerOut =
@@ -277,7 +277,7 @@ auto apply_functions(const FunctionContainer& functions, const FIn& x)
 template <typename F, typename FIn>
 auto apply_function_n_times(F f, std::size_t n, const FIn& x)
 {
-    (void)detail::trigger_static_asserts<detail::apply_functions_tag, F, FIn>();
+    detail::trigger_static_asserts<detail::unary_function_tag, F, FIn>();
     using FOut = std::decay_t<detail::invoke_result_t<F, FIn>>;
     static_assert(std::is_same<FOut, FIn>::value,
                   "Input and output of F must be the same type.");

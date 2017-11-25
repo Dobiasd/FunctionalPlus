@@ -11,7 +11,7 @@
 
 #include <fplus/detail/invoke.hpp>
 #include <fplus/detail/compare.hpp>
-#include <fplus/detail/asserts/compare.hpp>
+#include <fplus/detail/asserts/functions.hpp>
 
 namespace fplus
 {
@@ -275,10 +275,10 @@ template <typename F, typename G>
 auto is_equal_by_and_by(F f, G g)
 {
     return [f, g](const auto& x, const auto& y) {
-        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+        detail::trigger_static_asserts<detail::unary_function_tag,
                                              F,
                                              decltype(x)>();
-        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+        detail::trigger_static_asserts<detail::unary_function_tag,
                                              G,
                                              decltype(y)>();
         return is_equal(detail::invoke(f, x), detail::invoke(g, y));
@@ -304,7 +304,7 @@ auto is_equal_by_to(F f, const X& x)
 {
     return [f, x](const auto& y)
     {
-        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+        detail::trigger_static_asserts<detail::unary_function_tag,
                                              F,
                                              decltype(y)>();
         return is_equal(detail::invoke(f, y), x);
@@ -339,10 +339,10 @@ template <typename F, typename G>
 auto is_not_equal_by_and_by(F f, G g)
 {
     return [f, g](const auto& x, const auto& y) {
-        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+        detail::trigger_static_asserts<detail::unary_function_tag,
                                              F,
                                              decltype(x)>();
-        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+        detail::trigger_static_asserts<detail::unary_function_tag,
                                              G,
                                              decltype(y)>();
         using FOut = std::decay_t<detail::invoke_result_t<F, decltype(x)>>;
@@ -371,7 +371,7 @@ template <typename F, typename X>
 auto is_not_equal_by_to(F f, const X& x)
 {
     return [f, x](const auto& y) {
-        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+        detail::trigger_static_asserts<detail::unary_function_tag,
                                              F,
                                              decltype(y)>();
         return is_not_equal(detail::invoke(f, y), x);
@@ -407,10 +407,10 @@ auto is_less_by_and_by(F f, G g)
 {
     return [f, g](const auto& x, const auto& y)
     {
-        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+        detail::trigger_static_asserts<detail::unary_function_tag,
                                              F,
                                              decltype(x)>();
-        (void)detail::trigger_static_asserts<detail::is_equal_by_and_by_tag,
+        detail::trigger_static_asserts<detail::unary_function_tag,
                                              G,
                                              decltype(y)>();
         using FOut = std::decay_t<detail::invoke_result_t<F, decltype(x)>>;
@@ -440,7 +440,7 @@ auto is_less_by_than(F f, const X& x)
 {
     return [f, x](const auto& y)
     {
-        (void)detail::trigger_static_asserts<detail::is_less_by_tag,
+        detail::trigger_static_asserts<detail::unary_function_tag,
                                              F,
                                              decltype(y)>();
         return is_less(detail::invoke(f, y), x);
@@ -502,8 +502,8 @@ auto is_less_or_equal_by_than(F f, const X& x)
 {
     return [f, x](const auto& y)
     {
-        (void)detail::
-            trigger_static_asserts<detail::is_less_by_tag, F, decltype(y)>();
+        detail::
+            trigger_static_asserts<detail::unary_function_tag, F, decltype(y)>();
         return is_less_or_equal(detail::invoke(f, y), x);
     };
 }
@@ -623,7 +623,7 @@ auto is_greater_or_equal_by_than(F f, const X& x)
 {
     return [f, x](const auto& y)
     {
-        (void)detail::trigger_static_asserts<detail::is_greater_by_tag, F, decltype(y)>();
+        detail::trigger_static_asserts<detail::unary_function_tag, F, decltype(y)>();
         return is_greater_or_equal(detail::invoke(f, y), x);
     };
 }

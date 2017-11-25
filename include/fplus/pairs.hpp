@@ -18,14 +18,10 @@ namespace fplus
 // API search type: apply_to_pair : (((a, b) -> c), (a, b)) -> c
 // fwd bind count: 1
 // Apply binary function to parts of a pair.
-template <
-    typename F,
-    typename FIn0,
-    typename FIn1,
-    bool = detail::
-        trigger_static_asserts<detail::apply_to_pair_tag, F, FIn0, FIn1>()>
+template <typename F, typename FIn0, typename FIn1>
 auto apply_to_pair(F f, const std::pair<FIn0, FIn1>& p)
 {
+    detail::trigger_static_asserts<detail::apply_to_pair_tag, F, FIn0, FIn1>();
     return detail::invoke(f, p.first, p.second);
 }
 
@@ -38,12 +34,12 @@ template <typename ContainerIn1,
           typename F,
           typename X = typename ContainerIn1::value_type,
           typename Y = typename ContainerIn2::value_type,
-          bool = detail::trigger_static_asserts<detail::zip_with_tag, F, X, Y>(),
           typename TOut = std::decay_t<detail::invoke_result_t<F, X, Y>>,
           typename ContainerOut = std::vector<TOut>>
 ContainerOut zip_with(F f, const ContainerIn1& xs, const ContainerIn2& ys)
 {
-  static_assert(
+    detail::trigger_static_asserts<detail::zip_with_tag, F, X, Y>();
+    static_assert(
       std::is_same<
           typename internal::same_cont_new_t<ContainerIn1, void>::type,
           typename internal::same_cont_new_t<ContainerIn2, void>::type>::value,
@@ -75,7 +71,6 @@ template <
     typename X = typename ContainerIn1::value_type,
     typename Y = typename ContainerIn2::value_type,
     typename Z = typename ContainerIn3::value_type,
-    bool = detail::trigger_static_asserts<detail::zip_with_3_tag, F, X, Y, Z>(),
     typename TOut = std::decay_t<detail::invoke_result_t<F, X, Y, Z>>,
     typename ContainerOut = typename std::vector<TOut>>
 ContainerOut zip_with_3(F f,
@@ -83,6 +78,7 @@ ContainerOut zip_with_3(F f,
                         const ContainerIn2& ys,
                         const ContainerIn3& zs)
 {
+    detail::trigger_static_asserts<detail::zip_with_3_tag, F, X, Y, Z>();
     static_assert(std::is_same<
         typename internal::same_cont_new_t<ContainerIn1, void>::type,
         typename internal::same_cont_new_t<ContainerIn2, void>::type>::value,
@@ -119,14 +115,14 @@ template <
     typename ContainerIn2,
     typename F,
     typename X = typename ContainerIn1::value_type,
-    typename Y = typename ContainerIn2::value_type,
-    bool = detail::trigger_static_asserts<detail::zip_with_tag, F, X, Y>()>
+    typename Y = typename ContainerIn2::value_type>
 auto zip_with_defaults(F f,
     const X& default_x,
     const Y& default_y,
     const ContainerIn1& xs,
     const ContainerIn2& ys)
 {
+    detail::trigger_static_asserts<detail::zip_with_tag, F, X, Y>();
     const auto size_xs = size_of_cont(xs);
     const auto size_ys = size_of_cont(ys);
     if (size_xs < size_ys)
@@ -211,10 +207,10 @@ Y snd(const std::pair<X, Y>& pair)
 // Apply a function to the first element of a pair.
 // transform_fst(square, (4, 5)) == (16, 5)
 template <typename X, typename Y, typename F,
-    bool = detail::trigger_static_asserts<detail::transform_fst_tag, F, X>(),
     typename ResultFirst = std::decay_t<detail::invoke_result_t<F, X>>>
 std::pair<ResultFirst, Y> transform_fst(F f, const std::pair<X, Y>& pair)
 {
+    detail::trigger_static_asserts<detail::transform_fst_tag, F, X>();
     return std::make_pair(detail::invoke(f, pair.first), pair.second);
 }
 
@@ -223,10 +219,10 @@ std::pair<ResultFirst, Y> transform_fst(F f, const std::pair<X, Y>& pair)
 // Apply a function to the second element of a pair.
 // transform_snd(square, (4, 5)) == (4, 25)
 template <typename X, typename Y, typename F,
-    bool = detail::trigger_static_asserts<detail::transform_snd_tag, F, Y>(),
     typename ResultSecond = std::decay_t<detail::invoke_result_t<F, Y>>>
 std::pair<X, ResultSecond> transform_snd(F f, const std::pair<X, Y>& pair)
 {
+    detail::trigger_static_asserts<detail::transform_snd_tag, F, Y>();
     return std::make_pair(pair.first, detail::invoke(f, pair.second));
 }
 
@@ -239,14 +235,14 @@ template <
     typename Y,
     typename F,
     typename G,
-    bool = detail::trigger_static_asserts<detail::transform_fst_tag, F, X>(),
-    bool = detail::trigger_static_asserts<detail::transform_snd_tag, G, Y>(),
     typename ResultFirst = std::decay_t<detail::invoke_result_t<F, X>>,
     typename ResultSecond = std::decay_t<detail::invoke_result_t<G, Y>>>
 std::pair<ResultFirst, ResultSecond> transform_pair(F f,
                                                     G g,
                                                     const std::pair<X, Y>& pair)
 {
+    detail::trigger_static_asserts<detail::transform_fst_tag, F, X>();
+    detail::trigger_static_asserts<detail::transform_snd_tag, G, Y>();
     return std::make_pair(detail::invoke(f, pair.first),
                           detail::invoke(g, pair.second));
 }
@@ -398,19 +394,15 @@ template <
     typename Acc,
     typename X = typename ContainerIn1::value_type,
     typename Y = typename ContainerIn2::value_type,
-    bool = detail::
-        trigger_static_asserts<detail::inner_product_with_tag, OP2, X, Y>(),
-    typename OP2Out = detail::invoke_result_t<OP2, X, Y>,
-    bool = detail::trigger_static_asserts<detail::inner_product_with_tag,
-                                          OP1,
-                                          Acc,
-                                          OP2Out>()>
+    typename OP2Out = detail::invoke_result_t<OP2, X, Y>>
 auto inner_product_with(OP1 op1,
                         OP2 op2,
                         const Acc& value,
                         const ContainerIn1& xs,
                         const ContainerIn2& ys)
 {
+    detail::trigger_static_asserts<detail::inner_product_with_tag, OP2, X, Y>();
+    detail::trigger_static_asserts<detail::inner_product_with_tag, OP1, Acc, OP2Out>();
     assert(size_of_cont(xs) == size_of_cont(ys));
     return std::inner_product(
         std::begin(xs), std::end(xs), std::begin(ys), value, op1, op2);

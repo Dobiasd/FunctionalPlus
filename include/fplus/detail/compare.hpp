@@ -8,7 +8,7 @@
 
 #include <type_traits>
 
-#include <fplus/detail/asserts/compare.hpp>
+#include <fplus/detail/asserts/functions.hpp>
 
 #include <fplus/detail/invoke.hpp>
 
@@ -22,7 +22,7 @@ auto ord_to_impl(Compare comp)
     return [comp](auto x, decltype(x) y)
     {
         using In = decltype(x);
-        (void)detail::trigger_static_asserts<detail::ord_tag, Compare, In, In>();
+        detail::trigger_static_asserts<detail::binary_predicate_tag, Compare, In, In>();
 
         using CompareOut = std::decay_t<detail::invoke_result_t<Compare, In, In>>;
         static_assert(std::is_same<CompareOut, bool>::value,

@@ -10,7 +10,7 @@
 #include <fplus/numeric.hpp>
 #include <fplus/composition.hpp>
 
-#include <fplus/detail/asserts/generate.hpp>
+#include <fplus/detail/asserts/functions.hpp>
 
 namespace fplus
 {
@@ -42,8 +42,8 @@ ContainerOut generate(F f, std::size_t amount)
 template <typename ContainerOut, typename F>
 ContainerOut generate_by_idx(F f, std::size_t amount)
 {
-    (void)detail::
-        trigger_static_asserts<detail::generate_by_idx_tag, F, std::size_t>();
+    detail::
+        trigger_static_asserts<detail::unary_function_tag, F, std::size_t>();
 
     ContainerOut ys;
     internal::prepare_container(ys, amount);

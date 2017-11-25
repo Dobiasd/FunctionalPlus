@@ -21,9 +21,8 @@ template <
     typename F,
     typename... Args,
     typename std::enable_if<is_invocable<F, Args...>::value, int>::type = 0>
-constexpr bool trigger_static_asserts()
+constexpr void trigger_static_asserts()
 {
-  return true;
 }
 
 template <typename Tag,
@@ -32,11 +31,10 @@ template <typename Tag,
           typename std::enable_if<has_function_traits<F>::value &&
                                       !is_invocable<F, Args...>::value,
                                   int>::type = 0>
-constexpr bool trigger_static_asserts()
+constexpr void trigger_static_asserts()
 {
   // don't perform checks if function_traits<F> doesn't exist
-  (void)function_traits_asserts<Tag, F, Args...>{};
-  return true;
+  function_traits_asserts<Tag, F, Args...>{};
 }
 
 template <typename,
@@ -45,11 +43,10 @@ template <typename,
           typename std::enable_if<!has_function_traits<F>::value &&
                                       !is_invocable<F, Args...>::value,
                                   int>::type = 0>
-constexpr bool trigger_static_asserts()
+constexpr void trigger_static_asserts()
 {
   static_assert(sizeof(F) == 0,
                 "F is not a Callable, or its definition is ill-formed");
-  return true;
 }
 }
 }

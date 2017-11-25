@@ -8,6 +8,8 @@
 
 #include <fplus/function_traits.hpp>
 #include <fplus/detail/apply.hpp>
+#include <fplus/detail/asserts/compare.hpp>
+#include <fplus/detail/asserts/functions.hpp>
 #include <fplus/detail/asserts/composition.hpp>
 #include <fplus/detail/composition.hpp>
 
@@ -27,7 +29,7 @@ template <typename F, typename T>
 auto bind_1st_of_2(F f, T x)
 {
     return [f, x](auto&& y) {
-        (void)detail::trigger_static_asserts<detail::bind_1st_of_2_tag,
+        detail::trigger_static_asserts<detail::bind_1st_of_2_tag,
                                              F,
                                              T,
                                              decltype(y)>();
@@ -41,7 +43,7 @@ template <typename F, typename T>
 auto bind_2nd_of_2(F f, T y)
 {
     return [f, y](auto&& x) {
-        (void)detail::trigger_static_asserts<detail::bind_2nd_of_2_tag,
+        detail::trigger_static_asserts<detail::bind_2nd_of_2_tag,
                                              F,
                                              decltype(x),
                                              T>();
@@ -55,7 +57,7 @@ template <typename F, typename X>
 auto bind_1st_of_3(F f, X x)
 {
     return [f, x](auto&& y, auto&& z) {
-        (void)detail::trigger_static_asserts<detail::bind_1st_of_3_tag,
+        detail::trigger_static_asserts<detail::bind_1st_of_3_tag,
                                              F,
                                              X,
                                              decltype(y),
@@ -71,7 +73,7 @@ template <typename F, typename X, typename Y>
 auto bind_1st_and_2nd_of_3(F f, X x, Y y)
 {
     return [f, x, y](auto&& z) {
-        (void)detail::trigger_static_asserts<detail::bind_1st_and_2nd_of_3_tag,
+        detail::trigger_static_asserts<detail::bind_1st_and_2nd_of_3_tag,
                                              F,
                                              X,
                                              Y,
@@ -100,7 +102,7 @@ auto flip(F f)
 template <typename X, typename F>
 auto forward_apply(X&& x, F f)
 {
-    (void)detail::trigger_static_asserts<detail::forward_apply_tag, F, X>();
+    detail::trigger_static_asserts<detail::unary_function_tag, F, X>();
     return detail::invoke(f, std::forward<X>(x));
 }
 
@@ -113,7 +115,7 @@ template<typename F, typename... Args>
 auto lazy(F f, Args ... args)
 {
     return [f, args...] {
-        (void)detail::trigger_static_asserts<detail::lazy_tag, F, Args...>();
+        detail::trigger_static_asserts<detail::check_arity_tag, F, Args...>();
         return detail::invoke(f, args...);
     };
 }
@@ -153,7 +155,7 @@ template <typename Predicate>
 auto logical_not(Predicate f)
 {
     return [f](auto&&... args) {
-        (void)detail::trigger_static_asserts<detail::logical_unary_op_tag,
+        detail::trigger_static_asserts<detail::unary_function_tag,
                                              Predicate,
                                              decltype(args)...>();
         using Res =
@@ -215,8 +217,8 @@ template <typename F>
 auto memoize(F f)
 {
     return [f](auto x) mutable {
-        (void)detail::
-            trigger_static_asserts<detail::memoize_tag, F, decltype(x)>();
+        detail::
+            trigger_static_asserts<detail::unary_function_tag, F, decltype(x)>();
 
         using X = decltype(x);
         using FOut = detail::invoke_result_t<F, X>;

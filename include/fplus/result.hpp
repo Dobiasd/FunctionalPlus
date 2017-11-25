@@ -9,7 +9,7 @@
 #include <fplus/function_traits.hpp>
 #include <fplus/maybe.hpp>
 
-#include <fplus/detail/asserts/result.hpp>
+#include <fplus/detail/asserts/functions.hpp>
 #include <fplus/detail/composition.hpp>
 #include <fplus/detail/invoke.hpp>
 
@@ -214,7 +214,7 @@ bool operator != (const result<Ok, Error>& x, const result<Ok, Error>& y)
 template <typename Error, typename F, typename A>
 auto lift_result(F f, const result<A, Error>& r)
 {
-    (void)detail::trigger_static_asserts<detail::lift_result_tag, F, A>();
+    detail::trigger_static_asserts<detail::unary_function_tag, F, A>();
 
     using B = std::decay_t<detail::invoke_result_t<F, A>>;
 
@@ -229,8 +229,8 @@ auto lift_result(F f, const result<A, Error>& r)
 template <typename F, typename G, typename A, typename B>
 auto lift_result_both(F f, G g, const result<A, B>& r)
 {
-    (void)detail::trigger_static_asserts<detail::lift_result_tag, F, A>();
-    (void)detail::trigger_static_asserts<detail::lift_result_tag, G, B>();
+    detail::trigger_static_asserts<detail::unary_function_tag, F, A>();
+    detail::trigger_static_asserts<detail::unary_function_tag, G, B>();
 
     using C = std::decay_t<detail::invoke_result_t<F, A>>;
     using D = std::decay_t<detail::invoke_result_t<G, B>>;
@@ -247,8 +247,8 @@ auto lift_result_both(F f, G g, const result<A, B>& r)
 template <typename F, typename G, typename A, typename B>
 auto unify_result(F f, G g, const result<A, B>& r)
 {
-    (void)detail::trigger_static_asserts<detail::unify_result_tag, F, A>();
-    (void)detail::trigger_static_asserts<detail::unify_result_tag, G, B>();
+    detail::trigger_static_asserts<detail::unary_function_tag, F, A>();
+    detail::trigger_static_asserts<detail::unary_function_tag, G, B>();
     static_assert(std::is_same<detail::invoke_result_t<F, A>,
                                detail::invoke_result_t<G, B>>::value,
                   "Both functions must return the same type.");
@@ -280,7 +280,7 @@ result<OK, Error> join_result(const result<result<OK, Error>, Error>& r)
 template <typename Ok, typename Error, typename F>
 auto and_then_result(F f, const result<Ok, Error>& r)
 {
-    (void)detail::trigger_static_asserts<detail::and_then_result_tag, F, Ok>();
+    detail::trigger_static_asserts<detail::unary_function_tag, F, Ok>();
 
     using FOut = std::decay_t<detail::invoke_result_t<F, Ok>>;
     static_assert(std::is_same<Error, typename FOut::error_t>::value,
@@ -301,13 +301,13 @@ auto compose_result(Callables&&... callables)
     auto bind_result = [](auto f, auto g) {
         return [f = std::move(f), g = std::move(g)](auto&&... args)
         {
-            (void)detail::trigger_static_asserts<detail::compose_result_tag,
+            detail::trigger_static_asserts<detail::check_arity_tag,
                                                  decltype(f),
                                                  decltype(args)...>();
             using FOut = std::decay_t<
                 detail::invoke_result_t<decltype(f), decltype(args)...>>;
 
-            (void)detail::trigger_static_asserts<detail::compose_result_bis_tag,
+            detail::trigger_static_asserts<detail::unary_function_tag,
                                                  decltype(g),
                                                  typename FOut::ok_t>();
             using GOut = std::decay_t<
