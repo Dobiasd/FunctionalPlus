@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include <fplus/fplus.hpp>
-
 namespace fplus
 {
 namespace fwd
