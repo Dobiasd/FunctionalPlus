@@ -89,10 +89,8 @@ auto transform_and_keep_oks(F f, const ContainerIn& xs)
 // fwd bind count: 1
 // Map function over values and concat results.
 // Also known as flat_map or concat_map.
-template <typename F, typename ContainerIn,
-    typename ContainerOut = typename internal::same_cont_new_t_from_unary_f<
-        ContainerIn, F>::type::value_type>
-ContainerOut transform_and_concat(F f, const ContainerIn& xs)
+template <typename F, typename ContainerIn>
+auto transform_and_concat(F f, const ContainerIn& xs)
 {
     internal::check_arity<1, F>();
     return concat(transform(f, xs));
@@ -191,9 +189,8 @@ Container shuffle(internal::create_new_container_t,
 // Returns a randomly shuffled version of xs.
 // Example call: shuffle(std::mt19937::default_seed, xs);
 // Example call: shuffle(std::random_device()(), xs);
-template <typename Container,
-    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
-ContainerOut shuffle(std::uint_fast32_t seed, Container&& xs)
+template <typename Container>
+auto shuffle(std::uint_fast32_t seed, Container&& xs)
 {
     return(internal::shuffle(internal::can_reuse_v<Container>{},
         seed, std::forward<Container>(xs)));

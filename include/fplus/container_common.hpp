@@ -505,9 +505,8 @@ Container insert_at(std::size_t idx_begin,
 // Return the nth element of a sequence.
 // elem_at_idx(2, [7,6,5,4,3]) == 5
 // Unsafe! Crashes on invalid index.
-template <typename Container,
-    typename T = typename Container::value_type>
-T elem_at_idx(std::size_t idx, const Container& xs)
+template <typename Container>
+auto elem_at_idx(std::size_t idx, const Container& xs)
 {
     assert(idx < size_of_cont(xs));
     auto it = std::begin(xs);
@@ -871,9 +870,8 @@ typename Container::value_type reduce(
 // Takes the first 2 items of the list and applies the function to them,
 // then feeds the function with this result and the third argument and so on.
 // xs must be non-empty.
-template <typename F, typename Container,
-    typename Acc = typename Container::value_type>
-Acc fold_left_1(F f, const Container& xs)
+template <typename F, typename Container>
+auto fold_left_1(F f, const Container& xs)
 {
     assert(!xs.empty());
 
@@ -916,9 +914,8 @@ Acc fold_right(F f, const Acc& init, const Container& xs)
 // fold_right_1((+), [1, 2, 3]) == 1+(2+3)) == 6
 // Takes the last two items of the list and applies the function,
 // then it takes the third item from the end and the result, and so on.
-template <typename F, typename Container,
-    typename Acc = typename Container::value_type>
-Acc fold_right_1(F f, const Container& xs)
+template <typename F, typename Container>
+auto fold_right_1(F f, const Container& xs)
 {
     assert(!xs.empty());
 
@@ -2168,9 +2165,8 @@ T instead_of_if(internal::create_new_container_t, UnaryPredicate pred,
 // API search type: instead_of_if : ((a -> Bool), a, a) -> a
 // fwd bind count: 2
 // Return alt if pred(x), otherwise x itself.
-template <typename UnaryPredicate, typename T, typename TAlt,
-    typename TOut = internal::remove_const_and_ref_t<T>>
-TOut instead_of_if(UnaryPredicate pred, const TAlt& alt, T&& x)
+template <typename UnaryPredicate, typename T, typename TAlt>
+auto instead_of_if(UnaryPredicate pred, const TAlt& alt, T&& x)
 {
     return internal::instead_of_if(internal::can_reuse_v<T>{},
         pred, alt, std::forward<T>(x));

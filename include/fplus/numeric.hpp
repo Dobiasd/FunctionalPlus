@@ -783,9 +783,8 @@ Container normalize_min_max(internal::create_new_container_t,
 // normalize_min_max(0, 10, [1, 3, 6]) == [0, 4, 10]
 // It is recommended to convert integers to double beforehand.
 template <typename Container,
-    typename ContainerOut = internal::remove_const_and_ref_t<Container>,
     typename T = typename internal::remove_const_and_ref_t<Container>::value_type>
-ContainerOut normalize_min_max(const T& lower, const T& upper, Container&& xs)
+auto normalize_min_max(const T& lower, const T& upper, Container&& xs)
 {
     return internal::normalize_min_max(internal::can_reuse_v<Container>{},
         lower, upper, std::forward<Container>(xs));
@@ -826,9 +825,8 @@ Container normalize_mean_stddev(internal::create_new_container_t,
 // to match the given mean and population standard deviation.
 // normalize_mean_stddev(3, 2, [7, 8]) == [1, 5]
 template <typename Container,
-    typename ContainerOut = internal::remove_const_and_ref_t<Container>,
     typename T = typename internal::remove_const_and_ref_t<Container>::value_type>
-ContainerOut normalize_mean_stddev(
+auto normalize_mean_stddev(
     const T& mean, const T& stddev, Container&& xs)
 {
     return internal::normalize_mean_stddev(internal::can_reuse_v<Container>{},
@@ -839,9 +837,8 @@ ContainerOut normalize_mean_stddev(
 // fwd bind count: 0
 // Linearly scales the values to zero mean and population standard deviation 1.
 // standardize([7, 8]) == [-1, 1]
-template <typename Container,
-    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
-ContainerOut standardize(Container&& xs)
+template <typename Container>
+auto standardize(Container&& xs)
 {
     typedef typename internal::remove_const_and_ref_t<Container>::value_type T;
     T mean(0);

@@ -274,10 +274,7 @@ bool map_contains(const MapType& map, const Key& key)
 // Filters the map by keys.
 // map_keep_if(is_upper_case, {a: 1, b: 2, A: 3, C: 4}) == {A: 3, C: 4}
 // Also known as pick_by.
-template <typename MapType,
-    typename Pred,
-    typename Key = typename MapType::key_type,
-    typename Val = typename MapType::mapped_type>
+template <typename MapType, typename Pred>
 MapType map_keep_if(Pred pred, const MapType& map)
 {
     MapType result;
@@ -296,10 +293,7 @@ MapType map_keep_if(Pred pred, const MapType& map)
 // Filters the map by keys.
 // map_drop_if(is_lower_case, {a: 1, b: 2, A: 3, C: 4}) == {A: 3, C: 4}
 // Inverse of map_keep_if.
-template <typename MapType,
-    typename Pred,
-    typename Key = typename MapType::key_type,
-    typename Val = typename MapType::mapped_type>
+template <typename MapType, typename Pred>
 MapType map_drop_if(Pred pred, const MapType& map)
 {
     return map_keep_if(logical_not(pred), map);
@@ -311,10 +305,7 @@ MapType map_drop_if(Pred pred, const MapType& map)
 // map_keep([a, d], {a: 1, b: 2, c: 3, d: 4}) == {a: 1, d: 4}
 // map_keep([a, e, f], {a: 1, b: 2, c: 3, d: 4}) == {a: 1}
 // Also known as pick.
-template <typename MapType,
-    typename KeyContainer,
-    typename Key = typename MapType::key_type,
-    typename Val = typename MapType::mapped_type>
+template <typename MapType, typename KeyContainer>
 MapType map_keep(const KeyContainer& keys, const MapType& map)
 {
     static_assert(std::is_same<
@@ -329,10 +320,7 @@ MapType map_keep(const KeyContainer& keys, const MapType& map)
 // Keeps only the pairs of the map not found in the key list.
 // Inverse of map_keep.
 // map_drop([b, c], {a: 1, b: 2, c: 3, d: 4}); //=> {a: 1, d: 4}
-template <typename MapType,
-    typename KeyContainer,
-    typename Key = typename MapType::key_type,
-    typename Val = typename MapType::mapped_type>
+template <typename MapType, typename KeyContainer>
 MapType map_drop(const KeyContainer& keys, const MapType& map)
 {
     static_assert(std::is_same<

@@ -23,9 +23,8 @@ template <
     typename FIn0,
     typename FIn1,
     bool = detail::
-        trigger_static_asserts<detail::apply_to_pair_tag, F, FIn0, FIn1>(),
-    typename FOut = std::decay_t<detail::invoke_result_t<F, FIn0, FIn1>>>
-FOut apply_to_pair(F f, const std::pair<FIn0, FIn1>& p)
+        trigger_static_asserts<detail::apply_to_pair_tag, F, FIn0, FIn1>()>
+auto apply_to_pair(F f, const std::pair<FIn0, FIn1>& p)
 {
     return detail::invoke(f, p.first, p.second);
 }
@@ -121,14 +120,12 @@ template <
     typename F,
     typename X = typename ContainerIn1::value_type,
     typename Y = typename ContainerIn2::value_type,
-    bool = detail::trigger_static_asserts<detail::zip_with_tag, F, X, Y>(),
-    typename TOut = std::decay_t<detail::invoke_result_t<F, X, Y>>,
-    typename ContainerOut = typename std::vector<TOut>>
-ContainerOut zip_with_defaults(F f,
-                               const X& default_x,
-                               const Y& default_y,
-                               const ContainerIn1& xs,
-                               const ContainerIn2& ys)
+    bool = detail::trigger_static_asserts<detail::zip_with_tag, F, X, Y>()>
+auto zip_with_defaults(F f,
+    const X& default_x,
+    const Y& default_y,
+    const ContainerIn1& xs,
+    const ContainerIn2& ys)
 {
     const auto size_xs = size_of_cont(xs);
     const auto size_ys = size_of_cont(ys);
@@ -155,10 +152,8 @@ ContainerOut zip_with_defaults(F f,
 // zip([1, 2, 3], [5, 6]) == [(1, 5), (2, 6)]
 template <typename ContainerIn1, typename ContainerIn2,
     typename X = typename ContainerIn1::value_type,
-    typename Y = typename ContainerIn2::value_type,
-    typename TOut = std::pair<X, Y>,
-    typename ContainerOut = typename std::vector<TOut>>
-ContainerOut zip(const ContainerIn1& xs, const ContainerIn2& ys)
+    typename Y = typename ContainerIn2::value_type>
+auto zip(const ContainerIn1& xs, const ContainerIn2& ys)
 {
     auto MakePair = [](const X& x, const Y& y)
         { return std::make_pair(x, y); };
@@ -215,10 +210,7 @@ Y snd(const std::pair<X, Y>& pair)
 // fwd bind count: 1
 // Apply a function to the first element of a pair.
 // transform_fst(square, (4, 5)) == (16, 5)
-template <
-    typename X,
-    typename Y,
-    typename F,
+template <typename X, typename Y, typename F,
     bool = detail::trigger_static_asserts<detail::transform_fst_tag, F, X>(),
     typename ResultFirst = std::decay_t<detail::invoke_result_t<F, X>>>
 std::pair<ResultFirst, Y> transform_fst(F f, const std::pair<X, Y>& pair)
@@ -230,10 +222,7 @@ std::pair<ResultFirst, Y> transform_fst(F f, const std::pair<X, Y>& pair)
 // fwd bind count: 1
 // Apply a function to the second element of a pair.
 // transform_snd(square, (4, 5)) == (4, 25)
-template <
-    typename X,
-    typename Y,
-    typename F,
+template <typename X, typename Y, typename F,
     bool = detail::trigger_static_asserts<detail::transform_snd_tag, F, Y>(),
     typename ResultSecond = std::decay_t<detail::invoke_result_t<F, Y>>>
 std::pair<X, ResultSecond> transform_snd(F f, const std::pair<X, Y>& pair)
@@ -278,10 +267,8 @@ std::pair<Y, X> swap_pair_elems(const std::pair<X, Y>& pair)
 // swap_pairs_elems([(1,2), (3,4)]) == [(2,1), (4,3)]
 template <typename ContainerIn,
     typename X = typename ContainerIn::value_type::first_type,
-    typename Y = typename ContainerIn::value_type::second_type,
-    typename ContainerOut =
-        typename internal::same_cont_new_t<ContainerIn, std::pair<Y, X>, 0>::type>
-ContainerOut swap_pairs_elems(const ContainerIn& xs)
+    typename Y = typename ContainerIn::value_type::second_type>
+auto swap_pairs_elems(const ContainerIn& xs)
 {
     return fplus::transform(swap_pair_elems<X, Y>, xs);
 }
@@ -393,9 +380,8 @@ ContainerOut overlapping_pairs_cyclic(const Container& xs)
 // fwd bind count: 0
 // Attach its index to every element of a sequence.
 // enumerate([6,4,7,6]) == [(0, 6), (1, 4), (2, 7), (3, 6)]
-template <typename Container,
-    typename T = typename Container::value_type>
-std::vector<std::pair<std::size_t, T>> enumerate(const Container& xs)
+template <typename Container>
+auto enumerate(const Container& xs)
 {
     return zip(all_idxs(xs), xs);
 }
@@ -418,9 +404,8 @@ template <
     bool = detail::trigger_static_asserts<detail::inner_product_with_tag,
                                           OP1,
                                           Acc,
-                                          OP2Out>(),
-    typename TOut = std::decay_t<detail::invoke_result_t<OP1, Acc, OP2Out>>>
-TOut inner_product_with(OP1 op1,
+                                          OP2Out>()>
+auto inner_product_with(OP1 op1,
                         OP2 op2,
                         const Acc& value,
                         const ContainerIn1& xs,
@@ -455,9 +440,7 @@ Z inner_product(const Z& value,
 // first_mismatch_idx_by((==), [1, 2, 3], [1, 2]) == Nothing
 // first_mismatch_idx_by((==), [], [1, 2]) == Nothing
 template <typename ContainerIn1, typename ContainerIn2,
-    typename BinaryPredicate,
-    typename X = typename ContainerIn1::value_type,
-    typename Y = typename ContainerIn2::value_type>
+    typename BinaryPredicate>
 maybe<std::size_t> first_mismatch_idx_by(BinaryPredicate p,
     const ContainerIn1& xs, const ContainerIn2& ys)
 {

@@ -153,17 +153,11 @@ auto carthesian_product_with(F f, const Container1& xs, const Container2& ys)
 //   SELECT (xs.x, ys.y)
 //   FROM xs, ys
 //   WHERE pred(xs.x, ys.y);
-template <typename Pred,
-    typename Container1,
-    typename Container2,
-    typename X = typename Container1::value_type,
-    typename Y = typename Container2::value_type,
-    typename Out = std::pair<X, Y>,
-    typename ContainerOut = std::vector<Out>>
-ContainerOut carthesian_product_where(Pred pred,
+template <typename Pred, typename Container1, typename Container2>
+auto carthesian_product_where(Pred pred,
     const Container1& xs, const Container2& ys)
 {
-    auto make_res_pair = [](const X& x, const Y& y)
+    auto make_res_pair = [](const auto& x, const auto& y)
     {
         return std::make_pair(x, y);
     };
@@ -179,19 +173,14 @@ ContainerOut carthesian_product_where(Pred pred,
 // same as (in pseudo SQL):
 //   SELECT (xs.x, ys.y)
 //   FROM xs, ys;
-template <typename Container1,
-    typename Container2,
-    typename X = typename Container1::value_type,
-    typename Y = typename Container2::value_type,
-    typename Out = std::pair<X, Y>,
-    typename ContainerOut = std::vector<Out>>
-ContainerOut carthesian_product(const Container1& xs, const Container2& ys)
+template <typename Container1, typename Container2>
+auto carthesian_product(const Container1& xs, const Container2& ys)
 {
-    auto make_res_pair = [](const X& x, const Y& y)
+    auto make_res_pair = [](const auto& x, const auto& y)
     {
         return std::make_pair(x, y);
     };
-    auto always_true_x_y = [](const X&, const Y&) { return true; };
+    auto always_true_x_y = [](const auto&, const auto&) { return true; };
     return carthesian_product_with_where(
         make_res_pair, always_true_x_y, xs, ys);
 }

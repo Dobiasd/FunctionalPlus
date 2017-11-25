@@ -60,9 +60,8 @@ ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
 // For a version scanning the whole container see group_globally_on.
 // group_on((mod 10), [12,22,34]) == [[12,22],[34]]
 // O(n)
-template <typename F, typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
-ContainerOut group_on(F f, const ContainerIn& xs)
+template <typename F, typename ContainerIn>
+auto group_on(F f, const ContainerIn& xs)
 {
     return group_by(is_equal_by(f), xs);
 }
@@ -150,9 +149,8 @@ ContainerOut group_globally_by(BinaryPredicate p, const ContainerIn& xs)
 // group_globally_on((mod 10), [12,34,22]) == [[12,34],[22]]
 // O(n^2)
 // If you need O(n*log(n)), sort and then use group_on
-template <typename F, typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
-ContainerOut group_globally_on(F f, const ContainerIn& xs)
+template <typename F, typename ContainerIn>
+auto group_globally_on(F f, const ContainerIn& xs)
 {
     return group_globally_by(is_equal_by(f), xs);
 }
@@ -389,9 +387,8 @@ ContainerOut split_by_keep_separators
 // split(0, true, [1,3,2,0,0,6,0,7,5]) == [[1,3,2],[],[6],[7,5]]
 // O(n)
 template <typename ContainerIn,
-        typename T = typename ContainerIn::value_type,
-        typename ContainerOut = typename std::vector<ContainerIn>>
-ContainerOut split(const T& x, bool allow_empty, const ContainerIn& xs)
+        typename T = typename ContainerIn::value_type>
+auto split(const T& x, bool allow_empty, const ContainerIn& xs)
 {
     return split_by(is_equal_to(x), allow_empty, xs);
 }
@@ -405,9 +402,8 @@ ContainerOut split(const T& x, bool allow_empty, const ContainerIn& xs)
 // split_one_of(" o", false, "How are u?") == ["H","w","are","u?"]
 // O(n)
 template <typename ContainerIn,
-        typename ContainerDelims,
-        typename ContainerOut = typename std::vector<ContainerIn>>
-ContainerOut split_one_of(
+        typename ContainerDelims>
+auto split_one_of(
     const ContainerDelims delimiters, bool allow_empty, const ContainerIn& xs)
 {
     const auto pred = [&](const typename ContainerIn::value_type& x) -> bool
@@ -425,9 +421,8 @@ ContainerOut split_one_of(
 // == [[1,3],[2],[2,5,5,3],[6,7,9]]
 // O(n)
 template <typename ContainerIn,
-        typename T = typename ContainerIn::value_type,
-        typename ContainerOut = typename std::vector<ContainerIn>>
-ContainerOut split_keep_separators(const T& x, const ContainerIn& xs)
+        typename T = typename ContainerIn::value_type>
+auto split_keep_separators(const T& x, const ContainerIn& xs)
 {
     return split_by_keep_separators(is_equal_to(x), xs);
 }
@@ -594,10 +589,8 @@ ContainerOut run_length_encode_by(BinaryPredicate pred, const ContainerIn& xs)
 // RLE.
 // run_length_encode([1,2,2,2,2,3,3,2)) == [(1,1),(4,2),(2,3),(1,2)]
 template <typename ContainerIn,
-        typename T = typename ContainerIn::value_type,
-        typename ContainerOut =
-            typename std::vector<std::pair<std::size_t, T>>>
-ContainerOut run_length_encode(const ContainerIn& xs)
+        typename T = typename ContainerIn::value_type>
+auto run_length_encode(const ContainerIn& xs)
 {
     return run_length_encode_by(is_equal<T>, xs);
 }
@@ -608,15 +601,13 @@ ContainerOut run_length_encode(const ContainerIn& xs)
 // run_length_decode([(1,1),(4,2),(2,3),(1,2)]) == [1,2,2,2,2,3,3,2)
 template <typename ContainerIn,
         typename Pair = typename ContainerIn::value_type,
-        typename Cnt = typename Pair::first_type,
-        typename T = typename Pair::second_type,
-        typename ContainerOut = typename std::vector<T>>
-ContainerOut run_length_decode(const ContainerIn& pairs)
+        typename Cnt = typename Pair::first_type>
+auto run_length_decode(const ContainerIn& pairs)
 {
     static_assert(std::is_convertible<Cnt, std::size_t>::value,
         "Count type must be convertible to std::size_t.");
     const auto pair_to_vec =
-        [](const Pair& p) -> std::vector<T>
+        [](const Pair& p)
     {
         return replicate(p.first, p.second);
     };
