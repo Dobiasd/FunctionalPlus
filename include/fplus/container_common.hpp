@@ -11,7 +11,6 @@
 #include <fplus/maybe.hpp>
 #include <fplus/compare.hpp>
 
-#include <fplus/detail/asserts/container_common.hpp>
 #include <fplus/detail/meta.hpp>
 #include <fplus/detail/invoke.hpp>
 #include <fplus/detail/container_common.hpp>
