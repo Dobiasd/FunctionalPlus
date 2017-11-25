@@ -434,11 +434,6 @@ X int_power(X base, X exp)
 
 namespace internal
 {
-    // Marks a variable as unused. Prevents the compiler warning
-    // for set but unused variables.
-    template<class T>
-    inline void unused(T&&) { }
-
     // minimum of x values after transformation
     // (has an overload for non-POD types)
     // min_on(mod2, 4, 3) == 4

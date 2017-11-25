@@ -25,6 +25,11 @@ constexpr void trigger_static_asserts()
 {
 }
 
+// Marks a variable as unused. Prevents the compiler warning
+// for set but unused variables.
+template<class T>
+inline void unused(T&&) { }
+
 template <typename Tag,
           typename F,
           typename... Args,
@@ -33,8 +38,8 @@ template <typename Tag,
                                   int>::type = 0>
 constexpr void trigger_static_asserts()
 {
-  // don't perform checks if function_traits<F> doesn't exist
-  function_traits_asserts<Tag, F, Args...>{};
+    // don't perform checks if function_traits<F> doesn't exist
+    unused(function_traits_asserts<Tag, F, Args...>{});
 }
 
 template <typename,
