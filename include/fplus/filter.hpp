@@ -107,7 +107,7 @@ Container keep_if_with_idx(Pred pred, const Container& xs)
     std::size_t idx = 0;
     for (const auto& x : xs)
     {
-        if (pred(idx++, x))
+        if (detail::invoke(pred, idx++, x))
             *it = x;
     }
     return ys;
@@ -140,7 +140,7 @@ Container keep_by_idx(internal::reuse_container_t,
     std::size_t i = 0;
     for (auto it = std::begin(xs); it != std::end(xs); ++it)
     {
-        if (pred(i++))
+        if (detail::invoke(pred, i++))
             *itOut++ = std::move(*it);
     }
     xs.erase(itOut, std::end(xs));
@@ -232,7 +232,9 @@ Container drop_idxs(const ContainerIdxs& idxs_to_drop, const Container& xs)
         else
         {
             if (!idxs_left.empty())
+            {
                 idxs_left.pop_front();
+            }
         }
         ++idx;
     }
@@ -458,7 +460,7 @@ Container adjacent_drop_fst_if(BinaryPredicate p, const Container& xs)
     auto it_in = std::begin(xs);
     while (internal::add_to_iterator(it_in) != std::end(xs))
     {
-        if (!p(*it_in, *internal::add_to_iterator(it_in)))
+        if (!detail::invoke(p, *it_in, *internal::add_to_iterator(it_in)))
         {
             *it = *it_in;
         }

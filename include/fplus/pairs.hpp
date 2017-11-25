@@ -49,18 +49,18 @@ ContainerOut zip_with(F f, const ContainerIn1& xs, const ContainerIn2& ys)
           typename internal::same_cont_new_t<ContainerIn1, void>::type,
           typename internal::same_cont_new_t<ContainerIn2, void>::type>::value,
       "Both Containers must be of same outer type.");
-  ContainerOut result;
-  std::size_t resultSize = std::min(size_of_cont(xs), size_of_cont(ys));
-  internal::prepare_container(result, resultSize);
-  auto itResult = internal::get_back_inserter(result);
-  auto itXs = std::begin(xs);
-  auto itYs = std::begin(ys);
-  for (std::size_t i = 0; i < resultSize; ++i)
-  {
-    *itResult = detail::invoke(f, *itXs, *itYs);
-    ++itXs;
-    ++itYs;
-  }
+    ContainerOut result;
+    std::size_t resultSize = std::min(size_of_cont(xs), size_of_cont(ys));
+    internal::prepare_container(result, resultSize);
+    auto itResult = internal::get_back_inserter(result);
+    auto itXs = std::begin(xs);
+    auto itYs = std::begin(ys);
+    for (std::size_t i = 0; i < resultSize; ++i)
+    {
+        *itResult = detail::invoke(f, *itXs, *itYs);
+        ++itXs;
+        ++itYs;
+    }
   return result;
 }
 
@@ -161,7 +161,7 @@ template <typename ContainerIn1, typename ContainerIn2,
 ContainerOut zip(const ContainerIn1& xs, const ContainerIn2& ys)
 {
     auto MakePair = [](const X& x, const Y& y)
-            { return std::make_pair(x, y); };
+        { return std::make_pair(x, y); };
     return zip_with(MakePair, xs, ys);
 }
 
@@ -466,7 +466,7 @@ maybe<std::size_t> first_mismatch_idx_by(BinaryPredicate p,
     std::size_t minSize = std::min(size_of_cont(xs), size_of_cont(ys));
     for (std::size_t i = 0; i < minSize; ++i)
     {
-        if (!p(*itXs, *itYs))
+        if (!detail::invoke(p, *itXs, *itYs))
         {
             return just(i);
         }
@@ -602,7 +602,7 @@ maybe<std::size_t> first_match_idx_by(F f,
     std::size_t minSize = std::min(size_of_cont(xs), size_of_cont(ys));
     for (std::size_t i = 0; i < minSize; ++i)
     {
-        if (f(*itXs, *itYs))
+        if (detail::invoke(f, *itXs, *itYs))
         {
             return just(i);
         }

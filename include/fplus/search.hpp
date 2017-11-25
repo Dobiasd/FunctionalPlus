@@ -116,7 +116,7 @@ ContainerOut find_all_idxs_by(UnaryPredicate p, const Container& xs)
     auto itOut = internal::get_back_inserter(result);
     for (const auto& x : xs)
     {
-        if (p(x))
+        if (detail::invoke(p, x))
             *itOut = idx;
         ++idx;
     }
@@ -157,8 +157,7 @@ ContainerOut find_all_instances_of_token(const Container& token,
     std::size_t last_possible_idx = size_of_cont(xs) - size_of_cont(token);
     auto check_and_push = [&]()
     {
-        if (std::equal(itInBegin, itInEnd,
-            std::begin(token)))
+        if (std::equal(itInBegin, itInEnd, std::begin(token)))
         {
             *outIt = idx;
         }

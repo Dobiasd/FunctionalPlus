@@ -593,7 +593,7 @@ bool is_unique_in_by
     std::size_t count = 0;
     for (const auto& x : xs)
     {
-        if (pred(x))
+        if (detail::invoke(pred, x))
         {
             ++count;
             if (count > 1)

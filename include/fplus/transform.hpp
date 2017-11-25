@@ -44,7 +44,7 @@ ContainerOut transform_with_idx(F f, const ContainerIn& xs)
     std::size_t idx = 0;
     for (const auto& x : xs)
     {
-        *it = f(idx++, x);
+        *it = detail::invoke(f, idx++, x);
     }
     return ys;
 }
@@ -312,9 +312,9 @@ auto transform_parallelly(F f, const ContainerIn& xs)
     auto handles = transform([&f](const X& x)
     {
         return std::async(std::launch::async, [&x, &f]()
-            {
-                return detail::invoke(f, x);
-            });
+        {
+            return detail::invoke(f, x);
+        });
     }, xs);
 
     ContainerOut ys;
@@ -344,14 +344,14 @@ typename Container::value_type reduce_parallelly(
     }
     else if (size_of_cont(xs) == 1)
     {
-        return f(init, xs.front());
+        return detail::invoke(f, init, xs.front());
     }
     else
     {
         typedef typename Container::value_type T;
         const auto f_on_pair = [f](const std::pair<T, T>& p) -> T
         {
-            return f(p.first, p.second);
+            return detail::invoke(f, p.first, p.second);
         };
         auto transform_result =
             transform_parallelly(f_on_pair, adjacent_pairs(xs));
@@ -383,7 +383,7 @@ typename Container::value_type reduce_1_parallelly(F f, const Container& xs)
         typedef typename Container::value_type T;
         const auto f_on_pair = [f](const std::pair<T, T>& p) -> T
         {
-            return f(p.first, p.second);
+            return detail::invoke(f, p.first, p.second);
         };
         auto transform_result =
             transform_parallelly(f_on_pair, adjacent_pairs(xs));
@@ -505,7 +505,7 @@ auto transform_parallelly_n_threads(std::size_t n, F f, const ContainerIn& xs)
                 ++queue_idx;
             }
 
-            const auto y = f(*x_ptr);
+            const auto y = detail::invoke(f, *x_ptr);
 
             {
                 std::lock_guard<std::mutex> thread_results_lock(

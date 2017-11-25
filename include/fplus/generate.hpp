@@ -29,7 +29,7 @@ ContainerOut generate(F f, std::size_t amount)
     auto it = internal::get_back_inserter<ContainerOut>(ys);
     for (std::size_t i = 0; i < amount; ++i)
     {
-        *it = f();
+        *it = detail::invoke(f);
     }
     return ys;
 }
@@ -50,7 +50,7 @@ ContainerOut generate_by_idx(F f, std::size_t amount)
     auto it = internal::get_back_inserter<ContainerOut>(ys);
     for (std::size_t i = 0; i < amount; ++i)
     {
-        *it = f(i);
+        *it = detail::invoke(f, i);
     }
     return ys;
 }
@@ -118,7 +118,7 @@ auto carthesian_product_with_where(F f,
     {
         for (const auto& y : ys)
         {
-            if (pred(x, y))
+            if (detail::invoke(pred, x, y))
             {
                 itOut = f(x, y);
             }
@@ -367,7 +367,7 @@ ContainerOut iterate(F f, std::size_t size, const T& x)
     *it_out = current;
     for (std::size_t i = 1; i < size; ++i)
     {
-        current = f(current);
+        current = detail::invoke(f, current);
         *it_out = current;
     }
     return result;
@@ -390,7 +390,7 @@ ContainerOut iterate_maybe(F f, const T& x)
     while (current.is_just())
     {
         *it_out = current.unsafe_get_just();
-        current = f(current.unsafe_get_just());
+        current = detail::invoke(f, current.unsafe_get_just());
     }
     return result;
 }

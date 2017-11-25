@@ -564,7 +564,7 @@ auto is_greater_by_than(F f, const X& x)
 {
     return [f, x](const auto& y)
     {
-        return is_greater(f(y), x);
+        return is_greater(detail::invoke(f, y), x);
     };
 }
 

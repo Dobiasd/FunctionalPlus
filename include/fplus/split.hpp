@@ -45,7 +45,7 @@ ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
     *internal::get_back_inserter(result) = InnerContainerOut(1, xs.front());
     for (auto it = ++std::begin(xs); it != std::end(xs); ++it)
     {
-        if (p(result.back().back(), *it))
+        if (detail::invoke(p, result.back().back(), *it))
             *internal::get_back_inserter(result.back()) = *it;
         else
             *internal::get_back_inserter(result) = InnerContainerOut(1, *it);
@@ -129,7 +129,7 @@ ContainerOut group_globally_by(BinaryPredicate p, const ContainerIn& xs)
         bool found = false;
         for (auto& ys : result)
         {
-            if (p(x, ys.back()))
+            if (detail::invoke(p, x, ys.back()))
             {
                 *internal::get_back_inserter(ys) = x;
                 found = true;
@@ -227,7 +227,7 @@ ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
         {
             auto idx_x = idx_and_val_x.first;
             auto val_x = idx_and_val_x.second;
-            if (p(val_y, val_x))
+            if (detail::invoke(p, val_y, val_x))
             {
                 adj_mat[idx_y][idx_x] = 1;
             }
@@ -479,7 +479,7 @@ std::pair<Container, Container> partition
     auto itOutNotMatching = internal::get_back_inserter(notMatching);
     for (const auto& x : xs)
     {
-        if (pred(x))
+        if (detail::invoke(pred, x))
             *itOutMatching = x;
         else
             *itOutNotMatching = x;

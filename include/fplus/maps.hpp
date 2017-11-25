@@ -283,7 +283,7 @@ MapType map_keep_if(Pred pred, const MapType& map)
     MapType result;
     for (const auto& key_and_value : map)
     {
-        if (pred(key_and_value.first))
+        if (detail::invoke(pred, key_and_value.first))
         {
             result.insert(key_and_value);
         }
@@ -388,7 +388,7 @@ maybe<Val> choose_by(
     maybe<Val> result;
     for (const auto& p : pairs)
     {
-        if (p.first(x))
+        if (detail::invoke(p.first, x))
         {
             if (is_just(result))
             {

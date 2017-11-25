@@ -1740,7 +1740,7 @@ bool is_strictly_sorted_by(Compare comp, const Container& xs)
         return true;
     auto it1 = std::begin(xs);
     for (auto it2 = it1 + 1; it2 < std::end(xs); ++it1, ++it2)
-        if (!comp(*it1, *it2))
+        if (!detail::invoke(comp, *it1, *it2))
             return false;
     return true;
 }
@@ -1781,7 +1781,7 @@ bool is_sorted_by(Compare comp, const Container& xs)
         return true;
     auto it1 = std::begin(xs);
     for (auto it2 = it1 + 1; it2 < std::end(xs); ++it1, ++it2)
-        if (comp(*it2, *it1))
+        if (detail::invoke(comp, *it2, *it1))
             return false;
     return true;
 }
@@ -2085,11 +2085,11 @@ bool lexicographical_less_by(BinaryPredicate p,
     auto itYs = std::begin(ys);
     while (itXs != std::end(xs) && itYs != std::end(ys))
     {
-        if (p(*itXs, *itYs))
+        if (detail::invoke(p, *itXs, *itYs))
         {
             return true;
         }
-        if (p(*itYs, *itXs))
+        if (detail::invoke(p, *itYs, *itXs))
         {
             return false;
         }
@@ -2147,7 +2147,7 @@ template <typename UnaryPredicate, typename T>
 T instead_of_if(internal::reuse_container_t, UnaryPredicate pred,
     const T& alt, T&& x)
 {
-    if (pred(x))
+    if (detail::invoke(pred, x))
         return alt;
     else
         return std::forward<T>(x);
@@ -2157,7 +2157,7 @@ template <typename UnaryPredicate, typename T>
 T instead_of_if(internal::create_new_container_t, UnaryPredicate pred,
     const T& alt, const T& x)
 {
-    if (pred(x))
+    if (detail::invoke(pred, x))
         return alt;
     else
         return x;
