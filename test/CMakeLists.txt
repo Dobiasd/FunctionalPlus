@@ -4,13 +4,13 @@ message(STATUS "Building Unit Tests ${UNITTEST}")
 find_package(doctest REQUIRED)
 
 
-macro(_add_test _NAME)
-    add_executable(${_NAME} ${_NAME}.cpp)
-    add_test(NAME ${_NAME} COMMAND ${_NAME})
+function(_add_test name)
+    add_executable(${name} ${name}.cpp)
+    add_test(NAME ${name} COMMAND ${name})
 
-    target_include_directories(${_NAME} SYSTEM PUBLIC ${doctest_INCLUDE_DIR})
-    target_link_libraries(${_NAME} ${CMAKE_THREAD_LIBS_INIT})
-endmacro()
+    target_include_directories(${name} SYSTEM PUBLIC ${doctest_INCLUDE_DIR})
+    target_link_libraries(${name} ${CMAKE_THREAD_LIBS_INIT})
+endfunction()
 
 _add_test(show_versions)
 _add_test(compare_test)
