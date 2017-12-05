@@ -46,3 +46,9 @@ target_link_libraries(readme_perf_examples fplus ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(99_problems EXCLUDE_FROM_ALL examples/99_problems.cpp)
 target_link_libraries(99_problems fplus ${CMAKE_THREAD_LIBS_INIT})
+
+
+install(TARGETS fplus EXPORT fplus-config DESTINATION include)
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/include/" DESTINATION include)
+install(EXPORT fplus-config DESTINATION share/fplus/cmake)
+
