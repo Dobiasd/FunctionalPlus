@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(FunctionalPlus)
-set(PROJECT_VERSION 0.2)
+project(FunctionalPlus VERSION 0.2)
 
 message(STATUS "===( ${PROJECT_NAME} ${PROJECT_VERSION} )===")
 
