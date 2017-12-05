@@ -6,6 +6,7 @@ set(PROJECT_VERSION 0.2)
 message(STATUS "===( ${PROJECT_NAME} ${PROJECT_VERSION} )===")
 
 option(UNITTEST "Build unit tests" OFF)
+message(STATUS "Building Unit Tests ${UNITTEST}")
 
 
 install(DIRECTORY include/fplus DESTINATION include)

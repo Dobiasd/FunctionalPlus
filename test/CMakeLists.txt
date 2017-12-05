@@ -1,6 +1,4 @@
 
-message(STATUS "Building Unit Tests ${UNITTEST}")
-
 find_package(doctest REQUIRED)
 
 
