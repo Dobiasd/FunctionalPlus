@@ -8,8 +8,6 @@ option(UNITTEST "Build unit tests" OFF)
 message(STATUS "Building Unit Tests ${UNITTEST}")
 
 
-install(DIRECTORY include/fplus DESTINATION include)
-
 add_compile_options(-Wall
                     -Wextra
                     -pedantic
@@ -27,7 +25,11 @@ find_package(Threads REQUIRED)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-include_directories(include)
+add_library(fplus INTERFACE)
+target_include_directories(fplus INTERFACE
+                       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+                       $<INSTALL_INTERFACE:include>
+                        )
 
 if( UNITTEST )
     enable_testing()
@@ -40,7 +42,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(readme_perf_examples EXCLUDE_FROM_ALL examples/readme_perf_examples.cpp)
-target_link_libraries(readme_perf_examples ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(readme_perf_examples fplus ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(99_problems EXCLUDE_FROM_ALL examples/99_problems.cpp)
-target_link_libraries(99_problems ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(99_problems fplus ${CMAKE_THREAD_LIBS_INIT})

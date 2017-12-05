@@ -7,7 +7,7 @@ function(add_test_suite name)
     add_test(NAME ${name} COMMAND ${name})
 
     target_include_directories(${name} SYSTEM PRIVATE ${doctest_INCLUDE_DIR})
-    target_link_libraries(${name} ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(${name} PRIVATE fplus ${CMAKE_THREAD_LIBS_INIT})
 endfunction()
 
 add_test_suite(show_versions)
