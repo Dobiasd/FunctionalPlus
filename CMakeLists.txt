@@ -32,7 +32,7 @@ include_directories(include)
 
 if( UNITTEST )
     enable_testing()
-    subdirs(test)
+    add_subdirectory(test)
 endif()
 
 set(CMAKE_CXX_STANDARD 14)
