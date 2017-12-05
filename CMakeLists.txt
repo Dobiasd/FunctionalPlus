@@ -21,6 +21,11 @@ add_compile_options(-Wall
                     -Wparentheses
                     )
 
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+
 find_package(Threads REQUIRED)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -35,11 +40,6 @@ if( UNITTEST )
     enable_testing()
     add_subdirectory(test)
 endif()
-
-set(CMAKE_CXX_STANDARD 14)
-
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(readme_perf_examples EXCLUDE_FROM_ALL examples/readme_perf_examples.cpp)
 target_link_libraries(readme_perf_examples fplus ${CMAKE_THREAD_LIBS_INIT})
