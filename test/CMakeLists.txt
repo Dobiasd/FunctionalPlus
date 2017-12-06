@@ -6,6 +6,7 @@ function(add_test_suite name)
     add_executable(${name} ${name}.cpp)
     add_test(NAME ${name} COMMAND ${name})
 
+    target_compile_options(${name} PRIVATE ${COMPILE_OPTIONS})
     target_include_directories(${name} SYSTEM PRIVATE ${doctest_INCLUDE_DIR})
     target_link_libraries(${name} PRIVATE fplus ${CMAKE_THREAD_LIBS_INIT})
 endfunction()
