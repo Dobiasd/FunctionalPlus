@@ -41,8 +41,8 @@ ContainerOut zip_with(F f, const ContainerIn1& xs, const ContainerIn2& ys)
     internal::trigger_static_asserts<internal::zip_with_tag, F, X, Y>();
     static_assert(
       std::is_same<
-          typename internal::same_cont_new_t<ContainerIn1, void>::type,
-          typename internal::same_cont_new_t<ContainerIn2, void>::type>::value,
+          typename internal::same_cont_new_t<ContainerIn1, int>::type,
+          typename internal::same_cont_new_t<ContainerIn2, int>::type>::value,
       "Both Containers must be of same outer type.");
     ContainerOut result;
     std::size_t resultSize = std::min(size_of_cont(xs), size_of_cont(ys));
