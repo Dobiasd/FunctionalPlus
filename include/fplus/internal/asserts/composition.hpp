@@ -29,6 +29,10 @@ struct bind_1st_and_2nd_of_3_tag
 {
 };
 
+struct bind_2nd_and_3rd_of_3_tag
+{
+};
+
 template <typename F, typename X, typename Y>
 struct function_traits_asserts<bind_1st_of_2_tag, F, X, Y>
 {
@@ -85,6 +89,22 @@ struct function_traits_asserts<bind_1st_and_2nd_of_3_tag, F, X, Y, Z>
                   "Function can not take second bound parameter type");
     static_assert(std::is_convertible<Z, FIn2>::value,
                   "Function can not take provided parameter type");
+};
+
+template <typename F, typename X, typename Y, typename Z>
+struct function_traits_asserts<bind_2nd_and_3rd_of_3_tag, F, X, Y, Z>
+{
+    static_assert(utils::function_traits<F>::arity == 3,
+                  "Function must take three parameters.");
+    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
+    typedef typename utils::function_traits<F>::template arg<2>::type FIn2;
+    static_assert(std::is_convertible<X, FIn0>::value,
+                  "Function can not take provided parameter type");
+    static_assert(std::is_convertible<Y, FIn1>::value,
+                  "Function can not take second bound parameter type");
+    static_assert(std::is_convertible<Z, FIn2>::value,
+                  "Function can not take first bound parameter type");
 };
 
 }

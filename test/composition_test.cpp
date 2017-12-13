@@ -91,12 +91,15 @@ TEST_CASE("composition_test, parameter_binding")
 
     auto add3 = [](int x, int y, int z) { return x + y + z; };
     auto genericAdd3 = [](auto x, auto y, auto z) { return x + y + z; };
-  
+
     REQUIRE_EQ(bind_1st_of_3(add3, 3)(30, 9), 42);
     REQUIRE_EQ(bind_1st_of_3(genericAdd3, 3)(30, 9), 42);
 
     REQUIRE_EQ(bind_1st_and_2nd_of_3(add3, 3, 5)(7), 15);
     REQUIRE_EQ(bind_1st_and_2nd_of_3(genericAdd3, 3, 5)(7), 15);
+
+    REQUIRE_EQ(bind_2nd_and_3rd_of_3(add3, 3, 5)(7), 15);
+    REQUIRE_EQ(bind_2nd_and_3rd_of_3(genericAdd3, 3, 5)(7), 15);
 }
 
 TEST_CASE("composition_test, compose")
