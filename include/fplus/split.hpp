@@ -516,7 +516,7 @@ ContainerOut split_at_idxs(const ContainerIdxs& idxsIn, const ContainerIn& xs)
 // fwd bind count: 1
 // Split a sequence every n elements.
 // split_every(3, [0,1,2,3,4,5,6,7]) == [[0,1,2],[3,4,5],[6,7]]
-// Also known as chunk.
+// Also known as chunk or chunks.
 template <typename ContainerIn,
         typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut split_every(std::size_t n, const ContainerIn& xs)
