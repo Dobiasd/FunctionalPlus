@@ -7,7 +7,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 #include <fplus/fplus.hpp>
-
+#include <fplus/fwd.hpp>
 
 TEST_CASE("stringtools_test, to_lower/upper_case, cp1251")
 {
@@ -19,9 +19,11 @@ TEST_CASE("stringtools_test, to_lower/upper_case, cp1251")
         "ru_RU.cp1251"
 #endif
     };
-    REQUIRE_EQ(to_lower_case(std::string("cYrIlLiC 123&? ÊטÐטËכÈצÀ"), loc_cp1251), std::string("cyrillic 123&? ךטנטככטצא"));
-    REQUIRE_EQ(to_lower_case(std::string("ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞ‗"), loc_cp1251), std::string("אבגדהו¸זחטיךכלםמןנסעףפץצקרשתûü‎‏ÿ"));
+    auto lower = fwd::flip::to_lower_case(loc_cp1251);
+    auto upper = fwd::flip::to_upper_case(loc_cp1251);
+    REQUIRE_EQ(lower(std::string("cYrIlLiC 123&? ÊטÐטËכÈצÀ")), std::string("cyrillic 123&? ךטנטככטצא"));
+    REQUIRE_EQ(lower(std::string("ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞ‗")), std::string("אבגדהו¸זחטיךכלםמןנסעףפץצקרשתûü‎‏ÿ"));
 
-    REQUIRE_EQ(to_upper_case(std::string("cYrIlLiC 123&? ÊטÐטËכÈצÀ"), loc_cp1251), std::string("CYRILLIC 123&? ÊÈÐÈËËÈÖÀ"));
-    REQUIRE_EQ(to_upper_case(std::string("אבגדהו¸זחטיךכלםמןנסעףפץצקרשתûü‎‏ÿ"), loc_cp1251), std::string("ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞ‗"));
+    REQUIRE_EQ(upper(std::string("cYrIlLiC 123&? ÊטÐטËכÈצÀ")), std::string("CYRILLIC 123&? ÊÈÐÈËËÈÖÀ"));
+    REQUIRE_EQ(upper(std::string("אבגדהו¸זחטיךכלםמןנסעףפץצקרשתûü‎‏ÿ")), std::string("ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞ‗"));
 }

@@ -120,10 +120,10 @@ String to_lower_case(const String& str)
         }, str);
 }
 
-// API search type: to_lower_case : String, Locale -> String
-// fwd bind count: 0
-// Convert a string to lowercase characters using specified locale..
-// to_upper_case("cYrIlLiC КиРиЛлИцА") == "cyrillic кириллица"
+// API search type: to_lower_case : (String, Locale) -> String
+// fwd bind count: 1
+// Convert a string to lowercase characters using specified locale.
+// to_upper_case("cYrIlLiC КиРиЛлИцА", locale("ru_RU.utf8")) == "cyrillic кириллица"
 template <typename String>
 String to_lower_case(const String &str, const std::locale &lcl)
 {
@@ -150,10 +150,10 @@ String to_upper_case(const String& str)
         }, str);
 }
 
-// API search type: to_upper_case : String, Locale -> String
-// fwd bind count: 0
+// API search type: to_upper_case : (String, Locale) -> String
+// fwd bind count: 1
 // Convert a string to uppercase characters using specified locale.
-// to_upper_case("cYrIlLiC КиРиЛлИцА") == "CYRILLIC КИРИЛЛИЦА"
+// to_upper_case("cYrIlLiC КиРиЛлИцА", locale("ru_RU.utf8")) == "CYRILLIC КИРИЛЛИЦА"
 template <typename String>
 String to_upper_case(const String &str, const std::locale &lcl)
 {
