@@ -1573,6 +1573,7 @@ ContainerOut unique(Container&& xs)
 // fwd bind count: 1
 // Insert a value between all adjacent values in a sequence.
 // intersperse(0, [1, 2, 3]) == [1, 0, 2, 0, 3]
+// Also known as interpose.
 template <typename Container,
     typename X = typename Container::value_type>
 Container intersperse(const X& value, const Container& xs)
