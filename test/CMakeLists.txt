@@ -50,6 +50,15 @@ add_test_suite(tree_test)
 add_test_suite(udemy_course_test)
 add_test_suite(variant_test)
 
+if(NOT MSVC)
+    target_compile_options(stringtools_cp1251_test
+        PRIVATE -Wno-invalid-source-encoding
+    )
+    target_compile_options(stringtools_utf8_test
+        PRIVATE -Wno-invalid-source-encoding
+    )
+endif()
+
 
 add_custom_target(unittest show_versions
                         COMMAND compare_test
