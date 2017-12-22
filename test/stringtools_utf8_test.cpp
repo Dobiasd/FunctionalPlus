@@ -21,5 +21,11 @@ TEST_CASE("stringtools_test, to_lower/upper_case, utf8")
 
     REQUIRE_EQ(upper(std::wstring(L"cYrIlLiC 123&? КиРиЛлИцА")), std::wstring(L"CYRILLIC 123&? КИРИЛЛИЦА"));
     REQUIRE_EQ(upper(std::wstring(L"абвгдеёжзийклмнопрстуфхцчшщъыьэюя")), std::wstring(L"АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"));
+    
+    REQUIRE_EQ(lower(std::wstring(L"GrEeCe 123&? ΕλΛαΔα")), std::wstring(L"greece 123&? ελλαδα"));
+    REQUIRE_EQ(lower(std::wstring(L"ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ")), std::wstring(L"αβγδεζηθικλμνξοπρστυφχψω"));
+
+    REQUIRE_EQ(upper(std::wstring(L"GrEeCe 123&? ΕλΛαΔα")), std::wstring(L"GREECE 123&? ΕΛΛΑΔΑ"));
+    REQUIRE_EQ(upper(std::wstring(L"αβγδεζηθικλμνξοπρστυφχψω")), std::wstring(L"ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ"));
 }
 #endif

@@ -96,6 +96,9 @@ before_install:
     if [ ! `locale -a | grep ru_RU.cp1251` ]; then 
       sudo localedef -c -i ru_RU -f CP1251 ru_RU.CP1251
     fi
+    if [ ! `locale -a | grep el_GR.cp1253` ]; then 
+      sudo localedef -c -i el_GR -f CP1253 el_GR.CP1253
+    fi
 
 install:
   - mkdir -p build && cd build

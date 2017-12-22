@@ -45,6 +45,7 @@ add_test_suite(split_test)
 add_test_suite(stringtools_test)
 add_test_suite(stringtools_utf8_test)
 add_test_suite(stringtools_cp1251_test)
+add_test_suite(stringtools_cp1253_test)
 add_test_suite(transform_test)
 add_test_suite(tree_test)
 add_test_suite(udemy_course_test)
@@ -52,6 +53,9 @@ add_test_suite(variant_test)
 
 if(NOT MSVC)
     target_compile_options(stringtools_cp1251_test
+        PRIVATE -Wno-invalid-source-encoding
+    )
+    target_compile_options(stringtools_cp1253_test
         PRIVATE -Wno-invalid-source-encoding
     )
     target_compile_options(stringtools_utf8_test
