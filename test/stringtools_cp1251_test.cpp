@@ -8,19 +8,20 @@
 #include "doctest.h"
 #include <fplus/fplus.hpp>
 #include <fplus/fwd.hpp>
+#include "get_locale.hpp"
 
 TEST_CASE("stringtools_test, to_lower/upper_case, cp1251")
 {
     using namespace fplus;
-    const std::locale loc_cp1251 {
+    const std::locale loc = get_locale(
 #ifdef WIN32
         "ru-RU"
 #else
         "ru_RU.cp1251"
 #endif
-    };
-    auto lower = fwd::to_lower_case_loc(loc_cp1251);
-    auto upper = fwd::to_upper_case_loc(loc_cp1251);
+    );
+    auto lower = fwd::to_lower_case_loc(loc);
+    auto upper = fwd::to_upper_case_loc(loc);
     REQUIRE_EQ(lower(std::string("cYrIlLiC 123&? ÊèĞèËëÈöÀ")), std::string("cyrillic 123&? êèğèëëèöà"));
     REQUIRE_EQ(lower(std::string("ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞß")), std::string("àáâãäå¸æçèéêëìíîïğñòóôõö÷øùúûüışÿ"));
 
