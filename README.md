@@ -353,7 +353,7 @@ You can install FunctionalPlus in **one of the following 4 ways**:
 
 ### way 1: using [cmake](https://cmake.org/)
 
-```
+```bash
 git clone https://github.com/Dobiasd/FunctionalPlus
 cd FunctionalPlus
 mkdir build
@@ -365,7 +365,7 @@ sudo make install
 
 Building the tests (optional) requires [doctest](https://github.com/onqtam/doctest). Unit Tests are disabled by default – they are enabled and executed by:
 
-```
+```bash
 # install doctest
 wget https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h
 sudo mv ./doctest.h /usr/local/include/doctest.h
@@ -426,7 +426,7 @@ add_dependencies(main functional_plus)
 
 ### way 3: using [cget](https://github.com/pfultz2/cget/)
 
-```
+```bash
 # Setup up toolchain to use c++14
 cget init --std=c++14
 # Test and install
