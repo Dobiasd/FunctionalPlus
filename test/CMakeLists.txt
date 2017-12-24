@@ -43,10 +43,25 @@ add_test_suite(show_test)
 add_test_suite(side_effects_test)
 add_test_suite(split_test)
 add_test_suite(stringtools_test)
+add_test_suite(stringtools_utf8_test)
+add_test_suite(stringtools_cp1251_test)
+add_test_suite(stringtools_cp1253_test)
 add_test_suite(transform_test)
 add_test_suite(tree_test)
 add_test_suite(udemy_course_test)
 add_test_suite(variant_test)
+
+if(NOT MSVC)
+    target_compile_options(stringtools_cp1251_test
+        PRIVATE -Wno-invalid-source-encoding
+    )
+    target_compile_options(stringtools_cp1253_test
+        PRIVATE -Wno-invalid-source-encoding
+    )
+    target_compile_options(stringtools_utf8_test
+        PRIVATE -Wno-invalid-source-encoding
+    )
+endif()
 
 
 add_custom_target(unittest show_versions
@@ -81,6 +96,9 @@ add_custom_target(unittest show_versions
                         COMMAND side_effects_test
                         COMMAND split_test
                         COMMAND stringtools_test
+                        COMMAND stringtools_cp1251_test
+                        COMMAND stringtools_cp1253_test
+                        COMMAND stringtools_utf8_test
                         COMMAND transform_test
                         COMMAND tree_test
                         COMMAND udemy_course_test

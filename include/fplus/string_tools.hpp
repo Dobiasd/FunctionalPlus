@@ -12,6 +12,7 @@
 
 #include <cctype>
 #include <string>
+#include <locale>
 
 namespace fplus
 {
@@ -119,6 +120,21 @@ String to_lower_case(const String& str)
         }, str);
 }
 
+// API search type: to_lower_case_loc : (Locale, String) -> String
+// fwd bind count: 1
+// Convert a string to lowercase characters using specified locale.
+// to_upper_case_loc(locale("ru_RU.utf8"), "cYrIlLiC КиРиЛлИцА") == "cyrillic кириллица"
+template <typename String>
+String to_lower_case_loc(const std::locale &lcl, const String &str)
+{
+  typedef typename String::value_type Char;
+  return transform([&lcl](Char c) -> Char
+      {
+        return static_cast<Char>(
+            std::tolower(c, lcl));
+      }, str);
+}
+
 // API search type: to_upper_case : String -> String
 // fwd bind count: 0
 // Convert a string to uppercase characters.
@@ -132,6 +148,21 @@ String to_upper_case(const String& str)
             return static_cast<Char>(
                 std::toupper(static_cast<unsigned char>(c)));
         }, str);
+}
+
+// API search type: to_upper_case_loc : (Locale, String) -> String
+// fwd bind count: 1
+// Convert a string to uppercase characters using specified locale.
+// to_upper_case_loc(locale("ru_RU.utf8"), "cYrIlLiC КиРиЛлИцА") == "CYRILLIC КИРИЛЛИЦА"
+template <typename String>
+String to_upper_case_loc(const std::locale &lcl, const String &str)
+{
+  typedef typename String::value_type Char;
+  return transform([&lcl](Char c) -> Char
+      {
+        return static_cast<Char>(
+            std::toupper(c, lcl));
+      }, str);
 }
 
 // API search type: to_string_fill_left : (Char, Int, a) -> String
