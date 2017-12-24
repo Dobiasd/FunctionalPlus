@@ -366,6 +366,12 @@ sudo make install
 Building the tests (optional) requires [doctest](https://github.com/onqtam/doctest). Unit Tests are disabled by default – they are enabled and executed by:
 
 ```
+sudo locale-gen ru_RU
+sudo locale-gen ru_RU.UTF-8
+sudo locale-gen el_GR
+sudo locale-gen el_GR.UTF-8
+sudo localedef -c -i ru_RU -f CP1251 ru_RU.CP1251
+sudo localedef -c -i el_GR -f CP1253 el_GR.CP1253
 cmake -DUNITTEST=ON ..
 make unittest
 ```
