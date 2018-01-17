@@ -180,7 +180,9 @@ TEST_CASE("numeric_test, round")
     REQUIRE_EQ(round(1.5), 2);
     REQUIRE_EQ(round(1.6), 2);
 
+    REQUIRE_EQ((round<double, unsigned char>(254.9)), 255);
     REQUIRE_EQ((round<double, unsigned char>(300.0)), 255);
+    REQUIRE_EQ((round<double, unsigned char>(-0.0000001)), 0);
     REQUIRE_EQ((round<double, unsigned char>(-5.0)), 0);
 
     REQUIRE_EQ(round(-1.4), -1);
