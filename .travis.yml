@@ -102,7 +102,7 @@ before_install:
 
 install:
   - mkdir -p build && cd build
-  - cmake .. -DUNITTEST=ON
+  - cmake .. -DFPLUS_BUILD_UNITTEST=ON
 
 script:
   - which $CXX
