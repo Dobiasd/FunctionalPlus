@@ -379,7 +379,7 @@ sudo localedef -c -i ru_RU -f CP1251 ru_RU.CP1251
 sudo localedef -c -i el_GR -f CP1253 el_GR.CP1253
 
 # enable, build and run unittests
-cmake -DUNITTEST=ON ..
+cmake -DFPLUS_BUILD_UNITTEST=ON ..
 make unittest
 ```
 
