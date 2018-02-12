@@ -13,5 +13,4 @@ class TestPackageConan(ConanFile):
 
     def test(self):
         bin_path = os.path.join("bin", "test_package")
-        self.run("%s %s" % (bin_path, os.path.abspath(os.path.join(os.path.dirname(__file__),
-                            "readme_example_model.json"))))
+        self.run(bin_path)
