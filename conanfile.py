@@ -3,7 +3,6 @@ from conans import ConanFile
 
 class FunctionalPlusConan(ConanFile):
     name = "functionalplus"
-    version = "0.2"
     license = "Boost Software License 1.0"
     url = "https://github.com/Dobiasd/FunctionalPlus"
     description = "Functional Programming Library for C++. Write concise and readable C++ code."
