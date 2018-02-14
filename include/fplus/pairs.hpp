@@ -297,11 +297,13 @@ ContainerOut adjacent_pairs(const Container& xs)
     internal::advance_iterator(it2, 1);
     const auto it_source_end =
         internal::add_to_iterator(std::begin(xs), out_size + out_size);
-    for (; it1 != it_source_end;
-            internal::advance_iterator(it1, 2),
-            internal::advance_iterator(it2, 2))
+    for (;;)
     {
         *itOut = std::make_pair(*it1, *it2);
+        internal::advance_iterator(it1, 2);
+        if (it1 == it_source_end)
+            break;
+        internal::advance_iterator(it2, 2);
     }
     return result;
 }
