@@ -349,7 +349,7 @@ Requirements and Installation
 
 A **C++14**-compatible compiler is needed. Compilers from these versions on are fine: GCC 4.9, Clang 3.7 (libc++ 3.7) and Visual C++ 2015.
 
-You can install FunctionalPlus in **one of the following 4 ways**:
+You can install FunctionalPlus in **one of the following 5 ways**:
 
 ### way 1: using [cmake](https://cmake.org/)
 
@@ -437,6 +437,25 @@ cget install Dobiasd/FunctionalPlus
 ### way 4: download manually
 
 Just [download](https://github.com/Dobiasd/FunctionalPlus/archive/master.zip)/extract FunctionalPlus and tell your compiler to use the `include` directory.
+
+
+### way 5: using [Conan C/C++ package manager](https://conan.io)
+
+Just add a *conanfile.txt* with FunctionalPlus as a requirement and chose the generator for your project.
+
+```
+[requires]
+functionalplus/0.2@Dobiasd/stable
+
+[generators]
+cmake
+```
+
+Then install it:
+
+```
+$ conan install conanfile.txt
+```
 
 
 Disclaimer

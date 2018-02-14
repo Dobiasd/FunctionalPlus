@@ -1,4 +1,5 @@
-language: generic
+language: python
+python: 3.6
 
 dist: trusty
 sudo: required
@@ -99,6 +100,14 @@ before_install:
     if [ ! `locale -a | grep el_GR.cp1253` ]; then 
       sudo localedef -c -i el_GR -f CP1253 el_GR.CP1253
     fi
+  - |
+    set -e
+    set -x
+
+    pip install conan --upgrade
+    pip install conan_package_tools
+    conan user
+
 
 install:
   - mkdir -p build && cd build
@@ -108,3 +117,4 @@ script:
   - which $CXX
   - $CXX --version
   - cmake --build . --target unittest --config Release -- -j4
+  - cd .. && python conan_build.py
