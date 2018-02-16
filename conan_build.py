@@ -7,9 +7,9 @@ if __name__ == "__main__":
         if not version:
             version = "dev"
         reference = "functionalplus/%s" % version
-        username = "Dobiasd"
+        username = "dobiasd"
         channel = "stable"
-        upload_remote = "https://api.bintray.com/conan/Dobiasd/public-conan" if version is not "dev" else None
+        upload_remote = "https://api.bintray.com/conan/dobiasd/public-conan" if version is not "dev" else None
 
         print("Conan package metadata:", reference, username, channel, upload_remote)
 
