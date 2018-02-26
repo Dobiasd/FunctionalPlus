@@ -8,7 +8,7 @@ message(STATUS "===( ${PROJECT_NAME} ${PROJECT_VERSION} )===")
 
 option(FPLUS_USE_TOOLCHAIN "Use compiler flags from an external toolchain" OFF)
 option(FPLUS_BUILD_EXAMPLES "Build examples" ON)
-option(FPLUS_BUILD_UNITTEST "Build unit tests" ON)
+option(FPLUS_BUILD_UNITTEST "Build unit tests" OFF)
 message(STATUS "Building Unit Tests ${FPLUS_BUILD_UNITTEST}")
 message(STATUS "Building examples ${FPLUS_BUILD_EXAMPLES}")
 
