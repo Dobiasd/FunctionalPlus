@@ -445,7 +445,7 @@ Just add a *conanfile.txt* with FunctionalPlus as a requirement and chose the ge
 
 ```
 [requires]
-functionalplus/0.2@Dobiasd/stable
+functionalplus/v0.2-p1@Dobiasd/stable
 
 [generators]
 cmake
