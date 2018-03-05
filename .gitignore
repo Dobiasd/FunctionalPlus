@@ -1,5 +1,6 @@
 *.sublime-project
 *.sublime-workspace
+.vscode
 test/temp*
 build
 api_search/frontend/build

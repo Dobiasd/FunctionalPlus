@@ -906,10 +906,7 @@ typename Container::value_type reduce_1(F f, const Container& xs)
 template <typename F, typename Container, typename Acc>
 Acc fold_right(F f, const Acc& init, const Container& xs)
 {
-    using std::rbegin;
-    using std::rend;
-
-    return std::accumulate(rbegin(xs), rend(xs), init, flip(f));
+    return std::accumulate(xs.rbegin(), xs.rend(), init, flip(f));
 }
 
 // API search type: fold_right_1 : (((a, a) -> a), [a]) -> a
@@ -921,12 +918,8 @@ template <typename F, typename Container>
 auto fold_right_1(F f, const Container& xs)
 {
     assert(!xs.empty());
-
-    using std::rbegin;
-    using std::rend;
-
-    const auto it = rbegin(xs);
-    return std::accumulate(std::next(it), rend(xs), *it, flip(f));
+    const auto it = xs.rbegin();
+    return std::accumulate(std::next(it), xs.rend(), *it, flip(f));
 }
 
 // API search type: scan_left : (((a, b) -> a), a, [b]) -> [a]
