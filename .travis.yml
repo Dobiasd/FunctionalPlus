@@ -38,6 +38,16 @@ matrix:
 
     - os: linux
       compiler: clang
+      env: CLANG_VERSION=6.0 LIBCXX=On
+        - CC=clang-6.0
+        - CXX=clang++-6.0
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-6.0']
+          packages: ['clang-6.0', 'g++-6']
+
+    - os: linux
+      compiler: clang
       env: CLANG_VERSION=5.0 LIBCXX=On
         - CC=clang-5.0
         - CXX=clang++-5.0
