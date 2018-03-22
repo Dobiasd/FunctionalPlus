@@ -1,14 +1,11 @@
-
-find_package(doctest REQUIRED)
-
+find_package(doctest CONFIG REQUIRED)
 
 function(add_test_suite name)
     add_executable(${name} ${name}.cpp)
     add_test(NAME ${name} COMMAND ${name})
 
     target_compile_options(${name} PRIVATE ${COMPILE_OPTIONS})
-    target_include_directories(${name} SYSTEM PRIVATE ${doctest_INCLUDE_DIR})
-    target_link_libraries(${name} PRIVATE fplus ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(${name} PRIVATE fplus ${CMAKE_THREAD_LIBS_INIT} doctest::doctest)
 endfunction()
 
 add_test_suite(show_versions)

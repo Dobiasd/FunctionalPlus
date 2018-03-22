@@ -367,8 +367,12 @@ Building the tests (optional) requires [doctest](https://github.com/onqtam/docte
 
 ```bash
 # install doctest
-wget https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h
-sudo mv ./doctest.h /usr/local/include/doctest.h
+git clone https://github.com/onqtam/doctest
+cd doctest
+mkdir -p build && cd build
+cmake ..
+make
+sudo make install
 
 # install locales
 sudo locale-gen ru_RU
