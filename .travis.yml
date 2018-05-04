@@ -8,6 +8,15 @@ matrix:
     include:
     - os: linux
       compiler: gcc
+      env: GCC_VERSION=8
+        - CC=gcc-8
+        - CXX=g++-8
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-8']
+    - os: linux
+      compiler: gcc
       env: GCC_VERSION=7
         - CC=gcc-7
         - CXX=g++-7
