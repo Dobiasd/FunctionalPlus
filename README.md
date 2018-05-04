@@ -348,7 +348,7 @@ Requirements and Installation
 
 A **C++14**-compatible compiler is needed. Compilers from these versions on are fine: GCC 4.9, Clang 3.7 (libc++ 3.7) and Visual C++ 2015.
 
-Guides for different ways to install frugally-deep can be found in [INSTALL.md](INSTALL.md).
+Guides for different ways to install FunctionalPlus can be found in [INSTALL.md](INSTALL.md).
 
 
 Disclaimer
