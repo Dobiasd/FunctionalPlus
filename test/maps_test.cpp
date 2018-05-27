@@ -169,6 +169,13 @@ TEST_CASE("maps_test, map functions")
     REQUIRE_EQ(map_union(union_map_1, union_map_2), union_map_res);
     REQUIRE_EQ(map_union_with(append<std::string>, union_map_1, union_map_2), union_map_with_res);
 
+    IntStringUnorderedMap union_umap_1 = {{0, "a"}, {1, "b"}};
+    IntStringUnorderedMap union_umap_2 = {{0, "c"}, {2, "d"}};
+    IntStringUnorderedMap union_umap_res = {{0, "a"}, {1, "b"}, {2, "d"}};
+    IntStringUnorderedMap union_umap_with_res = {{0, "ac"}, {1, "b"}, {2, "d"}};
+    REQUIRE_EQ(map_union(union_umap_1, union_umap_2), union_umap_res);
+    REQUIRE_EQ(map_union_with(append<std::string>, union_umap_1, union_umap_2), union_umap_with_res);
+
     typedef std::map<std::string::value_type, int> CharIntMap;
     CharIntMap charIntMap = {{'a', 1}, {'b', 2}, {'A', 3}, {'C', 4}};
     const auto is_upper = [](std::string::value_type c) -> bool

@@ -87,8 +87,11 @@ auto transform_map_values(F f, const MapIn& map)
 template <typename F, typename MapIn>
 auto map_union_with(F f, const MapIn& dict1, const MapIn& dict2)
 {
-    auto full_map = pairs_to_map_grouped(
-            append(map_to_pairs(dict1), map_to_pairs(dict2)));
+    const auto both = append(map_to_pairs(dict1), map_to_pairs(dict2));
+    using Key = typename decltype(both)::value_type::first_type;
+    using SingleValue = typename decltype(both)::value_type::second_type;
+    auto full_map = pairs_to_map_grouped<decltype(both), Key, SingleValue,
+            typename internal::SameMapTypeNewTypes<MapIn, Key, std::vector<SingleValue>>::type>(both);
     const auto group_f = [f](const auto& vals)
     {
         return fold_left_1(f, vals);
