@@ -324,7 +324,7 @@ auto memoize_binary(F f)
 //     int a_;
 //     int b_;
 // };
-// const auto create_foo = constructor_as_function<foo, int int>;
+// const auto create_foo = constructor_as_function<foo, int, int>;
 // create_foo(1,2) == foo(1, 2);
 template <typename T, class ... Types>
 T constructor_as_function(Types ... args)
