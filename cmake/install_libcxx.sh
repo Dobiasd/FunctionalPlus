@@ -15,7 +15,8 @@ cd llvm-build
 
 # - libc++ versions < 4.x do not have the install-cxxabi and install-cxx targets
 # - only ASAN is enabled for clang/libc++ versions < 4.x
-if [[ $VERSION == *"3"* ]]; then
+if [[ ${VERSION} == "3"* ]]; then
+    echo "Clang 3.x"
     cmake -DCMAKE_C_COMPILER=${CC} \
             -DCMAKE_CXX_COMPILER=${CXX} \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo \
@@ -27,7 +28,7 @@ if [[ $VERSION == *"3"* ]]; then
                 -DCMAKE_EXE_LINKER_FLAGS="${ASAN_FLAGS}" \
                 ../llvm-source
     fi
-    make cxx -j{BUILD_JOBS}
+    make cxx -j${BUILD_JOBS}
     sudo cp -r lib/* /usr/lib/
     sudo cp -r include/c++ /usr/include/
 else
@@ -38,7 +39,7 @@ else
             -DLIBCXX_ABI_UNSTABLE=ON \
             -DLLVM_USE_SANITIZER=${SANITIZER} \
             ../llvm-source
-    make cxx -j{BUILD_JOBS}
+    make cxx -j${BUILD_JOBS}
     sudo make install-cxxabi install-cxx
 fi
 
