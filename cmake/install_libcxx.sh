@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+BUILD_JOBS=4
 VERSION=$(echo "${CLANG_VERSION}" | sed 's/\.//g')
 
 echo "Fetching libc++ and libc++abi '${VERSION}'..."
@@ -22,7 +23,7 @@ if [[ $VERSION == *"3"* ]]; then
         ASAN_FLAGS="-fsanitize=address"
         cmake -DCMAKE_CXX_FLAGS="${ASAN_FLAGS}" -DCMAKE_EXE_LINKER_FLAGS="${ASAN_FLAGS}" ../llvm-source
     fi
-    make cxx -j2 VERBOSE=0
+    make cxx -j{BUILD_JOBS}
     sudo cp -r lib/* /usr/lib/
     sudo cp -r include/c++ /usr/include/
 else
@@ -31,7 +32,7 @@ else
           -DLIBCXX_ABI_UNSTABLE=ON \
           -DLLVM_USE_SANITIZER=${SANITIZER} \
           ../llvm-source
-    make cxx -j2 VERBOSE=0
+    make cxx -j{BUILD_JOBS}
     sudo make install-cxxabi install-cxx
 fi
 
