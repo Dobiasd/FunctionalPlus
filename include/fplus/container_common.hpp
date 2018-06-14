@@ -1130,16 +1130,27 @@ ContainerOut prepend_elem(const T& y, Container&& xs)
 // fwd bind count: 1
 // Concatenaes two sequences.
 // append([1, 2], [3, 4, 5]) == [1, 2, 3, 4, 5]
-template <typename Container>
-Container append(const Container& xs, const Container& ys)
+template <typename ContainerIn1, typename ContainerIn2 = ContainerIn1, typename ContainerOut = ContainerIn1>
+ContainerOut append(const ContainerIn1& xs, const ContainerIn2& ys)
 {
-    Container result;
+    ContainerOut result;
     internal::prepare_container(result, size_of_cont(xs) + size_of_cont(ys));
     std::copy(std::begin(xs), std::end(xs),
         internal::get_back_inserter(result));
     std::copy(std::begin(ys), std::end(ys),
         internal::get_back_inserter(result));
     return result;
+}
+
+
+// API search type: transform_append : ([a], [a]) -> [a]
+// fwd bind count: 1
+// Same as append, but makes it easy to
+// use an output container type different from the input container type.
+template <typename ContainerOut, typename ContainerIn1, typename ContainerIn2 = ContainerIn1>
+ContainerOut transform_append(const ContainerIn1& xs, const ContainerIn2& ys)
+{
+    return append<ContainerIn1, ContainerIn2, ContainerOut>(xs, ys);
 }
 
 // API search type: concat : [[a]] -> [a]
