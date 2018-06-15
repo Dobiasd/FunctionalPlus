@@ -228,3 +228,14 @@ TEST_CASE("fwd_test, zip_with")
     REQUIRE_EQ(fwd::zip_with(multiply_int, ys)(xs), xs_mult_ys);
     REQUIRE_EQ(fwd::zip_with(multiply_generic, ys)(xs), xs_mult_ys);
 }
+
+TEST_CASE("fwd_test, append")
+{
+    using namespace fplus;
+
+    IntVector xs = {1,2,3,4,2};
+    IntVector ys = {2,2,3,1};
+    IntVector xs_append_ys = {1,2,3,4,2,2,2,3,1};
+
+    REQUIRE_EQ(fwd::append(xs)(ys), xs_append_ys);
+}

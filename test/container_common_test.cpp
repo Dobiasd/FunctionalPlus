@@ -8,6 +8,7 @@
 #include "doctest.h"
 #include <fplus/fplus.hpp>
 #include <vector>
+#include <deque>
 
 namespace {
     auto squareLambda = [](int x) -> int { return x*x; };
@@ -21,8 +22,10 @@ namespace {
     typedef std::vector<bool> BoolVector;
     typedef std::vector<std::size_t> IdxVector;
     typedef std::array<int, 5> IntArray5;
+    typedef std::deque<int> IntDeque;
     IntVector xs = {1,2,2,3,2};
     IntArray5 xs_arr = {{1,2,2,3,2}};
+    IntDeque  xs_deque = {1,2,2,3,2};
     IntVector xs_reverse = {2,3,2,2,1};
     IntVector xsSorted = {1,2,2,2,3};
     IntVector xs2Times = {1,2,2,3,2,1,2,2,3,2};
@@ -190,7 +193,17 @@ TEST_CASE("container_common_test, prepend_elem")
 TEST_CASE("container_common_test, append")
 {
     using namespace fplus;
+    std::vector<int> xs_empty;
     REQUIRE_EQ(append(xs, xs), xs2Times);
+    REQUIRE_EQ(append(xs, xs_arr), xs2Times);
+    REQUIRE_EQ(append(xs, xs_empty), xs);
+}
+
+TEST_CASE("container_common_test, append_convert")
+{
+    using namespace fplus;
+    REQUIRE_EQ(append_convert<decltype(xs2Times)>(xs_arr, xs_arr), xs2Times);
+    REQUIRE_EQ(append_convert<decltype(xs2Times)>(xs_arr, xs_deque), xs2Times);
 }
 
 TEST_CASE("container_common_test, interweave")
