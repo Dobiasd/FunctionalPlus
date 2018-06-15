@@ -1128,7 +1128,7 @@ ContainerOut prepend_elem(const T& y, Container&& xs)
 
 // API search type: append : ([a], [a]) -> [a]
 // fwd bind count: 1
-// Concatenaes two sequences.
+// Concatenates two sequences.
 // append([1, 2], [3, 4, 5]) == [1, 2, 3, 4, 5]
 template <typename ContainerIn1, typename ContainerIn2 = ContainerIn1, typename ContainerOut = ContainerIn1>
 ContainerOut append(const ContainerIn1& xs, const ContainerIn2& ys)
@@ -1155,7 +1155,7 @@ ContainerOut append_convert(const ContainerIn1& xs, const ContainerIn2& ys)
 
 // API search type: concat : [[a]] -> [a]
 // fwd bind count: 0
-// Concatenaes multiple sequences.
+// Concatenates multiple sequences.
 // concat([[1, 2], [], [3]]) == [1, 2, 3]
 // Also known as flatten.
 template <typename ContainerIn,
