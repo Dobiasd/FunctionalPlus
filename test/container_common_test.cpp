@@ -199,11 +199,11 @@ TEST_CASE("container_common_test, append")
     REQUIRE_EQ(append(xs, xs_empty), xs);
 }
 
-TEST_CASE("container_common_test, transform_append")
+TEST_CASE("container_common_test, append_convert")
 {
     using namespace fplus;
-    REQUIRE_EQ(transform_append<decltype(xs2Times)>(xs_arr, xs_arr), xs2Times);
-    REQUIRE_EQ(transform_append<decltype(xs2Times)>(xs_arr, xs_deque), xs2Times);
+    REQUIRE_EQ(append_convert<decltype(xs2Times)>(xs_arr, xs_arr), xs2Times);
+    REQUIRE_EQ(append_convert<decltype(xs2Times)>(xs_arr, xs_deque), xs2Times);
 }
 
 TEST_CASE("container_common_test, interweave")

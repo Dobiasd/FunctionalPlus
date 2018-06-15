@@ -1143,12 +1143,12 @@ ContainerOut append(const ContainerIn1& xs, const ContainerIn2& ys)
 }
 
 
-// API search type: transform_append : ([a], [a]) -> [a]
+// API search type: append_convert : ([a], [a]) -> [a]
 // fwd bind count: 1
-// Same as append, but makes it easy to
+// Same as append, but makes it easier to
 // use an output container type different from the input container type.
 template <typename ContainerOut, typename ContainerIn1, typename ContainerIn2 = ContainerIn1>
-ContainerOut transform_append(const ContainerIn1& xs, const ContainerIn2& ys)
+ContainerOut append_convert(const ContainerIn1& xs, const ContainerIn2& ys)
 {
     return append<ContainerIn1, ContainerIn2, ContainerOut>(xs, ys);
 }
