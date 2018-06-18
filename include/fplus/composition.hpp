@@ -242,7 +242,7 @@ std::function<FOut(FIn)> memoize(F f)
         const auto it = storage.find(x);
         if (it == storage.end())
         {
-            return storage.insert(std::make_pair(x, f(x))).first->second;
+            return storage.emplace(x, internal::invoke(f, x)).first->second;
         }
         else
         {
@@ -314,7 +314,7 @@ std::function<FOut(FIn1, FIn2)> memoize_binary(F f)
 {
     const auto unary_f = [f](const ParamPair& params) -> FOut
     {
-        return f(params.first, params.second);
+        return internal::invoke(f, params.first, params.second);
     };
     auto unary_f_memoized = memoize<decltype(unary_f),
         ParamPair, FOut, std::map<ParamPair, FOut>>(unary_f);
