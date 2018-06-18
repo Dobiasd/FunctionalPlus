@@ -227,22 +227,22 @@ auto logical_xor(UnaryPredicateF f, UnaryPredicateG g)
 // unary function.
 // Returns a closure mutating an internally held dictionary
 // mapping input values to output values.
-template <typename F>
-auto memoize(F f)
+template <typename F,
+    typename FIn = typename utils::function_traits<F>::template arg<0>::type,
+    typename FOut = typename std::result_of<F(FIn)>::type,
+    typename MemoMap = std::unordered_map<
+        typename std::remove_reference<typename std::remove_const<FIn>::type>::type,
+        FOut>>
+std::function<FOut(FIn)> memoize(F f)
 {
-    using FIn1 = typename utils::function_traits<F>::template arg<0>::type;
-    using FOut = internal::invoke_result_t<F, FIn1>;
-    using MemoMap = std::map<internal::uncvref_t<FIn1>, std::decay_t<FOut>>;
+    static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     MemoMap storage;
-
-    return [f, &storage](const FIn1& x) mutable {
-        internal::
-            trigger_static_asserts<internal::unary_function_tag, F, decltype(x)>();
-
+    return [=](FIn x) mutable -> FOut
+    {
         const auto it = storage.find(x);
         if (it == storage.end())
         {
-            return storage.emplace(x, internal::invoke(f, x)).first->second;
+            return storage.insert(std::make_pair(x, f(x))).first->second;
         }
         else
         {
@@ -253,24 +253,23 @@ auto memoize(F f)
 
 namespace internal
 {
-template <
-    typename F,
-    typename Cache,
-    typename FIn1 = typename utils::function_traits<F>::template arg<0>::type,
-    typename FIn2 = typename utils::function_traits<F>::template arg<1>::type,
-    typename FOut = internal::invoke_result_t<F, FIn1, FIn2>,
-    typename ResultF = std::function<FOut(FIn2)>>
-ResultF memoize_recursive_helper(const F f, std::shared_ptr<Cache> storage)
-{
-    return [f, storage](FIn2 x) {
-        const auto it = storage->find(x);
-        if (it == storage->end())
+    template <typename F, typename Cache,
+        typename FIn1 = typename utils::function_traits<F>::template arg<0>::type,
+        typename FIn2 = typename utils::function_traits<F>::template arg<1>::type,
+        typename FOut = typename std::result_of<F(FIn1, FIn2)>::type,
+        typename ResultF = std::function<FOut(FIn2)>>
+    ResultF memoize_recursive_helper(const F f, std::shared_ptr<Cache> storage)
+    {
+        return [f, storage](FIn2 x)
         {
-            const auto g = memoize_recursive_helper(f, storage);
-            (*storage)[x] = internal::invoke(f, g, x);
-        }
-        return (*storage)[x];
-    };
+            const auto it = storage->find(x);
+            if (it == storage->end())
+            {
+                const auto g = memoize_recursive_helper(f, storage);
+                (*storage)[x] = f(g, x);
+            }
+            return (*storage)[x];
+        };
     }
 } // namespace internal
 
@@ -285,15 +284,16 @@ ResultF memoize_recursive_helper(const F f, std::shared_ptr<Cache> storage)
 // }
 // Returns a closure mutating an internally held dictionary
 // mapping input values to output values.
-template <typename F>
-auto memoize_recursive(F f)
+template <typename F,
+    typename FIn1 = typename utils::function_traits<F>::template arg<0>::type,
+    typename FIn2 = typename utils::function_traits<F>::template arg<1>::type,
+    typename FOut = typename std::result_of<F(FIn1, FIn2)>::type,
+    typename MemoMap = std::unordered_map<
+        typename std::remove_reference<typename std::remove_const<FIn2>::type>::type,
+        FOut>>
+std::function<FOut(FIn2)> memoize_recursive(F f)
 {
-    using FIn1 = typename utils::function_traits<F>::template arg<0>::type;
-    using FIn2 = typename utils::function_traits<F>::template arg<1>::type;
-    using FOut = internal::invoke_result_t<F, FIn1, FIn2>;
-    using MemoMap =
-        std::unordered_map<internal::uncvref_t<FIn2>, std::decay_t<FOut>>;
-    auto storage = std::make_shared<MemoMap>();
+    std::shared_ptr<MemoMap> storage = std::make_shared<MemoMap>();
     return internal::memoize_recursive_helper(f, storage);
 }
 
@@ -302,15 +302,23 @@ auto memoize_recursive(F f)
 // binary function.
 // Returns a closure mutating an internally held dictionary
 // mapping input values to output values.
-template <typename F>
-auto memoize_binary(F f)
+template <typename F,
+    typename FIn1 = typename utils::function_traits<F>::template arg<0>::type,
+    typename FIn2 = typename utils::function_traits<F>::template arg<1>::type,
+    typename FOut = typename std::result_of<F(FIn1, FIn2)>::type,
+    typename ParamPair = std::pair<
+        typename std::remove_reference<typename std::remove_const<FIn1>::type>::type,
+        typename std::remove_reference<typename std::remove_const<FIn2>::type>::type>,
+    typename MemoMap = std::unordered_map<ParamPair, FOut>>
+std::function<FOut(FIn1, FIn2)> memoize_binary(F f)
 {
-    const auto unary_f = [f](const auto& params)
+    const auto unary_f = [f](const ParamPair& params) -> FOut
     {
-        return internal::invoke(f, params.first, params.second);
+        return f(params.first, params.second);
     };
-    auto unary_f_memoized = memoize(unary_f);
-    return [unary_f_memoized](auto a, auto b) mutable
+    auto unary_f_memoized = memoize<decltype(unary_f),
+        ParamPair, FOut, std::map<ParamPair, FOut>>(unary_f);
+    return [unary_f_memoized](FIn1 a, FIn2 b) mutable -> FOut
     {
         return unary_f_memoized(std::make_pair(a, b));
     };
