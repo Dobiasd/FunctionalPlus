@@ -230,15 +230,14 @@ auto logical_xor(UnaryPredicateF f, UnaryPredicateG g)
 template <typename F>
 auto memoize(F f)
 {
-    return [f](auto x) mutable {
+    using FIn1 = typename utils::function_traits<F>::template arg<0>::type;
+    using FOut = internal::invoke_result_t<F, FIn1>;
+    using MemoMap = std::map<internal::uncvref_t<FIn1>, std::decay_t<FOut>>;
+    MemoMap storage;
+
+    return [f, &storage](const FIn1& x) mutable {
         internal::
             trigger_static_asserts<internal::unary_function_tag, F, decltype(x)>();
-
-        using X = decltype(x);
-        using FOut = internal::invoke_result_t<F, X>;
-        using MemoMap = std::map<internal::uncvref_t<X>, std::decay_t<FOut>>;
-
-        MemoMap storage;
 
         const auto it = storage.find(x);
         if (it == storage.end())

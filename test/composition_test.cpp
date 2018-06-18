@@ -180,11 +180,13 @@ TEST_CASE("composition_test, memoize")
     REQUIRE_EQ(f(3), 9);
     REQUIRE_EQ(f(3), 9);
 
-    auto g = memoize([](auto x) { return x * x; });
+    std::size_t g_call_cnt = 0;
+    auto g = memoize([&g_call_cnt](auto x) { ++g_call_cnt; return x * x; });
     REQUIRE_EQ(g(2), 4);
     REQUIRE_EQ(g(2), 4);
     REQUIRE_EQ(g(3), 9);
     REQUIRE_EQ(g(3), 9);
+    REQUIRE_EQ(g_call_cnt, 2);
 
     const auto add = [](auto x, int y)
     {
