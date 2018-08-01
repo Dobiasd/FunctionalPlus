@@ -13,7 +13,11 @@ message(STATUS "Building Unit Tests ${FPLUS_BUILD_UNITTEST}")
 message(STATUS "Building examples ${FPLUS_BUILD_EXAMPLES}")
 
 if(NOT FPLUS_USE_TOOLCHAIN)
-  include(cmake/toolchain.cmake)
+  if (MSVC)
+    include(cmake/toolchain_msvc.cmake)
+  else()
+    include(cmake/toolchain.cmake)
+  endif()
 endif()
 
 add_library(fplus INTERFACE)
