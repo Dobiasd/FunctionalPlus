@@ -455,8 +455,10 @@ TEST_CASE("member data - derived object pointer")
   REQUIRE_EQ(internal::invoke(&derived_function_object_t::i, &obj), 42);
 }
 
+#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
+#endif // __GNUC__
 TEST_CASE("generic lambda")
 {
   auto add = [](auto a, auto b) { return a + b; };
@@ -489,4 +491,6 @@ TEST_CASE("transparent function objects")
   REQUIRE_EQ(internal::invoke(std::plus<>{}, 40, 2), 42);
 }
 
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
+#endif // __GNUC__
