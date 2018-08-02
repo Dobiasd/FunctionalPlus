@@ -72,6 +72,7 @@ private:
         if (is_present_)
         {
             T* ptr = reinterpret_cast<T*>(&mem_[0]);
+            (void)ptr; // silence warning under MSVC (C4189: 'ptr': local variable is initialized but not referenced)
             ptr->~T();
         }
     }
