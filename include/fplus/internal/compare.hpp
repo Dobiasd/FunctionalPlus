@@ -18,8 +18,10 @@ namespace internal
 template <typename Compare>
 auto ord_to_impl(Compare comp)
 {
-    return [comp](auto x, decltype(x) y)
+    return [comp](auto x, auto y)
     {
+        static_assert(std::is_same<decltype(x), decltype(y)>::value,
+            "Argument types must be the same");
         using In = decltype(x);
         internal::trigger_static_asserts<internal::binary_predicate_tag, Compare, In, In>();
 
