@@ -42,7 +42,7 @@ namespace {
     typedef std::vector<std::string> string_vec;
     IntVector vec0123({0,1,2,3});
     IntList list0123({0,1,2,3});
-    std::string ABC("ABC");
+    std::string ABC_("ABC");
     std::string XY("XY");
     std::string ABCD("ABCD");
 
@@ -253,12 +253,12 @@ TEST_CASE("container_common_test, carthesian_product")
     typedef std::vector<char_pair> char_pair_vec;
     auto twoCharsToString = [](std::string::value_type x, std::string::value_type y) { std::string result; result += x; result += y; return result; };
     auto alwaysTrueCharAndChar = [](std::string::value_type, std::string::value_type) { return true; };
-    REQUIRE_EQ(carthesian_product_with(twoCharsToString, ABC, XY), string_vec({"AX", "AY", "BX", "BY", "CX", "CY"}));
-    REQUIRE_EQ(carthesian_product_where(alwaysTrueCharAndChar, ABC, XY), char_pair_vec({{'A','X'}, {'A','Y'}, {'B','X'}, {'B','Y'}, {'C','X'}, {'C','Y'}}));
+    REQUIRE_EQ(carthesian_product_with(twoCharsToString, ABC_, XY), string_vec({"AX", "AY", "BX", "BY", "CX", "CY"}));
+    REQUIRE_EQ(carthesian_product_where(alwaysTrueCharAndChar, ABC_, XY), char_pair_vec({{'A','X'}, {'A','Y'}, {'B','X'}, {'B','Y'}, {'C','X'}, {'C','Y'}}));
     auto charAndCharSumIsEven = [&](std::string::value_type x, std::string::value_type y) { return is_even_int(x + y); };
-    REQUIRE_EQ(carthesian_product_with_where(twoCharsToString, charAndCharSumIsEven, ABC, XY), string_vec({"AY", "BX", "CY"}));
-    REQUIRE_EQ(carthesian_product_where(charAndCharSumIsEven, ABC, XY), char_pair_vec({{'A','Y'}, {'B','X'}, {'C','Y'}}));
-    REQUIRE_EQ(carthesian_product(ABC, XY), char_pair_vec({{'A','X'}, {'A','Y'}, {'B','X'}, {'B','Y'}, {'C','X'}, {'C','Y'}}));
+    REQUIRE_EQ(carthesian_product_with_where(twoCharsToString, charAndCharSumIsEven, ABC_, XY), string_vec({"AY", "BX", "CY"}));
+    REQUIRE_EQ(carthesian_product_where(charAndCharSumIsEven, ABC_, XY), char_pair_vec({{'A','Y'}, {'B','X'}, {'C','Y'}}));
+    REQUIRE_EQ(carthesian_product(ABC_, XY), char_pair_vec({{'A','X'}, {'A','Y'}, {'B','X'}, {'B','Y'}, {'C','X'}, {'C','Y'}}));
     REQUIRE_EQ(carthesian_product_n(2, ABCD), string_vec({"AA", "AB", "AC", "AD", "BA", "BB", "BC", "BD", "CA", "CB", "CC", "CD", "DA", "DB", "DC", "DD"}));
     REQUIRE_EQ(carthesian_product_n(2, vec0123), IntVectors({{0,0}, {0,1}, {0,2}, {0,3}, {1,0}, {1,1}, {1,2}, {1,3}, {2,0}, {2,1}, {2,2}, {2,3}, {3,0}, {3,1}, {3,2}, {3,3}}));
     REQUIRE_EQ(carthesian_product_n(0, vec0123), IntVectors({IntVector()}));
