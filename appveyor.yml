@@ -1,0 +1,51 @@
+version: '{build}'
+branches:
+  only:
+  - master
+clone_folder: c:\projects\fplus
+image:
+- Visual Studio 2015
+- Visual Studio 2017
+configuration:
+- Release
+platform:
+- x64
+environment:
+  matrix:
+  - arch: Win64
+  # - arch: #does not work, Release|x64 not a valid target
+matrix:
+  fast_finish: true
+
+# skip unsupported combinations
+init:
+- set arch=
+- if "%arch%"=="Win64" ( set arch= Win64)
+- echo %arch%
+- echo %APPVEYOR_BUILD_WORKER_IMAGE%
+- if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set generator="Visual Studio 15 2017%arch%" )
+- if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" ( set generator="Visual Studio 14 2015%arch%" )
+- echo %generator%
+
+before_build:
+- cmd: |-
+    cd c:\projects
+    git clone https://github.com/onqtam/doctest.git
+    cd doctest
+    mkdir build
+    cd build
+    cmake .. -DCMAKE_INSTALL_PREFIX=../install -G %generator%
+    cmake --build . --config Release --target INSTALL    
+    cd c:\projects\fplus
+    mkdir build
+    cd build
+    cmake --version
+    cmake .. -DFPLUS_BUILD_EXAMPLES=ON -DFPLUS_BUILD_UNITTEST=ON -DCMAKE_INSTALL_PREFIX=c:/projects/fplus/install -Ddoctest_DIR=C:/projects/doctest/install/lib/cmake/doctest -G %generator%
+build:
+  project: c:\projects\fplus\build\FunctionalPlus.sln
+  verbosity: minimal
+  parallel: true
+
+test_script:
+  - ps: cd c:\projects\fplus\build
+  - ctest -C Release
