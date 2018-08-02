@@ -87,7 +87,7 @@ TEST_CASE("udemy_course_test, Programming_challenge_longest_edge_of_polygon")
     using namespace Programming_challenge_longest_edge_of_polygon;
 
     vector<point> polygon =
-        { {1,2}, {7,3}, {6,5}, {4,4}, {2,9} };
+        { {1.f,2.f}, {7.f,3.f}, {6.f,5.f}, {4.f,4.f}, {2.f,9.f} };
 
     const auto edges =
         fplus::overlapping_pairs_cyclic(polygon);
@@ -163,7 +163,7 @@ TEST_CASE("udemy_course_test, High_level_expressiveness_and_concise_code")
     using namespace High_level_expressiveness_and_concise_code;
 
     vector<point> polygon =
-        { {1,2}, {7,3}, {6,5}, {4,4}, {2,9} };
+        { {1.f,2.f}, {7.f,3.f}, {6.f,5.f}, {4.f,4.f}, {2.f,9.f} };
 
     const auto result = fplus::maximum_on(
         edge_length,
@@ -234,7 +234,7 @@ TEST_CASE("udemy_course_test, Forward_application")
     using namespace Forward_application;
 
     vector<point> polygon =
-        { {1,2}, {7,3}, {6,5}, {4,4}, {2,9} };
+        { {1.f,2.f}, {7.f,3.f}, {6.f,5.f}, {4.f,4.f}, {2.f,9.f} };
 
     // 1:
     const auto result = fplus::fwd::apply(polygon
