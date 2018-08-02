@@ -13,6 +13,7 @@
 //TODO: google says there is no UTF8 locale on Windows, is it so?
 TEST_CASE("stringtools_test, to_lower/upper_case, utf8")
 {
+#ifndef FPLUS_MSVC_BYPASS_FAILING_TESTS // FATAL ERROR: Couldn't acquire locale: bad locale name. Is 'ru_RU.utf8' supported on your system?
     using namespace fplus;
     const std::locale loc = get_locale("ru_RU.utf8");
     auto lower = fwd::to_lower_case_loc(loc);
@@ -28,4 +29,5 @@ TEST_CASE("stringtools_test, to_lower/upper_case, utf8")
 
     REQUIRE_EQ(upper(std::wstring(L"GrEeCe 123&? ΕλΛαΔα")), std::wstring(L"GREECE 123&? ΕΛΛΑΔΑ"));
     REQUIRE_EQ(upper(std::wstring(L"αβγδεζηθικλμνξοπρστυφχψω")), std::wstring(L"ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ"));
+#endif
 }
