@@ -471,8 +471,10 @@ bool xor_bools(const T& x, const T& y)
 template <typename Compare>
 auto ord_to_eq(Compare comp)
 {
-    return [comp](auto x, decltype(x) y)
+    return [comp](auto x, auto y)
     {
+        static_assert(std::is_same<decltype(x), decltype(y)>::value,
+            "Argument types must be the same");
         auto p = internal::ord_to_impl(comp)(x, y);
         return !p.first && !p.second;
     };
@@ -498,8 +500,10 @@ auto ord_to_not_eq(Compare comp)
 template <typename Compare>
 auto ord_eq_to_eq(Compare comp)
 {
-    return [comp](auto x, decltype(x) y)
+    return [comp](auto x, auto y)
     {
+        static_assert(std::is_same<decltype(x), decltype(y)>::value,
+            "Argument types must be the same");
         auto p = internal::ord_to_impl(comp)(x, y);
         return p.first && p.second;
     };
