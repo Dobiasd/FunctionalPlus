@@ -15,6 +15,26 @@ namespace fplus
 {
 namespace internal
 {
+
+template<class InputIt, class T>
+T accumulate(InputIt first, InputIt last, T init)
+{
+    for (; first != last; ++first) {
+        init = std::move(init) + *first;
+    }
+    return init;
+}
+
+template<class InputIt, class T, class BinaryOperation>
+T accumulate(InputIt first, InputIt last, T init,
+             BinaryOperation op)
+{
+    for (; first != last; ++first) {
+        init = op(std::move(init), *first);
+    }
+    return init;
+}
+
 template <typename F,
           typename Acc,
           typename InputIterator,
@@ -34,7 +54,7 @@ void scan_impl(F f,
         return acc;
     };
 
-    std::accumulate(begin, end, init, g);
+    internal::accumulate(begin, end, init, g);
 }
 }
 }

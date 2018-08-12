@@ -851,7 +851,7 @@ Acc fold_left(F f, const Acc& init, const Container& xs)
     using std::begin;
     using std::end;
 
-    return std::accumulate(begin(xs), end(xs), init, f);
+    return internal::accumulate(begin(xs), end(xs), init, f);
 }
 
 // API search type: reduce : (((a, a) -> a), a, [a]) -> a
@@ -882,7 +882,7 @@ auto fold_left_1(F f, const Container& xs)
     using std::end;
 
     const auto it = begin(xs);
-    return std::accumulate(std::next(it), end(xs), *it, f);
+    return internal::accumulate(std::next(it), end(xs), *it, f);
 }
 
 // API search type: reduce_1 : (((a, a) -> a), [a]) -> a
@@ -906,7 +906,7 @@ typename Container::value_type reduce_1(F f, const Container& xs)
 template <typename F, typename Container, typename Acc>
 Acc fold_right(F f, const Acc& init, const Container& xs)
 {
-    return std::accumulate(xs.rbegin(), xs.rend(), init, flip(f));
+    return internal::accumulate(xs.rbegin(), xs.rend(), init, flip(f));
 }
 
 // API search type: fold_right_1 : (((a, a) -> a), [a]) -> a
@@ -919,7 +919,7 @@ auto fold_right_1(F f, const Container& xs)
 {
     assert(!xs.empty());
     const auto it = xs.rbegin();
-    return std::accumulate(std::next(it), xs.rend(), *it, flip(f));
+    return internal::accumulate(std::next(it), xs.rend(), *it, flip(f));
 }
 
 // API search type: scan_left : (((a, b) -> a), a, [b]) -> [a]
@@ -2020,7 +2020,7 @@ std::pair<Result, Result> mean_stddev(const Container& xs)
 
     // http://stackoverflow.com/a/7616783/1866775
     Result sum = static_cast<Result>(
-        std::accumulate(xs.begin(), xs.end(),
+        internal::accumulate(xs.begin(), xs.end(),
             static_cast<typename Container::value_type>(0)));
     Result mean = sum / static_cast<Result>(xs.size());
 
