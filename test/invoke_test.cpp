@@ -17,10 +17,14 @@
 using namespace fplus;
 
 #if defined(_MSC_VER) && ! defined(_WIN64)
-#define FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS // lots of test fail to compile under win 32 bits
+// lots of test fail to compile under win 32 bits
+// with either MSVC 2015 or 2017
+#define FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS 
 #endif
-#if defined(_MSC_VER) && defined(_WIN64)
-#define FPLUS_MSVC_BYPASS_FAILING_TESTS_64BITS // only one test fails to compile under win 64 bits
+#if defined(_MSC_VER) && defined(_WIN64) && (_MSC_VER < 1910)
+// only one test fails to compile under win 64 bits with MSVC 2015
+// all tests pass with MSVC 2017 in 64 bits
+#define FPLUS_MSVC_BYPASS_FAILING_TESTS_64BITS 
 #endif
 
 namespace
