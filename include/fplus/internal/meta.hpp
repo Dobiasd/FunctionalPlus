@@ -79,7 +79,15 @@ struct all_of
 
 // there seems to be a bug in libc++'s std::is_function
 // provide our own (cppreference one)
+// (the MSVC implementation seems correct)
+#ifndef _MSC_VER
+#define PROVIDE_IS_FUNCTION_POLYFILL
+#endif
 
+#ifndef PROVIDE_IS_FUNCTION_POLYFILL
+template<class... Any>
+using is_function = std::is_function<Any...>;
+#else //PROVIDE_IS_FUNCTION_POLYFILL
 // primary template
 template<class>
 struct is_function : std::false_type { };
@@ -139,6 +147,7 @@ template<class Ret, class... Args>
 struct is_function<Ret(Args...,...) volatile &&> : std::true_type {};
 template<class Ret, class... Args>
 struct is_function<Ret(Args...,...) const volatile &&> : std::true_type {};
+#endif //PROVIDE_IS_FUNCTION_POLYFILL
 
 template <typename>
 struct reverse_integer_sequence_impl;

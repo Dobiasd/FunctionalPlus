@@ -16,15 +16,9 @@
 
 using namespace fplus;
 
-#if defined(_MSC_VER) && ! defined(_WIN64)
-// lots of test fail to compile under win 32 bits
-// with either MSVC 2015 or 2017
-#define FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS 
-#endif
-#if defined(_MSC_VER) && defined(_WIN64) && (_MSC_VER < 1910)
-// only one test fails to compile under win 64 bits with MSVC 2015
-// all tests pass with MSVC 2017 in 64 bits
-#define FPLUS_MSVC_BYPASS_FAILING_TESTS_64BITS 
+#if defined(_MSC_VER) && (_MSC_VER < 1910)
+// only one test fails to compile with MSVC 2015, all tests pass with MSVC 2017
+#define FPLUS_MSVC2015_BYPASS_FAILING_TESTS
 #endif
 
 namespace
@@ -230,26 +224,20 @@ TEST_CASE("member function - object reference")
 
   auto qualifiers =
       all_qualifiers(identity<int (function_object_t::*)(int, int)>{});
-#ifndef FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS // Error C2338 under MSVC (i.e static_assert fail)
   static_assert(all_invocable<decltype(qualifiers), function_object_t, int const&, double>::value, "");
 
   static_assert(internal::is_invocable<call_operator_t, function_object_t, int const&, double>::value, "");
   static_assert(internal::is_invocable<mutate_data_t, function_object_t>::value, "");
   static_assert(internal::is_invocable_r<int&&, call_operator_t, function_object_t, int&, float>::value, "");
-#endif
 
   // non-const member function
-#ifndef FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS // Error C2338 under MSVC (i.e static_assert fail)
   static_assert(internal::is_invocable<mutate_data_t, function_object_t&>::value, "");
-#endif
   static_assert(!internal::is_invocable<mutate_data_t, const function_object_t&>::value, "");
 
   static_assert(!internal::is_invocable_r<int&, call_operator_t, function_object_t, int, int>::value, "");
 
-#ifndef FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS 
   auto adder = function_object_t{};
   REQUIRE_EQ(internal::invoke(&function_object_t::operator(), adder, 40, 2), 42);
-#endif
 }
 
 TEST_CASE("member function - reference_wrapper<object>")
@@ -259,26 +247,20 @@ TEST_CASE("member function - reference_wrapper<object>")
   using ref_wrapper_t = std::reference_wrapper<function_object_t>;
   using ref_wrapper_const_t = std::reference_wrapper<const function_object_t>;
 
-#ifndef FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS // Error C2338 under MSVC (i.e static_assert fail)
   static_assert(internal::is_invocable<call_operator_t, ref_wrapper_t, int const&, double>::value, "");
   static_assert(internal::is_invocable<call_operator_t, ref_wrapper_const_t, int const&, double>::value, "");
   static_assert(internal::is_invocable_r<int&&, call_operator_t, ref_wrapper_t, int&, float>::value, "");
   static_assert(internal::is_invocable_r<int&&, call_operator_t, ref_wrapper_const_t, int&, float>::value, "");
-#endif
 
   // non-const member function
-#ifndef FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS // Error C2338 under MSVC (i.e static_assert fail)
   static_assert(internal::is_invocable<mutate_data_t, ref_wrapper_t>::value, "");
-#endif
   static_assert(!internal::is_invocable<mutate_data_t, ref_wrapper_const_t>::value, "");
 
   static_assert(!internal::is_invocable_r<int&, call_operator_t, ref_wrapper_t, int, int>::value, "");
 
   auto adder = function_object_t{};
-#ifndef FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS //  error C2672: 'fplus::internal::invoke': no matching overloaded function found
   REQUIRE_EQ(internal::invoke(&function_object_t::operator(), std::ref(adder), 40, 2), 42);
   REQUIRE_EQ(internal::invoke(&function_object_t::operator(), std::cref(adder), 40, 2), 42);
-#endif
 }
 
 TEST_CASE("member function - object pointer")
@@ -286,23 +268,17 @@ TEST_CASE("member function - object pointer")
   using call_operator_t = decltype(&function_object_t::operator());
   using mutate_data_t = decltype(&function_object_t::mutate_data);
 
-#ifndef FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS //  error C2338 : static_assert fail
   static_assert(internal::is_invocable<call_operator_t, function_object_t*, int const&, double>::value, "");
   static_assert(internal::is_invocable_r<int&&, call_operator_t, function_object_t*, int&, float>::value, "");
-#endif
 
   // non-const member function
-#ifndef FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS //  error C2338 : static_assert fail
   static_assert(internal::is_invocable<mutate_data_t, function_object_t*>::value, "");
-#endif
   static_assert(!internal::is_invocable<mutate_data_t, const function_object_t*>::value, "");
 
   static_assert(!internal::is_invocable_r<int&, call_operator_t, function_object_t*, int, int>::value, "");
 
   auto adder = function_object_t{};
-#ifndef FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS //  error C2672: 'fplus::internal::invoke': no matching overloaded function found
   REQUIRE_EQ(internal::invoke(&function_object_t::operator(), &adder, 40, 2), 42);
-#endif
 }
 
 TEST_CASE("member function - derived object reference")
@@ -315,27 +291,21 @@ TEST_CASE("member function - derived object reference")
   // Need to add make_index_sequence to do that properly.
   auto qualifiers =
       all_qualifiers(identity<int (function_object_t::*)(int, int)>{});
-#if !defined(FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS) && !defined(FPLUS_MSVC_BYPASS_FAILING_TESTS_64BITS) // Error C2338 under MSVC (i.e static_assert fail)
+#if !defined(FPLUS_MSVC2015_BYPASS_FAILING_TESTS) // Error C2338 under MSVC (i.e static_assert fail)
   static_assert(all_invocable<decltype(qualifiers), derived_function_object_t, int const&, double>::value, "");
 #endif
 
-#ifndef FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS // Error C2338 under MSVC (i.e static_assert fail)
   static_assert(internal::is_invocable<call_operator_t, derived_function_object_t, int const&, double>::value, "");
   static_assert(internal::is_invocable_r<int&&, call_operator_t, derived_function_object_t, int&, float>::value, "");
-#endif
 
   // non-const member function
-#ifndef FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS //  error C2338 : static_assert fail
   static_assert(internal::is_invocable<mutate_data_t, derived_function_object_t&>::value, "");
-#endif
   static_assert(!internal::is_invocable<mutate_data_t, const derived_function_object_t&>::value, "");
 
   static_assert(!internal::is_invocable_r<int&, call_operator_t, derived_function_object_t&, int, int>::value, "");
 
   auto adder = derived_function_object_t{};
-#ifndef FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS //  error C2672: 'fplus::internal::invoke': no matching overloaded function found
   REQUIRE_EQ(internal::invoke(&function_object_t::operator(), adder, 40, 2), 42);
-#endif
 }
 
 TEST_CASE("member function - reference_wrapper<derived object>")
@@ -346,24 +316,18 @@ TEST_CASE("member function - reference_wrapper<derived object>")
   using ref_wrapper_t = std::reference_wrapper<derived_function_object_t>;
   using ref_wrapper_const_t = std::reference_wrapper<const derived_function_object_t>;
 
-#ifndef FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS //  error C2338 : static_assert fail
   static_assert(internal::is_invocable<call_operator_t, ref_wrapper_t, int const&, double>::value, "");
   static_assert(internal::is_invocable<call_operator_t, ref_wrapper_const_t, int const&, double>::value, "");
   static_assert(internal::is_invocable_r<int&&, call_operator_t, ref_wrapper_t, int&, float>::value, "");
-#endif
 
   // non-const member function
-#ifndef FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS //  error C2338 : static_assert fail
   static_assert(internal::is_invocable<mutate_data_t, ref_wrapper_t>::value, "");
-#endif
   static_assert(!internal::is_invocable<mutate_data_t, ref_wrapper_const_t>::value, "");
 
   static_assert(!internal::is_invocable_r<int&, call_operator_t, ref_wrapper_t&, int, int>::value, "");
 
   auto adder = derived_function_object_t{};
-#ifndef FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS //  error C2672: 'fplus::internal::invoke': no matching overloaded function found
   REQUIRE_EQ(internal::invoke(&function_object_t::operator(), adder, 40, 2), 42);
-#endif
 }
 
 TEST_CASE("member function - derived object pointer")
@@ -371,24 +335,18 @@ TEST_CASE("member function - derived object pointer")
   using call_operator_t = decltype(&function_object_t::operator());
   using mutate_data_t = decltype(&function_object_t::mutate_data);
 
-#ifndef FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS //  error C2338 : static_assert fail
   static_assert(internal::is_invocable<call_operator_t, derived_function_object_t*, int const&, double>::value, "");
   static_assert(internal::is_invocable_r<int&&, call_operator_t, derived_function_object_t*, int&, float>::value, "");
-#endif
 
   // non-const non-volatile member function
-#ifndef FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS //  error C2338 : static_assert fail
   static_assert(internal::is_invocable<mutate_data_t, derived_function_object_t*>::value, "");
-#endif
   static_assert(!internal::is_invocable<mutate_data_t, const derived_function_object_t*>::value, "");
   static_assert(!internal::is_invocable<mutate_data_t, volatile derived_function_object_t*>::value, "");
 
   static_assert(!internal::is_invocable_r<int&, call_operator_t, derived_function_object_t*, int, int>::value, "");
 
   auto adder = derived_function_object_t{};
-#ifndef FPLUS_MSVC_BYPASS_FAILING_TESTS_32BITS //  error C2672: 'fplus::internal::invoke': no matching overloaded function found
   REQUIRE_EQ(internal::invoke(&function_object_t::operator(), &adder, 40, 2), 42);
-#endif
 }
 
 TEST_CASE("member data - object reference")
