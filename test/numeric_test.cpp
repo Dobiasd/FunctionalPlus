@@ -175,18 +175,18 @@ TEST_CASE("numeric_test, cyclic_distance")
 
 TEST_CASE("numeric_test, round")
 {
-    using namespace fplus;
+    // using namespace fplus;  // round is also defined in tgmath.h under msvc
     REQUIRE_EQ(round(1.4), 1);
     REQUIRE_EQ(round(1.5), 2);
     REQUIRE_EQ(round(1.6), 2);
 
-    REQUIRE_EQ((round<double, unsigned char>(254.9)), 255);
-    REQUIRE_EQ((round<double, unsigned char>(300.0)), 255);
-    REQUIRE_EQ((round<double, unsigned char>(-0.0000001)), 0);
-    REQUIRE_EQ((round<double, unsigned char>(-5.0)), 0);
+    REQUIRE_EQ((fplus::round<double, unsigned char>(254.9)), 255);
+    REQUIRE_EQ((fplus::round<double, unsigned char>(300.0)), 255);
+    REQUIRE_EQ((fplus::round<double, unsigned char>(-0.0000001)), 0);
+    REQUIRE_EQ((fplus::round<double, unsigned char>(-5.0)), 0);
 
-    REQUIRE_EQ(round(-1.4), -1);
-    REQUIRE_EQ(round(-1.6), -2);
+    REQUIRE_EQ(fplus::round(-1.4), -1);
+    REQUIRE_EQ(fplus::round(-1.6), -2);
 }
 
 TEST_CASE("numeric_test, integral_cast_clamp")

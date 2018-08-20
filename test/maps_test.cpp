@@ -180,11 +180,11 @@ TEST_CASE("maps_test, map functions")
     CharIntMap charIntMap = {{'a', 1}, {'b', 2}, {'A', 3}, {'C', 4}};
     const auto is_upper = [](std::string::value_type c) -> bool
     {
-        return std::isupper(c);
+        return (std::isupper(c) != 0);
     };
     const auto is_lower = [](std::string::value_type c) -> bool
     {
-        return std::islower(c);
+        return (std::islower(c) != 0);
     };
     REQUIRE_EQ(map_keep_if(is_upper, charIntMap), CharIntMap({{'A', 3}, {'C', 4}}));
     REQUIRE_EQ(map_drop_if(is_lower, charIntMap), CharIntMap({{'A', 3}, {'C', 4}}));

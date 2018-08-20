@@ -9,11 +9,16 @@ message(STATUS "===( ${PROJECT_NAME} ${PROJECT_VERSION} )===")
 option(FPLUS_USE_TOOLCHAIN "Use compiler flags from an external toolchain" OFF)
 option(FPLUS_BUILD_EXAMPLES "Build examples" ON)
 option(FPLUS_BUILD_UNITTEST "Build unit tests" OFF)
+
 message(STATUS "Building Unit Tests ${FPLUS_BUILD_UNITTEST}")
 message(STATUS "Building examples ${FPLUS_BUILD_EXAMPLES}")
 
 if(NOT FPLUS_USE_TOOLCHAIN)
-  include(cmake/toolchain.cmake)
+  if (MSVC)
+    include(cmake/toolchain_msvc.cmake)
+  else()
+    include(cmake/toolchain.cmake)
+  endif()
 endif()
 
 add_library(fplus INTERFACE)
