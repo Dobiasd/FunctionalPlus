@@ -97,7 +97,7 @@ matrix:
 
 before_install:
   - git clone https://github.com/onqtam/doctest
-  - (cd doctest && mkdir -p build && cd build && cmake .. && make && sudo make install)
+  - (cd doctest && git checkout tags/1.2.9 && mkdir -p build && cd build && cmake .. && make && sudo make install)
   - |
     if [ -n "$GCC_VERSION" ]; then
       export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"
@@ -113,10 +113,10 @@ before_install:
       sudo ./cmake/install_libcxx.sh
       export CXXFLAGS="-stdlib=libc++"
     fi
-    if [ ! `locale -a | grep ru_RU.cp1251` ]; then 
+    if [ ! `locale -a | grep ru_RU.cp1251` ]; then
       sudo localedef -c -i ru_RU -f CP1251 ru_RU.CP1251
     fi
-    if [ ! `locale -a | grep el_GR.cp1253` ]; then 
+    if [ ! `locale -a | grep el_GR.cp1253` ]; then
       sudo localedef -c -i el_GR -f CP1253 el_GR.CP1253
     fi
   - |
