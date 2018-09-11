@@ -12,6 +12,7 @@ namespace {
     auto squareLambda = [](int x) -> int { return x*x; };
     auto cubeLambda = [](int x) -> int { return x*x*x; };
     typedef std::vector<int> IntVector;
+    typedef std::list<int> IntList;
     typedef std::pair<int, int> IntPair;
     typedef std::vector<IntPair> IntPairs;
     IntVector xs = {1,2,2,3,2};
@@ -30,6 +31,7 @@ TEST_CASE("pairs_test, zip_with")
     const auto add = [](int x, int y){ return x + y; };
     REQUIRE_EQ(zip_with(add, IntVector({1,2,3}), IntVector({1,2})), IntVector({2,4}));
     REQUIRE_EQ(zip_with(add, IntVector({1,2}), IntVector({1,2,3})), IntVector({2,4}));
+    REQUIRE_EQ(zip_with(add, IntVector({1,2}), IntList({1,2,3})), IntVector({2,4}));
 
     const auto add_generic = [](auto x, int y) {return x + y;};
     REQUIRE_EQ(zip_with(add_generic, IntVector({1,2,3}), IntVector({1,2})), IntVector({2,4}));
