@@ -25,7 +25,7 @@ Building the tests (optional) requires [doctest](https://github.com/onqtam/docte
 # install doctest
 git clone https://github.com/onqtam/doctest
 cd doctest
-CXXFLAGS='-std=c++11'
+git checkout tags/1.2.9
 mkdir -p build && cd build
 cmake ..
 make
