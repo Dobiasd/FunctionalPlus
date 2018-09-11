@@ -32,7 +32,7 @@ before_build:
     cd c:\projects
     git clone https://github.com/onqtam/doctest.git
     cd doctest
-    git checkout tags/1.2.9
+    CXXFLAGS='-std=c++14'
     mkdir build
     cd build
     cmake .. -DCMAKE_INSTALL_PREFIX=../install -G %generator%
