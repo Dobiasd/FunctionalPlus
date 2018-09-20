@@ -322,7 +322,7 @@ MapType map_keep(const KeyContainer& keys, const MapType& map)
 // fwd bind count: 1
 // Keeps only the pairs of the map not found in the key list.
 // Inverse of map_keep.
-// map_drop([b, c], {a: 1, b: 2, c: 3, d: 4}); //=> {a: 1, d: 4}
+// map_drop([b, c], {a: 1, b: 2, c: 3, d: 4}); == {a: 1, d: 4}
 template <typename MapType, typename KeyContainer>
 MapType map_drop(const KeyContainer& keys, const MapType& map)
 {
@@ -331,6 +331,68 @@ MapType map_drop(const KeyContainer& keys, const MapType& map)
         typename MapType::key_type>::value,
         "Key types do not match.");
     return map_drop_if(bind_2nd_of_2(is_elem_of<KeyContainer>, keys), map);
+}
+
+// API search type: map_keep_if_value : ((val -> Bool), Map key val) -> Map key val
+// fwd bind count: 1
+// Filters the map by values.
+// map_keep_if_value(is_upper_case, {1: a, 2: b, 3: A, 4: C}) == {3: A, 4: C}
+// Also known as filter_values.
+template <typename MapType, typename Pred>
+MapType map_keep_if_value(Pred pred, const MapType& map)
+{
+    MapType result;
+    for (const auto& key_and_value : map)
+    {
+        if (internal::invoke(pred, key_and_value.second))
+        {
+            result.insert(key_and_value);
+        }
+    }
+    return result;
+}
+
+// API search type: map_drop_if_value : ((value -> Bool), Map key val) -> Map key val
+// fwd bind count: 1
+// Filters the map by values.
+// map_drop_if_value(is_lower_case, {1: a, 2: b, 3: A, 4: C}) == {3: A, 4: C}
+// Inverse of map_keep_if_value.
+template <typename MapType, typename Pred>
+MapType map_drop_if_value(Pred pred, const MapType& map)
+{
+    return map_keep_if_value(logical_not(pred), map);
+}
+
+// API search type: map_keep_values : ([value], Map key val) -> Map key val
+// fwd bind count: 1
+// Keeps only the pairs of the map found in the value list.
+// map_keep_values([1, 4], {a: 1, b: 2, c: 3, d: 4}) == {a: 1, d: 4}
+// map_keep_values([1, 5, 6], {a: 1, b: 2, c: 3, d: 4}) == {a: 1}
+template <typename MapType, typename ValueContainer>
+MapType map_keep_values(const ValueContainer& values, const MapType& map)
+{
+    static_assert(std::is_same<
+        typename ValueContainer::value_type,
+        typename MapType::mapped_type>::value,
+        "Value types do not match.");
+    return map_keep_if_value(
+        bind_2nd_of_2(is_elem_of<ValueContainer>, values), map);
+}
+
+// API search type: map_drop_values : ([value], Map key val) -> Map key val
+// fwd bind count: 1
+// Keeps only the pairs of the map not found in the value list.
+// Inverse of map_keep_values.
+// map_drop_values([2, 3], {a: 1, b: 2, c: 3, d: 4}) == {a: 1, d: 4}
+template <typename MapType, typename ValueContainer>
+MapType map_drop_values(const ValueContainer& values, const MapType& map)
+{
+    static_assert(std::is_same<
+        typename ValueContainer::value_type,
+        typename MapType::mapped_type>::value,
+        "Value types do not match.");
+    return map_drop_if_value(
+        bind_2nd_of_2(is_elem_of<ValueContainer>, values), map);
 }
 
 // API search type: map_pluck : (key, [Map key val]) -> [val]

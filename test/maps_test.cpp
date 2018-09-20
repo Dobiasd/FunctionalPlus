@@ -177,7 +177,9 @@ TEST_CASE("maps_test, map functions")
     REQUIRE_EQ(map_union_with(append<std::string>, union_umap_1, union_umap_2), union_umap_with_res);
 
     typedef std::map<std::string::value_type, int> CharIntMap;
+    typedef std::map<int, std::string::value_type> IntCharMap;
     CharIntMap charIntMap = {{'a', 1}, {'b', 2}, {'A', 3}, {'C', 4}};
+    IntCharMap intCharMap = {{1, 'a'}, {2, 'b'}, {3, 'A'}, {4, 'C'}};
     const auto is_upper = [](std::string::value_type c) -> bool
     {
         return (std::isupper(c) != 0);
@@ -191,6 +193,11 @@ TEST_CASE("maps_test, map functions")
     typedef std::vector<std::string::value_type> CharVector;
     REQUIRE_EQ(map_keep(CharVector({'b', 'F'}), charIntMap), CharIntMap({{'b', 2}}));
     REQUIRE_EQ(map_drop(CharVector({'a', 'A', 'C', 'F'}), charIntMap), CharIntMap({{'b', 2}}));
+
+    REQUIRE_EQ(map_keep_if_value(is_upper, intCharMap), IntCharMap({{3, 'A'}, {4, 'C'}}));
+    REQUIRE_EQ(map_drop_if_value(is_lower, intCharMap), IntCharMap({{3, 'A'}, {4, 'C'}}));
+    REQUIRE_EQ(map_keep_values(CharVector({'b', 'F'}), intCharMap), IntCharMap({{2, 'b'}}));
+    REQUIRE_EQ(map_drop_values(CharVector({'a', 'A', 'C', 'F'}), intCharMap), IntCharMap({{2, 'b'}}));
 
     typedef std::vector<CharIntMap> CharIntMaps;
     typedef std::vector<maybe<int>> MaybeInts;
