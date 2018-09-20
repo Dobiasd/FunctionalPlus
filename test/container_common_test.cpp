@@ -69,6 +69,14 @@ TEST_CASE("container_common_test, group")
     REQUIRE_EQ(group_by(abs_diff_less_or_equal_3, IntVector({2,3,6,4,22,21,8,5})), IntVectors({{2,3,6,4},{22,21},{8,5}}));
 }
 
+TEST_CASE("container_common_test, separate")
+{
+    using namespace fplus;
+    IntVector values = {1, 2, 2, 3, 3, 4, 4, 4};
+    REQUIRE_EQ(separate(values), IntVectors({IntVector({1, 2, 3, 4}),IntVector({2, 3, 4}),IntVector({4})}));
+    REQUIRE_EQ(separate_on(int_mod_10, IntVector({12,22,34})), IntVectors({IntVector({12,34}),IntVector({22})}));
+}
+
 TEST_CASE("container_common_test, singleton_seq")
 {
     using namespace fplus;
@@ -636,7 +644,7 @@ TEST_CASE("container_common_test, nub")
     REQUIRE_EQ(nub_on(int_mod_10, IntVector({12,32,15})), IntVector({12,15}));
 }
 
-TEST_CASE("container_common_test, count_occurrences_by")
+TEST_CASE("container_common_test, coucount_occurrences_bynt_occurrences_on")
 {
     using namespace fplus;
     typedef std::map<int, std::size_t> IntSizeTMap;

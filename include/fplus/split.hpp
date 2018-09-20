@@ -145,8 +145,8 @@ ContainerOut group_globally_by(BinaryPredicate p, const ContainerIn& xs)
 
 // API search type: group_globally_on : ((a -> b), [a]) -> [[a]]
 // fwd bind count: 1
-// Arrange elements equal after applying a transfomer into groups.
-// group_globally_on((mod 10), [12,34,22]) == [[12,34],[22]]
+// Arrange elements equal after applying a transformer into groups.
+// group_globally_on((mod 10), [12,34,22]) == [[12,22],[34]]
 // O(n^2)
 // If you need O(n*log(n)), sort and then use group_on
 template <typename F, typename ContainerIn>
@@ -157,7 +157,7 @@ auto group_globally_on(F f, const ContainerIn& xs)
 
 // API search type: group_globally_on_labeled : ((a -> b), [a]) -> [(b, [a])]
 // fwd bind count: 1
-// Arrange elements equal after applying a transfomer into groups,
+// Arrange elements equal after applying a transformer into groups,
 // adding the transformation result as a label to the group.
 // group_globally_on_labeled((mod 10), [12,34,22]) == [(2,[12,22]),(4, [34])]
 // O(n^2)
@@ -743,6 +743,61 @@ Container winsorize(double trim_ratio, const Container& xs)
         assert(size_of_cont(result) == size_of_cont(xs_sorted));
         return result;
     }
+}
+
+// API search type: separate_on : ((a -> b), [a]) -> [[a]]
+// fwd bind count: 1
+// Separate elements equal after applying a transformer into groups.
+// separate_on((mod 10), [12,22,34]) == [[12,34],[22]]
+template <typename F, typename ContainerIn,
+        typename ContainerOut = typename std::vector<ContainerIn>>
+ContainerOut separate_on(F f, const ContainerIn& xs)
+{
+    static_assert(std::is_same<ContainerIn,
+        typename ContainerOut::value_type>::value,
+        "Containers do not match.");
+
+    ContainerOut result;
+    if (is_empty(xs)) {
+        return result;
+    }
+
+    const auto groups = group_globally_on(f, xs);
+    bool found = true;
+    auto itOut = internal::get_back_inserter(result);
+    std::size_t index = 0;
+    while (found) {
+        typename ContainerOut::value_type sub_result;
+        found = false;
+        auto itOutInner = internal::get_back_inserter(sub_result);
+        for (auto& group: groups) {
+            if (size_of_cont(group) > index)
+            {
+                *itOutInner = group[index];
+                found = true;
+            }
+        }
+        if (found) {
+            *itOut = sub_result;
+            ++index;
+        }
+    }
+    return result;
+}
+
+// API search type: separate : [a] -> [[a]]
+// fwd bind count: 0
+// Separate equal elements into groups.
+// separate([1, 2, 2, 3, 3, 4, 4, 4]) == [[1, 2, 3, 4], [2, 3, 4], [4]]
+template <typename ContainerIn,
+        typename ContainerOut = typename std::vector<ContainerIn>>
+ContainerOut separate(const ContainerIn& xs)
+{
+    static_assert(std::is_same<ContainerIn,
+        typename ContainerOut::value_type>::value,
+        "Containers do not match.");
+    typedef typename ContainerIn::value_type T;
+    return separate_on(identity<T>, xs);
 }
 
 } // namespace fplus
