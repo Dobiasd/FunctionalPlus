@@ -18,8 +18,8 @@ namespace
 {
     bool are_execution_times_close(double t1, double t2)
     {
-        // up to 20 ms difference, since the cpu scheduler might switch to another process during a sleep
-        double max_acceptable_delta__task_scheduler = 0.02;
+        // up to 30 ms difference, since the cpu scheduler might switch to another process during a sleep
+        double max_acceptable_delta__task_scheduler = 0.03;
         return (fabs(t1 - t2) < max_acceptable_delta__task_scheduler);
     }
 
@@ -53,12 +53,6 @@ TEST_CASE("timed, ctor")
         // default constructor
         fplus::timed<double> v;
         REQUIRE(v.get() == doctest::Approx(0.));
-        REQUIRE(v.time() == doctest::Approx(0.));
-    }
-    {
-        // T constructor
-        fplus::timed<double> v(1.);
-        REQUIRE(v.get() == doctest::Approx(1.));
         REQUIRE(v.time() == doctest::Approx(0.));
     }
     {

@@ -16,31 +16,20 @@ namespace fplus
 {
     using ExecutionTime = double; // in seconds
 
-    // Holds a value of type T plus a time
+    // Holds a value of type T plus an execution time
     template <typename T>
-    class timed
+    class timed : public std::pair<T, ExecutionTime>
     {
+        using base_pair = std::pair<T, ExecutionTime>;
     public:
-        timed() : time_(), val_()                                           {}
-        timed(const T& val, ExecutionTime t = 0.) : time_(t), val_(val)     {}
-        timed(const timed<T>& other) : time_(other.time_), val_(other.val_) {}
-        ~timed() = default;
-
-        timed<T>& operator = (const timed<T>& other) {
-            val_ = other.val_;
-            time_ = other.time_;
-            return *this;
-        }
+        timed() : base_pair()                                                 {}
+        timed(const T& val, ExecutionTime t = 0.) : base_pair(val, t)         {}
 
         // Execution time in seconds
-        ExecutionTime time() const { return time_; } 
+        ExecutionTime time() const { return second; } 
         // Inner value
-        const T& get() const       { return val_; }
-        T& get()                   { return val_; }
-
-    private:
-        ExecutionTime time_;
-        T val_;
+        const T& get() const       { return first; }
+        T& get()                   { return first; }
     };
 
 
