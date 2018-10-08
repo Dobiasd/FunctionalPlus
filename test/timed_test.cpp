@@ -11,7 +11,6 @@
 #include <cmath>
 #include <chrono>
 #include <fplus/fplus.hpp>
-#include <fplus/timed.hpp>
 
 // Utility functions
 namespace

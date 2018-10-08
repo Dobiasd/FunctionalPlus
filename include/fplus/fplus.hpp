@@ -36,6 +36,7 @@
 #include <fplus/side_effects.hpp>
 #include <fplus/stopwatch.hpp>
 #include <fplus/variant.hpp>
+#include <fplus/timed.hpp>
 
 #include <fplus/curry.hpp>
 #include <fplus/fwd.hpp>
