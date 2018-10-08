@@ -40,7 +40,7 @@ namespace
     {
         sleep_seconds(0.002);
         return a + b;
-    };
+    }
 }
 
 
