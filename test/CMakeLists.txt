@@ -94,11 +94,13 @@ add_custom_target(unittest show_versions
                         COMMAND show_test
                         COMMAND side_effects_test
                         COMMAND split_test
+                        COMMAND stopwatch_test
                         COMMAND stringtools_test
                         COMMAND stringtools_cp1251_test
                         COMMAND stringtools_cp1253_test
                         COMMAND stringtools_utf8_test
-                        COMMAND transform_test
+                        COMMAND timed_test
+                        COMMAND transform_test                        
                         COMMAND tree_test
                         COMMAND udemy_course_test
                         COMMAND variant_test
