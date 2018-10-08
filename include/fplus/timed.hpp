@@ -26,10 +26,10 @@ namespace fplus
         timed(const T& val, ExecutionTime t = 0.) : base_pair(val, t)         {}
 
         // Execution time in seconds
-        ExecutionTime time() const { return second; } 
+        ExecutionTime time() const { return base_pair::second; }
         // Inner value
-        const T& get() const       { return first; }
-        T& get()                   { return first; }
+        const T& get() const       { return base_pair::first; }
+        T& get()                   { return base_pair::first; }
     };
 
 
