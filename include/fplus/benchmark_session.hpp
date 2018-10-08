@@ -114,6 +114,14 @@ namespace fplus
         return bench_function_impl<Fn>(session, name, f);
     }
 
+#define benchmark_expression(bench_session, name, expression)      \
+    make_benchmark_function(                                   \
+    bench_session,                                             \
+    name,                                                      \
+    [&]() { return expression; }                               \
+    )();
+
+#define COMMA ,
 
     template<class Fn>
     auto run_n_times(int nb_runs, Fn f)
