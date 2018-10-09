@@ -140,11 +140,9 @@ TEST_CASE("make_timed_function")
         auto sort_bench = fplus::make_timed_function(sort_func);
 
         auto sorted_numbers = sort_bench(shuffled_numbers);
-        assert(sorted_numbers.get() == ascending_numbers);
         REQUIRE_EQ(sorted_numbers.get(), ascending_numbers);
         // sorting 1000 numbers should require less than 0.1 seconds (in practice it requires about 0.2ms)
         REQUIRE_LT(sorted_numbers.time(), 0.1); 
-        assert(sorted_numbers.time() < 0.1);
     }
 }
 
