@@ -92,12 +92,6 @@ namespace fplus
 
     namespace internal
     {
-        struct UnaryVoid {
-            UnaryVoid() = default; // required by clang 3.8
-        };
-        bool operator!=(const UnaryVoid &, const UnaryVoid &) { return false; } // required by unit tests
-        constexpr UnaryVoid unary_void;
-
         template<typename Fn>
         class timed_void_function_impl
         {
@@ -111,8 +105,7 @@ namespace fplus
             {
                 fplus::stopwatch timer;
                 _fn(args...);
-                auto r_t = fplus::timed<UnaryVoid>(unary_void, timer.elapsed());
-                return r_t;
+                return timer.elapsed();
             }
 
             Fn _fn;
@@ -120,7 +113,7 @@ namespace fplus
 
     }
 
-    // API search type: make_timed_void_function : ((a -> Void)) -> (a -> Timed Void)
+    // API search type: make_timed_void_function : ((a -> Void)) -> (a -> Double)
     // fwd bind count: 0
     // Transforms a void function into a timed / benchmarked version of the same function.
     //
@@ -132,7 +125,7 @@ namespace fplus
     // ...
     // auto foo_bench = make_timed_void_function(foo);
     // auto r = foo_bench();
-    // double run_time = foo_bench.time();
+    // double run_time = foo_bench();
     template<class Fn>
     auto make_timed_void_function(Fn f)
     {

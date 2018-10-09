@@ -113,9 +113,8 @@ TEST_CASE("make_timed_function")
     {
         // Test void function
         auto void_function_timed = fplus::make_timed_void_function(void_function);
-        auto result = void_function_timed();
-        auto expected = timed<fplus::internal::UnaryVoid>(fplus::internal::unary_void, 0.02);
-        REQUIRE(are_timed_equal(result, expected));
+        auto execution_time = void_function_timed();
+        REQUIRE(are_execution_times_close(execution_time, 0.02));
     }
 
     {
@@ -136,9 +135,8 @@ TEST_CASE("make_timed_function")
             sleep_seconds(0.03);
         };
         auto fn_timed = make_timed_void_function(fn);
-        auto result = fn_timed();
-        auto expected = timed<fplus::internal::UnaryVoid>(fplus::internal::unary_void, 0.03);
-        REQUIRE(are_timed_equal(result, expected));
+        auto execution_time = fn_timed();
+        REQUIRE(are_execution_times_close(execution_time, 0.03));
     }
 
     {
