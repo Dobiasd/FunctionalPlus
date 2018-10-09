@@ -44,26 +44,28 @@ namespace fplus
         return result;
     }
 
-
-    template<typename Fn>
-    class timed_function_impl
+    namespace internal
     {
-    public:
-        explicit timed_function_impl(Fn fn) : _fn(fn) {};
-        template<typename ...Args> auto operator()(Args... args) { return _timed_result(args...); }
-    
-    private:
-        template<typename ...Args>
-        auto _timed_result(Args... args)
+        template<typename Fn>
+        class timed_function_impl
         {
-            fplus::stopwatch timer;
-            auto r = _fn(args...);
-            auto r_t = fplus::timed<decltype(r)>(r, timer.elapsed());
-            return r_t;
-        }
+        public:
+            explicit timed_function_impl(Fn fn) : _fn(fn) {};
+            template<typename ...Args> auto operator()(Args... args) { return _timed_result(args...); }
+        
+        private:
+            template<typename ...Args>
+            auto _timed_result(Args... args)
+            {
+                fplus::stopwatch timer;
+                auto r = _fn(args...);
+                auto r_t = fplus::timed<decltype(r)>(r, timer.elapsed());
+                return r_t;
+            }
 
-        Fn _fn;
-    };
+            Fn _fn;
+        };
+    }
 
     // API search type: make_timed_function : ((a -> b)) -> (a -> Timed b)
     // fwd bind count: 0
@@ -84,6 +86,6 @@ namespace fplus
     template<class Fn>
     auto make_timed_function(Fn f)
     {
-        return timed_function_impl<decltype(f)>(f);
+        return internal::timed_function_impl<decltype(f)>(f);
     }
 }
