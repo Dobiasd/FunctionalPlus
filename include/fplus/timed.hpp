@@ -33,7 +33,7 @@ namespace fplus
     };
 
 
-    // API search type: show_maybe : Timed a -> String
+    // API search type: show_timed : Timed a -> String
     // fwd bind count: 0
     // show_timed((42,1)) -> "42 (1000ms)"
     template <typename T>
@@ -125,7 +125,7 @@ namespace fplus
     // ...
     // auto foo_bench = make_timed_void_function(foo);
     // auto r = foo_bench();
-    // double run_time = foo_bench();
+    // double run_time = foo_bench(); // in seconds
     template<class Fn>
     auto make_timed_void_function(Fn f)
     {
