@@ -93,8 +93,9 @@ namespace fplus
     namespace internal
     {
         struct UnaryVoid {
+            UnaryVoid() = default; // required by clang 3.8
         };
-        bool operator!=(const UnaryVoid &, const UnaryVoid &) { return false; }
+        bool operator!=(const UnaryVoid &, const UnaryVoid &) { return false; } // required by unit tests
         constexpr UnaryVoid unary_void;
 
         template<typename Fn>
