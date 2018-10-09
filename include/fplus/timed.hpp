@@ -88,4 +88,54 @@ namespace fplus
     {
         return internal::timed_function_impl<decltype(f)>(f);
     }
+
+
+    namespace internal
+    {
+        struct UnaryVoid {
+        };
+        bool operator!=(const UnaryVoid &, const UnaryVoid &) { return false; }
+        constexpr UnaryVoid unary_void;
+
+        template<typename Fn>
+        class timed_void_function_impl
+        {
+        public:
+            explicit timed_void_function_impl(Fn fn) : _fn(fn) {};
+            template<typename ...Args> auto operator()(Args... args) { return _timed_result(args...); }
+        
+        private:
+            template<typename ...Args>
+            auto _timed_result(Args... args)
+            {
+                fplus::stopwatch timer;
+                _fn(args...);
+                auto r_t = fplus::timed<UnaryVoid>(unary_void, timer.elapsed());
+                return r_t;
+            }
+
+            Fn _fn;
+        };
+
+    }
+
+    // API search type: make_timed_void_function : ((a -> Void)) -> (a -> Timed Void)
+    // fwd bind count: 0
+    // Transforms a void function into a timed / benchmarked version of the same function.
+    //
+    // Example:
+    //
+    // void foo() { 
+    //     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    // }
+    // ...
+    // auto foo_bench = make_timed_void_function(foo);
+    // auto r = foo_bench();
+    // double run_time = foo_bench.time();
+    template<class Fn>
+    auto make_timed_void_function(Fn f)
+    {
+        return internal::timed_void_function_impl<decltype(f)>(f);
+    }
+
 }

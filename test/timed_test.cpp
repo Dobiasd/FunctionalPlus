@@ -41,6 +41,12 @@ namespace
         sleep_seconds(0.002);
         return a + b;
     }
+
+    void void_function()
+    {
+        sleep_seconds(0.002);
+        std::cout << "void_function" << std::endl;
+    }
 }
 
 
@@ -92,7 +98,6 @@ TEST_CASE("timed, show_timed")
 
 
 // Test make_timed_function
-
 TEST_CASE("make_timed_function")
 {
     using namespace fplus;
@@ -106,6 +111,14 @@ TEST_CASE("make_timed_function")
     }
 
     {
+        // Test void function
+        auto void_function_timed = fplus::make_timed_void_function(void_function);
+        auto result = void_function_timed();
+        auto expected = timed<fplus::internal::UnaryVoid>(fplus::internal::unary_void, 0.02);
+        REQUIRE(are_timed_equal(result, expected));
+    }
+
+    {
         // Test decorated lambda
         auto sub = [](int a, int b) -> int { 
             sleep_seconds(0.03);
@@ -114,6 +127,17 @@ TEST_CASE("make_timed_function")
         auto sub_timed = make_timed_function(sub);
         auto result = sub_timed(45, 3);
         auto expected = timed<int>(42, 0.03);
+        REQUIRE(are_timed_equal(result, expected));
+    }
+
+    {
+        // Test decorated void lambda
+        auto fn = []() {
+            sleep_seconds(0.03);
+        };
+        auto fn_timed = make_timed_void_function(fn);
+        auto result = fn_timed();
+        auto expected = timed<fplus::internal::UnaryVoid>(fplus::internal::unary_void, 0.03);
         REQUIRE(are_timed_equal(result, expected));
     }
 
