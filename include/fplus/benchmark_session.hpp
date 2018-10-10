@@ -30,6 +30,8 @@ namespace internal
 class benchmark_session
 {
 public:
+    benchmark_session() : functions_times_mutex_(), functions_times_() {};
+
     // report() shall return a string with a summary of the session
     // Example below:
     // Function              |Nb calls|Total time|Av. time|Deviation|
@@ -70,7 +72,7 @@ private:
     }
 
     mutable std::mutex functions_times_mutex_;
-    std::map<FunctionName, std::vector<ExecutionTime>> functions_times_ = {};
+    std::map<FunctionName, std::vector<ExecutionTime>> functions_times_;
 };
 
 namespace internal 
@@ -306,7 +308,7 @@ namespace internal
         return result;
     }
 
-    std::vector< std::pair<FunctionName, benchmark_function_report> > make_ordered_reports(
+    inline std::vector< std::pair<FunctionName, benchmark_function_report> > make_ordered_reports(
         const std::map<FunctionName, benchmark_function_report> & report_map)
     {
         auto report_pairs = fplus::map_to_pairs(report_map);
@@ -316,7 +318,7 @@ namespace internal
         return report_pairs_sorted;
     }
 
-    std::string show_benchmark_function_report(const std::map<FunctionName, benchmark_function_report> & reports)
+    inline std::string show_benchmark_function_report(const std::map<FunctionName, benchmark_function_report> & reports)
     {
         auto ordered_reports = make_ordered_reports(reports);
         auto my_show_time_ms = [](double time) -> std::string {
