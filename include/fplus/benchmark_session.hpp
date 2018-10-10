@@ -5,6 +5,7 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #include <vector>
+#include <mutex>
 #include <fplus/fplus.hpp>
 
 namespace fplus
@@ -43,13 +44,16 @@ namespace fplus
 
         std::map<FunctionName, benchmark_function_report> report_list() const
         {
+            std::lock_guard<std::mutex> lock(functions_times_mutex_);
             std::map<FunctionName, benchmark_function_report> report;
             for (const auto & one_function_time : functions_times_)
                 report[one_function_time.first] = make_bench_report(one_function_time.second);
             return report;
         }
 
-        inline void store_one_time(const FunctionName & function_name, ExecutionTime time) {
+        inline void store_one_time(const FunctionName & function_name, ExecutionTime time) 
+        {
+            std::lock_guard<std::mutex> lock(functions_times_mutex_);
             functions_times_[function_name].push_back(time);
         }
 
@@ -65,6 +69,7 @@ namespace fplus
             return result;
         }
 
+        mutable std::mutex functions_times_mutex_;
         std::map<FunctionName, std::vector<ExecutionTime>> functions_times_ = {};
     };
 
@@ -139,20 +144,31 @@ namespace fplus
     // (use make_benchmark_void_function if your function returns void).
     //
     // Note that make_benchmark_function *will add side effects* to the function
-    // (since it stores data into the benchmark session at each call)
+    // (since it stores data into the benchmark session at each call).
     //
-    // Example:
+    // If you intend to benchmark only one function, prefer to use the simpler `make_timed_function`
     //
-    // benchmark_session bench_session;
-    // ...
-    // int add(int a, int b) { 
-    //     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    //     return a + b;
+    // Example of a minimal benchmark session:
+    //
+    // fplus::benchmark_session benchmark_sess;
+    // void foo() {
+    //     auto add_bench = fplus::make_benchmark_function(benchmark_sess, "add", add);
+    //     auto printf_bench = fplus::make_benchmark_void_function(benchmark_sess, "printf", printf);
+    //     int forty_five = add_bench(20, add_bench(19, 6));
+    //     int forty_two = benchmark_expression(benchmark_sess, "sub", forty_five - 3);
+    //     printf_bench("forty_two is %i\n", forty_two);
     // }
-    // ...
-    // auto add_bench = make_benchmark_void_function(bench_session, "add", add);
-    // ...
-    // std::cout << benchmark_session.report();
+    // void main() {
+    //     foo();
+    //     std::cout << benchmark_sess.report();
+    // }
+    //
+    // This will output a report like this:
+    // Function|Nb calls|Total time|Av. time|Deviation|
+    // --------+--------+----------+--------+---------+
+    // printf  |       1|   0.010ms| 9.952ns|  0.000ns|
+    // add     |       2|   0.000ms| 0.050ns|  0.009ns|
+    // sub     |       1|   0.000ms| 0.039ns|  0.000ns|
     //
     // (Read benchmark_session_test.cpp for a full example)
     //
@@ -161,15 +177,15 @@ namespace fplus
     // As an alternative to make_benchmark_function, you can also benchmark an expression.
     // For example, if you want to benchmark the following line:
     //
-    //     Ints shuffled_numbers = fplus::shuffle(std::mt19937::default_seed, ascending_numbers);
+    //     auto sorted = fplus::sort(my_vector);
     //
-    // In order to do so, ye just copy/paste this expression 
-    // into "bench_expression" like shown below. This expression will then be benchmarked with the name "shuffle"
+    // In order to do so, ye just copy/paste this expression into "bench_expression" like shown below.
+    // This expression will then be benchmarked with the name "sort_my_vector"
     //
-    // Ints shuffled_numbers = benchmark_expression(
+    // auto sorted = benchmark_expression(
     //     my_benchmark_session,
-    //     "shuffle",
-    //     fplus::shuffle(std::mt19937::default_seed, ascending_numbers);
+    //     "sort_my_vector",
+    //     fplus::sort(my_vector);
     // );
     //
     // Notes :
@@ -204,6 +220,7 @@ namespace fplus
     // }
     // ...
     // auto foo_bench = make_benchmark_void_function(bench_session, "foo", foo);
+    // foo_bench();
     // ...
     // std::cout << benchmark_session.report();
     template<class Fn>
