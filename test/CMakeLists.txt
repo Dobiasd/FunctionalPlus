@@ -39,11 +39,13 @@ add_test_suite(shared_ref_test)
 add_test_suite(show_test)
 add_test_suite(side_effects_test)
 add_test_suite(split_test)
+add_test_suite(stopwatch_test)
 add_test_suite(stringtools_test)
 add_test_suite(stringtools_utf8_test)
 add_test_suite(stringtools_cp1251_test)
 add_test_suite(stringtools_cp1253_test)
 add_test_suite(transform_test)
+add_test_suite(timed_test)
 add_test_suite(tree_test)
 add_test_suite(udemy_course_test)
 add_test_suite(variant_test)
@@ -92,11 +94,13 @@ add_custom_target(unittest show_versions
                         COMMAND show_test
                         COMMAND side_effects_test
                         COMMAND split_test
+                        COMMAND stopwatch_test
                         COMMAND stringtools_test
                         COMMAND stringtools_cp1251_test
                         COMMAND stringtools_cp1253_test
                         COMMAND stringtools_utf8_test
-                        COMMAND transform_test
+                        COMMAND timed_test
+                        COMMAND transform_test                        
                         COMMAND tree_test
                         COMMAND udemy_course_test
                         COMMAND variant_test

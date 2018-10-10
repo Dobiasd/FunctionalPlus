@@ -48,4 +48,4 @@ build:
 
 test_script:
   - ps: cd c:\projects\fplus\build
-  - ctest -C Release
+  - ctest -C Release --output-on-failure
