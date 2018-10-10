@@ -19,7 +19,7 @@ fplus::benchmark_session my_benchmark_session;
 
 
 // Benchmarked function : several sub parts of this function are benchmarked separately
-int benchmark_example()
+void benchmark_example()
 {
     using Ints = std::vector<int>;
 
@@ -92,15 +92,13 @@ int benchmark_example()
     );
     // Verify that the sort has worked
     assert(sorted_numbers2 == ascending_numbers);
-
-    return 1;
 }
 
 TEST_CASE("benchmark_example")
 {
     // Example 4 : benchmark by replacing a function
     // We also want to benchmark the "benchmark_example" in its entirety
-    auto benchmark_example_bench = make_benchmark_function(
+    auto benchmark_example_bench = make_benchmark_void_function(
         my_benchmark_session, 
         "benchmark_example", 
         benchmark_example);
@@ -110,7 +108,7 @@ TEST_CASE("benchmark_example")
 
     // A call to : 
     //
-    std::cout << fplus::show(my_benchmark_session.report()); 
+    // std::cout << fplus::show(my_benchmark_session.report()); 
     //
     // Would output something like
     // Function              |Nb calls|Total time|Av. time   |Deviation |
@@ -131,7 +129,8 @@ TEST_CASE("benchmark_example")
         REQUIRE_EQ(reports.size(), 5);
         const auto & one_report = reports.at("benchmark_example");
         REQUIRE_EQ(one_report.nb_calls, 10);
-        REQUIRE(one_report.average_time == doctest::Approx(one_report.total_time / one_report.nb_calls));
+        REQUIRE(one_report.average_time == doctest::Approx(
+            one_report.total_time / static_cast<double>(one_report.nb_calls)));
     }
 
     // test report()
@@ -150,7 +149,6 @@ TEST_CASE("benchmark_example")
             return (fplus::count('|', s) + fplus::count('+', s) ) == 5;
         }, lines );
         REQUIRE(fplus::all(check_nb_columns));
-
     }
 }
 
