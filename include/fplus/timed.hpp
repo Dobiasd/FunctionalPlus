@@ -25,11 +25,17 @@ namespace fplus
         timed() : base_pair()                                                 {}
         timed(const T& val, ExecutionTime t = 0.) : base_pair(val, t)         {}
 
-        // Execution time in seconds
+        // Execution time in seconds (returns a double)
         ExecutionTime time_in_s() const { return base_pair::second; }
+        // Execution time as a std::chrono::duration<double>
+        std::chrono::duration<double, std::ratio<1>> duration_in_s() const 
+        { 
+            return std::chrono::duration<double, std::ratio<1>>(time_in_s());
+        }
+
         // Inner value
-        const T& get() const       { return base_pair::first; }
-        T& get()                   { return base_pair::first; }
+        const T& get() const            { return base_pair::first; }
+        T& get()                        { return base_pair::first; }
     };
 
 

@@ -45,7 +45,6 @@ namespace
     void void_function()
     {
         sleep_seconds(0.002);
-        std::cout << "void_function" << std::endl;
     }
 }
 
@@ -93,6 +92,16 @@ TEST_CASE("timed, show_timed")
         fplus::timed<int> v(42, 1);
         auto s = show_timed(v);
         REQUIRE_EQ(s, "42 (1000ms)");
+    }
+}
+
+TEST_CASE("timed, duration_in_s")
+{
+    {
+        fplus::timed<int> v(42, 1.2345);
+        auto d = v.duration_in_s();
+        double seconds = d.count();
+        REQUIRE( seconds == doctest::Approx(1.2345) );
     }
 }
 
