@@ -108,8 +108,11 @@ TEST_CASE("benchmark_example")
     // For the sake of this test, we will run the benchmarked function several times
     fplus::run_n_times(10, [&]() { benchmark_example_bench(); });
 
-    std::cout << fplus::show(my_benchmark_session.report());
-    // Will output something like
+    // A call to : 
+    //
+    std::cout << fplus::show(my_benchmark_session.report()); 
+    //
+    // Would output something like
     // Function              |Nb calls|Total time|Av. time   |Deviation |
     // ----------------------+--------+----------+-----------+----------+
     // benchmark_example     |      10| 136.494ms|13649.412ns|1191.401ns|
@@ -121,5 +124,33 @@ TEST_CASE("benchmark_example")
     // Interestingly enough, we see that sort has a very good performance
     // on reversed sequences. It proves that sort is not just based on qsort
     // (qsort performs badly with reversed sequences)
+
+    // test report_list()
+    {
+        const auto reports = my_benchmark_session.report_list();
+        REQUIRE_EQ(reports.size(), 5);
+        const auto & one_report = reports.at("benchmark_example");
+        REQUIRE_EQ(one_report.nb_calls, 10);
+        REQUIRE(one_report.average_time == doctest::Approx(one_report.total_time / one_report.nb_calls));
+    }
+
+    // test report()
+    {
+        const auto & report = my_benchmark_session.report();
+
+        const auto & lines  = fplus::split_lines(false, report);
+        REQUIRE_EQ(lines.size(), 7);
+
+        const auto & lines_sizes = fplus::transform([](const std::string & s) {
+            return s.size();
+        }, lines );
+        REQUIRE( fplus::all_the_same(lines_sizes) );
+
+        const auto & check_nb_columns = fplus::transform([](const std::string & s) {
+            return (fplus::count('|', s) + fplus::count('+', s) ) == 5;
+        }, lines );
+        REQUIRE(fplus::all(check_nb_columns));
+
+    }
 }
 

@@ -12,16 +12,16 @@ namespace fplus
     using FunctionName = std::string;
     struct benchmark_function_report
     {
-        std::string function_name;
         size_t nb_calls;
         ExecutionTime total_time;
         ExecutionTime average_time;
         ExecutionTime deviation;
     };
 
+
     namespace internal
     {
-        std::string show_benchmark_function_report(const std::vector<benchmark_function_report> & reports);
+        std::string show_benchmark_function_report(const std::map<FunctionName, benchmark_function_report> & reports);
     }
 
     // benchmark_session stores timings during a benchmark session
@@ -35,21 +35,18 @@ namespace fplus
         // ----------------------+--------+----------+--------+---------+
         // convert_charset_string|    4000|   4.942ms| 1.236ns|  1.390ns|
         // split_lines           |    1000|   4.528ms| 4.528ns|  1.896ns|
-        inline std::string report() const {
+        inline std::string report() const 
+        {
             const auto reports = report_list();
             return fplus::internal::show_benchmark_function_report(reports);
         }
 
-        std::vector<benchmark_function_report> report_list() const
+        std::map<FunctionName, benchmark_function_report> report_list() const
         {
-            std::vector<benchmark_function_report> report;
+            std::map<FunctionName, benchmark_function_report> report;
             for (const auto & one_function_time : functions_times_)
-                report.push_back(make_bench_report(one_function_time.first, one_function_time.second));
-            // sort by total_time descending
-            auto report_sorted = fplus::sort_by([](const benchmark_function_report &a, const benchmark_function_report &b) {
-                return a.total_time > b.total_time;
-            }, report);
-            return report_sorted;
+                report[one_function_time.first] = make_bench_report(one_function_time.second);
+            return report;
         }
 
         inline void store_one_time(const FunctionName & function_name, ExecutionTime time) {
@@ -57,11 +54,9 @@ namespace fplus
         }
 
     private:
-        benchmark_function_report make_bench_report(
-            const FunctionName & function_name, const std::vector<ExecutionTime> & times) const
+        benchmark_function_report make_bench_report(const std::vector<ExecutionTime> & times) const
         {
             benchmark_function_report result;
-            result.function_name = function_name;            
             result.nb_calls = times.size();
             auto mean_and_dev = fplus::mean_stddev<double>(times);
             result.average_time = mean_and_dev.first;
@@ -73,37 +68,39 @@ namespace fplus
         std::map<FunctionName, std::vector<ExecutionTime>> functions_times_;
     };
 
-
-    template<typename Fn>
-    class bench_function_impl
+    namespace internal 
     {
-    public:
-        explicit bench_function_impl(
-            benchmark_session & benchmark_sess,
-            FunctionName function_name,
-            Fn fn) 
-            : benchmark_session_(benchmark_sess)
-            , function_name_(function_name)
-            , fn_(fn)
-        {};
-
-        template<typename ...Args> auto operator()(Args... args) { return _bench_result(args...); }
-
-    private:
-        template<typename ...Args>
-        auto _bench_result(Args... args)
+        template<typename Fn>
+        class bench_function_impl
         {
-            fplus::stopwatch timer;
-            auto r = fn_(args...);
-            benchmark_session_.store_one_time(function_name_, timer.elapsed());
-            return r;
-        }
+        public:
+            explicit bench_function_impl(
+                benchmark_session & benchmark_sess,
+                FunctionName function_name,
+                Fn fn) 
+                : benchmark_session_(benchmark_sess)
+                , function_name_(function_name)
+                , fn_(fn)
+            {};
 
-        benchmark_session & benchmark_session_;
-        FunctionName function_name_;
-        Fn fn_;
-        fplus::maybe<int> v;
-    };
+            template<typename ...Args> auto operator()(Args... args) { return _bench_result(args...); }
+
+        private:
+            template<typename ...Args>
+            auto _bench_result(Args... args)
+            {
+                fplus::stopwatch timer;
+                auto r = fn_(args...);
+                benchmark_session_.store_one_time(function_name_, timer.elapsed());
+                return r;
+            }
+
+            benchmark_session & benchmark_session_;
+            FunctionName function_name_;
+            Fn fn_;
+            fplus::maybe<int> v;
+        };
+    } // namespace internal
 
 
     template<class Fn>
@@ -111,7 +108,7 @@ namespace fplus
     {
         // transforms f into a function with the same 
         // signature, that will store timings into the benchmark session
-        return bench_function_impl<Fn>(session, name, f);
+        return internal::bench_function_impl<Fn>(session, name, f);
     }
 
 #define benchmark_expression(bench_session, name, expression)      \
@@ -187,8 +184,19 @@ namespace fplus
             return result;
         }
 
-        std::string show_benchmark_function_report(const std::vector<benchmark_function_report> & reports)
+        std::vector< std::pair<FunctionName, benchmark_function_report> > make_ordered_reports(
+            const std::map<FunctionName, benchmark_function_report> & report_map)
         {
+            auto report_pairs = fplus::map_to_pairs(report_map);
+            auto report_pairs_sorted = fplus::sort_by([](const auto &a, const auto &b) {
+                return a.second.total_time > b.second.total_time;
+            }, report_pairs);
+            return report_pairs_sorted;
+        }
+
+        std::string show_benchmark_function_report(const std::map<FunctionName, benchmark_function_report> & reports)
+        {
+            auto ordered_reports = make_ordered_reports(reports);
             auto my_show_time_ms = [](double time) -> std::string {
                 std::stringstream ss;
                 ss << std::fixed << std::setprecision(3);
@@ -207,10 +215,12 @@ namespace fplus
                 } };
             std::vector<std::vector<std::string>> tableau_rows;
             tableau_rows.push_back(header_row);
-            for (const auto & report : reports)
+            for (const auto & kv : ordered_reports)
             {
+                const auto & report = kv.second;
+                const auto & function_name = kv.first;
                 std::vector<std::string> row;
-                row.push_back(report.function_name);
+                row.push_back(function_name);
                 row.push_back(fplus::show(report.nb_calls));
                 row.push_back(my_show_time_ms(report.total_time));
                 row.push_back(my_show_time_ns(report.average_time));
