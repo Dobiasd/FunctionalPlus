@@ -26,7 +26,7 @@ namespace fplus
         timed(const T& val, ExecutionTime t = 0.) : base_pair(val, t)         {}
 
         // Execution time in seconds
-        ExecutionTime time() const { return base_pair::second; }
+        ExecutionTime time_in_s() const { return base_pair::second; }
         // Inner value
         const T& get() const       { return base_pair::first; }
         T& get()                   { return base_pair::first; }
@@ -40,7 +40,7 @@ namespace fplus
     std::string show_timed(const fplus::timed<T>& v)
     {
         std::string result =
-            fplus::show(v.get()) + " (" + fplus::show(v.time() * 1000.) + "ms)";
+            fplus::show(v.get()) + " (" + fplus::show(v.time_in_s() * 1000.) + "ms)";
         return result;
     }
 

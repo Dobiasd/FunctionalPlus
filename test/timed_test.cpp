@@ -27,7 +27,7 @@ namespace
     {
         if (a.get() != b.get())
             return false;
-        return are_execution_times_close(a.time(), b.time());
+        return are_execution_times_close(a.time_in_s(), b.time_in_s());
     }
 
     void sleep_seconds(double sleep_seconds)
@@ -58,19 +58,19 @@ TEST_CASE("timed, ctor")
         // default constructor
         fplus::timed<double> v;
         REQUIRE(v.get() == doctest::Approx(0.));
-        REQUIRE(v.time() == doctest::Approx(0.));
+        REQUIRE(v.time_in_s() == doctest::Approx(0.));
     }
     {
         // T +  time constructor
         fplus::timed<double> v(1., 3.);
         REQUIRE(v.get() == doctest::Approx(1.));
-        REQUIRE(v.time() == doctest::Approx(3.));
+        REQUIRE(v.time_in_s() == doctest::Approx(3.));
     }
     {
         // timed<T> constructor
         fplus::timed<double> v1(2.);
         auto v2(v1);
-        REQUIRE(v1.time() == doctest::Approx(v2.time()));
+        REQUIRE(v1.time_in_s() == doctest::Approx(v2.time_in_s()));
         REQUIRE(v1.get() == doctest::Approx(v2.get()));   
     }
 }
@@ -164,7 +164,7 @@ TEST_CASE("make_timed_function")
         auto sorted_numbers = sort_bench(shuffled_numbers);
         REQUIRE_EQ(sorted_numbers.get(), ascending_numbers);
         // sorting 1000 numbers should require less than 0.1 seconds (in practice it requires about 0.2ms)
-        REQUIRE_LT(sorted_numbers.time(), 0.1); 
+        REQUIRE_LT(sorted_numbers.time_in_s(), 0.1); 
     }
 }
 
