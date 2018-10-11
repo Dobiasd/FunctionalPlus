@@ -25,6 +25,7 @@ namespace internal
     std::string show_benchmark_function_report(const std::map<FunctionName, benchmark_function_report> & reports);
 }
 
+
 // benchmark_session stores timings during a benchmark session
 // and is able to emit a report at the end
 class benchmark_session
@@ -138,6 +139,7 @@ namespace internal
 
 } // namespace internal
 
+
 // API search type: make_benchmark_function : (benchmark_session, string, (a... -> b)) -> (a... -> b)
 // fwd bind count: 0
 // Transforms a function into a function with the *same* signature
@@ -250,14 +252,13 @@ make_benchmark_void_function(                                      \
 
 
 template<class Fn>
-auto run_n_times(int nb_runs, Fn f)
+auto run_n_times(int nb_runs, Fn f) // run_n_times is perhaps a nice addition to fplus
 {
     for (auto _ : fplus::numbers(0, nb_runs)) {
         (void) _; // suppress warning / unused variable
         f();
     }
 }
-
 
 
 namespace internal
@@ -283,7 +284,6 @@ namespace internal
             return fplus::transform(largest_string_size, fplus::transpose(rows));
         }(); 
 
-
         auto show_one_element = [](const std::pair<std::string, size_t> & elem_and_width) {
             const std::string & element = elem_and_width.first;
             const auto col_width = elem_and_width.second;
@@ -298,7 +298,6 @@ namespace internal
             return fplus::show_fill_left('-', col_width, "") + "+";
         };
 
-
         auto show_one_row = [&](const std::vector<std::string> & row) {
             return fplus::internal::transform_and_sum(
                 show_one_element, 
@@ -306,7 +305,6 @@ namespace internal
         };
 
         auto firstrow_separator = fplus::internal::transform_and_sum(show_one_separator, columns_width);
-
         auto rows_formatted = fplus::transform(show_one_row, rows);
         auto rows_separated = fplus::insert_at_idx(1, firstrow_separator, rows_formatted);
         return fplus::join( std::string("\n"), rows_separated) + "\n";

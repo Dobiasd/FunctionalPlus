@@ -17,7 +17,7 @@
 // We need to instantiate a session into which the stats will be collected
 fplus::benchmark_session my_benchmark_session;
 
-// antic C style qsort
+// antic C style qsort (will be benchmarked against std::sort)
 void qsort_vec_int(std::vector<int> & v)
 {
     auto cmp = [](const void * a, const void * b) {
@@ -101,6 +101,7 @@ void benchmark_example()
     // Verify that the sort has worked
     assert(sorted_numbers2 == ascending_numbers);
 
+    // benchmark qsort
     benchmark_void_expression(my_benchmark_session, "qsort_reverse_sequence",  qsort_vec_int(descending_numbers) );
 }
 
@@ -132,6 +133,9 @@ TEST_CASE("benchmark_example")
     // sort_reverse_sequence |      10|   2.308ms|  230.782ns|  87.104ns|
     // numbers               |      10|   2.000ms|  199.965ns| 103.334ns|
 
+
+    //////////// Unit tests assertions below ////////////////////////////
+
     // test report_list()
     {
         const auto reports = my_benchmark_session.report_list();
@@ -160,4 +164,3 @@ TEST_CASE("benchmark_example")
         REQUIRE(fplus::all(check_nb_columns));
     }
 }
-
