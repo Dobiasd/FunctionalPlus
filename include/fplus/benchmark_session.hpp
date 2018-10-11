@@ -194,6 +194,7 @@ namespace internal
 //  - benchmark_expression is a preprocessor macro that uses an immediately invoked lambda (IIL)
 // - the expression can be copy-pasted with no modification, and it is possible to not remove the ";"
 //   (although it also works if it is not present)
+// - you can also benchmark an expression that returns void using benchmark_void_expression
 //
 template<class Fn>
 auto make_benchmark_function(benchmark_session & session, const FunctionName & name, Fn f)
@@ -258,60 +259,57 @@ auto run_n_times(int nb_runs, Fn f)
 }
 
 
+
 namespace internal
 {
-    inline std::string show_tableau(std::vector<std::vector<std::string>> & rows, bool add_firstrow_separator)
+    // transform_and_sum is perhaps a nice addition to fplus
+    template <typename UnaryF, typename Container>
+    auto transform_and_sum(UnaryF unary_f, const Container& xs)
     {
-        if (rows.empty())
+        return fplus::sum(fplus::transform(unary_f, xs));
+    }
+
+
+    inline std::string show_tableau(const std::vector<std::vector<std::string>> & rows)
+    {
+        if (rows.empty() || rows[0].empty())
             return "";
-        if (rows[0].empty())
-            return "";
-        auto string_size = [](const std::string & s) -> size_t { return s.size(); };
-        auto get_item = [&](size_t row, size_t col) {
-            return rows[row][col];
-        };
-        auto largest_string_size = [&](const std::vector<std::string> & strings) -> size_t {
-            return string_size(fplus::maximum_on(string_size, strings));
-        };
 
-        size_t nb_rows = rows.size();
-        size_t nb_cols = rows[0].size();
+        const std::vector<size_t> columns_width = [&]() {
+            auto string_size = [](const std::string & s) -> size_t { return s.size(); };
+            auto largest_string_size = [&](const std::vector<std::string> & strings) -> size_t {
+                return string_size(fplus::maximum_on(string_size, strings));
+            };
+            return fplus::transform(largest_string_size, fplus::transpose(rows));
+        }(); 
 
-        std::vector<size_t> columns_width;
-        {
-            auto columns = fplus::transpose(rows);
-            columns_width = fplus::transform(largest_string_size, columns);
-        }
 
-        auto show_one_row = [&](size_t row) {
-            std::string result;
-            for (size_t col = 0; col < nb_cols; col++)
-            {
-                const std::string & element = get_item(row, col);
-                bool is_number = element.size() > 0 && isdigit(element[0]);
-                auto col_width = columns_width[col];
-                if (is_number)
-                    result = result + fplus::show_fill_left(' ', col_width, element) + "|";
-                else
-                    result = result + fplus::show_fill_right(' ', col_width, element) + "|";
-            }
-            return result;
+        auto show_one_element = [](const std::pair<std::string, size_t> & elem_and_width) {
+            const std::string & element = elem_and_width.first;
+            const auto col_width = elem_and_width.second;
+            bool is_number = element.size() > 0 && isdigit(element[0]);
+            if (is_number)
+                return fplus::show_fill_left(' ', col_width, element) + "|";
+            else
+                return fplus::show_fill_right(' ', col_width, element) + "|";
         };
 
-        auto show_firstrow_separator = [&]() {
-            std::string result;
-            for (size_t col = 0; col < nb_cols; col++)
-                result = result + fplus::show_fill_left('-', columns_width[col], "") + "+";
-            return result;
+        auto show_one_separator = [](size_t col_width) {
+            return fplus::show_fill_left('-', col_width, "") + "+";
         };
 
-        std::string result = show_one_row(0) + "\n";
-        if (add_firstrow_separator)
-            result += show_firstrow_separator() + "\n";
-        for (size_t row = 1; row < nb_rows; row++)
-            result += show_one_row(row) + "\n";
 
-        return result;
+        auto show_one_row = [&](const std::vector<std::string> & row) {
+            return fplus::internal::transform_and_sum(
+                show_one_element, 
+                fplus::zip(row, columns_width));
+        };
+
+        auto firstrow_separator = fplus::internal::transform_and_sum(show_one_separator, columns_width);
+
+        auto rows_formatted = fplus::transform(show_one_row, rows);
+        auto rows_separated = fplus::insert_at_idx(1, firstrow_separator, rows_formatted);
+        return fplus::join( std::string("\n"), rows_separated) + "\n";
     }
 
     inline std::vector< std::pair<FunctionName, benchmark_function_report> > make_ordered_reports(
@@ -343,22 +341,20 @@ namespace internal
         std::vector<std::string> header_row{ {
                 "Function", "Nb calls", "Total time", "Av. time", "Deviation"
             } };
-        std::vector<std::vector<std::string>> tableau_rows;
-        tableau_rows.push_back(header_row);
-        for (const auto & kv : ordered_reports)
-        {
-            const auto & report = kv.second;
-            const auto & function_name = kv.first;
-            std::vector<std::string> row;
-            row.push_back(function_name);
-            row.push_back(fplus::show(report.nb_calls));
-            row.push_back(my_show_time_ms(report.total_time));
-            row.push_back(my_show_time_ns(report.average_time));
-            row.push_back(my_show_time_ns(report.deviation));
-            tableau_rows.push_back(row);
-        }
+        auto value_rows = fplus::transform([&](const auto & kv) {
+                const auto & report = kv.second;
+                const auto & function_name = kv.first;
+                std::vector<std::string> row;
+                row.push_back(function_name);
+                row.push_back(fplus::show(report.nb_calls));
+                row.push_back(my_show_time_ms(report.total_time));
+                row.push_back(my_show_time_ns(report.average_time));
+                row.push_back(my_show_time_ns(report.deviation));
+                return row;
+            }, 
+            ordered_reports);
 
-        return fplus::internal::show_tableau(tableau_rows, true);
+        return fplus::internal::show_tableau(fplus::insert_at_idx(0, header_row, value_rows));
     }
 } // namespace internal 
 
