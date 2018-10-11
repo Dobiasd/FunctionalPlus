@@ -234,13 +234,19 @@ auto make_benchmark_void_function(benchmark_session & session, const FunctionNam
 }
 
 #define benchmark_expression(bench_session, name, expression)      \
-make_benchmark_function(                                       \
-    bench_session,                                             \
-    name,                                                      \
-    [&]() { return expression; }                               \
+make_benchmark_function(                                           \
+    bench_session,                                                 \
+    name,                                                          \
+    [&]() { return expression; }                                   \
 )();
 
-#define COMMA ,
+#define benchmark_void_expression(bench_session, name, expression) \
+make_benchmark_void_function(                                      \
+    bench_session,                                                 \
+    name,                                                          \
+    [&]() { expression; }                                          \
+)();
+
 
 template<class Fn>
 auto run_n_times(int nb_runs, Fn f)

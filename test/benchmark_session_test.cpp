@@ -17,6 +17,14 @@
 // We need to instantiate a session into which the stats will be collected
 fplus::benchmark_session my_benchmark_session;
 
+// antic C style qsort
+void qsort_vec_int(std::vector<int> & v)
+{
+    auto cmp = [](const void * a, const void * b) {
+    return ( *(static_cast<const int*>(a)) - *(static_cast<const int*>(b)) );
+    };
+    qsort (v.data(), v.size(), sizeof(int), cmp);
+}
 
 // Benchmarked function : several sub parts of this function are benchmarked separately
 void benchmark_example()
@@ -92,7 +100,10 @@ void benchmark_example()
     );
     // Verify that the sort has worked
     assert(sorted_numbers2 == ascending_numbers);
+
+    benchmark_void_expression(my_benchmark_session, "qsort_reverse_sequence",  qsort_vec_int(descending_numbers) );
 }
+
 
 TEST_CASE("benchmark_example")
 {
@@ -108,25 +119,23 @@ TEST_CASE("benchmark_example")
 
     // A call to : 
     //
-    // std::cout << fplus::show(my_benchmark_session.report()); 
+    //     std::cout << fplus::show(my_benchmark_session.report()); 
     //
     // Would output something like
+    //
     // Function              |Nb calls|Total time|Av. time   |Deviation |
     // ----------------------+--------+----------+-----------+----------+
-    // benchmark_example     |      10| 136.494ms|13649.412ns|1191.401ns|
-    // sort_shuffled_sequence|      10|  66.698ms| 6669.850ns| 339.859ns|
-    // shuffle               |      10|  62.881ms| 6288.136ns| 754.399ns|
-    // sort_reverse_sequence |      10|   3.079ms|  307.911ns|  71.570ns|
-    // numbers               |      10|   2.364ms|  236.398ns| 134.988ns|
-
-    // Interestingly enough, we see that sort has a very good performance
-    // on reversed sequences. It proves that sort is not just based on qsort
-    // (qsort performs badly with reversed sequences)
+    // benchmark_example     |      10| 136.393ms|13639.255ns|2209.289ns|
+    // sort_shuffled_sequence|      10|  57.006ms| 5700.557ns| 855.817ns|
+    // shuffle               |      10|  49.040ms| 4903.998ns| 785.540ns|
+    // qsort_reverse_sequence|      10|  24.777ms| 2477.678ns| 343.918ns|
+    // sort_reverse_sequence |      10|   2.308ms|  230.782ns|  87.104ns|
+    // numbers               |      10|   2.000ms|  199.965ns| 103.334ns|
 
     // test report_list()
     {
         const auto reports = my_benchmark_session.report_list();
-        REQUIRE_EQ(reports.size(), 5);
+        REQUIRE_EQ(reports.size(), 6);
         const auto & one_report = reports.at("benchmark_example");
         REQUIRE_EQ(one_report.nb_calls, 10);
         REQUIRE(one_report.average_time == doctest::Approx(
@@ -138,7 +147,7 @@ TEST_CASE("benchmark_example")
         const auto & report = my_benchmark_session.report();
 
         const auto & lines  = fplus::split_lines(false, report);
-        REQUIRE_EQ(lines.size(), 7);
+        REQUIRE_EQ(lines.size(), 8);
 
         const auto & lines_sizes = fplus::transform([](const std::string & s) {
             return s.size();
