@@ -8,6 +8,8 @@
 #include <mutex>
 #include <fplus/fplus.hpp>
 
+#pragma once
+
 namespace fplus
 {
 using FunctionName = std::string;
