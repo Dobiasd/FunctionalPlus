@@ -13,7 +13,7 @@ namespace fplus
 using FunctionName = std::string;
 struct benchmark_function_report
 {
-    size_t nb_calls;
+    std::size_t nb_calls;
     ExecutionTime total_time;
     ExecutionTime average_time;
     ExecutionTime deviation;
@@ -276,15 +276,15 @@ namespace internal
         if (rows.empty() || rows[0].empty())
             return "";
 
-        const std::vector<size_t> columns_width = [&]() {
-            auto string_size = [](const std::string & s) -> size_t { return s.size(); };
-            auto largest_string_size = [&](const std::vector<std::string> & strings) -> size_t {
+        const std::vector<std::size_t> columns_width = [&]() {
+            auto string_size = [](const std::string & s) -> std::size_t { return s.size(); };
+            auto largest_string_size = [&](const std::vector<std::string> & strings) -> std::size_t {
                 return string_size(fplus::maximum_on(string_size, strings));
             };
             return fplus::transform(largest_string_size, fplus::transpose(rows));
         }(); 
 
-        auto show_one_element = [](const std::pair<std::string, size_t> & elem_and_width) {
+        auto show_one_element = [](const std::pair<std::string, std::size_t> & elem_and_width) {
             const std::string & element = elem_and_width.first;
             const auto col_width = elem_and_width.second;
             bool is_number = element.size() > 0 && isdigit(element[0]);
@@ -294,7 +294,7 @@ namespace internal
                 return fplus::show_fill_right(' ', col_width, element) + "|";
         };
 
-        auto show_one_separator = [](size_t col_width) {
+        auto show_one_separator = [](std::size_t col_width) {
             return fplus::show_fill_left('-', col_width, "") + "+";
         };
 
