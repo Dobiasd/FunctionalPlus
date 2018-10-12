@@ -116,7 +116,7 @@ TEST_CASE("benchmark_example")
         benchmark_example);
 
     // For the sake of this test, we will run the benchmarked function several times
-    fplus::run_n_times(10, [&]() { benchmark_example_bench(); });
+    fplus::execute_n_times(10, [&]() { benchmark_example_bench(); });
 
     // A call to : 
     //

@@ -262,16 +262,6 @@ make_benchmark_void_function(                                      \
 )();
 
 
-template<class Fn>
-auto run_n_times(int nb_runs, Fn f) // run_n_times is perhaps a nice addition to fplus
-{
-    for (auto _ : fplus::numbers(0, nb_runs)) {
-        (void) _; // suppress warning / unused variable
-        f();
-    }
-}
-
-
 namespace internal
 {
     // transform_and_sum is perhaps a nice addition to fplus
@@ -280,7 +270,6 @@ namespace internal
     {
         return fplus::sum(fplus::transform(unary_f, xs));
     }
-
 
     inline std::string show_table(const std::vector<std::vector<std::string>>& rows)
     {
