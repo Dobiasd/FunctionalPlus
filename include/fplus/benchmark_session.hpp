@@ -153,7 +153,6 @@ namespace internal
 
 
 // API search type: make_benchmark_function : (benchmark_session, string, (a... -> b)) -> (a... -> b)
-// fwd bind count: 0
 // Transforms a function into a function with the *same* signature
 // and behavior, except that it also stores stats into the benchmark session (first parameter),
 // under the name given by the second parameter.
@@ -209,7 +208,6 @@ auto make_benchmark_function(benchmark_session & session, const FunctionName & n
 
 
 // API search type: make_benchmark_void_function : (benchmark_session, string, (a... -> Void)) -> (a... -> Void)
-// fwd bind count: 0
 // Transforms a function that returns a void into a function with the *same* signature
 // and behavior, except that it also stores stats into the benchmark session (first parameter),
 // under the name given by the second parameter
