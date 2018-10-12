@@ -282,7 +282,7 @@ namespace internal
     }
 
 
-    inline std::string show_tableau(const std::vector<std::vector<std::string>>& rows)
+    inline std::string show_table(const std::vector<std::vector<std::string>>& rows)
     {
         if (rows.empty() || rows[0].empty())
             return "";
@@ -363,7 +363,7 @@ namespace internal
             }, 
             ordered_reports);
 
-        return fplus::internal::show_tableau(fplus::insert_at_idx(0, header_row, value_rows));
+        return fplus::internal::show_table(fplus::insert_at_idx(0, header_row, value_rows));
     }
 } // namespace internal 
 
