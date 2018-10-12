@@ -76,9 +76,9 @@ namespace internal
 // API search type: make_timed_function : ((a -> b)) -> (a -> Timed b)
 // fwd bind count: 0
 // Transforms a function into a timed / benchmarked version of the same function.
-// 
+// -
 // Example:
-// 
+// -
 // using Ints = std::vector<int>;
 // Ints ascending_numbers = fplus::numbers(0, 1000);
 // Ints shuffled_numbers = fplus::shuffle(std::mt19937::default_seed, ascending_numbers);
@@ -87,7 +87,7 @@ namespace internal
 // auto sorted_numbers = sort_bench(shuffled_numbers);
 // assert(sorted_numbers.get() == ascending_numbers); // sorted_numbers.get() <=> actual output
 // assert(sorted_numbers.time_in_s() < 0.1); // // sorted_numbers.time_in_s() <=> execution time
-// 
+// -
 template<class Fn>
 auto make_timed_function(Fn f)
 {
@@ -123,15 +123,15 @@ namespace internal
 // API search type: make_timed_void_function : ((a -> Void)) -> (a -> Double)
 // fwd bind count: 0
 // Transforms a void function into a timed / benchmarked version of the same function.
-// 
+// -
 // Example:
-// 
+// -
 // void foo() { std::this_thread::sleep_for(std::chrono::milliseconds(1000)); }
 // ...
 // auto foo_bench = make_timed_void_function(foo);
 // auto r = foo_bench();
 // double run_time = foo_bench(); // in seconds
-// 
+// -
 template<class Fn>
 auto make_timed_void_function(Fn f)
 {
