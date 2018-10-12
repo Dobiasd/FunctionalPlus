@@ -264,13 +264,6 @@ make_benchmark_void_function(                                      \
 
 namespace internal
 {
-    // transform_and_sum is perhaps a nice addition to fplus
-    template <typename UnaryF, typename Container>
-    auto transform_and_sum(UnaryF unary_f, const Container& xs)
-    {
-        return fplus::sum(fplus::transform(unary_f, xs));
-    }
-
     inline std::string show_table(const std::vector<std::vector<std::string>>& rows)
     {
         if (rows.empty() || rows[0].empty())
@@ -299,12 +292,12 @@ namespace internal
         };
 
         auto show_one_row = [&](const std::vector<std::string> & row) {
-            return fplus::internal::transform_and_sum(
+            return fplus::sum(fplus::transform(
                 show_one_element, 
-                fplus::zip(row, columns_width));
+                fplus::zip(row, columns_width)));
         };
 
-        auto firstrow_separator = fplus::internal::transform_and_sum(show_one_separator, columns_width);
+        auto firstrow_separator = fplus::sum(fplus::transform(show_one_separator, columns_width));
         auto rows_formatted = fplus::transform(show_one_row, rows);
         auto rows_separated = fplus::insert_at_idx(1, firstrow_separator, rows_formatted);
         return fplus::join( std::string("\n"), rows_separated) + "\n";
