@@ -21,7 +21,7 @@ fplus::benchmark_session my_benchmark_session;
 void qsort_vec_int(std::vector<int> & v)
 {
     auto cmp = [](const void * a, const void * b) {
-    return ( *(static_cast<const int*>(a)) - *(static_cast<const int*>(b)) );
+        return ( *(static_cast<const int*>(a)) - *(static_cast<const int*>(b)) );
     };
     qsort (v.data(), v.size(), sizeof(int), cmp);
 }

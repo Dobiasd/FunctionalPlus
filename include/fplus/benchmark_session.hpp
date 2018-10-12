@@ -22,7 +22,8 @@ struct benchmark_function_report
 
 namespace internal
 {
-    std::string show_benchmark_function_report(const std::map<FunctionName, benchmark_function_report> & reports);
+    std::string show_benchmark_function_report(
+        const std::map<FunctionName, benchmark_function_report> & reports);
 }
 
 
@@ -50,7 +51,9 @@ public:
         std::lock_guard<std::mutex> lock(functions_times_mutex_);
         std::map<FunctionName, benchmark_function_report> report;
         for (const auto & one_function_time : functions_times_)
+        {
             report[one_function_time.first] = make_bench_report(one_function_time.second);
+        }
         return report;
     }
 
@@ -61,7 +64,8 @@ public:
     }
 
 private:
-    benchmark_function_report make_bench_report(const std::vector<ExecutionTime> & times) const
+    benchmark_function_report make_bench_report(
+        const std::vector<ExecutionTime> & times) const
     {
         benchmark_function_report result;
         result.nb_calls = times.size();
@@ -91,7 +95,10 @@ namespace internal
             , fn_(fn)
         {};
 
-        template<typename ...Args> auto operator()(Args... args) { return _bench_result(args...); }
+        template<typename ...Args> auto operator()(Args... args) 
+        { 
+            return _bench_result(args...); 
+        }
 
     private:
         template<typename ...Args>
@@ -121,7 +128,10 @@ namespace internal
             , fn_(fn)
         {};
 
-        template<typename ...Args> auto operator()(Args... args) { _bench_result(args...); }
+        template<typename ...Args> auto operator()(Args... args) 
+        { 
+            _bench_result(args...); 
+        }
 
     private:
         template<typename ...Args>
@@ -228,6 +238,7 @@ auto make_benchmark_function(benchmark_session & session, const FunctionName & n
 // foo_bench();
 // ...
 // std::cout << benchmark_session.report();
+//
 template<class Fn>
 auto make_benchmark_void_function(benchmark_session & session, const FunctionName & name, Fn f)
 {
@@ -271,7 +282,7 @@ namespace internal
     }
 
 
-    inline std::string show_tableau(const std::vector<std::vector<std::string>> & rows)
+    inline std::string show_tableau(const std::vector<std::vector<std::string>>& rows)
     {
         if (rows.empty() || rows[0].empty())
             return "";
