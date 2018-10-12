@@ -269,7 +269,7 @@ auto execute_max_n_times_until_success(std::size_t n,
         replicate(n, effect_to_std_function(eff)));
 }
 
-// API search type: execute_n_times : (Int, Io a)) -> Io Void
+// API search type: execute_n_times : (Int, Io a)) -> Io ()
 // Returns a function that (when called) executes n times
 // the provided side effect function. 
 // The return values (if present) are dropped.
