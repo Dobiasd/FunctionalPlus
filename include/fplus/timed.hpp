@@ -87,7 +87,6 @@ namespace internal
 // auto sorted_numbers = sort_bench(shuffled_numbers);
 // assert(sorted_numbers.get() == ascending_numbers); // sorted_numbers.get() <=> actual output
 // assert(sorted_numbers.time_in_s() < 0.1); // // sorted_numbers.time_in_s() <=> execution time
-// -
 template<class Fn>
 auto make_timed_function(Fn f)
 {
@@ -131,7 +130,6 @@ namespace internal
 // auto foo_bench = make_timed_void_function(foo);
 // auto r = foo_bench();
 // double run_time = foo_bench(); // in seconds
-// -
 template<class Fn>
 auto make_timed_void_function(Fn f)
 {
