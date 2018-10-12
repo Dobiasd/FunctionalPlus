@@ -155,50 +155,48 @@ namespace internal
 // Transforms a function into a function with the *same* signature
 // and behavior, except that it also stores stats into the benchmark session (first parameter),
 // under the name given by the second parameter.
-// (use make_benchmark_void_function if your function returns void).
-// Notes
-// -  make_benchmark_function *will add side effects* to the function
-// (since it stores data into the benchmark session at each call).
-// - If you intend to benchmark only one function, prefer to use the simpler `make_timed_function`
-// --------------------------------------------------
-// Example of a minimal benchmark session:
-// ---------------------------------------
-// fplus::benchmark_session benchmark_sess;
-// void foo() {
-//     auto add_bench = fplus::make_benchmark_function(benchmark_sess, "add", add);
-//     auto printf_bench = fplus::make_benchmark_void_function(benchmark_sess, "printf", printf);
-//     int forty_five = add_bench(20, add_bench(19, 6));
-//     int forty_two = benchmark_expression(benchmark_sess, "sub", forty_five - 3);
-//     printf_bench("forty_two is %i\n", forty_two);
-// }
-// void main() {
-//     foo();
-//     std::cout << benchmark_sess.report();
-// }
-// ----------------------------------------
-// This will output a report like this:
+// -
+// Notes:
+// Side effects: make_benchmark_function *will add side effects* to the function, since it stores data 
+// into the benchmark session at each call.
+// If you intend to benchmark only one function, prefer to use the simpler "make_timed_function"
+// Use "make_benchmark_void_function" if your function returns void
+// -
+// Example of a minimal benchmark session (read benchmark_session_test.cpp for a full example)
+//     fplus::benchmark_session benchmark_sess;
+//     void foo() {
+//         auto add_bench = fplus::make_benchmark_function(benchmark_sess, "add", add);
+//         auto printf_bench = fplus::make_benchmark_void_function(benchmark_sess, "printf", printf);
+//         int forty_five = add_bench(20, add_bench(19, 6));
+//         int forty_two = benchmark_expression(benchmark_sess, "sub", forty_five - 3);
+//         printf_bench("forty_two is %i\n", forty_two);
+//     }
+//     void main() {
+//         foo();
+//         std::cout << benchmark_sess.report();
+//     }
+// This will output a report like this
 // Function|Nb calls|Total time|Av. time|Deviation|
 // --------+--------+----------+--------+---------+
 // printf  |       1|   0.010ms| 9.952ns|  0.000ns|
 // add     |       2|   0.000ms| 0.050ns|  0.009ns|
 // sub     |       1|   0.000ms| 0.039ns|  0.000ns|
-// (Read benchmark_session_test.cpp for a full example)
-// -----------------------------------------
+// -
 // As an alternative to make_benchmark_function, you can also benchmark an expression.
-// For example, if you want to benchmark the following line:
+// For example, in order to benchmark the following line:
 //     auto sorted = fplus::sort(my_vector);
-// In order to do so, we just copy/paste this expression into "bench_expression" like shown below.
-// This expression will then be benchmarked with the name "sort_my_vector"
+// Just copy/paste this expression into "bench_expression" like shown below: this expression 
+// will then be benchmarked with the name "sort_my_vector"
 //     auto sorted = benchmark_expression(
 //         my_benchmark_session,
 //         "sort_my_vector",
 //         fplus::sort(my_vector);
 //     );
 // Notes :
-//  - benchmark_expression is a preprocessor macro that uses an immediately invoked lambda (IIL)
-// - the expression can be copy-pasted with no modification, and it is possible to not remove the ";"
-//   (although it also works if it is not present)
-// - you can also benchmark an expression that returns void using benchmark_void_expression
+// benchmark_expression is a preprocessor macro that uses an immediately invoked lambda (IIL).
+// The expression can be copy-pasted with no modification, and it is possible to not remove the ";"
+// (although it also works if it is not present)
+// You can also benchmark an expression that returns void using benchmark_void_expression
 template<class Fn>
 auto make_benchmark_function(benchmark_session & session, const FunctionName & name, Fn f)
 {
@@ -215,9 +213,8 @@ auto make_benchmark_function(benchmark_session & session, const FunctionName & n
 // under the name given by the second parameter
 // Note that make_benchmark_void_function *will add side effects* to the function
 // (since it stores data into the benchmark session at each call)
-// --------------------------------------------------
+// -
 // Example:
-// ---------------------------------------
 //     benchmark_session bench_session;
 //     ...
 //     void foo() { 
