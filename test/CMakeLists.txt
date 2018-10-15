@@ -1,11 +1,24 @@
-find_package(doctest CONFIG REQUIRED)
+if (FPLUS_UNITTEST_USE_CONAN)
+  # if using conan for the build, first install doctest via conan:
+  # > cd build/
+  # > conan install .. -obuild_unittest=True
+  # > cmake .. -DFPLUS_BUILD_UNITTEST=ON -DFPLUS_UNITTEST_USE_CONAN=ON
+  include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+  conan_basic_setup()
+else()
+    find_package(doctest CONFIG REQUIRED)
+endif()
 
 function(add_test_suite name)
     add_executable(${name} ${name}.cpp)
     add_test(NAME ${name} COMMAND ${name})
 
     target_compile_options(${name} PRIVATE ${COMPILE_OPTIONS})
-    target_link_libraries(${name} PRIVATE fplus ${CMAKE_THREAD_LIBS_INIT} doctest::doctest)
+    if (FPLUS_UNITTEST_USE_CONAN)
+        target_link_libraries(${name} PRIVATE fplus ${CMAKE_THREAD_LIBS_INIT})
+    else()
+        target_link_libraries(${name} PRIVATE fplus ${CMAKE_THREAD_LIBS_INIT} doctest::doctest)
+    endif()
 endfunction()
 
 add_test_suite(show_versions)
