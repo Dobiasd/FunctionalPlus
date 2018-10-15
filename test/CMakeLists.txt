@@ -9,16 +9,19 @@ else()
     find_package(doctest CONFIG REQUIRED)
 endif()
 
+set(link_libraries fplus ${CMAKE_THREAD_LIBS_INIT})
+if (UNIX)
+    list(APPEND link_libraries stdc++ m)
+endif()
+if (NOT FPLUS_UNITTEST_USE_CONAN)
+    list(APPEND link_libraries doctest::doctest)
+endif()
+
 function(add_test_suite name)
     add_executable(${name} ${name}.cpp)
     add_test(NAME ${name} COMMAND ${name})
-
     target_compile_options(${name} PRIVATE ${COMPILE_OPTIONS})
-    if (FPLUS_UNITTEST_USE_CONAN)
-        target_link_libraries(${name} PRIVATE fplus ${CMAKE_THREAD_LIBS_INIT})
-    else()
-        target_link_libraries(${name} PRIVATE fplus ${CMAKE_THREAD_LIBS_INIT} doctest::doctest)
-    endif()
+    target_link_libraries(${name} PRIVATE ${link_libraries})
 endfunction()
 
 add_test_suite(show_versions)
@@ -115,11 +118,10 @@ add_custom_target(unittest show_versions
                         COMMAND stringtools_cp1253_test
                         COMMAND stringtools_utf8_test
                         COMMAND timed_test
-                        COMMAND transform_test                        
+                        COMMAND transform_test
                         COMMAND tree_test
                         COMMAND udemy_course_test
                         COMMAND variant_test
                         COMMENT "Running unittests\n\n"
                         VERBATIM
                         )
-
