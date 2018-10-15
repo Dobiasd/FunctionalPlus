@@ -1,11 +1,27 @@
-find_package(doctest CONFIG REQUIRED)
+if (FPLUS_UNITTEST_USE_CONAN)
+  # if using conan for the build, first install doctest via conan:
+  # > cd build/
+  # > conan install .. -obuild_unittest=True
+  # > cmake .. -DFPLUS_BUILD_UNITTEST=ON -DFPLUS_UNITTEST_USE_CONAN=ON
+  include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+  conan_basic_setup()
+else()
+    find_package(doctest CONFIG REQUIRED)
+endif()
+
+set(link_libraries fplus ${CMAKE_THREAD_LIBS_INIT})
+if (UNIX)
+    list(APPEND link_libraries stdc++ m)
+endif()
+if (NOT FPLUS_UNITTEST_USE_CONAN)
+    list(APPEND link_libraries doctest::doctest)
+endif()
 
 function(add_test_suite name)
     add_executable(${name} ${name}.cpp)
     add_test(NAME ${name} COMMAND ${name})
-
     target_compile_options(${name} PRIVATE ${COMPILE_OPTIONS})
-    target_link_libraries(${name} PRIVATE fplus ${CMAKE_THREAD_LIBS_INIT} doctest::doctest)
+    target_link_libraries(${name} PRIVATE ${link_libraries})
 endfunction()
 
 add_test_suite(show_versions)
@@ -102,11 +118,10 @@ add_custom_target(unittest show_versions
                         COMMAND stringtools_cp1253_test
                         COMMAND stringtools_utf8_test
                         COMMAND timed_test
-                        COMMAND transform_test                        
+                        COMMAND transform_test
                         COMMAND tree_test
                         COMMAND udemy_course_test
                         COMMAND variant_test
                         COMMENT "Running unittests\n\n"
                         VERBATIM
                         )
-
