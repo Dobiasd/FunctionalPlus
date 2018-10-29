@@ -100,9 +100,6 @@ before_install:
   - (cd doctest && git checkout tags/1.2.9 && mkdir -p build && cd build && cmake .. && make && sudo make install)
   - |
     if [ "$LIBCXX" == "On" ]; then
-      sudo apt-get purge cmake
-      sudo apt-get install cmake3
-      cmake --version
       sudo CXX="$CXX" CC="$CC"
       sudo ./cmake/install_libcxx.sh
       export CXXFLAGS="-stdlib=libc++"
@@ -126,5 +123,6 @@ install:
 script:
   - which $CXX
   - $CXX --version
+  - cmake --version
   - cmake --build . --target unittest --config Release -- -j4
   - cd .. && python conan_build.py
