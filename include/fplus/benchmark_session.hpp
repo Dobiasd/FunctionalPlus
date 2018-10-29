@@ -42,7 +42,7 @@ public:
     // ----------------------+--------+----------+--------+---------+
     // convert_charset_string|    4000|   4.942ms| 1.236ns|  1.390ns|
     // split_lines           |    1000|   4.528ms| 4.528ns|  1.896ns|
-    inline std::string report() const 
+    inline std::string report() const
     {
         const auto reports = report_list();
         return fplus::internal::show_benchmark_function_report(reports);
@@ -59,7 +59,7 @@ public:
         return report;
     }
 
-    inline void store_one_time(const FunctionName & function_name, ExecutionTime time) 
+    inline void store_one_time(const FunctionName & function_name, ExecutionTime time)
     {
         std::lock_guard<std::mutex> lock(functions_times_mutex_);
         functions_times_[function_name].push_back(time);
@@ -82,7 +82,7 @@ private:
     std::map<FunctionName, std::vector<ExecutionTime>> functions_times_;
 };
 
-namespace internal 
+namespace internal
 {
     template<typename Fn>
     class bench_function_impl
@@ -91,15 +91,15 @@ namespace internal
         explicit bench_function_impl(
             benchmark_session & benchmark_sess,
             FunctionName function_name,
-            Fn fn) 
+            Fn fn)
             : benchmark_session_(benchmark_sess)
             , function_name_(function_name)
             , fn_(fn)
         {};
 
-        template<typename ...Args> auto operator()(Args... args) 
-        { 
-            return _bench_result(args...); 
+        template<typename ...Args> auto operator()(Args... args)
+        {
+            return _bench_result(args...);
         }
 
     private:
@@ -124,15 +124,15 @@ namespace internal
         explicit bench_void_function_impl(
             benchmark_session & benchmark_sess,
             FunctionName function_name,
-            Fn fn) 
+            Fn fn)
             : benchmark_session_(benchmark_sess)
             , function_name_(function_name)
             , fn_(fn)
         {};
 
-        template<typename ...Args> auto operator()(Args... args) 
-        { 
-            _bench_result(args...); 
+        template<typename ...Args> auto operator()(Args... args)
+        {
+            _bench_result(args...);
         }
 
     private:
@@ -158,7 +158,7 @@ namespace internal
 // under the name given by the second parameter.
 // -
 // Notes:
-// Side effects: make_benchmark_function *will add side effects* to the function, since it stores data 
+// Side effects: make_benchmark_function *will add side effects* to the function, since it stores data
 // into the benchmark session at each call.
 // If you intend to benchmark only one function, prefer to use the simpler "make_timed_function"
 // Use "make_benchmark_void_function" if your function returns void
@@ -172,7 +172,7 @@ namespace internal
 //         int forty_two = benchmark_expression(benchmark_sess, "sub", forty_five - 3);
 //         printf_bench("forty_two is %i\n", forty_two);
 //     }
-//     void main() {
+//     int main() {
 //         foo();
 //         std::cout << benchmark_sess.report();
 //     }
@@ -186,7 +186,7 @@ namespace internal
 // As an alternative to make_benchmark_function, you can also benchmark an expression.
 // For example, in order to benchmark the following line:
 //     auto sorted = fplus::sort(my_vector);
-// Just copy/paste this expression into "bench_expression" like shown below: this expression 
+// Just copy/paste this expression into "bench_expression" like shown below: this expression
 // will then be benchmarked with the name "sort_my_vector"
 //     auto sorted = benchmark_expression(
 //         my_benchmark_session,
@@ -201,7 +201,7 @@ namespace internal
 template<class Fn>
 auto make_benchmark_function(benchmark_session & session, const FunctionName & name, Fn f)
 {
-    // transforms f into a function with the same 
+    // transforms f into a function with the same
     // signature, that will store timings into the benchmark session
     return internal::bench_function_impl<Fn>(session, name, f);
 }
@@ -217,7 +217,7 @@ auto make_benchmark_function(benchmark_session & session, const FunctionName & n
 // Example:
 //     benchmark_session bench_session;
 //     ...
-//     void foo() { 
+//     void foo() {
 //         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 //     }
 //     ...
@@ -228,7 +228,7 @@ auto make_benchmark_function(benchmark_session & session, const FunctionName & n
 template<class Fn>
 auto make_benchmark_void_function(benchmark_session & session, const FunctionName & name, Fn f)
 {
-    // transforms a void returning function into a function with the same 
+    // transforms a void returning function into a function with the same
     // signature, that will store timings into the benchmark session
     return internal::bench_void_function_impl<Fn>(session, name, f);
 }
@@ -261,7 +261,7 @@ namespace internal
                 return string_size(fplus::maximum_on(string_size, strings));
             };
             return fplus::transform(largest_string_size, fplus::transpose(rows));
-        }(); 
+        }();
 
         auto show_one_element = [](const std::pair<std::string, std::size_t> & elem_and_width) {
             const std::string & element = elem_and_width.first;
@@ -279,7 +279,7 @@ namespace internal
 
         auto show_one_row = [&](const std::vector<std::string> & row) {
             return fplus::sum(fplus::transform(
-                show_one_element, 
+                show_one_element,
                 fplus::zip(row, columns_width)));
         };
 
@@ -328,11 +328,11 @@ namespace internal
                 row.push_back(my_show_time_ns(report.average_time));
                 row.push_back(my_show_time_ns(report.deviation));
                 return row;
-            }, 
+            },
             ordered_reports);
 
         return fplus::internal::show_table(fplus::insert_at_idx(0, header_row, value_rows));
     }
-} // namespace internal 
+} // namespace internal
 
 }
