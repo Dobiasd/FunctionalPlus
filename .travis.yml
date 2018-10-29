@@ -47,6 +47,16 @@ matrix:
 
     - os: linux
       compiler: clang
+      env: CLANG_VERSION=7
+        - CC=clang-7
+        - CXX=clang++-7
+      addons:
+        apt:
+          sources: ['llvm-toolchain-trusty', 'llvm-toolchain-trusty-7']
+          packages: ['clang-7', 'libc++-7-dev', 'libc++abi-7-dev']
+
+    - os: linux
+      compiler: clang
       env: CLANG_VERSION=6.0 LIBCXX=On
         - CC=clang-6.0
         - CXX=clang++-6.0
@@ -102,6 +112,9 @@ before_install:
     if [ "$LIBCXX" == "On" ]; then
       sudo CXX="$CXX" CC="$CC"
       sudo ./cmake/install_libcxx.sh
+      export CXXFLAGS="-stdlib=libc++"
+    fi
+    if [ "${CLANG_VERSION}" == "7" ]; then
       export CXXFLAGS="-stdlib=libc++"
     fi
     if [ ! `locale -a | grep ru_RU.cp1251` ]; then
