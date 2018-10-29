@@ -47,6 +47,16 @@ matrix:
 
     - os: linux
       compiler: clang
+      env: CLANG_VERSION=7
+        - CC=clang-7
+        - CXX=clang++-7
+      addons:
+        apt:
+          sources: ['llvm-toolchain-trusty', 'llvm-toolchain-trusty-7', 'ubuntu-toolchain-r-test']
+          packages: ['clang-7', 'libc++-7-dev', 'libc++abi-7-dev']
+
+    - os: linux
+      compiler: clang
       env: CLANG_VERSION=6.0 LIBCXX=On
         - CC=clang-6.0
         - CXX=clang++-6.0
@@ -99,18 +109,11 @@ before_install:
   - git clone https://github.com/onqtam/doctest
   - (cd doctest && git checkout tags/1.2.9 && mkdir -p build && cd build && cmake .. && make && sudo make install)
   - |
-    if [ -n "$GCC_VERSION" ]; then
-      export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"
-    fi
-    if [ -n "$CLANG_VERSION" ]; then
-      export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"
-    fi
     if [ "$LIBCXX" == "On" ]; then
-      sudo apt-get purge cmake
-      sudo apt-get install cmake3
-      cmake --version
-      sudo CXX="$CXX" CC="$CC"
-      sudo ./cmake/install_libcxx.sh
+      ./cmake/install_libcxx.sh
+      export CXXFLAGS="-stdlib=libc++"
+    fi
+    if [ "${CLANG_VERSION}" == "7" ]; then
       export CXXFLAGS="-stdlib=libc++"
     fi
     if [ ! `locale -a | grep ru_RU.cp1251` ]; then
@@ -120,9 +123,6 @@ before_install:
       sudo localedef -c -i el_GR -f CP1253 el_GR.CP1253
     fi
   - |
-    set -e
-    set -x
-
     pip install conan --upgrade
     pip install conan_package_tools
     conan user
@@ -135,5 +135,6 @@ install:
 script:
   - which $CXX
   - $CXX --version
+  - cmake --version
   - cmake --build . --target unittest --config Release -- -j4
   - cd .. && python conan_build.py

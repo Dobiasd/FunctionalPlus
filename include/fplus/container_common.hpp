@@ -335,7 +335,7 @@ Container get_segment(internal::reuse_container_t,
     if (idx_end <= idx_begin)
     {
         xs.clear();
-        return xs;
+        return std::forward<Container>(xs);
     }
     auto itBegin = std::begin(xs);
     internal::advance_iterator(itBegin, idx_begin);
