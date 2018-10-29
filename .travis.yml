@@ -114,9 +114,6 @@ before_install:
       sudo localedef -c -i el_GR -f CP1253 el_GR.CP1253
     fi
   - |
-    set -e
-    set -x
-
     pip install conan --upgrade
     pip install conan_package_tools
     conan user
