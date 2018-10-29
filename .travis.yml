@@ -52,7 +52,7 @@ matrix:
         - CXX=clang++-7
       addons:
         apt:
-          sources: ['llvm-toolchain-trusty', 'llvm-toolchain-trusty-7']
+          sources: ['llvm-toolchain-trusty', 'llvm-toolchain-trusty-7', 'ubuntu-toolchain-r-test']
           packages: ['clang-7', 'libc++-7-dev', 'libc++abi-7-dev']
 
     - os: linux
@@ -110,8 +110,7 @@ before_install:
   - (cd doctest && git checkout tags/1.2.9 && mkdir -p build && cd build && cmake .. && make && sudo make install)
   - |
     if [ "$LIBCXX" == "On" ]; then
-      sudo CXX="$CXX" CC="$CC"
-      sudo ./cmake/install_libcxx.sh
+      ./cmake/install_libcxx.sh
       export CXXFLAGS="-stdlib=libc++"
     fi
     if [ "${CLANG_VERSION}" == "7" ]; then
