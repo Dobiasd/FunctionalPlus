@@ -269,6 +269,20 @@ auto execute_max_n_times_until_success(std::size_t n,
         replicate(n, effect_to_std_function(eff)));
 }
 
+// API search type: execute_n_times : (Int, Io a) -> Io ()
+// Returns a function that (when called) executes n times
+// the provided side effect function. 
+// The return values (if present) are dropped.
+template<typename Effect>
+auto execute_n_times(std::size_t n, const Effect& eff)
+{
+    for (auto _ : fplus::numbers(static_cast<size_t>(0), n))
+    {
+        (void) _; // suppress warning / unused variable
+        eff();
+    }
+}
+
 // API search type: execute_serially_until_failure : [Io Bool] -> Io Bool
 // Returns a function that (when called) executes the given side effects
 // one after another until one of them returns false.

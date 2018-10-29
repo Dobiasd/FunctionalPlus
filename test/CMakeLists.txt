@@ -9,6 +9,7 @@ function(add_test_suite name)
 endfunction()
 
 add_test_suite(show_versions)
+add_test_suite(benchmark_session_test)
 add_test_suite(compare_test)
 add_test_suite(composition_test)
 add_test_suite(container_common_test)
@@ -64,6 +65,7 @@ endif()
 
 
 add_custom_target(unittest show_versions
+                        COMMAND benchmark_session_test
                         COMMAND compare_test
                         COMMAND composition_test
                         COMMAND container_common_test

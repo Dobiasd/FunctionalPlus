@@ -176,4 +176,3 @@ TEST_CASE("make_timed_function")
         REQUIRE_LT(sorted_numbers.time_in_s(), 0.1); 
     }
 }
-
