@@ -7,6 +7,15 @@ class FunctionalPlusConan(ConanFile):
     url = "https://github.com/Dobiasd/FunctionalPlus"
     description = "Functional Programming Library for C++. Write concise and readable C++ code."
     exports_sources = ["include*", "LICENSE"]
+    options = {
+        "build_unittest": [True, False],
+    }
+    default_options = "build_unittest=False",
+    generators = ["cmake"]
+
+    def requirements(self):
+        if self.options.build_unittest:
+            self.requires.add('doctest/1.2.6@bincrafters/stable')
 
     def package(self):
         self.copy("*LICENSE", dst="licenses")

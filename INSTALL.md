@@ -19,10 +19,22 @@ make
 sudo make install
 ```
 
-Building the tests (optional) requires [doctest](https://github.com/onqtam/doctest). Unit Tests are disabled by default – they are enabled and executed by:
+#### Building the unit tests
 
+Unit Tests are disabled by default. Building the tests (optional) requires [doctest](https://github.com/onqtam/doctest).
+
+First, install the required locales
+````bash
+sudo locale-gen ru_RU
+sudo locale-gen ru_RU.UTF-8
+sudo locale-gen el_GR
+sudo locale-gen el_GR.UTF-8
+sudo localedef -c -i ru_RU -f CP1251 ru_RU.CP1251
+sudo localedef -c -i el_GR -f CP1253 el_GR.CP1253
+````
+
+Then, install doctest:
 ```bash
-# install doctest
 git clone https://github.com/onqtam/doctest
 cd doctest
 git checkout tags/1.2.9
@@ -30,19 +42,32 @@ mkdir -p build && cd build
 cmake ..
 make
 sudo make install
-
-# install locales
-sudo locale-gen ru_RU
-sudo locale-gen ru_RU.UTF-8
-sudo locale-gen el_GR
-sudo locale-gen el_GR.UTF-8
-sudo localedef -c -i ru_RU -f CP1251 ru_RU.CP1251
-sudo localedef -c -i el_GR -f CP1253 el_GR.CP1253
-
-# enable, build and run unittests
-cmake -DFPLUS_BUILD_UNITTEST=ON ..
-make unittest
 ```
+
+Then, compile & run the tests
+````bash
+git clone https://github.com/Dobiasd/FunctionalPlus
+cd FunctionalPlus
+mkdir build
+cd build
+cmake .. -DFPLUS_BUILD_UNITTEST=ON
+make
+make test
+````
+
+As an alternative, doctest global installation can be skipped by using [conan](https://conan.io):
+
+````bash
+# pip install conan # (if conan is not installed)
+git clone https://github.com/Dobiasd/FunctionalPlus
+cd FunctionalPlus
+mkdir build
+cd build
+conan install .. -obuild_unittest=True --build=missing
+cmake .. -DFPLUS_BUILD_UNITTEST=ON -DFPLUS_UNITTEST_USE_CONAN=ON
+make
+make test
+````
 
 
 ### way 2: using [cmake's ExternalProject](https://cmake.org/cmake/help/v3.0/module/ExternalProject.html)
