@@ -1166,6 +1166,8 @@ ContainerOut concat(const ContainerIn& xss)
         transform(size_of_cont<typename ContainerIn::value_type>, xss));
     ContainerOut result;
     internal::prepare_container(result, length);
+    using std::begin;
+    using std::end;
     for(const auto& xs : xss)
     {
         result.insert(end(result), begin(xs), end(xs));
