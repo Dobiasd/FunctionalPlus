@@ -14,8 +14,10 @@ TEST_CASE("stringtools_test, to_lower/upper_case, cp1253")
 {
     using namespace fplus;
     const std::locale loc = get_locale(
-#ifdef WIN32
+#if defined(WIN32)
         "el-GR"
+#elif defined(__APPLE__)
+        "el_GR.ISO8859-7"
 #else
         "el_GR.cp1253"
 #endif
