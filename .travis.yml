@@ -1,12 +1,12 @@
-language: python
-python: 3.6
-
+language: generic
 dist: trusty
 sudo: required
 
 matrix:
     include:
     - os: linux
+      language: python
+      python: 3.6
       compiler: gcc
       env: GCC_VERSION=8
         - CC=gcc-8
@@ -15,7 +15,10 @@ matrix:
         apt:
           sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-8']
+
     - os: linux
+      language: python
+      python: 3.6
       compiler: gcc
       env: GCC_VERSION=7
         - CC=gcc-7
@@ -26,6 +29,8 @@ matrix:
           packages: ['g++-7']
 
     - os: linux
+      language: python
+      python: 3.6
       compiler: gcc
       env: GCC_VERSION=6
         - CC=gcc-6
@@ -36,6 +41,8 @@ matrix:
           packages: ['g++-6']
 
     - os: linux
+      language: python
+      python: 3.6
       compiler: gcc
       env: GCC_VERSION=5
         - CC=gcc-5
@@ -46,6 +53,8 @@ matrix:
           packages: ['g++-5']
 
     - os: linux
+      language: python
+      python: 3.6
       compiler: clang
       env: CLANG_VERSION=7
         - CC=clang-7
@@ -56,6 +65,8 @@ matrix:
           packages: ['clang-7', 'libc++-7-dev', 'libc++abi-7-dev']
 
     - os: linux
+      language: python
+      python: 3.6
       compiler: clang
       env: CLANG_VERSION=6.0 LIBCXX=On
         - CC=clang-6.0
@@ -66,6 +77,8 @@ matrix:
           packages: ['clang-6.0', 'g++-6']
 
     - os: linux
+      language: python
+      python: 3.6
       compiler: clang
       env: CLANG_VERSION=5.0 LIBCXX=On
         - CC=clang-5.0
@@ -76,6 +89,8 @@ matrix:
           packages: ['clang-5.0', 'g++-6']
 
     - os: linux
+      language: python
+      python: 3.6
       compiler: clang
       env: CLANG_VERSION=4.0 LIBCXX=On
         - CC=clang-4.0
@@ -86,6 +101,8 @@ matrix:
           packages: ['clang-4.0', 'g++-6']
 
     - os: linux
+      language: python
+      python: 3.6
       compiler: clang
       env: CLANG_VERSION=3.9 LIBCXX=On
         - CC=clang-3.9
@@ -96,6 +113,8 @@ matrix:
           packages: ['clang-3.9', 'g++-6']
 
     - os: linux
+      language: python
+      python: 3.6
       compiler: clang
       env: CLANG_VERSION=3.8 LIBCXX=On
         - CC=clang-3.8
@@ -105,7 +124,26 @@ matrix:
           sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-3.8']
           packages: ['clang-3.8', 'g++-6']
 
+    - os: osx
+      osx_image: xcode10
+      env: OSX="On"
+        - CC=clang
+        - CXX=clang++
+
+    - os: osx
+      osx_image: xcode9.4
+      env: OSX="On"
+        - CC=clang
+        - CXX=clang++
+
 before_install:
+  - |
+    if [ "$OSX" == "On" ]; then # force python 3 on OSX
+      sudo rm /usr/local/bin/python
+      sudo ln -s /usr/local/bin/python3 /usr/local/bin/python
+      sudo rm /usr/local/bin/pip
+      sudo ln -s /usr/local/bin/pip3 /usr/local/bin/pip
+    fi
   - git clone https://github.com/onqtam/doctest
   - (cd doctest && git checkout tags/1.2.9 && mkdir -p build && cd build && cmake .. && make && sudo make install)
   - |
@@ -116,13 +154,17 @@ before_install:
     if [ "${CLANG_VERSION}" == "7" ]; then
       export CXXFLAGS="-stdlib=libc++"
     fi
-    if [ ! `locale -a | grep ru_RU.cp1251` ]; then
-      sudo localedef -c -i ru_RU -f CP1251 ru_RU.CP1251
-    fi
-    if [ ! `locale -a | grep el_GR.cp1253` ]; then
-      sudo localedef -c -i el_GR -f CP1253 el_GR.CP1253
+    if [ ! "$OSX" == "On" ]; then
+      if [ ! `locale -a | grep ru_RU.cp1251` ]; then
+        sudo localedef -c -i ru_RU -f CP1251 ru_RU.CP1251
+      fi
+      if [ ! `locale -a | grep el_GR.cp1253` ]; then
+        sudo localedef -c -i el_GR -f CP1253 el_GR.CP1253
+      fi
     fi
   - |
+    python --version
+    pip --version
     pip install conan --upgrade
     pip install conan_package_tools
     conan user
