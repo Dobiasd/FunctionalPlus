@@ -1,13 +1,16 @@
 ![logo](logo/fplus.png)
 
-[![Build Status Travis](https://travis-ci.org/Dobiasd/FunctionalPlus.svg?branch=master)][travis]
-[![Build Status AppVeyor](https://ci.appveyor.com/api/projects/status/github/dobiasd/FunctionalPlus)][appveyor]
+
+
+[![Build Status Travis](https://travis-ci.org/Dobiasd/FunctionalPlus.svg?branch=master)][travis]&nbsp;&nbsp;Linux & OSX 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[![Build Status AppVeyor](https://ci.appveyor.com/api/projects/status/github/dobiasd/FunctionalPlus)][appveyor]&nbsp;&nbsp;Windows
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [![(License Boost 1.0)](https://img.shields.io/badge/license-boost%201.0-blue.svg)][license]
 
 [travis]: https://travis-ci.org/Dobiasd/FunctionalPlus
 [appveyor]: https://ci.appveyor.com/project/Dobiasd/functionalplus
 [license]: http://www.boost.org/LICENSE_1_0.txt
-
 
 FunctionalPlus
 ==============
