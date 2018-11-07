@@ -10,9 +10,6 @@ else()
 endif()
 
 set(link_libraries fplus ${CMAKE_THREAD_LIBS_INIT})
-if (APPLE) # see issue #147
-    list(APPEND link_libraries stdc++ m)
-endif()
 if (NOT FPLUS_UNITTEST_USE_CONAN)
     list(APPEND link_libraries doctest::doctest)
 endif()
