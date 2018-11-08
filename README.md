@@ -350,7 +350,11 @@ When using FunctionalPlus on the other hand you work with normal STL-containers.
 Requirements and Installation
 -----------------------------
 
-A **C++14**-compatible compiler is needed. Compilers from these versions on are fine: GCC 4.9, Clang 3.7 (libc++ 3.7) and Visual C++ 2015.
+A **C++14**-compatible compiler is needed. Compilers from these versions on are fine:
+* GCC ( >= 4.9 )
+* Clang ( >= 3.7 with libc++ >= 3.7 )
+* Visual Studio ( >= 2015 )
+* XCode ( >= 9 )
 
 Guides for different ways to install FunctionalPlus can be found in [INSTALL.md](INSTALL.md).
 

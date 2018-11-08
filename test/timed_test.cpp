@@ -15,19 +15,21 @@
 // Utility functions
 namespace
 {
-    bool are_execution_times_close(double t1, double t2)
+    void require_are_execution_times_close(double t1, double t2)
     {
         // up to 30 ms difference, since the cpu scheduler might switch to another process during a sleep
         double max_acceptable_delta__task_scheduler = 0.03;
-        return (fabs(t1 - t2) < max_acceptable_delta__task_scheduler);
+        #if defined(__APPLE__)
+            max_acceptable_delta__task_scheduler = 0.1; // travis osx builders are slow...
+        #endif
+        REQUIRE(fabs(t1 - t2) < max_acceptable_delta__task_scheduler);
     }
 
     template<typename T>
-    bool are_timed_equal(const fplus::timed<T> & a, const fplus::timed<T> & b)
+    void require_are_timed_equal(const fplus::timed<T> & a, const fplus::timed<T> & b)
     {
-        if (a.get() != b.get())
-            return false;
-        return are_execution_times_close(a.time_in_s(), b.time_in_s());
+        REQUIRE(a.get() == b.get());
+        require_are_execution_times_close(a.time_in_s(), b.time_in_s());
     }
 
     void sleep_seconds(double sleep_seconds)
@@ -70,7 +72,7 @@ TEST_CASE("timed, ctor")
         fplus::timed<double> v1(2.);
         auto v2(v1);
         REQUIRE(v1.time_in_s() == doctest::Approx(v2.time_in_s()));
-        REQUIRE(v1.get() == doctest::Approx(v2.get()));   
+        REQUIRE(v1.get() == doctest::Approx(v2.get()));
     }
 }
 
@@ -116,26 +118,26 @@ TEST_CASE("make_timed_function")
         auto add_timed = make_timed_function(add);
         auto result = add_timed(39, 3);
         auto expected = timed<int>(42, 0.02);
-        REQUIRE(are_timed_equal(result, expected));
+        require_are_timed_equal(result, expected);
     }
 
     {
         // Test void function
         auto void_function_timed = fplus::make_timed_void_function(void_function);
         auto execution_time = void_function_timed();
-        REQUIRE(are_execution_times_close(execution_time, 0.02));
+        require_are_execution_times_close(execution_time, 0.02);
     }
 
     {
         // Test decorated lambda
-        auto sub = [](int a, int b) -> int { 
+        auto sub = [](int a, int b) -> int {
             sleep_seconds(0.03);
             return a - b;
         };
         auto sub_timed = make_timed_function(sub);
         auto result = sub_timed(45, 3);
         auto expected = timed<int>(42, 0.03);
-        REQUIRE(are_timed_equal(result, expected));
+        require_are_timed_equal(result, expected);
     }
 
     {
@@ -145,7 +147,7 @@ TEST_CASE("make_timed_function")
         };
         auto fn_timed = make_timed_void_function(fn);
         auto execution_time = fn_timed();
-        REQUIRE(are_execution_times_close(execution_time, 0.03));
+        require_are_execution_times_close(execution_time, 0.03);
     }
 
     {
@@ -158,7 +160,7 @@ TEST_CASE("make_timed_function")
         auto sub_timed = make_timed_function(sub);
         auto result = sub_timed(45, 3);
         auto expected = timed<int>(42, 0.03);
-        REQUIRE(are_timed_equal(result, expected));
+        require_are_timed_equal(result, expected);
     }
 
     {
@@ -173,6 +175,6 @@ TEST_CASE("make_timed_function")
         auto sorted_numbers = sort_bench(shuffled_numbers);
         REQUIRE_EQ(sorted_numbers.get(), ascending_numbers);
         // sorting 1000 numbers should require less than 0.1 seconds (in practice it requires about 0.2ms)
-        REQUIRE_LT(sorted_numbers.time_in_s(), 0.1); 
+        REQUIRE_LT(sorted_numbers.time_in_s(), 0.1);
     }
 }
