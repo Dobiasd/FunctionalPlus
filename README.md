@@ -1,16 +1,13 @@
 ![logo](logo/fplus.png)
 
-
-
-[![Build Status Travis](https://travis-ci.org/Dobiasd/FunctionalPlus.svg?branch=master)][travis]&nbsp;&nbsp;Linux & OSX 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-[![Build Status AppVeyor](https://ci.appveyor.com/api/projects/status/github/dobiasd/FunctionalPlus)][appveyor]&nbsp;&nbsp;Windows
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[![Build Status Travis](https://travis-ci.org/Dobiasd/FunctionalPlus.svg?branch=master)][travis]
+[![Build Status AppVeyor](https://ci.appveyor.com/api/projects/status/github/dobiasd/FunctionalPlus)][appveyor]
 [![(License Boost 1.0)](https://img.shields.io/badge/license-boost%201.0-blue.svg)][license]
 
 [travis]: https://travis-ci.org/Dobiasd/FunctionalPlus
 [appveyor]: https://ci.appveyor.com/project/Dobiasd/functionalplus
 [license]: http://www.boost.org/LICENSE_1_0.txt
+
 
 FunctionalPlus
 ==============
@@ -353,7 +350,11 @@ When using FunctionalPlus on the other hand you work with normal STL-containers.
 Requirements and Installation
 -----------------------------
 
-A **C++14**-compatible compiler is needed. Compilers from these versions on are fine: GCC 4.9, Clang 3.7 (libc++ 3.7) and Visual C++ 2015.
+A **C++14**-compatible compiler is needed. Compilers from these versions on are fine:
+* GCC ( >= 4.9 )
+* Clang ( >= 3.7 with libc++ >= 3.7 )
+* Visual Studio ( >= 2015 )
+* XCode ( >= 9 )
 
 Guides for different ways to install FunctionalPlus can be found in [INSTALL.md](INSTALL.md).
 
