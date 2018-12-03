@@ -1012,8 +1012,8 @@ std::vector<T> modulo_chain(const std::vector<T>& factors, T val)
 // API search type: line_equation : ((Float, Float), (Float, Float), Float) -> Float
 // fwd bind count: 2
 // Can be used to interpolate and to extrapolate
-// based on two given two-dimensional points.
-// Using slope, return nan if x_1 equals to x_2
+// based on two given two-dimensional points (x, y).
+// Using slope, return NaN if x_1 == x_2.
 // line_equation((0.0, 0.0), (2.0, 1.0), 3.0) == 1.5
 // line_equation((-1.0, 1.0), (-2.0, 4.0), 0.0) == -2.0
 template <typename T>
