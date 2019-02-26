@@ -2,14 +2,7 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#if _MSC_VER
-__pragma(warning(push))
-__pragma(warning(disable:4643))
-#endif
 #include "doctest.h"
-#if _MSC_VER
-__pragma(warning(pop))
-#endif
 #include <fplus/fplus.hpp>
 #include <fplus/stopwatch.hpp>
 

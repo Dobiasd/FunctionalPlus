@@ -5,14 +5,7 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#if _MSC_VER
-__pragma(warning(push))
-__pragma(warning(disable:4643))
-#endif
 #include "doctest.h"
-#if _MSC_VER
-__pragma(warning(pop))
-#endif
 #include <fplus/fplus.hpp>
 #include <fplus/fwd.hpp>
 #include "get_locale.hpp"
@@ -29,9 +22,9 @@ TEST_CASE("stringtools_test, to_lower/upper_case, cp1251")
     );
     auto lower = fwd::to_lower_case_loc(loc);
     auto upper = fwd::to_upper_case_loc(loc);
-    REQUIRE_EQ(lower(std::string("cYrIlLiC 123&? ÃŠÃ¨ÃÃ¨Ã‹Ã«ÃˆÃ¶Ã€")), std::string("cyrillic 123&? ÃªÃ¨Ã°Ã¨Ã«Ã«Ã¨Ã¶Ã "));
-    REQUIRE_EQ(lower(std::string("Ã€ÃÃ‚ÃƒÃ„Ã…Â¨Ã†Ã‡ÃˆÃ‰ÃŠÃ‹ÃŒÃÃÃÃÃ‘Ã’Ã“Ã”Ã•Ã–Ã—Ã˜Ã™ÃšÃ›ÃœÃÃÃŸ")), std::string("Ã Ã¡Ã¢Ã£Ã¤Ã¥Â¸Ã¦Ã§Ã¨Ã©ÃªÃ«Ã¬Ã­Ã®Ã¯Ã°Ã±Ã²Ã³Ã´ÃµÃ¶Ã·Ã¸Ã¹ÃºÃ»Ã¼Ã½Ã¾Ã¿"));
+    REQUIRE_EQ(lower(std::string("cYrIlLiC 123&? ÊèĞèËëÈöÀ")), std::string("cyrillic 123&? êèğèëëèöà"));
+    REQUIRE_EQ(lower(std::string("ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞß")), std::string("àáâãäå¸æçèéêëìíîïğñòóôõö÷øùúûüışÿ"));
 
-    REQUIRE_EQ(upper(std::string("cYrIlLiC 123&? ÃŠÃ¨ÃÃ¨Ã‹Ã«ÃˆÃ¶Ã€")), std::string("CYRILLIC 123&? ÃŠÃˆÃÃˆÃ‹Ã‹ÃˆÃ–Ã€"));
-    REQUIRE_EQ(upper(std::string("Ã Ã¡Ã¢Ã£Ã¤Ã¥Â¸Ã¦Ã§Ã¨Ã©ÃªÃ«Ã¬Ã­Ã®Ã¯Ã°Ã±Ã²Ã³Ã´ÃµÃ¶Ã·Ã¸Ã¹ÃºÃ»Ã¼Ã½Ã¾Ã¿")), std::string("Ã€ÃÃ‚ÃƒÃ„Ã…Â¨Ã†Ã‡ÃˆÃ‰ÃŠÃ‹ÃŒÃÃÃÃÃ‘Ã’Ã“Ã”Ã•Ã–Ã—Ã˜Ã™ÃšÃ›ÃœÃÃÃŸ"));
+    REQUIRE_EQ(upper(std::string("cYrIlLiC 123&? ÊèĞèËëÈöÀ")), std::string("CYRILLIC 123&? ÊÈĞÈËËÈÖÀ"));
+    REQUIRE_EQ(upper(std::string("àáâãäå¸æçèéêëìíîïğñòóôõö÷øùúûüışÿ")), std::string("ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞß"));
 }

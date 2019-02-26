@@ -5,14 +5,7 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#if _MSC_VER
-__pragma(warning(push))
-__pragma(warning(disable:4643))
-#endif
 #include "doctest.h"
-#if _MSC_VER
-__pragma(warning(pop))
-#endif
 #include <fplus/fplus.hpp>
 #include <fplus/fwd.hpp>
 #include "get_locale.hpp"
@@ -31,9 +24,9 @@ TEST_CASE("stringtools_test, to_lower/upper_case, cp1253")
     );
     auto lower = fwd::to_lower_case_loc(loc);
     auto upper = fwd::to_upper_case_loc(loc);
-    REQUIRE_EQ(lower(std::string("GrEeCe 123&? Γ…Γ«Γ‹Γ΅Γ„Γ΅")), std::string("greece 123&? Γ¥Γ«Γ«Γ΅Γ¤Γ΅"));
-    REQUIRE_EQ(lower(std::string("ΓΓ‚ΓƒΓ„Γ…Γ†Γ‡ΓΓ‰ΓΓ‹ΓΓΓΓΓΓ‘Γ“Γ”Γ•Γ–Γ—ΓΓ™")), std::string("Γ΅ΓΆΓ£Γ¤Γ¥Γ¦Γ§Γ¨Γ©ΓªΓ«Γ¬Γ­Γ®Γ―Γ°Γ±Γ³Γ΄ΓµΓ¶Γ·ΓΈΓΉ"));
+    REQUIRE_EQ(lower(std::string("GrEeCe 123&? ΕλΛαΔα")), std::string("greece 123&? ελλαδα"));
+    REQUIRE_EQ(lower(std::string("ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ")), std::string("αβγδεζηθικλμνξοπρστυφχψω"));
 
-    REQUIRE_EQ(upper(std::string("GrEeCe 123&? Γ…Γ«Γ‹Γ΅Γ„Γ΅")), std::string("GREECE 123&? Γ…Γ‹Γ‹ΓΓ„Γ"));
-    REQUIRE_EQ(upper(std::string("Γ΅ΓΆΓ£Γ¤Γ¥Γ¦Γ§Γ¨Γ©ΓªΓ«Γ¬Γ­Γ®Γ―Γ°Γ±Γ³Γ΄ΓµΓ¶Γ·ΓΈΓΉ")), std::string("ΓΓ‚ΓƒΓ„Γ…Γ†Γ‡ΓΓ‰ΓΓ‹ΓΓΓΓΓΓ‘Γ“Γ”Γ•Γ–Γ—ΓΓ™"));
+    REQUIRE_EQ(upper(std::string("GrEeCe 123&? ΕλΛαΔα")), std::string("GREECE 123&? ΕΛΛΑΔΑ"));
+    REQUIRE_EQ(upper(std::string("αβγδεζηθικλμνξοπρστυφχψω")), std::string("ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ"));
 }
