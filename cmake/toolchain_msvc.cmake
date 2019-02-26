@@ -13,7 +13,6 @@ set(msvc_disabled_warnings
   4100 # unreferenced formal parameter
   4189 # local variable is initialized but not referenced
   4244 # '=': conversion from 'unsigned int' to 'char', possible loss of data
-  4643 # Forward declaring 'basic_ostream' in namespace std is not permitted by the C++ Standard
 )
 foreach(warningNumber ${msvc_disabled_warnings})
     add_compile_options(/wd${warningNumber})
