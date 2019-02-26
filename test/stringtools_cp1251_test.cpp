@@ -5,7 +5,10 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#pragma warning( push )
+#pragma warning( disable : 4643 )
 #include "doctest.h"
+#pragma warning( pop )
 #include <fplus/fplus.hpp>
 #include <fplus/fwd.hpp>
 #include "get_locale.hpp"
@@ -22,9 +25,9 @@ TEST_CASE("stringtools_test, to_lower/upper_case, cp1251")
     );
     auto lower = fwd::to_lower_case_loc(loc);
     auto upper = fwd::to_upper_case_loc(loc);
-    REQUIRE_EQ(lower(std::string("cYrIlLiC 123&? КиРиЛлИцА")), std::string("cyrillic 123&? кириллица"));
-    REQUIRE_EQ(lower(std::string("АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ")), std::string("абвгдеёжзийклмнопрстуфхцчшщъыьэюя"));
+    REQUIRE_EQ(lower(std::string("cYrIlLiC 123&? пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ")), std::string("cyrillic 123&? пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
+    REQUIRE_EQ(lower(std::string("пїЅпїЅпїЅпїЅпїЅЕЁпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ")), std::string("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
 
-    REQUIRE_EQ(upper(std::string("cYrIlLiC 123&? КиРиЛлИцА")), std::string("CYRILLIC 123&? КИРИЛЛИЦА"));
-    REQUIRE_EQ(upper(std::string("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")), std::string("АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"));
+    REQUIRE_EQ(upper(std::string("cYrIlLiC 123&? пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ")), std::string("CYRILLIC 123&? пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
+    REQUIRE_EQ(upper(std::string("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ")), std::string("пїЅпїЅпїЅпїЅпїЅЕЁпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
 }

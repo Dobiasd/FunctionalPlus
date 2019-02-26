@@ -10,7 +10,10 @@
 // https://www.udemy.com/functional-programming-using-cpp/
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#pragma warning( push )
+#pragma warning( disable : 4643 )
 #include "doctest.h"
+#pragma warning( pop )
 #include <fplus/fplus.hpp>
 #include <vector>
 
