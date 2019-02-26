@@ -5,10 +5,12 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#pragma warning( push )
-#pragma warning( disable : 4643 )
+#if _MSC_VER
+__pragma(warning(push))
+__pragma(warning(disable:4643))
 #include "doctest.h"
-#pragma warning( pop )
+__pragma(warning(pop))
+#endif
 #include <fplus/fplus.hpp>
 
 TEST_CASE("queue_test, full")
