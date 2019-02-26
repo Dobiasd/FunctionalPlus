@@ -29,9 +29,9 @@ TEST_CASE("stringtools_test, to_lower/upper_case, cp1253")
     );
     auto lower = fwd::to_lower_case_loc(loc);
     auto upper = fwd::to_upper_case_loc(loc);
-    REQUIRE_EQ(lower(std::string("GrEeCe 123&? ������")), std::string("greece 123&? ������"));
-    REQUIRE_EQ(lower(std::string("������������������������")), std::string("������������������������"));
+    REQUIRE_EQ(lower(std::string("GrEeCe 123&? ÅëËáÄá")), std::string("greece 123&? åëëáäá"));
+    REQUIRE_EQ(lower(std::string("ÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÓÔÕÖ×ØÙ")), std::string("áâãäåæçèéêëìíîïðñóôõö÷øù"));
 
-    REQUIRE_EQ(upper(std::string("GrEeCe 123&? ������")), std::string("GREECE 123&? ������"));
-    REQUIRE_EQ(upper(std::string("������������������������")), std::string("������������������������"));
+    REQUIRE_EQ(upper(std::string("GrEeCe 123&? ÅëËáÄá")), std::string("GREECE 123&? ÅËËÁÄÁ"));
+    REQUIRE_EQ(upper(std::string("áâãäåæçèéêëìíîïðñóôõö÷øù")), std::string("ÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÓÔÕÖ×ØÙ"));
 }
