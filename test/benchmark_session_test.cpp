@@ -5,7 +5,7 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "doctest.h"
+#include "doctest_wrapper.h"
 
 #include <vector>
 #include <fplus/fplus.hpp>
@@ -37,13 +37,13 @@ void benchmark_example()
     //    Ints ascending_numbers = fplus::numbers(0, 1000);
     //
     // So, first we make an alternate version of the function "fplus::numbers"
-    // Since fplus::numbers is a template function, we need to specify 
-    // that the actual version we want to benchmark 
+    // Since fplus::numbers is a template function, we need to specify
+    // that the actual version we want to benchmark
     // is "fplus::numbers<int, std::vector<int>>"
     //
     // numbers_bench will our alternate version and it
-    // has the same signature as fplus::numbers<int, std::vector<int>>, 
-    // except that it also stores stats into the benchmark session, 
+    // has the same signature as fplus::numbers<int, std::vector<int>>,
+    // except that it also stores stats into the benchmark session,
     // under the name "numbers"
     //
     // Note that make_benchmark_function *will add side effects* to the function
@@ -51,7 +51,7 @@ void benchmark_example()
     auto numbers_bench = make_benchmark_function(
         my_benchmark_session,
         "numbers",
-        fplus::numbers<int, std::vector<int>> 
+        fplus::numbers<int, std::vector<int>>
     );
     // Then, we replace the original code "Ints ascending_numbers = fplus::numbers(0, 1000);"
     // by a code that uses the benchmarked function
@@ -62,7 +62,7 @@ void benchmark_example()
     // The original expression we want to benchmark was:
     //     Ints shuffled_numbers = fplus::shuffle(std::mt19937::default_seed, ascending_numbers);
     //
-    // In order to do so, we just copy/paste this expression 
+    // In order to do so, we just copy/paste this expression
     // into "bench_expression" like shown below.
     // This expression will then be benchmarked with the name "shuffle"
     //
@@ -87,9 +87,9 @@ void benchmark_example()
     // Verify that the sort has worked
     assert(sorted_numbers == ascending_numbers);
 
-    // In this toy example, we will compare the performance 
+    // In this toy example, we will compare the performance
     // of sorting a shuffled sequence versus sorting a reversed sequence
-    
+
     Ints descending_numbers = fplus::reverse(ascending_numbers); // this call is not benchmarked
 
     // here we benchmark the call to fplus::sort(descending_numbers)
@@ -111,16 +111,16 @@ TEST_CASE("benchmark_example")
     // Example 4 : benchmark by replacing a function
     // We also want to benchmark the "benchmark_example" in its entirety
     auto benchmark_example_bench = make_benchmark_void_function(
-        my_benchmark_session, 
-        "benchmark_example", 
+        my_benchmark_session,
+        "benchmark_example",
         benchmark_example);
 
     // For the sake of this test, we will run the benchmarked function several times
     fplus::execute_n_times(10, [&]() { benchmark_example_bench(); });
 
-    // A call to : 
+    // A call to :
     //
-    //     std::cout << fplus::show(my_benchmark_session.report()); 
+    //     std::cout << fplus::show(my_benchmark_session.report());
     //
     // Would output something like
     //

@@ -5,7 +5,7 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "doctest.h"
+#include "doctest_wrapper.h"
 
 #include <vector>
 #include <cmath>
