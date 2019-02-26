@@ -24,9 +24,9 @@ TEST_CASE("stringtools_test, to_lower/upper_case, cp1253")
     );
     auto lower = fwd::to_lower_case_loc(loc);
     auto upper = fwd::to_upper_case_loc(loc);
-    REQUIRE_EQ(lower(std::string("GrEeCe 123&? О©╫О©╫О©╫О©╫О©╫О©╫")), std::string("greece 123&? О©╫О©╫О©╫О©╫О©╫О©╫"));
-    REQUIRE_EQ(lower(std::string("О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫")), std::string("О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫"));
+    REQUIRE_EQ(lower(std::string("GrEeCe 123&? еКкАдА")), std::string("greece 123&? ЕККАДА"));
+    REQUIRE_EQ(lower(std::string("абцдефгхийклмнопястужвьы")), std::string("АБЦДЕФГХИЙКЛМНОПЯСТУЖВЬЫ"));
 
-    REQUIRE_EQ(upper(std::string("GrEeCe 123&? О©╫О©╫О©╫О©╫О©╫О©╫")), std::string("GREECE 123&? О©╫О©╫О©╫О©╫О©╫О©╫"));
-    REQUIRE_EQ(upper(std::string("О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫")), std::string("О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫"));
+    REQUIRE_EQ(upper(std::string("GrEeCe 123&? еКкАдА")), std::string("GREECE 123&? еккада"));
+    REQUIRE_EQ(upper(std::string("АБЦДЕФГХИЙКЛМНОПЯСТУЖВЬЫ")), std::string("абцдефгхийклмнопястужвьы"));
 }
