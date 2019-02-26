@@ -2,7 +2,7 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "doctest_wrapper.h"
+#include "doctest.h"
 #include <fplus/fplus.hpp>
 #include <fplus/stopwatch.hpp>
 
