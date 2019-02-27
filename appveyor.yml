@@ -34,7 +34,7 @@ before_build:
     cd doctest
     mkdir build
     cd build
-    cmake .. -DDOCTEST_WITH_TESTS=off -DCMAKE_INSTALL_PREFIX=../install -G %generator%
+    cmake .. -DDOCTEST_WITH_TESTS=off -DDOCTEST_WITH_MAIN_IN_STATIC_LIB=OFF -DCMAKE_INSTALL_PREFIX=../install -G %generator%
     cmake --build . --config Release --target INSTALL
     cd c:\projects\fplus
     mkdir build
