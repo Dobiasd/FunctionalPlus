@@ -34,7 +34,7 @@ before_build:
     cd doctest
     mkdir build
     cd build
-    cmake .. -DCMAKE_CXX_FLAGS=-std=c++11 -DCMAKE_INSTALL_PREFIX=../install -G %generator%
+    cmake .. -DCMAKE_CXX_FLAGS="-std=c++11 /wd4530 /wd4577" -DCMAKE_INSTALL_PREFIX=../install -G %generator%
     cmake --build . --config Release --target INSTALL
     cd c:\projects\fplus
     mkdir build
