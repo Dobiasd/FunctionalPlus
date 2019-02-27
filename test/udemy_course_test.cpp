@@ -10,7 +10,7 @@
 // https://www.udemy.com/functional-programming-using-cpp/
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "doctest.h"
+#include "doctest/doctest.h"
 #include <fplus/fplus.hpp>
 #include <vector>
 
