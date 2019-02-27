@@ -38,7 +38,7 @@ Then, install doctest:
 git clone https://github.com/onqtam/doctest
 cd doctest
 mkdir -p build && cd build
-cmake .. -DCMAKE_CXX_FLAGS=-std=c++11
+cmake .. -DDOCTEST_WITH_TESTS=off
 make
 sudo make install
 ```
