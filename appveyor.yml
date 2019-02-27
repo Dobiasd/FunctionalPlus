@@ -32,10 +32,9 @@ before_build:
     cd c:\projects
     git clone https://github.com/onqtam/doctest.git
     cd doctest
-    git checkout tags/1.2.9
     mkdir build
     cd build
-    cmake .. -DCMAKE_INSTALL_PREFIX=../install -G %generator%
+    cmake .. -DCMAKE_CXX_FLAGS=-std=c++11 -DCMAKE_INSTALL_PREFIX=../install -G %generator%
     cmake --build . --config Release --target INSTALL
     cd c:\projects\fplus
     mkdir build
