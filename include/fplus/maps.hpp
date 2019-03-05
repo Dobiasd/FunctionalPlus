@@ -262,6 +262,54 @@ Val get_from_map_with_def(const MapType& map, const Val& defVal,
     return just_with_default(defVal, get_from_map(map, key));
 }
 
+// API search type: get_first_from_map : (Map key val, [key]) -> Maybe val
+// fwd bind count: 1
+// Returns just the value of the first key present.
+// Otherwise returns nothing.
+template <typename MapType,
+    typename KeysContainer,
+    typename Key = typename MapType::key_type,
+    typename Val = typename MapType::mapped_type>
+maybe<Val> get_first_from_map(const MapType& map, const KeysContainer& keys)
+{
+    static_assert(std::is_same<typename KeysContainer::value_type, Key>::value,
+        "Key type does not match.");
+    for (const auto& key: keys)
+    {
+        auto it = map.find(key);
+        if (it != std::end(map))
+            return just(it->second);
+    }
+    return nothing<Val>();
+}
+
+// API search type: get_first_from_map_unsafe : (Map key val, [key]) -> val
+// fwd bind count: 1
+// Returns the value of the first key present.
+// Crashes otherwise.
+template <typename MapType,
+    typename KeysContainer,
+    typename Key = typename MapType::key_type,
+    typename Val = typename MapType::mapped_type>
+Val get_first_from_map_unsafe(const MapType& map, const KeysContainer& keys)
+{
+    return unsafe_get_just(get_first_from_map(map, keys));
+}
+
+// API search type: get_first_from_map_with_def : (Map key val, val, [key]) -> val
+// fwd bind count: 2
+// Returns the value of the first key present.
+// Otherwise returns the provided default.
+template <typename MapType,
+    typename KeysContainer,
+    typename Key = typename MapType::key_type,
+    typename Val = typename MapType::mapped_type>
+Val get_first_from_map_with_def(const MapType& map, const Val& defVal,
+    const KeysContainer& keys)
+{
+    return just_with_default(defVal, get_first_from_map(map, keys));
+}
+
 // API search type: map_contains : (Map key val, key) -> Bool
 // fwd bind count: 1
 // Checks if a map contains a key.

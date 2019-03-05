@@ -162,6 +162,13 @@ TEST_CASE("maps_test, map functions")
     REQUIRE_EQ(map_contains(intStringMap, 1), true);
     REQUIRE_EQ(map_contains(intStringMap, 9), false);
 
+    REQUIRE_EQ(get_first_from_map(intStringMap, IntVector({4, 1})), just<std::string>("53"));
+    REQUIRE_EQ(get_first_from_map(intStringMap, IntVector({5, 1})), just<std::string>("2"));
+    REQUIRE_EQ(get_first_from_map(intStringMap, IntVector({5, 2})), nothing<std::string>());
+    REQUIRE_EQ(get_first_from_map_with_def(intStringMap, std::string("n/a"), IntVector({4, 1})), "53");
+    REQUIRE_EQ(get_first_from_map_with_def(intStringMap, std::string("n/a"), IntVector({5, 1})), "2");
+    REQUIRE_EQ(get_first_from_map_with_def(intStringMap, std::string("n/a"), IntVector({5, 2})), "n/a");
+
     IntStringMap union_map_1 = {{0, "a"}, {1, "b"}};
     IntStringMap union_map_2 = {{0, "c"}, {2, "d"}};
     IntStringMap union_map_res = {{0, "a"}, {1, "b"}, {2, "d"}};
