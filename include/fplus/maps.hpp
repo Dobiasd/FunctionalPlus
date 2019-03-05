@@ -240,12 +240,7 @@ template <typename MapType,
     typename Val = typename MapType::mapped_type>
 Val get_from_map_unsafe(const MapType& map, const Key& key)
 {
-    auto it = map.find(key);
-    if (it == std::end(map))
-    {
-        assert(false); // Key not present in map.
-    }
-    return it->second;
+    return unsafe_get_just(get_from_map(map, key));
 }
 
 // API search type: get_from_map_with_def : (Map key val, val, key) -> val
