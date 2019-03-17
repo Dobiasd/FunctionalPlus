@@ -267,7 +267,8 @@ auto swap_pairs_elems(const ContainerIn& xs)
 // API search type: adjacent_pairs : [a] -> [(a, a)]
 // fwd bind count: 0
 // Split a sequence into pairs of elements.
-// adjacent_pairs([0,1,2,3,4]) == [(0,1),(2,3)]
+// adjacent_pairs([0,1,2,3,4]) == [(0,1), (2,3)]
+// Also known as zip_with_next.
 template <typename Container,
     typename ContainerOut =
         typename internal::same_cont_new_t<Container,
