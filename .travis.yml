@@ -1,6 +1,6 @@
 language: generic
-dist: trusty
-sudo: required
+
+dist: xenial
 
 matrix:
     include:
@@ -61,7 +61,7 @@ matrix:
         - CXX=clang++-7
       addons:
         apt:
-          sources: ['llvm-toolchain-trusty', 'llvm-toolchain-trusty-7', 'ubuntu-toolchain-r-test']
+          sources: ['llvm-toolchain-xenial', 'llvm-toolchain-xenial-7', 'ubuntu-toolchain-r-test']
           packages: ['clang-7', 'libc++-7-dev', 'libc++abi-7-dev']
 
     - os: linux
@@ -73,7 +73,7 @@ matrix:
         - CXX=clang++-6.0
       addons:
         apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-6.0']
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-xenial-6.0']
           packages: ['clang-6.0', 'g++-6']
 
     - os: linux
@@ -85,7 +85,7 @@ matrix:
         - CXX=clang++-5.0
       addons:
         apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-5.0']
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-xenial-5.0']
           packages: ['clang-5.0', 'g++-6']
 
     - os: linux
