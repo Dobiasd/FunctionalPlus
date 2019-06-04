@@ -8,6 +8,18 @@ matrix:
       language: python
       python: 3.6
       compiler: gcc
+      env: GCC_VERSION=9
+        - CC=gcc-9
+        - CXX=g++-9
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-9']
+
+    - os: linux
+      language: python
+      python: 3.6
+      compiler: gcc
       env: GCC_VERSION=8
         - CC=gcc-8
         - CXX=g++-8
