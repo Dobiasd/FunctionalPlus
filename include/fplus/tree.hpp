@@ -62,7 +62,7 @@ std::vector<tree<T>> presort_trees(BinaryPredicate tree_is_child_of,
             }
         }
     }
-    return std::move(result);
+    return result;
 }
 
 template <typename BinaryPredicate, typename TreeCont> // todo: name?
