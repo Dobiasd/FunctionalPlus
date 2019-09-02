@@ -1,6 +1,6 @@
 language: generic
 
-dist: xenial
+dist: bionic
 
 matrix:
     include:
