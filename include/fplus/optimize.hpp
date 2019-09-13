@@ -152,7 +152,8 @@ pos_t minimize_downhill(
             multiply(
                 add(new_momentum, new_momentum_add),
                 step_factor);
-        if (dist_to_origin(new_momentum) <= std::numeric_limits<double>::min())
+        if (dist_to_origin(momentum) <= std::numeric_limits<double>::min() &&
+            dist_to_origin(new_momentum) <= std::numeric_limits<double>::min())
         {
             break;
         }
