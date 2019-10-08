@@ -65,6 +65,20 @@ matrix:
       language: python
       python: 3.6
       compiler: clang
+      env: CLANG_VERSION=9
+        - CC=clang-9
+        - CXX=clang++-9
+      addons:
+        apt:
+          sources:
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+          packages: ['clang-9', 'libc++-9-dev', 'libc++abi-9-dev']
+
+    - os: linux
+      language: python
+      python: 3.6
+      compiler: clang
       env: CLANG_VERSION=8
         - CC=clang-8
         - CXX=clang++-8
@@ -143,7 +157,6 @@ before_install:
       ./cmake/install_libcxx.sh
     fi
     if [ -n "${CLANG_VERSION}" ]; then
-      echo "=== Using libc++ ==="
       export CXXFLAGS="-stdlib=libc++"
     fi
     if [ ! "$OSX" == "On" ]; then
