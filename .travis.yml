@@ -141,9 +141,9 @@ before_install:
   - |
     if [ "$LIBCXX" == "On" ]; then
       ./cmake/install_libcxx.sh
-      export CXXFLAGS="-stdlib=libc++"
     fi
-    if [ "${CLANG_VERSION}" == "7" ]; then
+    if [ -n "${CLANG_VERSION}" ]; then
+      echo "=== Using libc++ ==="
       export CXXFLAGS="-stdlib=libc++"
     fi
     if [ ! "$OSX" == "On" ]; then
