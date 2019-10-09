@@ -1,6 +1,6 @@
 language: generic
 
-dist: xenial
+dist: bionic
 
 matrix:
     include:
@@ -13,8 +13,9 @@ matrix:
         - CXX=g++-9
       addons:
         apt:
-          sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-9']
+          sources:
+            - sourceline: 'ppa:ubuntu-toolchain-r/test'
 
     - os: linux
       language: python
@@ -25,7 +26,6 @@ matrix:
         - CXX=g++-8
       addons:
         apt:
-          sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-8']
 
     - os: linux
@@ -37,7 +37,6 @@ matrix:
         - CXX=g++-7
       addons:
         apt:
-          sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-7']
 
     - os: linux
@@ -49,7 +48,6 @@ matrix:
         - CXX=g++-6
       addons:
         apt:
-          sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-6']
 
     - os: linux
@@ -61,8 +59,21 @@ matrix:
         - CXX=g++-5
       addons:
         apt:
-          sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-5']
+
+    - os: linux
+      language: python
+      python: 3.6
+      compiler: clang
+      env: CLANG_VERSION=9
+        - CC=clang-9
+        - CXX=clang++-9
+      addons:
+        apt:
+          sources:
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+          packages: ['clang-9', 'libc++-9-dev', 'libc++abi-9-dev']
 
     - os: linux
       language: python
@@ -73,7 +84,6 @@ matrix:
         - CXX=clang++-8
       addons:
         apt:
-          sources: ['llvm-toolchain-xenial', 'llvm-toolchain-xenial-8', 'ubuntu-toolchain-r-test']
           packages: ['clang-8', 'libc++-8-dev', 'libc++abi-8-dev']
 
     - os: linux
@@ -85,7 +95,6 @@ matrix:
         - CXX=clang++-7
       addons:
         apt:
-          sources: ['llvm-toolchain-xenial', 'llvm-toolchain-xenial-7', 'ubuntu-toolchain-r-test']
           packages: ['clang-7', 'libc++-7-dev', 'libc++abi-7-dev']
 
     - os: linux
@@ -97,7 +106,6 @@ matrix:
         - CXX=clang++-6.0
       addons:
         apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-xenial-6.0']
           packages: ['clang-6.0', 'g++-6']
 
     - os: linux
@@ -109,7 +117,6 @@ matrix:
         - CXX=clang++-5.0
       addons:
         apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-xenial-5.0']
           packages: ['clang-5.0', 'g++-6']
 
     - os: linux
@@ -121,32 +128,7 @@ matrix:
         - CXX=clang++-4.0
       addons:
         apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-4.0']
-          packages: ['clang-4.0', 'g++-6']
-
-    - os: linux
-      language: python
-      python: 3.6
-      compiler: clang
-      env: CLANG_VERSION=3.9 LIBCXX=On
-        - CC=clang-3.9
-        - CXX=clang++-3.9
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-3.9']
-          packages: ['clang-3.9', 'g++-6']
-
-    - os: linux
-      language: python
-      python: 3.6
-      compiler: clang
-      env: CLANG_VERSION=3.8 LIBCXX=On
-        - CC=clang-3.8
-        - CXX=clang++-3.8
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-3.8']
-          packages: ['clang-3.8', 'g++-6']
+          packages: ['clang-4.0', 'libc++-dev', 'g++-6']
 
     - os: osx
       osx_image: xcode10
@@ -173,9 +155,8 @@ before_install:
   - |
     if [ "$LIBCXX" == "On" ]; then
       ./cmake/install_libcxx.sh
-      export CXXFLAGS="-stdlib=libc++"
     fi
-    if [ "${CLANG_VERSION}" == "7" ]; then
+    if [ -n "${CLANG_VERSION}" ]; then
       export CXXFLAGS="-stdlib=libc++"
     fi
     if [ ! "$OSX" == "On" ]; then
