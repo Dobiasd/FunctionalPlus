@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.2)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-project(FunctionalPlus VERSION 0.2.3)
+project(FunctionalPlus VERSION 0.2.4)
 
 message(STATUS "===( ${PROJECT_NAME} ${PROJECT_VERSION} )===")
 option(FPLUS_USE_TOOLCHAIN "Use compiler flags from an external toolchain" OFF)
