@@ -138,6 +138,16 @@ cmake
 
 Then install it:
 
+```bash
+conan install conanfile.txt
 ```
-$ conan install conanfile.txt
+
+
+### way 6: using [conda-forge](https://conda-forge.org/)
+
+```bash
+conda config --add channels conda-forge
+conda install FunctionalPlus
 ```
+
+Visit [`conda-forge/FunctionalPlus-feedstock`](https://github.com/conda-forge/FunctionalPlus-feedstock) for more details.
