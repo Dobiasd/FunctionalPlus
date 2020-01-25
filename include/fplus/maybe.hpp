@@ -29,22 +29,24 @@ public:
     const T& unsafe_get_just() const
     {
         assert(is_just());
-        return value_;
+        return *reinterpret_cast<const T*>(&value_);
     }
     T& unsafe_get_just()
     {
         assert(is_just());
-        return value_;
+        return *reinterpret_cast<T*>(&value_);
     }
     typedef T type;
-    maybe() : is_present_(false) {};
+    maybe() : is_present_(false), value_() {};
     ~maybe()
     {
         destruct_content();
     }
-    maybe(const T& val_just) : is_present_(true), value_(val_just)
-    {}
-    maybe(const maybe<T>& other) : is_present_(other.is_just())
+    maybe(const T& val_just) : is_present_(true), value_()
+    {
+        new (&value_) T(val_just);
+    }
+    maybe(const maybe<T>& other) : is_present_(other.is_just()), value_()
     {
         if (other.is_just())
         {
@@ -67,14 +69,11 @@ private:
         if (is_present_)
         {
             is_present_ = false;
-            value_.~T();
+            (*reinterpret_cast<const T*>(&value_)).~T();
         }
     }
     bool is_present_;
-    union
-    {
-        T value_;
-    };
+    typename std::aligned_storage<sizeof(T), alignof(T)>::type value_;
 };
 
 namespace internal
