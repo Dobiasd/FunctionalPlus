@@ -37,14 +37,14 @@ public:
         return value_;
     }
     typedef T type;
-    maybe() : is_present_(false), dummy_(0) {};
+    maybe() : is_present_(false) {};
     ~maybe()
     {
         destruct_content();
     }
     maybe(const T& val_just) : is_present_(true), value_(val_just)
     {}
-    maybe(const maybe<T>& other) : is_present_(other.is_just()), dummy_(0)
+    maybe(const maybe<T>& other) : is_present_(other.is_just())
     {
         if (other.is_just())
         {
@@ -68,13 +68,11 @@ private:
         {
             is_present_ = false;
             value_.~T();
-            dummy_ = 0;
         }
     }
     bool is_present_;
     union
     {
-        unsigned char dummy_;
         T value_;
     };
 };
