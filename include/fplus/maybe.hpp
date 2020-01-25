@@ -29,31 +29,31 @@ public:
     const T& unsafe_get_just() const
     {
         assert(is_just());
-        return value_;
+        return *reinterpret_cast<const T*>(&mem_[0]);
     }
     T& unsafe_get_just()
     {
         assert(is_just());
-        return value_;
+        return *reinterpret_cast<T*>(&mem_[0]);
     }
     typedef T type;
 #ifdef __GNUC__ // workaround for bug in GCC 4.9
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #endif
-    maybe() : is_present_(false), dummy_(0) {};
+    maybe() : is_present_(false), mem_({}) {};
     ~maybe()
     {
         destruct_content();
     }
-    maybe(const T& val_just) : is_present_(true), dummy_(0)
+    maybe(const T& val_just) : is_present_(true), mem_({})
     {
-        value_ = val_just;
+        new (&mem_[0]) T(val_just);
     }
-    maybe(const maybe<T>& other) : is_present_(other.is_just()), dummy_(0)
+    maybe(const maybe<T>& other) : is_present_(other.is_just()), mem_({})
     {
         if (other.is_just())
-            value_ = other.unsafe_get_just();
+            new (&mem_[0]) T(other.unsafe_get_just());
     }
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
@@ -63,7 +63,7 @@ public:
         destruct_content();
         is_present_ = other.is_just();
         if (other.is_just())
-            value_ = other.unsafe_get_just();
+            new (&mem_[0]) T(other.unsafe_get_just());
         return *this;
     }
 private:
@@ -71,15 +71,13 @@ private:
     {
         if (is_present_)
         {
-            value_.~T();
+            T* ptr = reinterpret_cast<T*>(&mem_[0]);
+            (void)ptr; // silence warning under MSVC (C4189: 'ptr': local variable is initialized but not referenced)
+            ptr->~T();
         }
     }
     bool is_present_;
-    union
-    {
-        unsigned char dummy_;
-        T value_;
-    };
+    std::array<unsigned char, sizeof(T)> mem_;
 };
 
 namespace internal
