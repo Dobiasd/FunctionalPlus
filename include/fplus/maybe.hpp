@@ -46,12 +46,35 @@ public:
     {
         new (&value_) T(val_just);
     }
+    maybe(T&& val_just) : is_present_(true), value_() {
+        new (&value_) T(std::move(val_just));
+    }
     maybe(const maybe<T>& other) : is_present_(other.is_just()), value_()
     {
-        if (other.is_just())
+        if (is_present_)
         {
             new (&value_) T(other.unsafe_get_just());
         }
+    }
+    maybe(maybe<T>&& other) : is_present_(std::move(other.is_present_)), value_()
+    {
+        if (is_present_)
+        {
+            new (&value_) T(std::move(other.unsafe_get_just()));
+        }
+    }
+    maybe<T>& operator = (const T& other)
+    {
+        destruct_content();
+        is_present_ = true;
+        new (&value_) T(other);
+        return *this;
+    }
+    maybe& operator = (T&& other) {
+        destruct_content();
+        is_present_ = true;
+        new (&value_) T(std::move(other));
+        return *this;
     }
     maybe<T>& operator = (const maybe<T>& other)
     {
@@ -60,6 +83,15 @@ public:
         {
             is_present_ = true;
             new (&value_) T(other.unsafe_get_just());
+        }
+        return *this;
+    }
+    maybe& operator = (maybe<T>&& other) {
+        destruct_content();
+        is_present_ = std::move(other.is_present_);
+        if (is_present_)
+        {
+            new (&value_) T(std::move(other.unsafe_get_just()));
         }
         return *this;
     }

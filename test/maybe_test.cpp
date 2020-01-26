@@ -35,14 +35,18 @@ namespace {
 struct foo {
     explicit foo(int) { msgs_.push_back("ctor"); }
     foo(const foo&) { msgs_.push_back("copyctor"); }
+    foo(foo&&) noexcept { msgs_.push_back("movector"); }
+    foo& operator = (const foo&) { msgs_.push_back("assignment"); return *this; }
+    foo& operator = (foo&&) { msgs_.push_back("moveassignment"); return *this; }
     ~foo() { msgs_.push_back("dtor"); }
     static std::vector<std::string> msgs_;
 };
 std::vector<std::string> foo::msgs_;
 
-TEST_CASE("maybe_test, ctor")
+TEST_CASE("maybe_test, construction and assignment")
 {
     using namespace fplus;
+    foo::msgs_.clear();
     REQUIRE_EQ(maybe<int>(4), just<int>(4));
 
     typedef std::vector<std::string> Strings;
@@ -50,10 +54,27 @@ TEST_CASE("maybe_test, ctor")
     maybe<foo> no_foo;
     REQUIRE_EQ(foo::msgs_, Strings({}));
     {
-        maybe<foo> a_foo(foo(1));
-        REQUIRE_EQ(foo::msgs_, Strings({"ctor", "copyctor", "dtor"}));
+        foo foo_source = foo(1);
+        maybe<foo> a_foo(foo_source);
+        REQUIRE_EQ(foo::msgs_, Strings({"ctor", "copyctor"}));
     }
     REQUIRE_EQ(foo::msgs_, Strings({"ctor", "copyctor", "dtor", "dtor"}));
+    foo::msgs_.clear();
+}
+
+TEST_CASE("maybe_test, move semantics")
+{
+    using namespace fplus;
+    foo::msgs_.clear();
+    typedef std::vector<std::string> Strings;
+    maybe<foo> foo_a(foo(1));
+    maybe<foo> foo_b(foo(2));
+    maybe<foo> foo_z(std::move(foo_a));
+    foo_z = std::move(foo_b);
+    REQUIRE_EQ(foo::msgs_, Strings({
+        "ctor", "movector", "dtor",
+        "ctor", "movector", "dtor",
+        "movector", "dtor", "movector"}));
     foo::msgs_.clear();
 }
 
