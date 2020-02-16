@@ -19,6 +19,18 @@ make
 sudo make install
 ```
 
+And then, you can add **FunctionalPlus** as a dependency in your cmake project as in the following.
+
+```cmake
+find_package(FunctionalPlus REQUIRED)
+
+add_executable(HelloWorld main.cpp)
+target_link_libraries(HelloWorld FunctionalPlus::fplus)
+```
+
+If you want cmake to download and install the package automatically,
+see [ExternalProject](#way-2-using-cmakes-externalproject) below.
+
 #### Building the unit tests
 
 Unit Tests are disabled by default. Building the tests (optional) requires [doctest](https://github.com/onqtam/doctest).
