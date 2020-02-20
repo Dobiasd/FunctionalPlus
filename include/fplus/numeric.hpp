@@ -862,13 +862,25 @@ std::function<X(X)> add_to(const X& x)
 
 // API search type: subtract_from : a -> (a -> a)
 // Provide a function subtracting from a given constant.
-// add_to(3)(2) == 1
+// subtract_from(3)(2) == 1
 template <typename X>
 std::function<X(X)> subtract_from(const X& x)
 {
     return [x](X y) -> X
     {
         return x - y;
+    };
+}
+
+// API search type: subtract : a -> (a -> a)
+// Provide a function subtracting a given constant.
+// subtract(2)(3) == 1
+template <typename X>
+std::function<X(X)> subtract(const X& x)
+{
+    return [x](X y) -> X
+    {
+        return y - x;
     };
 }
 
