@@ -40,8 +40,8 @@ public:
     // Example below:
     // Function              |Nb calls|Total time|Av. time|Deviation|
     // ----------------------+--------+----------+--------+---------+
-    // convert_charset_string|    4000|   4.942ms| 1.236ns|  1.390ns|
-    // split_lines           |    1000|   4.528ms| 4.528ns|  1.896ns|
+    // convert_charset_string|    4000|   4.942ms| 1.236us|  1.390us|
+    // split_lines           |    1000|   4.528ms| 4.528us|  1.896us|
     inline std::string report() const
     {
         const auto reports = report_list();
@@ -179,9 +179,9 @@ namespace internal
 // This will output a report like this
 // Function|Nb calls|Total time|Av. time|Deviation|
 // --------+--------+----------+--------+---------+
-// printf  |       1|   0.010ms| 9.952ns|  0.000ns|
-// add     |       2|   0.000ms| 0.050ns|  0.009ns|
-// sub     |       1|   0.000ms| 0.039ns|  0.000ns|
+// printf  |       1|   0.010ms| 9.952us|  0.000us|
+// add     |       2|   0.000ms| 0.050us|  0.009us|
+// sub     |       1|   0.000ms| 0.039us|  0.000us|
 // -
 // As an alternative to make_benchmark_function, you can also benchmark an expression.
 // For example, in order to benchmark the following line:
@@ -308,11 +308,11 @@ namespace internal
             ss << (time * 1000.);
             return ss.str() + "ms";
         };
-        auto my_show_time_ns = [](double time) -> std::string {
+        auto my_show_time_us = [](double time) -> std::string {
             std::stringstream ss;
             ss << std::fixed << std::setprecision(3);
             ss << (time * 1000000.);
-            return ss.str() + "ns";
+            return ss.str() + "us";
         };
 
         std::vector<std::string> header_row{ {
@@ -325,8 +325,8 @@ namespace internal
                 row.push_back(function_name);
                 row.push_back(fplus::show(report.nb_calls));
                 row.push_back(my_show_time_ms(report.total_time));
-                row.push_back(my_show_time_ns(report.average_time));
-                row.push_back(my_show_time_ns(report.deviation));
+                row.push_back(my_show_time_us(report.average_time));
+                row.push_back(my_show_time_us(report.deviation));
                 return row;
             },
             ordered_reports);
