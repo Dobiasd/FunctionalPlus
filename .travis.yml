@@ -2,7 +2,7 @@ language: generic
 
 dist: bionic
 
-matrix:
+jobs:
     include:
     - os: linux
       language: python
@@ -60,6 +60,20 @@ matrix:
       addons:
         apt:
           packages: ['g++-5']
+
+    - os: linux
+      language: python
+      python: 3.6
+      compiler: clang
+      env: CLANG_VERSION=10
+        - CC=clang-10
+        - CXX=clang++-10
+      addons:
+        apt:
+          sources:
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+          packages: ['clang-10', 'libc++-10-dev', 'libc++abi-10-dev']
 
     - os: linux
       language: python
