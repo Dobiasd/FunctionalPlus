@@ -339,7 +339,7 @@ ContainerOut split_by
         start = internal::add_to_iterator(stop);
         if (allow_empty && start == std::end(xs))
         {
-            *itOut = std::insert_iterator<ContainerOut>{};
+            *itOut = typename ContainerOut::value_type();
         }
     }
     return result;
