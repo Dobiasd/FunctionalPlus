@@ -18,6 +18,7 @@ namespace fplus
 // The standard does not provide a class to
 // express only shared ownership without optionality.
 // shared_ref fills this gap.
+// It is recommended to use make_shared_ref for constructing an instance.
 template <typename T>
 class shared_ref
 {
