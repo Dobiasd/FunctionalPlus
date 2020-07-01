@@ -23,6 +23,7 @@ if(NOT FPLUS_USE_TOOLCHAIN)
 endif()
 
 add_library(fplus INTERFACE)
+add_library(FunctionalPlus::fplus ALIAS fplus)
 target_include_directories(fplus INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
   )
