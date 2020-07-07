@@ -8,6 +8,19 @@ jobs:
       language: python
       python: 3.6
       compiler: gcc
+      env: GCC_VERSION=10
+        - CC=gcc-10
+        - CXX=g++-10
+      addons:
+        apt:
+          packages: ['g++-10']
+          sources:
+            - sourceline: 'ppa:ubuntu-toolchain-r/test'
+
+    - os: linux
+      language: python
+      python: 3.6
+      compiler: gcc
       env: GCC_VERSION=9
         - CC=gcc-9
         - CXX=g++-9

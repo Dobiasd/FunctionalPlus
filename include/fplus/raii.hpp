@@ -12,7 +12,7 @@ namespace fplus
 {
 
 // A generic RAII class.
-// It is recommended to use make_shared_ref for construction an instance.
+// It is recommended to use make_raii for constructing an instance.
 template <typename INIT, typename QUIT>
 class raii
 {
