@@ -352,7 +352,7 @@ MapType map_drop_if(Pred pred, const MapType& map)
 // map_keep([a, e, f], {a: 1, b: 2, c: 3, d: 4}) == {a: 1}
 // Also known as pick.
 template <typename MapType, typename KeyContainer>
-MapType map_keep(const KeyContainer& keys, const MapType& map)
+MapType map_keep(KeyContainer&& keys, const MapType& map)
 {
     static_assert(std::is_same<
         typename KeyContainer::value_type,
@@ -412,7 +412,7 @@ MapType map_drop_if_value(Pred pred, const MapType& map)
 // map_keep_values([1, 4], {a: 1, b: 2, c: 3, d: 4}) == {a: 1, d: 4}
 // map_keep_values([1, 5, 6], {a: 1, b: 2, c: 3, d: 4}) == {a: 1}
 template <typename MapType, typename ValueContainer>
-MapType map_keep_values(const ValueContainer& values, const MapType& map)
+MapType map_keep_values(ValueContainer&& values, const MapType& map)
 {
     static_assert(std::is_same<
         typename ValueContainer::value_type,
