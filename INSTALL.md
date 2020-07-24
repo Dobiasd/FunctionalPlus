@@ -163,3 +163,10 @@ conda install FunctionalPlus
 ```
 
 Visit [`conda-forge/FunctionalPlus-feedstock`](https://github.com/conda-forge/FunctionalPlus-feedstock) for more details.
+
+
+### way 7: using [Homebrew](https://brew.sh/)
+
+```bash
+brew install functionalplus
+```
