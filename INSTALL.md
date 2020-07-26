@@ -173,3 +173,5 @@ brew install functionalplus
 ```
 
 And then, you can add **FunctionalPlus** as a dependency in your cmake project [as in way 1](#cmake-dependency).
+
+If you're not using cmake, you might need to add `$(brew --prefix functionalplus)/include` to the additional include paths for your compiler.
