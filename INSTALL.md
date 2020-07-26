@@ -19,6 +19,7 @@ make
 sudo make install
 ```
 
+<a id="cmake-dependency"></a>
 And then, you can add **FunctionalPlus** as a dependency in your cmake project as in the following.
 
 ```cmake
@@ -170,3 +171,5 @@ Visit [`conda-forge/FunctionalPlus-feedstock`](https://github.com/conda-forge/Fu
 ```bash
 brew install functionalplus
 ```
+
+And then, you can add **FunctionalPlus** as a dependency in your cmake project [as in way 1](#cmake-dependency).
