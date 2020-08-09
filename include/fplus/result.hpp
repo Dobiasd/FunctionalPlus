@@ -304,14 +304,24 @@ auto compose_result(Callables&&... callables)
             internal::trigger_static_asserts<internal::check_arity_tag,
                                                  decltype(f),
                                                  decltype(args)...>();
+#if _MSC_VER >= 1920 // in VS2019, compilation with /permissive- breaks with 'using' syntax below
+            struct FOut : std::decay_t<
+                internal::invoke_result_t<decltype(f), decltype(args)...>> {};
+#else
             using FOut = std::decay_t<
                 internal::invoke_result_t<decltype(f), decltype(args)...>>;
+#endif
 
             internal::trigger_static_asserts<internal::unary_function_tag,
                                                  decltype(g),
                                                  typename FOut::ok_t>();
+#if _MSC_VER >= 1920 // in VS2019, compilation with /permissive- breaks with 'using' syntax below
+            struct GOut : std::decay_t<
+                internal::invoke_result_t<decltype(g), typename FOut::ok_t>> {};
+#else
             using GOut = std::decay_t<
                 internal::invoke_result_t<decltype(g), typename FOut::ok_t>>;
+#endif
             static_assert(std::is_same<typename FOut::error_t,
                                        typename GOut::error_t>::value,
                           "Error type must stay the same.");
