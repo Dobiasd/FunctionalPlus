@@ -114,7 +114,7 @@ There actually are this many 'I's in team: 2
 ```
 
 ### The cutest kitty
-Finding the highest rated element in a container is very simple compared to [a hand-written version](https://gist.github.com/Dobiasd/a4e7aa9c25a3dd4c0522d75a71e2a867#file-cuteness-cpp-L28-L38).
+Finding the highest rated element in a container is very simple compared to a hand-written version([1](https://gist.github.com/Dobiasd/a4e7aa9c25a3dd4c0522d75a71e2a867#file-cuteness-cpp-L28-L38), [2](https://gist.github.com/Dobiasd/ca9963ecafa786a18bd5990414fd9a59#file-cuteness2-cpp-L28-L31)).
 ```c++
 #include <fplus/fplus.hpp>
 #include <iostream>
