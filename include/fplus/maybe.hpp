@@ -8,6 +8,7 @@
 
 #include <fplus/function_traits.hpp>
 #include <fplus/container_common.hpp>
+#include <fplus/compare.hpp>
 #include <fplus/internal/composition.hpp>
 #include <fplus/internal/asserts/composition.hpp>
 
