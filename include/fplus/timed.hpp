@@ -4,6 +4,8 @@
 #include <type_traits>
 #include <fplus/function_traits.hpp>
 #include <fplus/container_common.hpp>
+#include <fplus/show.hpp>
+#include <fplus/stopwatch.hpp>
 #include <fplus/internal/composition.hpp>
 #include <fplus/internal/asserts/composition.hpp>
 

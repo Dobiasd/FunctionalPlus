@@ -6,7 +6,9 @@
 
 #include <vector>
 #include <mutex>
-#include <fplus/fplus.hpp>
+#include <fplus/container_common.hpp>
+#include <fplus/show.hpp>
+#include <fplus/timed.hpp>
 
 #pragma once
 

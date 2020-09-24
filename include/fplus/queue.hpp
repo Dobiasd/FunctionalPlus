@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include <fplus/container_common.hpp>
+#include <fplus/maybe.hpp>
+
 #include <condition_variable>
 #include <cstdint>
 #include <deque>

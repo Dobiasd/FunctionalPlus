@@ -9,6 +9,8 @@
 #include <fplus/container_common.hpp>
 #include <fplus/maybe.hpp>
 
+#include <cmath>
+
 namespace fplus
 {
 
@@ -25,8 +27,8 @@ T elem_at_float_idx(double idx, const Container& xs)
     {
         return xs.front();
     }
-    std::size_t idx_floor = floor<double, std::size_t>(idx);
-    std::size_t idx_ceil = ceil<double, std::size_t>(idx);
+    std::size_t idx_floor = static_cast<std::size_t>(floor(idx));
+    std::size_t idx_ceil = static_cast<std::size_t>(ceil(idx));
     if (idx_ceil >= size_of_cont(xs))
     {
         return xs.back();

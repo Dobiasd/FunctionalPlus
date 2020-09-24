@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include <fplus/container_common.hpp>
+#include <fplus/maybe.hpp>
+
 #include <vector>
 #include <queue>
 
