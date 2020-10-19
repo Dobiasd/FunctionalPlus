@@ -78,6 +78,20 @@ jobs:
       language: python
       python: 3.6
       compiler: clang
+      env: CLANG_VERSION=11
+        - CC=clang-11
+        - CXX=clang++-11
+      addons:
+        apt:
+          sources:
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+          packages: ['clang-11', 'libc++-11-dev', 'libc++abi-11-dev']
+
+    - os: linux
+      language: python
+      python: 3.6
+      compiler: clang
       env: CLANG_VERSION=10
         - CC=clang-10
         - CXX=clang++-10
