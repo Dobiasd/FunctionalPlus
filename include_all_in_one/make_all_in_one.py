@@ -27,7 +27,7 @@ def parse_one_file(filename):
     ALLREADY_INCLUDED_FILES.append(filename)
 
     parsed_result = "\n//\n" + "// " + filename + "\n//\n\n"
-    with open(FPLUS_INCLUDE_DIR + "/" + filename, "r") as f:
+    with open(FPLUS_INCLUDE_DIR + "/" + filename, "r", encoding='utf-8', errors='ignore') as f:
         lines = f.readlines()
         for code_line in lines:
             if is_fplus_include_line(code_line):
@@ -40,6 +40,6 @@ def parse_one_file(filename):
 
 print("-- Generating include_all_in_one")
 content = parse_one_file("fplus.hpp")
-with open(THIS_DIR + "/include/fplus/fplus.hpp", "w") as f:
+with open(THIS_DIR + "/include/fplus/fplus.hpp", "w", encoding='utf-8', errors='ignore') as f:
     f.write(content)
 
