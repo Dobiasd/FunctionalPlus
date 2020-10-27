@@ -31,6 +31,8 @@ target_include_directories(fplus INTERFACE
 find_package(Threads REQUIRED)
 target_link_libraries(fplus INTERFACE Threads::Threads)
 
+add_subdirectory(include_all_in_one)
+
 if(FPLUS_BUILD_UNITTEST)
     enable_testing()
     add_subdirectory(test)
