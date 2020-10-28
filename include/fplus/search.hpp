@@ -123,6 +123,25 @@ ContainerOut find_all_idxs_by(UnaryPredicate p, const Container& xs)
     return result;
 }
 
+// find_all_idxs_by : quasi-verbatim overload for vector of bools
+template <typename ContainerOut = std::vector<std::size_t>,
+        typename UnaryPredicate>
+ContainerOut find_all_idxs_by(UnaryPredicate p, const std::vector<bool>& xs)
+{
+    internal::check_unary_predicate_for_container<UnaryPredicate, std::vector<bool>>();
+    std::size_t idx = 0;
+    ContainerOut result;
+    auto itOut = internal::get_back_inserter(result);
+    for (const auto x : xs) // this line differs (cannot take a reference on vector<bool> item)
+    {
+        if (internal::invoke(p, x))
+            *itOut = idx;
+        ++idx;
+    }
+    return result;
+}
+
+
 // API search type: find_all_idxs_of : (a, [a]) -> [Int]
 // fwd bind count: 1
 // Returns the indices off all elements equal to x.
