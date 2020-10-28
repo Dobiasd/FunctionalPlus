@@ -400,8 +400,12 @@ typename Container::value_type reduce_1_parallelly(F f, const Container& xs)
 template <typename Pred, typename Container>
 Container keep_if_parallelly(Pred pred, const Container& xs)
 {
+    // Avoid a temporary std::vector<bool>.
     const auto idxs = find_all_idxs_by(
-        identity<bool>, transform_parallelly(pred, xs));
+        is_equal_to<std::uint8_t>(1),
+        transform_parallelly([pred](const auto & x) -> std::uint8_t {
+            return pred(x) ? 1 : 0;
+        }, xs));
     return elems_at_idxs(idxs, xs);
 }
 
