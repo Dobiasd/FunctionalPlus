@@ -3109,7 +3109,7 @@ namespace internal
         std::size_t pos_;
     };
 
-#if _MSC_VER >= 1900
+#if defined(_MSC_VER) && _MSC_VER >= 1900
     template <typename T, std::size_t N>
     struct std::_Is_checked_helper<array_back_insert_iterator<T, N>>
         : public true_type
@@ -5468,7 +5468,7 @@ auto compose_result(Callables&&... callables)
             internal::trigger_static_asserts<internal::check_arity_tag,
                                                  decltype(f),
                                                  decltype(args)...>();
-#if _MSC_VER >= 1920 // in VS2019, compilation with /permissive- breaks with 'using' syntax below
+#if defined(_MSC_VER) && _MSC_VER >= 1920 // in VS2019, compilation with /permissive- breaks with 'using' syntax below
             struct FOut : std::decay_t<
                 internal::invoke_result_t<decltype(f), decltype(args)...>> {};
 #else
@@ -5479,7 +5479,7 @@ auto compose_result(Callables&&... callables)
             internal::trigger_static_asserts<internal::unary_function_tag,
                                                  decltype(g),
                                                  typename FOut::ok_t>();
-#if _MSC_VER >= 1920 // in VS2019, compilation with /permissive- breaks with 'using' syntax below
+#if defined(_MSC_VER) && _MSC_VER >= 1920 // in VS2019, compilation with /permissive- breaks with 'using' syntax below
             struct GOut : std::decay_t<
                 internal::invoke_result_t<decltype(g), typename FOut::ok_t>> {};
 #else
@@ -7030,7 +7030,7 @@ int sign_with_zero(X x)
 template <typename Out, typename X>
 Out integral_cast_throw(X x)
 {
-#if _MSC_VER
+#ifdef _MSC_VER
 __pragma(warning(push))
 __pragma(warning(disable:4127))
 #endif
@@ -7089,7 +7089,7 @@ __pragma(warning(disable:4127))
         assert(false);
         return static_cast<Out>(x);
     }
-#if _MSC_VER
+#ifdef _MSC_VER
 __pragma(warning(pop))
 #endif
 }

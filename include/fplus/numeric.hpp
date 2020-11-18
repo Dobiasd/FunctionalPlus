@@ -226,7 +226,7 @@ int sign_with_zero(X x)
 template <typename Out, typename X>
 Out integral_cast_throw(X x)
 {
-#if _MSC_VER
+#ifdef _MSC_VER
 __pragma(warning(push))
 __pragma(warning(disable:4127))
 #endif
@@ -285,7 +285,7 @@ __pragma(warning(disable:4127))
         assert(false);
         return static_cast<Out>(x);
     }
-#if _MSC_VER
+#ifdef _MSC_VER
 __pragma(warning(pop))
 #endif
 }
