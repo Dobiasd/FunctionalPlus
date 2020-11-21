@@ -2,19 +2,7 @@ cmake_minimum_required(VERSION 3.2)
 
 project(FunctionalPlusTests)
 
-option(FPLUS_UNITTEST_USE_CONAN "Use conan to get doctest dependency (for unit tests only)" OFF)
-if(FPLUS_UNITTEST_USE_CONAN)
-  # if using conan for the build, first install doctest via conan:
-  # > cd build/
-  # > conan install .. -obuild_unittest=True
-  # > cmake .. -DFPLUS_UNITTEST_USE_CONAN=ON
-  include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
-  conan_basic_setup()
-  # conan uses its own namespace, so we have to alias it to unify usage
-  add_library(doctest::doctest ALIAS CONAN_PKG::doctest)
-else()
-  find_package(doctest 2.3.4 CONFIG REQUIRED)
-endif()
+find_package(doctest 2.3.4 CONFIG REQUIRED)
 
 function(add_test_suite name)
   add_executable("${name}" "${name}.cpp")

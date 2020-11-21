@@ -14,8 +14,7 @@ class FunctionalPlusConan(ConanFile):
     generators = ["cmake"]
 
     def requirements(self):
-        if self.options.build_unittest:
-            self.requires.add('doctest/2.3.4@bincrafters/stable')
+        pass
 
     def package(self):
         self.copy("*LICENSE", dst="licenses")
