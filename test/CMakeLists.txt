@@ -11,7 +11,7 @@ if(FPLUS_UNITTEST_USE_CONAN)
   include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
   conan_basic_setup()
 else()
-  find_package(doctest CONFIG REQUIRED)
+  find_package(doctest 2.3.4 CONFIG REQUIRED)
 endif()
 
 set(link_libraries fplus ${CMAKE_THREAD_LIBS_INIT})
