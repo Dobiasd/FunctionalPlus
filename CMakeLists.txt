@@ -13,5 +13,5 @@ target_link_libraries(fplus INTERFACE Threads::Threads)
 
 add_subdirectory(include_all_in_one)
 
-# Run pkgconfig installation:
-include(cmake/pkgconfig.cmake)
+# Install rules
+include(cmake/install-rules.cmake)
