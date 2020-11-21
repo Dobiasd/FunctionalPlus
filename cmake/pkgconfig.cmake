@@ -1,11 +1,13 @@
 # Installation (https://github.com/forexample/package-example) {
 
+# Include module for standard, cross-platform install paths
+include(GNUInstallDirs)
+
 # Layout. This works for all platforms:
-#   * <prefix>/lib/cmake/<PROJECT-NAME>
-#   * <prefix>/lib/
-#   * <prefix>/include/
-set(config_install_dir "lib/cmake/${PROJECT_NAME}")
-set(include_install_dir "include")
+#   * ${CMAKE_INSTALL_LIBDIR}/cmake/<PROJECT-NAME>
+#   * ${CMAKE_INSTALL_INCLUDEDIR}/fplus/
+set(config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+set(include_install_dir "${CMAKE_INSTALL_INCLUDEDIR}")
 
 set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
 
@@ -31,7 +33,7 @@ write_basic_package_version_file(
 configure_file("cmake/Config.cmake.in" "${project_config}" @ONLY)
 
 # Targets:
-#   * header location after install: <prefix>/include/fplus/fplus.hpp
+#   * header location after install: ${CMAKE_INSTALL_INCLUDEDIR}/fplus/fplus.hpp
 #   * headers can be included by C++ code `#include <fplus/fplus.hpp>`
 install(
     TARGETS fplus
@@ -40,22 +42,22 @@ install(
 )
 
 # Headers:
-#   * include/fplus/fplus.hpp -> <prefix>/include/fplus/fplus.hpp
+#   * include/fplus/fplus.hpp -> ${CMAKE_INSTALL_INCLUDEDIR}/fplus/fplus.hpp
 install(
     DIRECTORY "include/fplus" # no trailing slash
     DESTINATION "${include_install_dir}"
 )
 
 # Config
-#   * <prefix>/lib/cmake/FunctionalPlus/FunctionalPlusConfig.cmake
-#   * <prefix>/lib/cmake/FunctionalPlus/FunctionalPlusConfigVersion.cmake
+#   * ${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus/FunctionalPlusConfig.cmake
+#   * ${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus/FunctionalPlusConfigVersion.cmake
 install(
     FILES "${project_config}" "${version_config}"
     DESTINATION "${config_install_dir}"
 )
 
 # Config
-#   * <prefix>/lib/cmake/FunctionalPlus/FunctionalPlusTargets.cmake
+#   * ${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus/FunctionalPlusTargets.cmake
 install(
     EXPORT "${TARGETS_EXPORT_NAME}"
     NAMESPACE "${namespace}"
