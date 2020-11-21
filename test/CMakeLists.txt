@@ -10,20 +10,17 @@ if(FPLUS_UNITTEST_USE_CONAN)
   # > cmake .. -DFPLUS_UNITTEST_USE_CONAN=ON
   include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
   conan_basic_setup()
+  # conan uses its own namespace, so we have to alias it to unify usage
+  add_library(doctest::doctest ALIAS CONAN_PKG::doctest)
 else()
   find_package(doctest 2.3.4 CONFIG REQUIRED)
-endif()
-
-set(link_libraries fplus ${CMAKE_THREAD_LIBS_INIT})
-if(NOT FPLUS_UNITTEST_USE_CONAN)
-  list(APPEND link_libraries doctest::doctest)
 endif()
 
 function(add_test_suite name)
   add_executable(${name} ${name}.cpp)
   add_test(NAME ${name} COMMAND ${name})
   target_compile_options(${name} PRIVATE ${COMPILE_OPTIONS})
-  target_link_libraries(${name} PRIVATE ${link_libraries})
+  target_link_libraries(${name} PRIVATE FunctionalPlus::fplus doctest::doctest)
 endfunction()
 
 enable_testing()
