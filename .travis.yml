@@ -218,11 +218,11 @@ before_install:
 
 install:
   - mkdir -p build && cd build
-  - cmake .. -DFPLUS_BUILD_UNITTEST=ON
+  - cmake ../test
 
 script:
   - which $CXX
   - $CXX --version
   - cmake --version
-  - cmake --build . --target unittest --config Release -- -j4
+  - cmake --build . --config Release -- -j4
   - cd .. && python conan_build.py

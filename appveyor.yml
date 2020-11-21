@@ -42,9 +42,9 @@ before_build:
     mkdir build
     cd build
     cmake --version
-    cmake .. -DFPLUS_BUILD_EXAMPLES=ON -DFPLUS_BUILD_UNITTEST=ON -DCMAKE_INSTALL_PREFIX=c:/projects/fplus/install -Ddoctest_DIR=C:/projects/doctest/install/lib/cmake/doctest -G %generator%
+    cmake ..\test -DCMAKE_INSTALL_PREFIX=c:/projects/fplus/install -Ddoctest_DIR=C:/projects/doctest/install/lib/cmake/doctest -G %generator%
 build:
-  project: c:\projects\fplus\build\FunctionalPlus.sln
+  project: c:\projects\fplus\build\FunctionalPlusTests.sln
   verbosity: minimal
   parallel: true
 
