@@ -69,19 +69,11 @@ foreach(name IN LISTS tests)
 endforeach()
 
 if(NOT MSVC)
-  target_compile_options(
-      stringtools_cp1251_test
-      PRIVATE
-      -Wno-invalid-source-encoding
-  )
-  target_compile_options(
-      stringtools_cp1253_test
-      PRIVATE
-      -Wno-invalid-source-encoding
-  )
-  target_compile_options(
-      stringtools_utf8_test
-      PRIVATE
-      -Wno-invalid-source-encoding
-  )
+  foreach(encoding IN ITEMS cp1251 cp1253 utf8)
+    target_compile_options(
+        "stringtools_${encoding}_test"
+        PRIVATE
+        -Wno-invalid-source-encoding
+    )
+  endforeach()
 endif()
