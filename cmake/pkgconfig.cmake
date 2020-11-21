@@ -36,9 +36,6 @@ configure_file("cmake/Config.cmake.in" "${project_config}" @ONLY)
 install(
     TARGETS fplus
     EXPORT "${TARGETS_EXPORT_NAME}"
-    LIBRARY DESTINATION "lib"
-    ARCHIVE DESTINATION "lib"
-    RUNTIME DESTINATION "bin"
     INCLUDES DESTINATION "${include_install_dir}"
 )
 
