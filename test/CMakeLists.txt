@@ -2,6 +2,15 @@ cmake_minimum_required(VERSION 3.2)
 
 project(FunctionalPlusTests)
 
+set(
+    FunctionalPlus_INCLUDE_WITHOUT_SYSTEM
+    YES
+    CACHE
+    INTERNAL
+    "Turn the warning guard off to have errors appear in test builds"
+)
+add_subdirectory("${PROJECT_SOURCE_DIR}/.." "${PROJECT_BINARY_DIR}/root_project")
+
 find_package(doctest 2.3.4 CONFIG REQUIRED)
 # for doctest_discover_tests
 include(doctest)
