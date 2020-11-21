@@ -1,3 +1,7 @@
+cmake_minimum_required(VERSION 3.2)
+
+project(FunctionalPlusTests)
+
 if (FPLUS_UNITTEST_USE_CONAN)
   # if using conan for the build, first install doctest via conan:
   # > cd build/
