@@ -28,12 +28,7 @@ write_basic_package_version_file(
 # Configure '<PROJECT-NAME>Config.cmake'
 # Use variables:
 #   * TARGETS_EXPORT_NAME
-#   * PROJECT_NAME
-configure_package_config_file(
-    "cmake/Config.cmake.in"
-    "${project_config}"
-    INSTALL_DESTINATION "${config_install_dir}"
-)
+configure_file("cmake/Config.cmake.in" "${project_config}" @ONLY)
 
 # Targets:
 #   * header location after install: <prefix>/include/fplus/fplus.hpp
