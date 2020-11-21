@@ -1,4 +1,4 @@
-# Installation (https://github.com/forexample/package-example) {
+# Installation {
 
 # Include module for standard, cross-platform install paths
 include(GNUInstallDirs)
