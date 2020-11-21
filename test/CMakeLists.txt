@@ -26,6 +26,8 @@ function(add_test_suite name)
     target_link_libraries(${name} PRIVATE ${link_libraries})
 endfunction()
 
+enable_testing()
+
 add_test_suite(show_versions)
 add_test_suite(benchmark_session_test)
 add_test_suite(compare_test)

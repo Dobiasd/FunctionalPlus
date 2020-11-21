@@ -27,11 +27,6 @@ target_link_libraries(fplus INTERFACE Threads::Threads)
 
 add_subdirectory(include_all_in_one)
 
-if(FPLUS_BUILD_UNITTEST)
-    enable_testing()
-    add_subdirectory(test)
-endif()
-
 if(FPLUS_BUILD_EXAMPLES)
     add_executable(readme_perf_examples EXCLUDE_FROM_ALL examples/readme_perf_examples.cpp)
     target_compile_options(readme_perf_examples PRIVATE ${COMPILE_OPTIONS})
