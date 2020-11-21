@@ -5,11 +5,7 @@ project(FunctionalPlus VERSION 0.2.10)
 message(STATUS "===( ${PROJECT_NAME} ${PROJECT_VERSION} )===")
 option(FPLUS_USE_TOOLCHAIN "Use compiler flags from an external toolchain" OFF)
 option(FPLUS_BUILD_EXAMPLES "Build examples" ON)
-option(FPLUS_BUILD_UNITTEST "Build unit tests" OFF)
-option(FPLUS_UNITTEST_USE_CONAN "Use conan to get doctest dependency (for unit tests only)" OFF)
 
-message(STATUS "Building Unit Tests ${FPLUS_BUILD_UNITTEST}")
-message(STATUS "Use conan ${FPLUS_UNITTEST_USE_CONAN}")
 message(STATUS "Building examples ${FPLUS_BUILD_EXAMPLES}")
 
 if(NOT FPLUS_USE_TOOLCHAIN)
