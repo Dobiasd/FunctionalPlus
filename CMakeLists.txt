@@ -4,9 +4,6 @@ project(FunctionalPlus VERSION 0.2.10)
 
 message(STATUS "===( ${PROJECT_NAME} ${PROJECT_VERSION} )===")
 option(FPLUS_USE_TOOLCHAIN "Use compiler flags from an external toolchain" OFF)
-option(FPLUS_BUILD_EXAMPLES "Build examples" ON)
-
-message(STATUS "Building examples ${FPLUS_BUILD_EXAMPLES}")
 
 if(NOT FPLUS_USE_TOOLCHAIN)
   if (MSVC)
@@ -26,16 +23,6 @@ find_package(Threads REQUIRED)
 target_link_libraries(fplus INTERFACE Threads::Threads)
 
 add_subdirectory(include_all_in_one)
-
-if(FPLUS_BUILD_EXAMPLES)
-    add_executable(readme_perf_examples EXCLUDE_FROM_ALL examples/readme_perf_examples.cpp)
-    target_compile_options(readme_perf_examples PRIVATE ${COMPILE_OPTIONS})
-    target_link_libraries(readme_perf_examples PRIVATE fplus ${CMAKE_THREAD_LIBS_INIT})
-
-    add_executable(99_problems EXCLUDE_FROM_ALL examples/99_problems.cpp)
-    target_compile_options(99_problems PRIVATE ${COMPILE_OPTIONS})
-    target_link_libraries(99_problems PRIVATE fplus ${CMAKE_THREAD_LIBS_INIT})
-endif()
 
 # Run pkgconfig installation:
 include(cmake/pkgconfig.cmake)
