@@ -11,7 +11,5 @@ target_include_directories(fplus INTERFACE
 find_package(Threads REQUIRED)
 target_link_libraries(fplus INTERFACE Threads::Threads)
 
-add_subdirectory(include_all_in_one)
-
 # Install rules
 include(cmake/install-rules.cmake)
