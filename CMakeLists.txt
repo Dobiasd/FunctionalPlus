@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.2)
 
 project(FunctionalPlus VERSION 0.2.10)
 
-message(STATUS "===( ${PROJECT_NAME} ${PROJECT_VERSION} )===")
-
 add_library(fplus INTERFACE)
 add_library(FunctionalPlus::fplus ALIAS fplus)
 target_include_directories(fplus INTERFACE
