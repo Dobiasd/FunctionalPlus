@@ -11,6 +11,8 @@ set(
 )
 add_subdirectory("${PROJECT_SOURCE_DIR}/.." "${PROJECT_BINARY_DIR}/root_project")
 
+include(../cmake/warnings.cmake)
+
 find_package(doctest 2.3.4 CONFIG REQUIRED)
 # for doctest_discover_tests
 include(doctest)
@@ -65,7 +67,7 @@ set(
 
 foreach(name IN LISTS tests)
   add_executable("${name}" "${name}.cpp")
-  target_compile_options("${name}" PRIVATE "${COMPILE_OPTIONS}")
+  target_compile_options("${name}" PRIVATE ${project_warnings})
   target_link_libraries(
       "${name}"
       PRIVATE

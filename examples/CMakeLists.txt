@@ -9,24 +9,6 @@ function(add_example NAME)
   target_link_libraries("${NAME}" PRIVATE FunctionalPlus::fplus)
   # CMake 3.2 doesn't know cxx_std_14 so instead we use cxx_variable_templates
   target_compile_features("${NAME}" PRIVATE cxx_variable_templates)
-  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
-    target_compile_options(
-        "${NAME}"
-        PRIVATE
-        -Wall
-        -Wextra
-        -pedantic
-        # -Wshadow
-        -Werror
-        -Weffc++
-        -Wconversion
-        -Wsign-conversion
-        -Wctor-dtor-privacy
-        -Wreorder
-        -Wold-style-cast
-        -Wparentheses
-    )
-  endif()
 endfunction()
 
 add_example(readme_perf_examples)
