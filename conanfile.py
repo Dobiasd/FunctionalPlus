@@ -17,12 +17,12 @@ class FunctionalPlusConan(ConanFile):
         if self.options.build_unittest:
             self.requires.add('doctest/2.3.4@bincrafters/stable')
 
-    def build(self):
+    def package(self):
+        # CMake
         cmake = CMake(self)
         cmake.configure()
         cmake.install()
-
-    def package(self):
+        # File copy
         self.copy("*LICENSE", dst="licenses")
         self.copy("*.hpp", src="include")
         self.copy("*.hpp", src="lib")
