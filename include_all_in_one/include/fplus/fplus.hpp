@@ -3014,6 +3014,7 @@ namespace internal
     void prepare_container(std::array<T, N>&, std::size_t size)
     {
         assert(size == N);
+        unused(size);
     }
 
     template <typename Y>
@@ -9257,8 +9258,7 @@ T mean_obj_div_double(const Container& xs)
 template <typename Result, typename Container>
 Result mean_using_doubles(const Container& xs)
 {
-    auto size = size_of_cont(xs);
-    assert(size != 0);
+    assert(size_of_cont(xs) != 0);
     auto xs_as_doubles = convert_elems<double>(xs);
     auto result_as_double = mean<double>(xs_as_doubles);
     if (!std::is_integral<Result>::value)
