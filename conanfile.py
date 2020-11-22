@@ -6,7 +6,7 @@ class FunctionalPlusConan(ConanFile):
     license = "Boost Software License 1.0"
     url = "https://github.com/Dobiasd/FunctionalPlus"
     description = "Functional Programming Library for C++. Write concise and readable C++ code."
-    exports_sources = ["*", "LICENSE"]
+    exports_sources = ["examples*", "cmake*", "include*", "CMakeLists.txt", "LICENSE"]
     options = {
         "build_unittest": [True, False],
     }
