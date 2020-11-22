@@ -82,6 +82,7 @@ namespace internal
     void prepare_container(std::array<T, N>&, std::size_t size)
     {
         assert(size == N);
+        unused(size);
     }
 
     template <typename Y>
