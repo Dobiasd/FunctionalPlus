@@ -47,11 +47,10 @@ def parse_one_file(filename):
 
 
 print("-- Generating include_all_in_one")
-content = parse_one_file("fplus.hpp")
+content = "#pragma once\n" + parse_one_file("fplus.hpp")
 if version_info[0] >= 3:
     f = open(THIS_DIR + "/include/fplus/fplus.hpp", "w", encoding='utf-8', errors='ignore')
 else:
     f = open(THIS_DIR + "/include/fplus/fplus.hpp", "w")
 f.write(content)
 f.close()
-
