@@ -5,7 +5,7 @@ if __name__ == "__main__":
     if os.getenv("CXX") == "g++-7":
         version = os.getenv("TRAVIS_TAG")
         if not version:
-            version = "dev"
+            version = "v0.2.8-p0"
         reference = "functionalplus/%s" % version
         username = "dobiasd"
         channel = "stable"
