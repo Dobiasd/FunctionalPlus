@@ -74,8 +74,7 @@ foreach(name IN LISTS tests)
       FunctionalPlus::fplus
       doctest::doctest
   )
-  # CMake 3.2 doesn't know cxx_std_14 so instead we use cxx_variable_templates
-  target_compile_features("${name}" INTERFACE cxx_variable_templates)
+  target_compile_features("${name}" INTERFACE cxx_std_14)
   doctest_discover_tests("${name}")
 endforeach()
 
