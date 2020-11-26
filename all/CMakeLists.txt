@@ -1,6 +1,6 @@
 # This is the lists file that should be used during development for the best
 # discovery in the developer's choice of IDE.
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.14)
 
 project(FunctionalPlusDevelopment)
 
