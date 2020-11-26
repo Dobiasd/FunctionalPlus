@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.14)
 
 project(FunctionalPlusExamples)
 
-add_subdirectory("${PROJECT_SOURCE_DIR}/.." "${PROJECT_BINARY_DIR}/root_project")
+include(../cmake/root-project.cmake)
 
 function(add_example NAME)
   add_executable("${NAME}" "${NAME}.cpp")

@@ -10,19 +10,6 @@ add_subdirectory(
     "${PROJECT_BINARY_DIR}/test"
 )
 
-# This project supports CMake 3.2 as a minimum version, so there is no way to
-# protect against multiple inclusions other than to turn add_subdirectory into
-# a noop with code injection at project() calls.
-# If at least CMake 3.11 were to be supported, then the FetchContent module has
-# this kind of protection built into it.
-set(
-    CMAKE_PROJECT_FunctionalPlusExamples_INCLUDE
-    "${PROJECT_SOURCE_DIR}/noop.cmake"
-    CACHE
-    INTERNAL
-    "Protect against multiple inclusions using add_subdirectory"
-)
-
 add_subdirectory(
     "${PROJECT_SOURCE_DIR}/../examples"
     "${PROJECT_BINARY_DIR}/examples"

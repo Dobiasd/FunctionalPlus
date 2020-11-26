@@ -9,8 +9,7 @@ set(
     INTERNAL
     "Turn the warning guard off to have errors appear in test builds"
 )
-add_subdirectory("${PROJECT_SOURCE_DIR}/.." "${PROJECT_BINARY_DIR}/root_project")
-
+include(../cmake/root-project.cmake)
 include(../cmake/warnings.cmake)
 
 find_package(doctest 2.3.4 CONFIG REQUIRED)
