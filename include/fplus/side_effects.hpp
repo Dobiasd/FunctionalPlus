@@ -313,8 +313,22 @@ template <typename Container>
 auto execute_parallelly(const Container& effs)
 {
     return [effs] {
-        // Bluntly re-using the transform implementation for execute side effects.
+        // Bluntly re-using the transform implementation to execute side effects.
         return transform_parallelly([](const auto& eff) {
+            return internal::invoke(eff);
+        }, effs);
+    };
+}
+
+// API search type: execute_parallelly_n_threads : (Int, [Io a]) -> Io [a]
+// Returns a function that (when called) executes the given side effects
+// in parallel (one thread each) and returns the collected results.
+template <typename Container>
+auto execute_parallelly_n_threads(std::size_t n, const Container& effs)
+{
+    return [n, effs] {
+        // Bluntly re-using the transform implementation to execute side effects.
+        return transform_parallelly_n_threads(n, [](const auto& eff) {
             return internal::invoke(eff);
         }, effs);
     };
