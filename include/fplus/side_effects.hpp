@@ -308,23 +308,15 @@ std::function<bool()> execute_serially_until_failure(const Container& effs)
 
 // API search type: execute_parallelly : [Io a] -> Io [a]
 // Returns a function that (when called) executes the given side effects
-// in parallel and returns the collected results.
+// in parallel (one thread each) and returns the collected results.
 template <typename Container>
 auto execute_parallelly(const Container& effs)
 {
-    using Effect = typename Container::value_type;
-    using Result = internal::invoke_result_t<Effect>;
     return [effs] {
-        auto handles = transform(
-            [](Effect e) { return std::async(std::launch::async, e); }, effs);
-
-        std::vector<std::decay_t<Result>> results;
-        results.reserve(size_of_cont(handles));
-        for (auto& handle : handles)
-        {
-            results.push_back(handle.get());
-        }
-        return results;
+        // Bluntly re-using the transform implementation for execute side effects.
+        return transform_parallelly([](const auto& eff) {
+            return internal::invoke(eff);
+        }, effs);
     };
 }
 
