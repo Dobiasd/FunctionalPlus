@@ -296,9 +296,11 @@ auto apply_function_n_times(F f, std::size_t n, const FIn& x)
 // API search type: transform_parallelly : ((a -> b), [a]) -> [b]
 // fwd bind count: 1
 // transform_parallelly((*2), [1, 3, 4]) == [2, 6, 8]
-// Same as transform, but can utilize multiple CPUs by using std::async.
+// Same as transform, but can utilize multiple CPUs by using std::launch::async.
 // Only makes sense if one run of the provided function
 // takes enough time to justify the synchronization overhead.
+// One thread per container element is spawned.
+// Check out transform_parallelly_n_threads to limit the number of threads.
 template <typename F, typename ContainerIn>
 auto transform_parallelly(F f, const ContainerIn& xs)
 {
@@ -322,145 +324,6 @@ auto transform_parallelly(F f, const ContainerIn& xs)
         *it = handle.get();
     }
     return ys;
-}
-
-// API search type: reduce_parallelly : (((a, a) -> a), a, [a]) -> a
-// fwd bind count: 2
-// reduce_parallelly((+), 0, [1, 2, 3]) == (0+1+2+3) == 6
-// Same as reduce, but can utilize multiple CPUs by using std::async.
-// Combines the initial value and all elements of the sequence
-// using the given function in unspecified order.
-// The set of f, init and value_type should form a commutative monoid.
-template <typename F, typename Container>
-typename Container::value_type reduce_parallelly(
-    F f, const typename Container::value_type& init, const Container& xs)
-{
-    if (is_empty(xs))
-    {
-        return init;
-    }
-    else if (size_of_cont(xs) == 1)
-    {
-        return internal::invoke(f, init, xs.front());
-    }
-    else
-    {
-        typedef typename Container::value_type T;
-        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T
-        {
-            return internal::invoke(f, p.first, p.second);
-        };
-        auto transform_result =
-            transform_parallelly(f_on_pair, adjacent_pairs(xs));
-        if (size_of_cont(xs) % 2 == 1)
-        {
-            transform_result.push_back(last(xs));
-        }
-        return reduce_parallelly(f, init, transform_result);;
-    }
-}
-
-// API search type: reduce_1_parallelly : (((a, a) -> a), [a]) -> a
-// fwd bind count: 1
-// reduce_1_parallelly((+), [1, 2, 3]) == (1+2+3) == 6
-// Same as reduce_1, but can utilize multiple CPUs by using std::async.
-// Joins all elements of the sequence using the given function
-// in unspecified order.
-// The set of f and value_type should form a commutative semigroup.
-template <typename F, typename Container>
-typename Container::value_type reduce_1_parallelly(F f, const Container& xs)
-{
-    assert(is_not_empty(xs));
-    if (size_of_cont(xs) == 1)
-    {
-        return xs.front();
-    }
-    else
-    {
-        typedef typename Container::value_type T;
-        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T
-        {
-            return internal::invoke(f, p.first, p.second);
-        };
-        auto transform_result =
-            transform_parallelly(f_on_pair, adjacent_pairs(xs));
-        if (size_of_cont(xs) % 2 == 1)
-        {
-            transform_result.push_back(last(xs));
-        }
-        return reduce_1_parallelly(f, transform_result);
-    }
-}
-
-// API search type: keep_if_parallelly : ((a -> Bool), [a]) -> [a]
-// fwd bind count: 1
-// Same as keep_if but using multiple threads.
-// Can be useful if calling the predicate takes some time.
-// keep_if_parallelly(is_even, [1, 2, 3, 2, 4, 5]) == [2, 2, 4]
-template <typename Pred, typename Container>
-Container keep_if_parallelly(Pred pred, const Container& xs)
-{
-    // Avoid a temporary std::vector<bool>.
-    const auto idxs = find_all_idxs_by(
-        is_equal_to<std::uint8_t>(1),
-        transform_parallelly([pred](const auto & x) -> std::uint8_t {
-            return pred(x) ? 1 : 0;
-        }, xs));
-    return elems_at_idxs(idxs, xs);
-}
-
-// API search type: transform_reduce : ((a -> b), ((b, b) -> b), b, [a]) -> b
-// fwd bind count: 3
-// transform_reduce(square, add, 0, [1,2,3]) == 0+1+4+9 = 14
-// The set of binary_f, init and unary_f::output should form a
-// commutative monoid.
-template <typename UnaryF, typename BinaryF, typename Container, typename Acc>
-auto transform_reduce(UnaryF unary_f,
-                      BinaryF binary_f,
-                      const Acc& init,
-                      const Container& xs)
-{
-    return reduce(binary_f, init, transform(unary_f, xs));
-}
-
-// API search type: transform_reduce_1 : ((a -> b), ((b, b) -> b), [a]) -> b
-// fwd bind count: 2
-// transform_reduce_1(square, add, [1,2,3]) == 0+1+4+9 = 14
-// The set of binary_f, and unary_f::output should form
-// a commutative semigroup.
-template <typename UnaryF, typename BinaryF, typename Container>
-auto transform_reduce_1(UnaryF unary_f, BinaryF binary_f, const Container& xs)
-{
-    return reduce_1(binary_f, transform(unary_f, xs));
-}
-
-// API search type: transform_reduce_parallelly : ((a -> b), ((b, b) -> b), b, [a]) -> b
-// fwd bind count: 3
-// transform_reduce_parallelly(square, add, 0, [1,2,3]) == 0+1+4+9 = 14
-// Also Known as map_reduce.
-// The set of binary_f, init and unary_f::output
-// should form a commutative monoid.
-template <typename UnaryF, typename BinaryF, typename Container, typename Acc>
-auto transform_reduce_parallelly(UnaryF unary_f,
-                                 BinaryF binary_f,
-                                 const Acc& init,
-                                 const Container& xs)
-{
-    return reduce_parallelly(binary_f, init, transform_parallelly(unary_f, xs));
-}
-
-// API search type: transform_reduce_1_parallelly : ((a -> b), ((b, b) -> b), [a]) -> b
-// fwd bind count: 2
-// transform_reduce_1_parallelly(square, add, [1,2,3]) == 0+1+4+9 = 14
-// Also Known as map_reduce.
-// The set of binary_f, and unary_f::output
-// should form a commutative semigroup.
-template <typename UnaryF, typename BinaryF, typename Container>
-auto transform_reduce_1_parallelly(UnaryF unary_f,
-                                   BinaryF binary_f,
-                                   const Container& xs)
-{
-    return reduce_1_parallelly(binary_f, transform_parallelly(unary_f, xs));
 }
 
 // API search type: transform_parallelly_n_threads : (Int, (a -> b), [a]) -> [b]
@@ -529,6 +392,276 @@ auto transform_parallelly_n_threads(std::size_t n, F f, const ContainerIn& xs)
 
     return get_map_values<decltype(thread_results), ContainerOut>(
         thread_results);
+}
+
+// API search type: reduce_parallelly : (((a, a) -> a), a, [a]) -> a
+// fwd bind count: 2
+// reduce_parallelly((+), 0, [1, 2, 3]) == (0+1+2+3) == 6
+// Same as reduce, but can utilize multiple CPUs by using std::launch::async.
+// Combines the initial value and all elements of the sequence
+// using the given function in unspecified order.
+// The set of f, init and value_type should form a commutative monoid.
+// One thread per container element is spawned.
+// Check out reduce_parallelly_n_threads to limit the number of threads.
+template <typename F, typename Container>
+typename Container::value_type reduce_parallelly(
+    F f, const typename Container::value_type& init, const Container& xs)
+{
+    if (is_empty(xs))
+    {
+        return init;
+    }
+    else if (size_of_cont(xs) == 1)
+    {
+        return internal::invoke(f, init, xs.front());
+    }
+    else
+    {
+        typedef typename Container::value_type T;
+        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T
+        {
+            return internal::invoke(f, p.first, p.second);
+        };
+        auto transform_result =
+            transform_parallelly(f_on_pair, adjacent_pairs(xs));
+        if (size_of_cont(xs) % 2 == 1)
+        {
+            transform_result.push_back(last(xs));
+        }
+        return reduce_parallelly(f, init, transform_result);
+    }
+}
+
+// API search type: reduce_parallelly_n_threads : (Int, ((a, a) -> a), a, [a]) -> a
+// fwd bind count: 3
+// reduce_parallelly_n_threads(2, (+), 0, [1, 2, 3]) == (0+1+2+3) == 6
+// Same as reduce, but can utilize multiple CPUs by using std::launch::async.
+// Combines the initial value and all elements of the sequence
+// using the given function in unspecified order.
+// The set of f, init and value_type should form a commutative monoid.
+template <typename F, typename Container>
+typename Container::value_type reduce_parallelly_n_threads(
+    std::size_t n,
+    F f, const typename Container::value_type& init, const Container& xs)
+{
+    if (is_empty(xs))
+    {
+        return init;
+    }
+    else if (size_of_cont(xs) == 1)
+    {
+        return internal::invoke(f, init, xs.front());
+    }
+    else
+    {
+        typedef typename Container::value_type T;
+        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T
+        {
+            return internal::invoke(f, p.first, p.second);
+        };
+        auto transform_result =
+            transform_parallelly_n_threads(n, f_on_pair, adjacent_pairs(xs));
+        if (size_of_cont(xs) % 2 == 1)
+        {
+            transform_result.push_back(last(xs));
+        }
+        return reduce_parallelly_n_threads(n, f, init, transform_result);
+    }
+}
+
+// API search type: reduce_1_parallelly : (((a, a) -> a), [a]) -> a
+// fwd bind count: 1
+// reduce_1_parallelly((+), [1, 2, 3]) == (1+2+3) == 6
+// Same as reduce_1, but can utilize multiple CPUs by using std::launch::async.
+// Joins all elements of the sequence using the given function
+// in unspecified order.
+// The set of f and value_type should form a commutative semigroup.
+// One thread per container element is spawned.
+// Check out reduce_1_parallelly_n_threads to limit the number of threads.
+template <typename F, typename Container>
+typename Container::value_type reduce_1_parallelly(F f, const Container& xs)
+{
+    assert(is_not_empty(xs));
+    if (size_of_cont(xs) == 1)
+    {
+        return xs.front();
+    }
+    else
+    {
+        typedef typename Container::value_type T;
+        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T
+        {
+            return internal::invoke(f, p.first, p.second);
+        };
+        auto transform_result =
+            transform_parallelly(f_on_pair, adjacent_pairs(xs));
+        if (size_of_cont(xs) % 2 == 1)
+        {
+            transform_result.push_back(last(xs));
+        }
+        return reduce_1_parallelly(f, transform_result);
+    }
+}
+
+// API search type: reduce_1_parallelly_n_threads : (Int, ((a, a) -> a), [a]) -> a
+// fwd bind count: 2
+// reduce_1_parallelly_n_threads(2, (+), [1, 2, 3]) == (1+2+3) == 6
+// Same as reduce_1, but can utilize multiple CPUs by using std::launch::async.
+// Joins all elements of the sequence using the given function
+// in unspecified order.
+// The set of f and value_type should form a commutative semigroup.
+template <typename F, typename Container>
+typename Container::value_type reduce_1_parallelly_n_threads(
+    std::size_t n, F f, const Container& xs)
+{
+    assert(is_not_empty(xs));
+    if (size_of_cont(xs) == 1)
+    {
+        return xs.front();
+    }
+    else
+    {
+        typedef typename Container::value_type T;
+        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T
+        {
+            return internal::invoke(f, p.first, p.second);
+        };
+        auto transform_result =
+            transform_parallelly_n_threads(n, f_on_pair, adjacent_pairs(xs));
+        if (size_of_cont(xs) % 2 == 1)
+        {
+            transform_result.push_back(last(xs));
+        }
+        return reduce_1_parallelly_n_threads(n, f, transform_result);
+    }
+}
+
+// API search type: keep_if_parallelly : ((a -> Bool), [a]) -> [a]
+// fwd bind count: 1
+// Same as keep_if but using multiple threads.
+// Can be useful if calling the predicate takes some time.
+// keep_if_parallelly(is_even, [1, 2, 3, 2, 4, 5]) == [2, 2, 4]
+// One thread per container element is spawned.
+// Check out keep_if_parallelly_n_threads to limit the number of threads.
+template <typename Pred, typename Container>
+Container keep_if_parallelly(Pred pred, const Container& xs)
+{
+    // Avoid a temporary std::vector<bool>.
+    const auto idxs = find_all_idxs_by(
+        is_equal_to<std::uint8_t>(1),
+        transform_parallelly([pred](const auto & x) -> std::uint8_t {
+            return pred(x) ? 1 : 0;
+        }, xs));
+    return elems_at_idxs(idxs, xs);
+}
+
+// API search type: keep_if_parallelly_n_threads : (Int, (a -> Bool), [a]) -> [a]
+// fwd bind count: 2
+// Same as keep_if but using multiple threads.
+// Can be useful if calling the predicate takes some time.
+// keep_if_parallelly_n_threads(3, is_even, [1, 2, 3, 2, 4, 5]) == [2, 2, 4]
+template <typename Pred, typename Container>
+Container keep_if_parallelly_n_threads(
+    std::size_t n, Pred pred, const Container& xs)
+{
+    // Avoid a temporary std::vector<bool>.
+    const auto idxs = find_all_idxs_by(
+        is_equal_to<std::uint8_t>(1),
+        transform_parallelly_n_threads(n, [pred](const auto & x) -> std::uint8_t {
+            return pred(x) ? 1 : 0;
+        }, xs));
+    return elems_at_idxs(idxs, xs);
+}
+
+// API search type: transform_reduce : ((a -> b), ((b, b) -> b), b, [a]) -> b
+// fwd bind count: 3
+// transform_reduce(square, add, 0, [1,2,3]) == 0+1+4+9 = 14
+// The set of binary_f, init and unary_f::output should form a
+// commutative monoid.
+template <typename UnaryF, typename BinaryF, typename Container, typename Acc>
+auto transform_reduce(UnaryF unary_f,
+                      BinaryF binary_f,
+                      const Acc& init,
+                      const Container& xs)
+{
+    return reduce(binary_f, init, transform(unary_f, xs));
+}
+
+// API search type: transform_reduce_1 : ((a -> b), ((b, b) -> b), [a]) -> b
+// fwd bind count: 2
+// transform_reduce_1(square, add, [1,2,3]) == 0+1+4+9 = 14
+// The set of binary_f, and unary_f::output should form
+// a commutative semigroup.
+template <typename UnaryF, typename BinaryF, typename Container>
+auto transform_reduce_1(UnaryF unary_f, BinaryF binary_f, const Container& xs)
+{
+    return reduce_1(binary_f, transform(unary_f, xs));
+}
+
+// API search type: transform_reduce_parallelly : ((a -> b), ((b, b) -> b), b, [a]) -> b
+// fwd bind count: 3
+// transform_reduce_parallelly(square, add, 0, [1,2,3]) == 0+1+4+9 = 14
+// Also known as map_reduce.
+// The set of binary_f, init and unary_f::output
+// should form a commutative monoid.
+// One thread per container element is spawned.
+// Check out transform_reduce_parallelly_n_threads to limit the number of threads.
+template <typename UnaryF, typename BinaryF, typename Container, typename Acc>
+auto transform_reduce_parallelly(UnaryF unary_f,
+                                 BinaryF binary_f,
+                                 const Acc& init,
+                                 const Container& xs)
+{
+    return reduce_parallelly(binary_f, init, transform_parallelly(unary_f, xs));
+}
+
+// API search type: transform_reduce_parallelly_n_threads : (Int, (a -> b), ((b, b) -> b), b, [a]) -> b
+// fwd bind count: 4
+// transform_reduce_parallelly_n_threads(2, square, add, 0, [1,2,3]) == 0+1+4+9 = 14
+// Also known as map_reduce.
+// The set of binary_f, init and unary_f::output
+// should form a commutative monoid.
+template <typename UnaryF, typename BinaryF, typename Container, typename Acc>
+auto transform_reduce_parallelly_n_threads(std::size_t n,
+                                           UnaryF unary_f,
+                                           BinaryF binary_f,
+                                           const Acc& init,
+                                           const Container& xs)
+{
+    return reduce_parallelly_n_threads(
+        n, binary_f, init, transform_parallelly_n_threads(n, unary_f, xs));
+}
+
+// API search type: transform_reduce_1_parallelly : ((a -> b), ((b, b) -> b), [a]) -> b
+// fwd bind count: 2
+// transform_reduce_1_parallelly(square, add, [1,2,3]) == 0+1+4+9 = 14
+// Also Known as map_reduce.
+// The set of binary_f, and unary_f::output
+// should form a commutative semigroup.
+// One thread per container element is spawned.
+// Check out transform_reduce_1_parallelly_n_threads to limit the number of threads.
+template <typename UnaryF, typename BinaryF, typename Container>
+auto transform_reduce_1_parallelly(UnaryF unary_f,
+                                   BinaryF binary_f,
+                                   const Container& xs)
+{
+    return reduce_1_parallelly(binary_f, transform_parallelly(unary_f, xs));
+}
+
+// API search type: transform_reduce_1_parallelly_n_threads : (Int, (a -> b), ((b, b) -> b), [a]) -> b
+// fwd bind count: 3
+// transform_reduce_1_parallelly_n_threads(2, square, add, [1,2,3]) == 0+1+4+9 = 14
+// Also Known as map_reduce.
+// The set of binary_f, and unary_f::output
+// should form a commutative semigroup.
+template <typename UnaryF, typename BinaryF, typename Container>
+auto transform_reduce_1_parallelly_n_threads(std::size_t n,
+                                             UnaryF unary_f,
+                                             BinaryF binary_f,
+                                             const Container& xs)
+{
+    return reduce_1_parallelly_n_threads(
+        n, binary_f, transform_parallelly_n_threads(n, unary_f, xs));
 }
 
 } // namespace fplus
