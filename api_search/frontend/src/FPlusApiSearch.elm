@@ -2,6 +2,7 @@ module FPlusApiSearch exposing (..)
 
 import FPlusApiCommon exposing (..)
 import TypeSignature
+import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -11,12 +12,17 @@ import String
 
 
 main =
-    program
-        { init = initModelAndCommands
+    Browser.element
+        { init = init
         , update = update
-        , subscriptions = always Sub.none
+        , subscriptions = subscriptions
         , view = view
         }
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
 
 
 maxVisibleFunctions : Int
@@ -24,8 +30,8 @@ maxVisibleFunctions =
     20
 
 
-initModelAndCommands : ( Model, Cmd Msg )
-initModelAndCommands =
+init : () -> ( Model, Cmd Msg )
+init _ =
     ( defaultModel, Cmd.none )
 
 
@@ -125,7 +131,7 @@ view model =
                     [ placeholder "search query"
                     , autofocus True
                     , autocomplete True
-                    , style [ ( "width", "500px" ) ]
+                    , style "width" "500px"
                     , onInput UpdateQuery
                     ]
                     []
@@ -315,17 +321,17 @@ showFunctions ratedFunctions =
 
 ratingToHtml : Float -> Html Msg
 ratingToHtml rating =
-    "search rating: " ++ toString (round rating) |> docFromString
+    "search rating: " ++ String.fromInt (round rating) |> docFromString
 
 
 showRatedFunction : ( Function, Float ) -> Html Msg
 showRatedFunction ( function, rating ) =
     let
-        functionRating =
+        ratingOfFunction =
             div [ class "functionrating" ]
                 [ rating
                     |> ratingToHtml
                 ]
     in
         div [ class "function" ]
-            ( showFunctionDivs function ++ [functionRating] )
+            ( showFunctionDivs function ++ [ratingOfFunction] )

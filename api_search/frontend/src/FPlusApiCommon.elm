@@ -1,6 +1,7 @@
 module FPlusApiCommon exposing (..)
 
 import Database
+import Debug
 import TypeSignature
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -44,7 +45,7 @@ parseSignatureCrashOnError function =
                 ++ function.name
                 ++ ": "
                 ++ function.signature
-                |> Debug.crash
+                |> Debug.todo
 
 
 hasFwdSignature : String -> Bool
@@ -122,7 +123,7 @@ showMaybeSig maybeSig =
 
 replaceInString : String -> String -> String -> String
 replaceInString pattern replacement =
-    Regex.replace Regex.All (Regex.regex pattern) (always replacement)
+    Regex.replace (Maybe.withDefault Regex.never (Regex.fromString pattern)) (always replacement)
 
 
 replaceSubMatchInString : String -> (String -> String) -> String -> String
@@ -136,7 +137,7 @@ replaceSubMatchInString pattern replacementFunc =
                 _ ->
                     match
     in
-        Regex.replace Regex.All (Regex.regex pattern) f
+        Regex.replace (Maybe.withDefault Regex.never (Regex.fromString pattern)) f
 
 
 replaceTwoSubMatchInString :
@@ -154,7 +155,7 @@ replaceTwoSubMatchInString pattern replacementFunc =
                 _ ->
                     match
     in
-        Regex.replace Regex.All (Regex.regex pattern) f
+        Regex.replace (Maybe.withDefault Regex.never (Regex.fromString pattern)) f
 
 
 applyUntilIdempotent : (String -> String) -> String -> String

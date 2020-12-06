@@ -1,4 +1,4 @@
 function init() {
   var mainDiv = document.getElementById('main');
-  elmContent = Elm.FPlusApiExplore.embed(mainDiv);
+  elmContent = Elm.FPlusApiExplore.init({ node: mainDiv });
 }

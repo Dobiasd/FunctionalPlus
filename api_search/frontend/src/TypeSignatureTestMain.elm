@@ -1,5 +1,6 @@
 module TypeSignatureTestMain exposing (..)
 
+import Browser
 import TypeSignature
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -10,8 +11,8 @@ import String
 
 
 main =
-    beginnerProgram
-        { model = ""
+    Browser.sandbox
+        { init = init
         , update = update
         , view = view
         }
@@ -19,6 +20,11 @@ main =
 
 type alias Model =
     String
+
+
+init : Model
+init =
+    ""
 
 
 type Msg
@@ -68,15 +74,15 @@ view str =
             [ input
                 [ placeholder "please enter type signature"
                 , autofocus True
-                , style [ ( "width", "500px" ) ]
+                , style "width" "500px"
                 , onInput UpdateStr
                 ]
                 []
-            , div [ style [ ( "margin", "10px" ) ] ]
-                [ "parse result: " ++ (maybeSignature |> toString) |> text ]
-            , div [ style [ ( "margin", "10px" ) ] ]
+            , div [ style "margin" "10px" ]
+                [ "parse result: " ++ (maybeSignature |> Debug.toString) |> text ]
+            , div [ style "margin" "10px" ]
                 [ "parse result: "
-                    ++ (maybeSignatureNormalized |> toString)
+                    ++ (maybeSignatureNormalized |> Debug.toString)
                     |> text
                 ]
             , div [] [ "as string: " ++ signatureString |> text ]
