@@ -2,7 +2,6 @@ from conans import ConanFile, CMake
 
 class FunctionalPlusConan(ConanFile):
     name = "functionalplus"
-    version = "v0.2.13-p0"
     license = "Boost Software License 1.0"
     url = "https://github.com/Dobiasd/FunctionalPlus"
     description = "Functional Programming Library for C++. Write concise and readable C++ code."
