@@ -1,6 +1,7 @@
 module FPlusApiExplore exposing (..)
 
 import FPlusApiCommon exposing (..)
+import Browser
 import Database
 import TypeSignature
 import Html exposing (..)
@@ -12,16 +13,21 @@ import String
 
 
 main =
-    program
-        { init = initModelAndCommands
+    Browser.element
+        { init = init
         , update = update
-        , subscriptions = always Sub.none
+        , subscriptions = subscriptions
         , view = view
         }
 
 
-initModelAndCommands : ( Model, Cmd Msg )
-initModelAndCommands =
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
+
+
+init : () -> ( Model, Cmd Msg )
+init _ =
     ( defaultModel, Cmd.none )
 
 

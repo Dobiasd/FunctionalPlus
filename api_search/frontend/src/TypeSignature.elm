@@ -3,10 +3,11 @@ module TypeSignature exposing (Signature, parseSignature, showSignature, normali
 {-| This module provides the possibility to parse Haskell and Elm type signatures.
 -}
 
-import Combine as C exposing ((<$))
+import Combine as C
 import Combine.Char as CC
 import Combine.Num as CN
 import Char
+import Debug
 import Dict
 import Tuple exposing (first)
 import List exposing ((::))
@@ -39,7 +40,7 @@ splitLast xs =
 
         _ ->
             "Error splitLast"
-                |> Debug.crash
+                |> Debug.todo
 
 
 curry1 : Signature -> Signature
@@ -48,7 +49,7 @@ curry1 sig =
         Arrow (Tuple []) ret ->
             "Error curry1 (empty tuple): "
                 ++ showSignature True sig
-                |> Debug.crash
+                |> Debug.todo
 
         Arrow (Tuple params) ret ->
             let
@@ -59,13 +60,13 @@ curry1 sig =
                     [p] -> Arrow p (Arrow x ret)
                     _ -> Arrow (Tuple ps) (Arrow x ret)
 
-        Arrow sig ret ->
-            Arrow (Tuple []) (Arrow sig ret)
+        Arrow sig2 ret ->
+            Arrow (Tuple []) (Arrow sig2 ret)
 
         _ ->
             "Error curry1: "
                 ++ showSignature True sig
-                |> Debug.crash
+                |> Debug.todo
 
 curry1Flip : Signature -> Signature
 curry1Flip sig =
@@ -75,19 +76,19 @@ curry1Flip sig =
         _ ->
             "Error curry1Flip: "
                 ++ showSignature True sig
-                |> Debug.crash
+                |> Debug.todo
 
 mapS : (s -> String -> ( s, String )) -> s -> List Signature -> ( List Signature, s )
 mapS f s =
     let
-        go sig ( sigs, s ) =
+        go sig ( sigs, s2 ) =
             let
                 ( sig_, s_ ) =
-                    mapLRS f s sig
+                    mapLRS f s2 sig
             in
                 ( sig_ :: sigs, s_ )
     in
-        List.foldl go ( [], s ) >> \( xs, s ) -> ( List.reverse xs, s )
+        List.foldl go ( [], s ) >> \( xs, s2 ) -> ( List.reverse xs, s2 )
 
 
 
@@ -146,7 +147,7 @@ nthVarName : Int -> String
 nthVarName i =
     let
         charPart =
-            97 + (rem i 26) |> Char.fromCode |> String.fromChar
+            97 + (remainderBy 26 i) |> Char.fromCode |> String.fromChar
 
         addNumber =
             i // 26
@@ -155,7 +156,7 @@ nthVarName i =
             if addNumber == 0 then
                 ""
             else
-                toString addNumber
+                String.fromInt addNumber
     in
         charPart ++ numStr
 
@@ -286,7 +287,7 @@ arrowParser : C.Parser s Signature
 arrowParser =
     let
         arrowOp =
-            Arrow <$ trimSpaces (C.string "->")
+            C.onsuccess Arrow (trimSpaces (C.string "->"))
     in
         C.chainr arrowOp (C.lazy <| \() -> nonAppSignatureParser)
 
@@ -308,7 +309,7 @@ typeApplicationParser : C.Parser s Signature
 typeApplicationParser =
     let
         typeApplyOp =
-            TypeApplication <$ C.many1 CC.space
+            C.onsuccess TypeApplication (C.many1 CC.space)
 
         validate ta =
             if isValidTypeApplication ta then

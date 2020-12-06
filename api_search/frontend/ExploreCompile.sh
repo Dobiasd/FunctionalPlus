@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-elm-make src/Explore.elm --output build/js/fplus_api_explore.js
+elm make src/FPlusApiExplore.elm --output=build/js/fplus_api_explore.js
 
 if [ $? -eq 0 ]
 then

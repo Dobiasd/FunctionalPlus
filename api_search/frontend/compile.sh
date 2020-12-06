@@ -5,7 +5,8 @@ rm -r -f build
 mkdir -p build
 mkdir -p build/js
 
-elm-make src/Main.elm --output build/js/fplus_api_search.js
+# todo: Use --optimize
+elm make src/FPlusApiSearch.elm --output=build/js/fplus_api_search.js
 
 if [ $? -eq 0 ]
 then
