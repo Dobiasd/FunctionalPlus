@@ -324,6 +324,74 @@ auto transform_parallelly(F f, const ContainerIn& xs)
     return ys;
 }
 
+// API search type: transform_parallelly_n_threads : (Int, (a -> b), [a]) -> [b]
+// fwd bind count: 2
+// transform_parallelly_n_threads(4, (*2), [1, 3, 4]) == [2, 6, 8]
+// Same as transform, but uses n threads in parallel.
+// Only makes sense if one run of the provided function
+// takes enough time to justify the synchronization overhead.
+// Can be used for applying the MapReduce pattern.
+template <typename F, typename ContainerIn>
+auto transform_parallelly_n_threads(std::size_t n, F f, const ContainerIn& xs)
+{
+    using ContainerOut = typename internal::
+        same_cont_new_t_from_unary_f<ContainerIn, F, 0>::type;
+    using X = typename ContainerIn::value_type;
+    using Y = internal::invoke_result_t<F, X>;
+    using x_ptr_t =  const X*;
+    auto queue = transform_convert<std::vector<x_ptr_t>>(
+        [](const X& x) -> x_ptr_t
+        {
+            return &x;
+        }, xs);
+
+    std::mutex queue_mutex;
+    std::mutex thread_results_mutex;
+    std::map<std::size_t, std::decay_t<Y>> thread_results;
+    std::size_t queue_idx = 0;
+
+    const auto worker_func = [&]()
+    {
+        for (;;)
+        {
+            std::size_t idx = std::numeric_limits<std::size_t>::max();
+            x_ptr_t x_ptr = nullptr;
+            {
+                std::lock_guard<std::mutex> queue_lock(queue_mutex);
+                if (queue_idx == queue.size())
+                {
+                    return;
+                }
+                idx = queue_idx;
+                x_ptr = queue[idx];
+                ++queue_idx;
+            }
+
+            const auto y = internal::invoke(f, *x_ptr);
+
+            {
+                std::lock_guard<std::mutex> thread_results_lock(
+                    thread_results_mutex);
+                thread_results.insert(std::make_pair(idx, y));
+            }
+        }
+    };
+
+    const auto create_thread = [&]() -> std::thread
+    {
+        return std::thread(worker_func);
+    };
+    auto threads = generate<std::vector<std::thread>>(create_thread, n);
+
+    for (auto& thread : threads)
+    {
+        thread.join();
+    }
+
+    return get_map_values<decltype(thread_results), ContainerOut>(
+        thread_results);
+}
+
 // API search type: reduce_parallelly : (((a, a) -> a), a, [a]) -> a
 // fwd bind count: 2
 // reduce_parallelly((+), 0, [1, 2, 3]) == (0+1+2+3) == 6
@@ -461,74 +529,6 @@ auto transform_reduce_1_parallelly(UnaryF unary_f,
                                    const Container& xs)
 {
     return reduce_1_parallelly(binary_f, transform_parallelly(unary_f, xs));
-}
-
-// API search type: transform_parallelly_n_threads : (Int, (a -> b), [a]) -> [b]
-// fwd bind count: 2
-// transform_parallelly_n_threads(4, (*2), [1, 3, 4]) == [2, 6, 8]
-// Same as transform, but uses n threads in parallel.
-// Only makes sense if one run of the provided function
-// takes enough time to justify the synchronization overhead.
-// Can be used for applying the MapReduce pattern.
-template <typename F, typename ContainerIn>
-auto transform_parallelly_n_threads(std::size_t n, F f, const ContainerIn& xs)
-{
-    using ContainerOut = typename internal::
-        same_cont_new_t_from_unary_f<ContainerIn, F, 0>::type;
-    using X = typename ContainerIn::value_type;
-    using Y = internal::invoke_result_t<F, X>;
-    using x_ptr_t =  const X*;
-    auto queue = transform_convert<std::vector<x_ptr_t>>(
-        [](const X& x) -> x_ptr_t
-        {
-            return &x;
-        }, xs);
-
-    std::mutex queue_mutex;
-    std::mutex thread_results_mutex;
-    std::map<std::size_t, std::decay_t<Y>> thread_results;
-    std::size_t queue_idx = 0;
-
-    const auto worker_func = [&]()
-    {
-        for (;;)
-        {
-            std::size_t idx = std::numeric_limits<std::size_t>::max();
-            x_ptr_t x_ptr = nullptr;
-            {
-                std::lock_guard<std::mutex> queue_lock(queue_mutex);
-                if (queue_idx == queue.size())
-                {
-                    return;
-                }
-                idx = queue_idx;
-                x_ptr = queue[idx];
-                ++queue_idx;
-            }
-
-            const auto y = internal::invoke(f, *x_ptr);
-
-            {
-                std::lock_guard<std::mutex> thread_results_lock(
-                    thread_results_mutex);
-                thread_results.insert(std::make_pair(idx, y));
-            }
-        }
-    };
-
-    const auto create_thread = [&]() -> std::thread
-    {
-        return std::thread(worker_func);
-    };
-    auto threads = generate<std::vector<std::thread>>(create_thread, n);
-
-    for (auto& thread : threads)
-    {
-        thread.join();
-    }
-
-    return get_map_values<decltype(thread_results), ContainerOut>(
-        thread_results);
 }
 
 } // namespace fplus
