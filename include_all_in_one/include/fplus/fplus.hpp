@@ -14255,14 +14255,17 @@ namespace internal
     {
     public:
         explicit timed_function_impl(Fn fn) : _fn(fn) {};
-        template<typename ...Args> auto operator()(Args... args) { return _timed_result(args...); }
+        template<typename ...Args> auto operator()(Args&&... args) 
+        { 
+            return _timed_result(std::forward<Args>(args)...); 
+        }
 
     private:
         template<typename ...Args>
-        auto _timed_result(Args... args)
+        auto _timed_result(Args&&... args)
         {
             fplus::stopwatch timer;
-            auto r = _fn(args...);
+            auto r = _fn(std::forward<Args>(args)...);
             auto r_t = fplus::timed<decltype(r)>(r, timer.elapsed());
             return r_t;
         }
@@ -14298,17 +14301,17 @@ namespace internal
     {
     public:
         explicit timed_void_function_impl(Fn fn) : _fn(fn) {};
-        template<typename ...Args> auto operator()(Args... args)
+        template<typename ...Args> auto operator()(Args&&... args)
         {
-            return _timed_result(args...);
+            return _timed_result(std::forward<Args>(args)...);
         }
 
     private:
         template<typename ...Args>
-        auto _timed_result(Args... args)
+        auto _timed_result(Args&&... args)
         {
             fplus::stopwatch timer;
-            _fn(args...);
+            _fn(std::forward<Args>(args)...);
             return timer.elapsed();
         }
 
@@ -14437,17 +14440,17 @@ namespace internal
             , fn_(fn)
         {};
 
-        template<typename ...Args> auto operator()(Args... args)
+        template<typename ...Args> auto operator()(Args&&... args)
         {
-            return _bench_result(args...);
+            return _bench_result(std::forward<Args>(args)...);
         }
 
     private:
         template<typename ...Args>
-        auto _bench_result(Args... args)
+        auto _bench_result(Args&&... args)
         {
             fplus::stopwatch timer;
-            auto r = fn_(args...);
+            auto r = fn_(std::forward<Args>(args)...);
             benchmark_session_.store_one_time(function_name_, timer.elapsed());
             return r;
         }
@@ -14470,17 +14473,17 @@ namespace internal
             , fn_(fn)
         {};
 
-        template<typename ...Args> auto operator()(Args... args)
+        template<typename ...Args> auto operator()(Args&&... args)
         {
-            _bench_result(args...);
+            _bench_result(std::forward<Args>(args)...);
         }
 
     private:
         template<typename ...Args>
-        auto _bench_result(Args... args)
+        auto _bench_result(Args&&... args)
         {
             fplus::stopwatch timer;
-            fn_(args...);
+            fn_(std::forward<Args>(args)...);
             benchmark_session_.store_one_time(function_name_, timer.elapsed());
         }
 
