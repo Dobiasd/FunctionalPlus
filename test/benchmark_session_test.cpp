@@ -103,6 +103,7 @@ void benchmark_example()
 
     // benchmark qsort
     benchmark_void_expression(my_benchmark_session, "qsort_reverse_sequence",  qsort_vec_int(descending_numbers) );
+    REQUIRE(descending_numbers == ascending_numbers);
 }
 
 
@@ -162,5 +163,53 @@ TEST_CASE("benchmark_example")
             return (fplus::count('|', s) + fplus::count('+', s) ) == 5;
         }, lines );
         REQUIRE(fplus::all(check_nb_columns));
+    }
+}
+
+
+//
+// The test below asserts that variadic arguments containing modifiable references are correctly forwarded
+//
+bool function_with_input_output_params(int input1, int& output2)
+{
+    output2 = input1 + 1;
+    return true;
+}
+void void_function_with_input_output_params(int input1, int& output2)
+{
+    output2 = input1 + 1;
+}
+TEST_CASE("benchmark_input_output_args")
+{
+    fplus::benchmark_session benchmark_session;
+
+    // With non void function
+    {
+        auto function_with_input_output_params_bench = make_benchmark_function(
+            my_benchmark_session,
+            "function_with_input_output_params_bench",
+            function_with_input_output_params
+        );
+
+        int input1 = 1;
+        int output2 = 42;
+
+        bool r = function_with_input_output_params_bench(input1, output2);
+        REQUIRE_EQ(output2, 2);
+        REQUIRE(r);
+    }
+    // With void function
+    {
+        auto void_function_with_input_output_params_bench = make_benchmark_void_function(
+            my_benchmark_session,
+            "void_function_with_input_output_params_bench",
+            void_function_with_input_output_params
+        );
+
+        int input1 = 1;
+        int output2 = 42;
+
+        void_function_with_input_output_params_bench(input1, output2);
+        REQUIRE_EQ(output2, 2);
     }
 }
