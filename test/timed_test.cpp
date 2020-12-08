@@ -178,3 +178,41 @@ TEST_CASE("make_timed_function")
         REQUIRE_LT(sorted_numbers.time_in_s(), 0.1);
     }
 }
+
+
+//
+// The test below asserts that variadic arguments containing modifiable references are correctly forwarded
+//
+bool function_with_input_output_params(int input1, int& output2)
+{
+    output2 = input1 + 1;
+    return true;
+}
+void void_function_with_input_output_params(int input1, int& output2)
+{
+    output2 = input1 + 1;
+}
+TEST_CASE("timed_with_input_output_args")
+{
+    // With non void function
+    {
+        auto timed_function_with_input_output_params = fplus::make_timed_function(function_with_input_output_params);
+
+        int input1 = 1;
+        int output2 = 42;
+
+        fplus::timed<bool> r = timed_function_with_input_output_params(input1, output2);
+        REQUIRE_EQ(output2, 2);
+        REQUIRE(r.get());
+    }
+    // With void function
+    {
+        auto timed_void_function_with_input_output_params = fplus::make_timed_void_function(void_function_with_input_output_params);
+
+        int input1 = 1;
+        int output2 = 42;
+
+        timed_void_function_with_input_output_params(input1, output2);
+        REQUIRE_EQ(output2, 2);
+    }
+}
