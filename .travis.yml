@@ -190,6 +190,13 @@ before_install:
       sudo ln -s /usr/local/bin/python3 /usr/local/bin/python
       sudo rm /usr/local/bin/pip
       sudo ln -s /usr/local/bin/pip3 /usr/local/bin/pip
+    else
+      wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
+      sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
+      sudo apt-get update
+      sudo apt-get install cmake -y
+      # Strip bogus cmake path from PATH variable
+      export PATH=$(printf "%s\n" "$PATH" | tr ":" "\n" | grep -vF cmake | tr "\n" ":" | sed -e "s/:$//")
     fi
   - git clone https://github.com/onqtam/doctest
   - (cd doctest && mkdir -p build && cd build && cmake .. -DDOCTEST_WITH_TESTS=off -DDOCTEST_WITH_MAIN_IN_STATIC_LIB=OFF && make && sudo make install)
