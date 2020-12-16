@@ -1,0 +1,50 @@
+name: ci
+
+on: [push, pull_request]
+
+jobs:
+  build_linux:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        build_config:
+          - { cc: gcc, cxx: g++, version: 10 }
+          - { cc: gcc, cxx: g++, version: 9 }
+          - { cc: gcc, cxx: g++, version: 8 }
+          - { cc: gcc, cxx: g++, version: 7 }
+          - { cc: clang, cxx: clang++, version: 11 }
+          - { cc: clang, cxx: clang++, version: 10 }
+          - { cc: clang, cxx: clang++, version: 9 }
+    env:
+      CC: ${{ matrix.build_config.cc }}-${{ matrix.build_config.version }}
+      CXX: ${{ matrix.build_config.cxx }}-${{ matrix.build_config.version }}
+    name: "${{ matrix.build_config.cc }}-${{ matrix.build_config.version }}"
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup Compiler
+        if: matrix.build_config.cc == 'clang'
+        run: |
+          VERSION=${{ matrix.build_config.version }}
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-${VERSION} main"
+          sudo apt update
+          sudo apt-get install -y clang-${VERSION} libc++-${VERSION}-dev libc++abi-${VERSION}-dev
+          echo "CXXFLAGS=-stdlib=libc++" >> $GITHUB_ENV
+      - name: Setup
+        run: |
+          git clone --depth=1 https://github.com/onqtam/doctest
+          cd doctest && mkdir -p build && cd build
+          cmake .. -DDOCTEST_WITH_TESTS=OFF -DDOCTEST_WITH_MAIN_IN_STATIC_LIB=OFF
+          make && sudo make install
+          sudo locale-gen ru_RU
+          sudo locale-gen ru_RU.UTF-8
+          sudo locale-gen el_GR
+          sudo locale-gen el_GR.UTF-8
+          sudo update-locale
+          sudo localedef -c -i ru_RU -f CP1251 ru_RU.CP1251
+          sudo localedef -c -i el_GR -f CP1253 el_GR.CP1253
+      - name: Build
+        run: |
+          mkdir -p build && cd build
+          cmake .. -DFPLUS_BUILD_UNITTEST=ON
+          cmake --build . --target unittest --config Release -- -j4
