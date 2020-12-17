@@ -1,52 +1,31 @@
-cmake_minimum_required(VERSION 3.2)
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+cmake_minimum_required(VERSION 3.14)
 
 project(FunctionalPlus VERSION 0.2.13)
 
-message(STATUS "===( ${PROJECT_NAME} ${PROJECT_VERSION} )===")
-option(FPLUS_USE_TOOLCHAIN "Use compiler flags from an external toolchain" OFF)
-option(FPLUS_BUILD_EXAMPLES "Build examples" ON)
-option(FPLUS_BUILD_UNITTEST "Build unit tests" OFF)
-option(FPLUS_UNITTEST_USE_CONAN "Use conan to get doctest dependency (for unit tests only)" OFF)
+# ---- Warning guard ----
 
-message(STATUS "Building Unit Tests ${FPLUS_BUILD_UNITTEST}")
-message(STATUS "Use conan ${FPLUS_UNITTEST_USE_CONAN}")
-message(STATUS "Building examples ${FPLUS_BUILD_EXAMPLES}")
-
-if(NOT FPLUS_USE_TOOLCHAIN)
-  if (MSVC)
-    include(cmake/toolchain_msvc.cmake)
-  else()
-    include(cmake/toolchain.cmake)
-  endif()
+# Protect dependents from this project's warnings if the guard isn't disabled
+set(FunctionalPlus_warning_guard SYSTEM)
+if(FunctionalPlus_INCLUDE_WITHOUT_SYSTEM)
+  set(FunctionalPlus_warning_guard "")
 endif()
+
+# ---- Declare library ----
 
 add_library(fplus INTERFACE)
 add_library(FunctionalPlus::fplus ALIAS fplus)
-target_include_directories(fplus INTERFACE
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-  )
+target_include_directories(
+    fplus
+    ${FunctionalPlus_warning_guard}
+    INTERFACE
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+)
+
+target_compile_features(fplus INTERFACE cxx_std_14)
 
 find_package(Threads REQUIRED)
 target_link_libraries(fplus INTERFACE Threads::Threads)
 
-add_subdirectory(include_all_in_one)
+# ---- Install ----
 
-if(FPLUS_BUILD_UNITTEST)
-    enable_testing()
-    add_subdirectory(test)
-endif()
-
-if(FPLUS_BUILD_EXAMPLES)
-    add_executable(readme_perf_examples EXCLUDE_FROM_ALL examples/readme_perf_examples.cpp)
-    target_compile_options(readme_perf_examples PRIVATE ${COMPILE_OPTIONS})
-    target_link_libraries(readme_perf_examples PRIVATE fplus ${CMAKE_THREAD_LIBS_INIT})
-
-    add_executable(99_problems EXCLUDE_FROM_ALL examples/99_problems.cpp)
-    target_compile_options(99_problems PRIVATE ${COMPILE_OPTIONS})
-    target_link_libraries(99_problems PRIVATE fplus ${CMAKE_THREAD_LIBS_INIT})
-endif()
-
-# Run pkgconfig installation:
-include(cmake/pkgconfig.cmake)
+include(cmake/install-rules.cmake)
