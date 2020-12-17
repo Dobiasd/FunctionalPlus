@@ -31,10 +31,7 @@ jobs:
           sudo script/ci_setup_dependencies.sh
           sudo script/ci_setup_locales.sh
       - name: Build
-        run: |
-          mkdir -p build && cd build
-          cmake .. -DFPLUS_BUILD_UNITTEST=ON
-          cmake --build . --target unittest --config Release -- -j4
+        run: script/ci_build.sh
 
 
   build_osx:
@@ -48,7 +45,4 @@ jobs:
       - name: Setup
         run: script/ci_setup_dependencies.sh
       - name: Build
-        run: |
-          mkdir -p build && cd build
-          cmake .. -DFPLUS_BUILD_UNITTEST=ON
-          cmake --build . --target unittest --config Release -- -j4
+        run: script/ci_build.sh
