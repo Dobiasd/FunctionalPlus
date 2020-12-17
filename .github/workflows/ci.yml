@@ -28,7 +28,25 @@ jobs:
           echo "CXXFLAGS=-stdlib=libc++" >> $GITHUB_ENV
       - name: Setup
         run: |
-          sudo script/ci_setup.sh
+          sudo script/ci_setup_dependencies.sh
+          sudo script/ci_setup_locales.sh
+      - name: Build
+        run: |
+          mkdir -p build && cd build
+          cmake .. -DFPLUS_BUILD_UNITTEST=ON
+          cmake --build . --target unittest --config Release -- -j4
+
+
+  build_osx:
+    runs-on: macOS-latest
+    env:
+      CC: clang
+      CXX: clang++
+    name: "OS X"
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup
+        run: script/ci_setup_dependencies.sh
       - name: Build
         run: |
           mkdir -p build && cd build
