@@ -1,5 +1,6 @@
 ![logo](logo/fplus.png)
 
+[![CI](https://github.com/Dobiasd/FunctionalPlus/workflows/ci/badge.svg)](https://github.com/Dobiasd/FunctionalPlus/actions)
 [![Build Status Travis](https://travis-ci.org/Dobiasd/FunctionalPlus.svg?branch=master)][travis]
 [![Build Status AppVeyor](https://ci.appveyor.com/api/projects/status/github/dobiasd/FunctionalPlus)][appveyor]
 [![(License Boost 1.0)](https://img.shields.io/badge/license-boost%201.0-blue.svg)][license]
