@@ -15,6 +15,9 @@ jobs:
           - { cc: clang, cxx: clang++, version: 11 }
           - { cc: clang, cxx: clang++, version: 10 }
           - { cc: clang, cxx: clang++, version: 9 }
+          - { cc: clang, cxx: clang++, version: 8 }
+          - { cc: clang, cxx: clang++, version: 7 }
+          - { cc: clang, cxx: clang++, version: 6 }
     env:
       CC: ${{ matrix.build_config.cc }}-${{ matrix.build_config.version }}
       CXX: ${{ matrix.build_config.cxx }}-${{ matrix.build_config.version }}
@@ -25,7 +28,7 @@ jobs:
         if: matrix.build_config.cc == 'clang'
         run: |
           sudo script/ci_install_clang.sh ${{ matrix.build_config.version }}
-          echo "CXXFLAGS=-stdlib=libc++" >> $GITHUB_ENV
+          if [ "${{ matrix.build_config.version }}" -ge "7" ]; then echo "CXXFLAGS=-stdlib=libc++" >> $GITHUB_ENV; fi
       - name: Setup
         run: |
           sudo script/ci_setup_dependencies.sh
