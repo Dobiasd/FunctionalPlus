@@ -3,36 +3,62 @@ name: ci
 on: [push, pull_request]
 
 jobs:
-  build_linux:
+  build_gcc:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
         build_config:
-          - { cc: gcc, cxx: g++, version: 10 }
-          - { cc: gcc, cxx: g++, version: 9 }
-          - { cc: gcc, cxx: g++, version: 8 }
-          - { cc: gcc, cxx: g++, version: 7 }
-          - { cc: clang, cxx: clang++, version: 11 }
-          - { cc: clang, cxx: clang++, version: 10 }
-          - { cc: clang, cxx: clang++, version: 9 }
-          - { cc: clang, cxx: clang++, version: 8 }
-          - { cc: clang, cxx: clang++, version: 7 }
-          - { cc: clang, cxx: clang++, version: 6 }
-    env:
-      CC: ${{ matrix.build_config.cc }}-${{ matrix.build_config.version }}
-      CXX: ${{ matrix.build_config.cxx }}-${{ matrix.build_config.version }}
-    name: "${{ matrix.build_config.cc }}-${{ matrix.build_config.version }}"
+          - { version: 10 }
+          - { version: 9 }
+          - { version: 8 }
+          - { version: 7 }
+          - { version: 6 }
+          - { version: 5 }
+          - { version: 4.9 }
+    container:
+      image: gcc:${{ matrix.build_config.version }}
+    name: "gcc-${{ matrix.build_config.version }}"
     steps:
       - uses: actions/checkout@master
-      - name: Setup Compiler
-        if: matrix.build_config.cc == 'clang'
-        run: |
-          sudo script/ci_install_clang.sh ${{ matrix.build_config.version }}
-          if [ "${{ matrix.build_config.version }}" -ge "7" ]; then echo "CXXFLAGS=-stdlib=libc++" >> $GITHUB_ENV; fi
       - name: Setup
+        run: script/ci_setup_linux.sh
+      - name: Setup Dependencies
+        run: script/ci_setup_dependencies.sh
+      - name: Build
+        run: script/ci_build.sh
+
+
+  build_clang:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        build_config:
+          - { version: 11 }
+          - { version: 10 }
+          - { version: 9 }
+          - { version: 8 }
+          - { version: 7 }
+          - { version: 6, suffix: '.0' }
+          - { version: 5, suffix: '.0' }
+          - { version: 4, suffix: '.0' }
+    container:
+      image: teeks99/clang-ubuntu:${{ matrix.build_config.version }}
+    name: "clang-${{ matrix.build_config.version }}"
+    env:
+      CC: clang-${{ matrix.build_config.version }}${{ matrix.build_config.suffix }}
+      CXX: clang++-${{ matrix.build_config.version }}${{ matrix.build_config.suffix }}
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup
+        run: script/ci_setup_linux.sh
+      - name: Setup libc++
         run: |
-          sudo script/ci_setup_dependencies.sh
-          sudo script/ci_setup_locales.sh
+          if [ "${{ matrix.build_config.version }}" -le "6" ]; then
+            script/ci_setup_libcxx.sh ${{ matrix.build_config.version }}
+          fi
+          echo "CXXFLAGS=-stdlib=libc++" >> $GITHUB_ENV
+      - name: Setup Dependencies
+        run: script/ci_setup_dependencies.sh
       - name: Build
         run: script/ci_build.sh
 
