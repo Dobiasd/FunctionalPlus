@@ -1,5 +1,7 @@
 #!/bin/bash
 
-mkdir -p build && cd build
-cmake .. -DFPLUS_BUILD_UNITTEST=ON
-cmake --build . --target unittest --config Release -- -j4
+JOBS=4
+
+cmake -S test -B build
+cmake --build build --config Release -j $JOBS
+ctest -C Release -j ${JOBS} --output-on-failure
