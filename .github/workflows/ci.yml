@@ -17,11 +17,14 @@ jobs:
           - { version: 4.9 }
     container:
       image: gcc:${{ matrix.build_config.version }}
+      options: -v /usr/local:/host_usr_local
     name: "gcc-${{ matrix.build_config.version }}"
     steps:
       - uses: actions/checkout@master
       - name: Setup
-        run: script/ci_setup_linux.sh
+        run: |
+          echo "/host_usr_local/bin" >> $GITHUB_PATH
+          script/ci_setup_linux.sh
       - name: Setup Dependencies
         run: script/ci_setup_dependencies.sh
       - name: Build
@@ -43,6 +46,7 @@ jobs:
           - { version: 4, suffix: '.0' }
     container:
       image: teeks99/clang-ubuntu:${{ matrix.build_config.version }}
+      options: -v /usr/local:/host_usr_local
     name: "clang-${{ matrix.build_config.version }}"
     env:
       CC: clang-${{ matrix.build_config.version }}${{ matrix.build_config.suffix }}
@@ -50,7 +54,9 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Setup
-        run: script/ci_setup_linux.sh
+        run: |
+          echo "/host_usr_local/bin" >> $GITHUB_PATH
+          script/ci_setup_linux.sh
       - name: Setup libc++
         run: |
           if [ "${{ matrix.build_config.version }}" -le "6" ]; then

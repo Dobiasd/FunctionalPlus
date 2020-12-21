@@ -1,13 +1,7 @@
 #!/bin/bash
 
 apt-get update
-apt-get install -y wget git locales
-
-
-## Install CMake
-wget -nv https://github.com/Kitware/CMake/releases/download/v3.19.2/cmake-3.19.2-Linux-x86_64.sh -O setup_cmake.sh
-chmod +x setup_cmake.sh
-./setup_cmake.sh --prefix=/usr/local --skip-license
+apt-get install -y git locales
 
 
 ## Generate locales for tests
