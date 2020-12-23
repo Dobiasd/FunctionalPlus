@@ -1,0 +1,83 @@
+name: ci
+
+on: [push, pull_request]
+
+jobs:
+  build_gcc:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        build_config:
+          - { version: 10 }
+          - { version: 9 }
+          - { version: 8 }
+          - { version: 7 }
+          - { version: 6 }
+          - { version: 5 }
+          - { version: 4.9 }
+    container:
+      image: gcc:${{ matrix.build_config.version }}
+      options: -v /usr/local:/host_usr_local
+    name: "gcc-${{ matrix.build_config.version }}"
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup
+        run: |
+          echo "/host_usr_local/bin" >> $GITHUB_PATH
+          script/ci_setup_linux.sh
+      - name: Setup Dependencies
+        run: script/ci_setup_dependencies.sh
+      - name: Build
+        run: script/ci_build.sh
+
+
+  build_clang:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        build_config:
+          - { version: 11 }
+          - { version: 10 }
+          - { version: 9 }
+          - { version: 8 }
+          - { version: 7 }
+          - { version: 6, suffix: '.0' }
+          - { version: 5, suffix: '.0' }
+          - { version: 4, suffix: '.0' }
+    container:
+      image: teeks99/clang-ubuntu:${{ matrix.build_config.version }}
+      options: -v /usr/local:/host_usr_local
+    name: "clang-${{ matrix.build_config.version }}"
+    env:
+      CC: clang-${{ matrix.build_config.version }}${{ matrix.build_config.suffix }}
+      CXX: clang++-${{ matrix.build_config.version }}${{ matrix.build_config.suffix }}
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup
+        run: |
+          echo "/host_usr_local/bin" >> $GITHUB_PATH
+          script/ci_setup_linux.sh
+      - name: Setup libc++
+        run: |
+          if [ "${{ matrix.build_config.version }}" -le "6" ]; then
+            script/ci_setup_libcxx.sh ${{ matrix.build_config.version }}
+          fi
+          echo "CXXFLAGS=-stdlib=libc++" >> $GITHUB_ENV
+      - name: Setup Dependencies
+        run: script/ci_setup_dependencies.sh
+      - name: Build
+        run: script/ci_build.sh
+
+
+  build_osx:
+    runs-on: macOS-latest
+    env:
+      CC: clang
+      CXX: clang++
+    name: "OS X"
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup
+        run: script/ci_setup_dependencies.sh
+      - name: Build
+        run: script/ci_build.sh
