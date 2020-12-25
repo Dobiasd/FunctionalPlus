@@ -32,7 +32,7 @@ init:
 before_build:
 - cmd: |-
     cd c:\projects
-    git clone https://github.com/onqtam/doctest.git
+    git clone --depth=1 --branch=2.4.3 https://github.com/onqtam/doctest
     cd doctest
     mkdir build
     cd build
