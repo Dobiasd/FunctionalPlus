@@ -84,8 +84,8 @@ jobs:
 
 
   build_windows:
-    name: "OS X"
     runs-on: windows-latest
+    name: "Windows"
     steps:
       - uses: actions/checkout@master
       - uses: ilammy/msvc-dev-cmd@v1
