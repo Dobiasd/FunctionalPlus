@@ -91,7 +91,7 @@ jobs:
           - { version: 14.2 }
           - { version: 14.1 }
           - { version: 14.0 }
-    name: "windows-${{ matrix.build_config.version }}"
+    name: "windows-MSVC-${{ matrix.build_config.version }}"
     env:
       toolset: ${{ matrix.build_config.version }}
     steps:
