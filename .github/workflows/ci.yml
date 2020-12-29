@@ -91,5 +91,7 @@ jobs:
       - uses: ilammy/msvc-dev-cmd@v1
       - name: Setup
         run: script/ci_setup_dependencies.sh
+      - name: Print compiler version
+        run: cl
       - name: Build
         run: script/ci_build.sh
