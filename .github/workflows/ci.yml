@@ -92,4 +92,8 @@ jobs:
       - name: Setup
         run: script/ci_setup_dependencies.sh
       - name: Build
-        run: script/ci_build.sh
+        run: |
+          cmake -S test -B build -D CMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release -j 4
+          cd build
+          ctest -C Release -j 4 --output-on-failure
