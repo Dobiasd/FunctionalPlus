@@ -88,9 +88,9 @@ jobs:
     strategy:
       matrix:
         build_config:
-          - { version: 14.2 }
-          - { version: 14.1 }
-          - { version: 14.0 }
+          - { version: '14.2' }
+          - { version: '14.1' }
+          - { version: '14.0' }
     name: "windows-MSVC-${{ matrix.build_config.version }}"
     env:
       toolset: ${{ matrix.build_config.version }}
