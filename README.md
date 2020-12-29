@@ -1,10 +1,8 @@
 ![logo](logo/fplus.png)
 
 [![CI](https://github.com/Dobiasd/FunctionalPlus/workflows/ci/badge.svg)](https://github.com/Dobiasd/FunctionalPlus/actions)
-[![Build Status AppVeyor](https://ci.appveyor.com/api/projects/status/github/dobiasd/FunctionalPlus)][appveyor]
 [![(License Boost 1.0)](https://img.shields.io/badge/license-boost%201.0-blue.svg)][license]
 
-[appveyor]: https://ci.appveyor.com/project/Dobiasd/functionalplus
 [license]: http://www.boost.org/LICENSE_1_0.txt
 
 
