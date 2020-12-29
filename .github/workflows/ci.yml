@@ -81,3 +81,15 @@ jobs:
         run: script/ci_setup_dependencies.sh
       - name: Build
         run: script/ci_build.sh
+
+
+  build_windows:
+    name: "OS X"
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: Setup
+        run: script/ci_setup_dependencies.sh
+      - name: Build
+        run: script/ci_build.sh
