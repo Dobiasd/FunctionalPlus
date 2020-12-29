@@ -85,15 +85,7 @@ jobs:
 
   build_windows:
     runs-on: windows-latest
-    strategy:
-      matrix:
-        build_config:
-          - { version: '14.2' }
-          - { version: '14.1' }
-          - { version: '14.0' }
-    name: "windows-MSVC-${{ matrix.build_config.version }}"
-    env:
-      toolset: ${{ matrix.build_config.version }}
+    name: "Windows MSVC"
     steps:
       - uses: actions/checkout@master
       - uses: ilammy/msvc-dev-cmd@v1
