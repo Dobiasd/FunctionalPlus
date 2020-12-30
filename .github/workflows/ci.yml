@@ -86,8 +86,8 @@ jobs:
   build_windows_2016:
     runs-on: windows-2016
     name: "Windows 2016 MSVC"
-    shell: bash
     steps:
+      shell: bash
       - uses: actions/checkout@master
       - uses: ilammy/msvc-dev-cmd@v1
       - name: Setup
@@ -98,8 +98,8 @@ jobs:
   build_windows_2019:
     runs-on: windows-2019
     name: "Windows 2019 MSVC"
-    shell: bash
     steps:
+      shell: bash
       - uses: actions/checkout@master
       - uses: ilammy/msvc-dev-cmd@v1
       - name: Setup
