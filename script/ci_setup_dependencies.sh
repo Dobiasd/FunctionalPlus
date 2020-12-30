@@ -7,10 +7,10 @@ cd doctest && mkdir -p build && cd build
 cmake .. -DDOCTEST_WITH_TESTS=OFF -DDOCTEST_WITH_MAIN_IN_STATIC_LIB=OFF
 
 BUILDUSINGCMAKE=${BUILDUSINGCMAKE:-false}
-if [ $BUILDUSINGCMAKE = true ] ; then
+if [ $BUILDUSINGCMAKE = true ]
+then
     cmake --build . --config Release --target INSTALL
 else
-fi
     make -j
     make install
-}
+fi
