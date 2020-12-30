@@ -86,6 +86,8 @@ jobs:
   build_windows_2016:
     runs-on: windows-2016
     name: "Windows 2016 MSVC"
+    env:
+      build_using_cmake: true
     steps:
       - uses: actions/checkout@master
       - uses: ilammy/msvc-dev-cmd@v1
@@ -99,6 +101,8 @@ jobs:
   build_windows_2019:
     runs-on: windows-2019
     name: "Windows 2019 MSVC"
+    env:
+      build_using_cmake: true
     steps:
       - uses: actions/checkout@master
       - uses: ilammy/msvc-dev-cmd@v1
