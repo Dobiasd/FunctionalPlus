@@ -86,21 +86,23 @@ jobs:
   build_windows_2016:
     runs-on: windows-2016
     name: "Windows 2016 MSVC"
+    shell: bash
     steps:
       - uses: actions/checkout@master
       - uses: ilammy/msvc-dev-cmd@v1
       - name: Setup
-        run: script/ci_setup_dependencies_windows.bat
+        run: script/ci_setup_dependencies.sh
       - name: Build
-        run: script/ci_build_windows.bat
+        run: script/ci_build.sh
 
   build_windows_2019:
     runs-on: windows-2019
     name: "Windows 2019 MSVC"
+    shell: bash
     steps:
       - uses: actions/checkout@master
       - uses: ilammy/msvc-dev-cmd@v1
       - name: Setup
-        run: script/ci_setup_dependencies_windows.bat
+        run: script/ci_setup_dependencies.sh
       - name: Build
-        run: script/ci_build_windows.bat
+        run: script/ci_build.sh
