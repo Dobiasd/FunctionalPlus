@@ -70,7 +70,7 @@ jobs:
 
 
   build_osx:
-    runs-on: macOS-latest
+    runs-on: macos-11.0
     env:
       CC: clang
       CXX: clang++
