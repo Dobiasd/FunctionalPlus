@@ -74,11 +74,10 @@ jobs:
 
   build_osx:
     runs-on: macos-11.0
+    name: "OS X"
     env:
       CC: clang
       CXX: clang++
-    name: "OS X"
-    env:
       BUILD_DOCTEST_USING_CMAKE: true
     steps:
       - uses: actions/checkout@master
