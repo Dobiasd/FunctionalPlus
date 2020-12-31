@@ -20,7 +20,7 @@ jobs:
       options: -v /usr/local:/host_usr_local
     name: "gcc-${{ matrix.build_config.version }}"
     env:
-      BUILD_DOCTEST_USING_CMAKE: true
+      BUILD_DOCTEST_USING_CMAKE: false
     steps:
       - uses: actions/checkout@master
       - name: Setup
@@ -51,7 +51,7 @@ jobs:
       options: -v /usr/local:/host_usr_local
     name: "clang-${{ matrix.build_config.version }}"
     env:
-      BUILD_DOCTEST_USING_CMAKE: true
+      BUILD_DOCTEST_USING_CMAKE: false
       CC: clang-${{ matrix.build_config.version }}${{ matrix.build_config.suffix }}
       CXX: clang++-${{ matrix.build_config.version }}${{ matrix.build_config.suffix }}
     steps:
@@ -78,7 +78,7 @@ jobs:
     env:
       CC: clang
       CXX: clang++
-      BUILD_DOCTEST_USING_CMAKE: true
+      BUILD_DOCTEST_USING_CMAKE: false
     steps:
       - uses: actions/checkout@master
       - name: Setup
