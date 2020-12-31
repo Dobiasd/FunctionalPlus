@@ -96,6 +96,7 @@ jobs:
         shell: bash
         run: script/ci_build.sh
 
+
   build_windows_2019:
     runs-on: windows-2019
     name: "Windows 2019 MSVC"
