@@ -70,14 +70,42 @@ jobs:
 
 
   build_osx:
-    runs-on: macOS-latest
+    runs-on: macos-11.0
+    name: "OS X"
     env:
       CC: clang
       CXX: clang++
-    name: "OS X"
     steps:
       - uses: actions/checkout@master
       - name: Setup
         run: script/ci_setup_dependencies.sh
       - name: Build
+        run: script/ci_build.sh
+
+
+  build_windows_2016:
+    runs-on: windows-2016
+    name: "Windows 2016 MSVC"
+    steps:
+      - uses: actions/checkout@master
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: Setup
+        shell: bash
+        run: script/ci_setup_dependencies.sh
+      - name: Build
+        shell: bash
+        run: script/ci_build.sh
+
+
+  build_windows_2019:
+    runs-on: windows-2019
+    name: "Windows 2019 MSVC"
+    steps:
+      - uses: actions/checkout@master
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: Setup
+        shell: bash
+        run: script/ci_setup_dependencies.sh
+      - name: Build
+        shell: bash
         run: script/ci_build.sh
