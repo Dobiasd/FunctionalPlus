@@ -83,23 +83,14 @@ jobs:
         run: script/ci_build.sh
 
 
-  build_windows_2016:
-    runs-on: windows-2016
-    name: "Windows 2016 MSVC"
-    steps:
-      - uses: actions/checkout@master
-      - uses: ilammy/msvc-dev-cmd@v1
-      - name: Setup
-        shell: bash
-        run: script/ci_setup_dependencies.sh
-      - name: Build
-        shell: bash
-        run: script/ci_build.sh
-
-
-  build_windows_2019:
-    runs-on: windows-2019
-    name: "Windows 2019 MSVC"
+  build_windows_msvc:
+    runs-on: windows-${{ matrix.msvc_version }}
+    strategy:
+      matrix:
+        msvc_version:
+          - 2019
+          - 2016
+    name: "Windows ${{ matrix.msvc_version }} MSVC"
     steps:
       - uses: actions/checkout@master
       - uses: ilammy/msvc-dev-cmd@v1
