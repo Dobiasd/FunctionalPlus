@@ -71,4 +71,10 @@ install(
     COMPONENT "${fplus_component}"
 )
 
+# Conditionally include the CPack module only if this is the top project, so
+# appropriate targets and files are generated for packaging the library
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+  include(CPack)
+endif()
+
 # }
