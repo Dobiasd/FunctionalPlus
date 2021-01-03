@@ -41,11 +41,16 @@ install(
     INCLUDES DESTINATION "${include_install_dir}"
 )
 
+# Dev component name, useful if the client embeds the library into their build
+# tree and want to install only their own files
+set(fplus_component "${PROJECT_NAME}_Development")
+
 # Headers:
 #   * include/fplus/fplus.hpp -> ${CMAKE_INSTALL_INCLUDEDIR}/fplus/fplus.hpp
 install(
     DIRECTORY "include/fplus" # no trailing slash
     DESTINATION "${include_install_dir}"
+    COMPONENT "${fplus_component}"
 )
 
 # Config
@@ -54,6 +59,7 @@ install(
 install(
     FILES "${project_config}" "${version_config}"
     DESTINATION "${config_install_dir}"
+    COMPONENT "${fplus_component}"
 )
 
 # Config
@@ -62,6 +68,7 @@ install(
     EXPORT "${TARGETS_EXPORT_NAME}"
     NAMESPACE "${namespace}"
     DESTINATION "${config_install_dir}"
+    COMPONENT "${fplus_component}"
 )
 
 # }
