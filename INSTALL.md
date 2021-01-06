@@ -175,3 +175,32 @@ brew install functionalplus
 And then, you can add **FunctionalPlus** as a dependency in your cmake project [as in way 1](#cmake-dependency).
 
 If you're not using cmake, you might need to add `$(brew --prefix functionalplus)/include` to the additional include paths for your compiler.
+
+### way 8: using the "all in one" include file
+[include_all_in_one/include/fplus/fplus.hpp](include_all_in_one/include/fplus/fplus.hpp) is a standalone header that groups all FunctionalPlus code.
+
+For example, download this file into external/fplus/include/fplus, like this:
+
+````bash
+mkdir -p external/fplus/include/fplus
+wget -O external/fplus/include/fplus/fplus.hpp https://raw.githubusercontent.com/Dobiasd/FunctionalPlus/master/include_all_in_one/include/fplus/fplus.hpp
+````
+
+Then, compile like this:
+````bash
+g++ --std=c++14 src/main.cpp -Iexternal/fplus/include
+````
+
+or, with cmake:
+````cmake
+cmake_minimum_required(VERSION 3.14)
+project(YourProjectName)
+set(CMAKE_CXX_STANDARD 14)
+add_executable(main src/main.cpp)
+target_include_directories(main PRIVATE external/fplus/include)
+````
+
+You can also use this standalone header on [Compiler Explorer](https://godbolt.org): See [this example](https://godbolt.org/z/arnEx7). Just add a line like this:
+````cpp
+#include "https://raw.githubusercontent.com/Dobiasd/FunctionalPlus/master/include_all_in_one/include/fplus/fplus.hpp"
+````
