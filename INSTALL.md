@@ -4,7 +4,7 @@ FunctionalPlus
 Requirements and Installation
 -----------------------------
 
-You can install FunctionalPlus in **one of the following 5 ways**:
+You can install FunctionalPlus in **one of the following ways**:
 
 
 ### way 1: using [cmake](https://cmake.org/)
