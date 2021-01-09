@@ -67,6 +67,11 @@ set(
 foreach(name IN LISTS tests)
   add_executable("${name}" "${name}.cpp")
   target_compile_options("${name}" PRIVATE ${project_warnings})
+  target_compile_definitions(
+      "${name}"
+      PRIVATE
+      DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+  )
   target_link_libraries(
       "${name}"
       PRIVATE
