@@ -9,7 +9,7 @@
 // "Functional Programming using C++"
 // https://www.udemy.com/functional-programming-using-cpp/
 
-#include "doctest/doctest.h"
+#include <doctest/doctest.h>
 #include <fplus/fplus.hpp>
 #include <vector>
 

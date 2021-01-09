@@ -4,7 +4,7 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include "doctest/doctest.h"
+#include <doctest/doctest.h>
 #include <fplus/fplus.hpp>
 
 TEST_CASE("container_traits_test, static_asserts")
