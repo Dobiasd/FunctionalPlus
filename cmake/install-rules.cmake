@@ -11,8 +11,6 @@ set(config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus")
 # * Installed header files' location
 set(include_install_dir "${CMAKE_INSTALL_INCLUDEDIR}/fplus")
 
-set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
-
 # Include module with fuction 'write_basic_package_version_file'
 include(CMakePackageConfigHelpers)
 
