@@ -11,12 +11,8 @@ set(config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus")
 # * Installed header files' location
 set(include_install_dir "${CMAKE_INSTALL_INCLUDEDIR}/fplus")
 
-# Include module with fuction 'write_basic_package_version_file'
 include(CMakePackageConfigHelpers)
 
-# Configure '<PROJECT-NAME>ConfigVersion.cmake'
-# Use:
-#   * PROJECT_VERSION
 write_basic_package_version_file(
     FunctionalPlusConfigVersion.cmake
     COMPATIBILITY SameMajorVersion
