@@ -14,7 +14,6 @@ set(include_install_dir "${CMAKE_INSTALL_INCLUDEDIR}/fplus")
 set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
 
 # Configuration
-set(version_config "${generated_dir}/${PROJECT_NAME}ConfigVersion.cmake")
 set(namespace "${PROJECT_NAME}::")
 
 # Include module with fuction 'write_basic_package_version_file'
@@ -24,7 +23,9 @@ include(CMakePackageConfigHelpers)
 # Use:
 #   * PROJECT_VERSION
 write_basic_package_version_file(
-    "${version_config}" COMPATIBILITY SameMajorVersion ARCH_INDEPENDENT
+    FunctionalPlusConfigVersion.cmake
+    COMPATIBILITY SameMajorVersion
+    ARCH_INDEPENDENT
 )
 
 # Targets:
@@ -54,7 +55,7 @@ install(
 install(
     FILES
     "${PROJECT_SOURCE_DIR}/cmake/FunctionalPlusConfig.cmake"
-    "${version_config}"
+    "${PROJECT_BINARY_DIR}/FunctionalPlusConfigVersion.cmake"
     DESTINATION "${config_install_dir}"
     COMPONENT "${fplus_component}"
 )
