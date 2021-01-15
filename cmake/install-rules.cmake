@@ -15,8 +15,6 @@ set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
 
 # Configuration
 set(version_config "${generated_dir}/${PROJECT_NAME}ConfigVersion.cmake")
-set(project_config "${generated_dir}/${PROJECT_NAME}Config.cmake")
-set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
 set(namespace "${PROJECT_NAME}::")
 
 # Include module with fuction 'write_basic_package_version_file'
@@ -29,17 +27,12 @@ write_basic_package_version_file(
     "${version_config}" COMPATIBILITY SameMajorVersion ARCH_INDEPENDENT
 )
 
-# Configure '<PROJECT-NAME>Config.cmake'
-# Use variables:
-#   * TARGETS_EXPORT_NAME
-configure_file("cmake/Config.cmake.in" "${project_config}" @ONLY)
-
 # Targets:
 #   * header location after install: ${CMAKE_INSTALL_INCLUDEDIR}/fplus/fplus.hpp
 #   * headers can be included by C++ code `#include <fplus/fplus.hpp>`
 install(
     TARGETS fplus
-    EXPORT "${TARGETS_EXPORT_NAME}"
+    EXPORT FunctionalPlusTargets
     INCLUDES DESTINATION "${include_install_dir}"
 )
 
@@ -59,7 +52,9 @@ install(
 #   * ${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus/FunctionalPlusConfig.cmake
 #   * ${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus/FunctionalPlusConfigVersion.cmake
 install(
-    FILES "${project_config}" "${version_config}"
+    FILES
+    "${PROJECT_SOURCE_DIR}/cmake/FunctionalPlusConfig.cmake"
+    "${version_config}"
     DESTINATION "${config_install_dir}"
     COMPONENT "${fplus_component}"
 )
@@ -67,7 +62,7 @@ install(
 # Config
 #   * ${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus/FunctionalPlusTargets.cmake
 install(
-    EXPORT "${TARGETS_EXPORT_NAME}"
+    EXPORT FunctionalPlusTargets
     NAMESPACE "${namespace}"
     DESTINATION "${config_install_dir}"
     COMPONENT "${fplus_component}"
