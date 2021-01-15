@@ -1,27 +1,8 @@
-# Installation {
-
-# Include module for standard, cross-platform install paths
+include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
-# Layout:
-
-# * CMake package config location
-set(config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus")
-
-# * Installed header files' location
 set(include_install_dir "${CMAKE_INSTALL_INCLUDEDIR}/fplus")
 
-include(CMakePackageConfigHelpers)
-
-write_basic_package_version_file(
-    FunctionalPlusConfigVersion.cmake
-    COMPATIBILITY SameMajorVersion
-    ARCH_INDEPENDENT
-)
-
-# Targets:
-#   * header location after install: ${CMAKE_INSTALL_INCLUDEDIR}/fplus/fplus.hpp
-#   * headers can be included by C++ code `#include <fplus/fplus.hpp>`
 install(
     TARGETS fplus
     EXPORT FunctionalPlusTargets
@@ -32,17 +13,20 @@ install(
 # tree and want to install only their own files
 set(fplus_component "${PROJECT_NAME}_Development")
 
-# Headers:
-#   * include/fplus/fplus.hpp -> ${CMAKE_INSTALL_INCLUDEDIR}/fplus/fplus.hpp
 install(
-    DIRECTORY "include/fplus" # no trailing slash
-    DESTINATION "${include_install_dir}"
+    DIRECTORY "${PROJECT_SOURCE_DIR}/include/fplus" # no trailing slash
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
     COMPONENT "${fplus_component}"
 )
 
-# Config
-#   * ${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus/FunctionalPlusConfig.cmake
-#   * ${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus/FunctionalPlusConfigVersion.cmake
+write_basic_package_version_file(
+    FunctionalPlusConfigVersion.cmake
+    COMPATIBILITY SameMajorVersion
+    ARCH_INDEPENDENT
+)
+
+set(config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus")
+
 install(
     FILES
     "${PROJECT_SOURCE_DIR}/cmake/FunctionalPlusConfig.cmake"
@@ -51,8 +35,6 @@ install(
     COMPONENT "${fplus_component}"
 )
 
-# Config
-#   * ${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus/FunctionalPlusTargets.cmake
 install(
     EXPORT FunctionalPlusTargets
     NAMESPACE FunctionalPlus::
@@ -65,5 +47,3 @@ install(
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   include(CPack)
 endif()
-
-# }
