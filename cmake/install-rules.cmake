@@ -3,11 +3,13 @@
 # Include module for standard, cross-platform install paths
 include(GNUInstallDirs)
 
-# Layout. This works for all platforms:
-#   * ${CMAKE_INSTALL_LIBDIR}/cmake/<PROJECT-NAME>
-#   * ${CMAKE_INSTALL_INCLUDEDIR}/fplus/
-set(config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
-set(include_install_dir "${CMAKE_INSTALL_INCLUDEDIR}")
+# Layout:
+
+# * CMake package config location
+set(config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus")
+
+# * Installed header files' location
+set(include_install_dir "${CMAKE_INSTALL_INCLUDEDIR}/fplus")
 
 set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
 
