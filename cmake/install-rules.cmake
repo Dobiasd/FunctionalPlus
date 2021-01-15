@@ -13,9 +13,6 @@ set(include_install_dir "${CMAKE_INSTALL_INCLUDEDIR}/fplus")
 
 set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
 
-# Configuration
-set(namespace "${PROJECT_NAME}::")
-
 # Include module with fuction 'write_basic_package_version_file'
 include(CMakePackageConfigHelpers)
 
@@ -64,7 +61,7 @@ install(
 #   * ${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus/FunctionalPlusTargets.cmake
 install(
     EXPORT FunctionalPlusTargets
-    NAMESPACE "${namespace}"
+    NAMESPACE FunctionalPlus::
     DESTINATION "${config_install_dir}"
     COMPONENT "${fplus_component}"
 )
