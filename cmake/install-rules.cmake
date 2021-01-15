@@ -1,6 +1,7 @@
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
+# Create an export set for the CMake package
 install(
     TARGETS fplus
     EXPORT FunctionalPlusTargets
@@ -11,18 +12,23 @@ install(
 # tree and want to install only their own files
 set(fplus_component FunctionalPlus_Development)
 
+# Install the include/fplus directory to a location that was added to the
+# export set and the include directories of its target above
 install(
     DIRECTORY "${PROJECT_SOURCE_DIR}/include/fplus" # no trailing slash
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
     COMPONENT "${fplus_component}"
 )
 
+# Use the PROJECT_VERSION variable to generate a basic config version file in
+# the PROJECT_BINARY_DIR directory
 write_basic_package_version_file(
     FunctionalPlusConfigVersion.cmake
     COMPATIBILITY SameMajorVersion
     ARCH_INDEPENDENT
 )
 
+# Location of the CMake package that find_package() can find
 set(config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus")
 
 install(
@@ -33,6 +39,9 @@ install(
     COMPONENT "${fplus_component}"
 )
 
+# Generate the FunctionalPlusTargets.cmake file in the config_install_dir that
+# is included by FunctionalPlusConfig.cmake after the dependencies have been
+# found
 install(
     EXPORT FunctionalPlusTargets
     NAMESPACE FunctionalPlus::
