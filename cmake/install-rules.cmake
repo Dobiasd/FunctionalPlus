@@ -1,17 +1,15 @@
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
-set(include_install_dir "${CMAKE_INSTALL_INCLUDEDIR}/fplus")
-
 install(
     TARGETS fplus
     EXPORT FunctionalPlusTargets
-    INCLUDES DESTINATION "${include_install_dir}"
+    INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
 )
 
 # Dev component name, useful if the client embeds the library into their build
 # tree and want to install only their own files
-set(fplus_component "${PROJECT_NAME}_Development")
+set(fplus_component FunctionalPlus_Development)
 
 install(
     DIRECTORY "${PROJECT_SOURCE_DIR}/include/fplus" # no trailing slash
