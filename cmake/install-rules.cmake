@@ -1,72 +1,50 @@
-# Installation {
-
-# Include module for standard, cross-platform install paths
+include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
-# Layout. This works for all platforms:
-#   * ${CMAKE_INSTALL_LIBDIR}/cmake/<PROJECT-NAME>
-#   * ${CMAKE_INSTALL_INCLUDEDIR}/fplus/
-set(config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
-set(include_install_dir "${CMAKE_INSTALL_INCLUDEDIR}")
-
-set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
-
-# Configuration
-set(version_config "${generated_dir}/${PROJECT_NAME}ConfigVersion.cmake")
-set(project_config "${generated_dir}/${PROJECT_NAME}Config.cmake")
-set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
-set(namespace "${PROJECT_NAME}::")
-
-# Include module with fuction 'write_basic_package_version_file'
-include(CMakePackageConfigHelpers)
-
-# Configure '<PROJECT-NAME>ConfigVersion.cmake'
-# Use:
-#   * PROJECT_VERSION
-write_basic_package_version_file(
-    "${version_config}" COMPATIBILITY SameMajorVersion ARCH_INDEPENDENT
-)
-
-# Configure '<PROJECT-NAME>Config.cmake'
-# Use variables:
-#   * TARGETS_EXPORT_NAME
-configure_file("cmake/Config.cmake.in" "${project_config}" @ONLY)
-
-# Targets:
-#   * header location after install: ${CMAKE_INSTALL_INCLUDEDIR}/fplus/fplus.hpp
-#   * headers can be included by C++ code `#include <fplus/fplus.hpp>`
+# Create an export set for the CMake package
 install(
     TARGETS fplus
-    EXPORT "${TARGETS_EXPORT_NAME}"
-    INCLUDES DESTINATION "${include_install_dir}"
+    EXPORT FunctionalPlusTargets
+    INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
 )
 
 # Dev component name, useful if the client embeds the library into their build
 # tree and want to install only their own files
-set(fplus_component "${PROJECT_NAME}_Development")
+set(fplus_component FunctionalPlus_Development)
 
-# Headers:
-#   * include/fplus/fplus.hpp -> ${CMAKE_INSTALL_INCLUDEDIR}/fplus/fplus.hpp
+# Install the include/fplus directory to a location that was added to the
+# export set and the include directories of its target above
 install(
-    DIRECTORY "include/fplus" # no trailing slash
-    DESTINATION "${include_install_dir}"
+    DIRECTORY "${PROJECT_SOURCE_DIR}/include/fplus" # no trailing slash
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
     COMPONENT "${fplus_component}"
 )
 
-# Config
-#   * ${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus/FunctionalPlusConfig.cmake
-#   * ${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus/FunctionalPlusConfigVersion.cmake
+# Use the PROJECT_VERSION variable to generate a basic config version file in
+# the PROJECT_BINARY_DIR directory
+write_basic_package_version_file(
+    FunctionalPlusConfigVersion.cmake
+    COMPATIBILITY SameMajorVersion
+    ARCH_INDEPENDENT
+)
+
+# Location of the CMake package that find_package() can find
+set(config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus")
+
 install(
-    FILES "${project_config}" "${version_config}"
+    FILES
+    "${PROJECT_SOURCE_DIR}/cmake/FunctionalPlusConfig.cmake"
+    "${PROJECT_BINARY_DIR}/FunctionalPlusConfigVersion.cmake"
     DESTINATION "${config_install_dir}"
     COMPONENT "${fplus_component}"
 )
 
-# Config
-#   * ${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus/FunctionalPlusTargets.cmake
+# Generate the FunctionalPlusTargets.cmake file in the config_install_dir that
+# is included by FunctionalPlusConfig.cmake after the dependencies have been
+# found
 install(
-    EXPORT "${TARGETS_EXPORT_NAME}"
-    NAMESPACE "${namespace}"
+    EXPORT FunctionalPlusTargets
+    NAMESPACE FunctionalPlus::
     DESTINATION "${config_install_dir}"
     COMPONENT "${fplus_component}"
 )
@@ -76,5 +54,3 @@ install(
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   include(CPack)
 endif()
-
-# }
