@@ -27,7 +27,8 @@ target_link_libraries(HelloWorld FunctionalPlus::fplus)
 ```
 
 If you want CMake to download and install the package automatically,
-see [ExternalProject](#way-2-using-cmakes-externalproject) below.
+see [FetchContent](#way-3-using-cmake-314-fetchcontent) or
+[ExternalProject](#way-2-using-cmakes-externalproject) below.
 
 #### Building the unit tests
 
@@ -117,7 +118,7 @@ target_include_directories(main PRIVATE "${SOURCE_DIR}")
 ```
 
 
-### way 3: using [CMake 3.14 FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html):
+### way 3: using [CMake 3.14 FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html)
 
 This should be preferred over the
 [ExternalProject](#way-2-using-cmakes-externalproject) method.
