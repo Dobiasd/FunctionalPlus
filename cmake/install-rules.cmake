@@ -29,23 +29,30 @@ write_basic_package_version_file(
 )
 
 # Location of the CMake package that find_package() can find
-set(config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus")
+set(
+    FunctionalPlus_INSTALL_CMAKEDIR
+    "${CMAKE_INSTALL_LIBDIR}/cmake/FunctionalPlus"
+    CACHE STRING "CMake package config location relative to the install prefix"
+)
+
+# This variable is a customization point for package managers like vcpkg
+mark_as_advanced(FunctionalPlus_INSTALL_CMAKEDIR)
 
 install(
     FILES
     "${PROJECT_SOURCE_DIR}/cmake/FunctionalPlusConfig.cmake"
     "${PROJECT_BINARY_DIR}/FunctionalPlusConfigVersion.cmake"
-    DESTINATION "${config_install_dir}"
+    DESTINATION "${FunctionalPlus_INSTALL_CMAKEDIR}"
     COMPONENT "${fplus_component}"
 )
 
-# Generate the FunctionalPlusTargets.cmake file in the config_install_dir that
-# is included by FunctionalPlusConfig.cmake after the dependencies have been
-# found
+# Generate the FunctionalPlusTargets.cmake file in the
+# FunctionalPlus_INSTALL_CMAKEDIR that is included by
+# FunctionalPlusConfig.cmake after the dependencies have been found
 install(
     EXPORT FunctionalPlusTargets
     NAMESPACE FunctionalPlus::
-    DESTINATION "${config_install_dir}"
+    DESTINATION "${FunctionalPlus_INSTALL_CMAKEDIR}"
     COMPONENT "${fplus_component}"
 )
 
