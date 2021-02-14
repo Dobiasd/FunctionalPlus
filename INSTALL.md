@@ -7,20 +7,17 @@ Requirements and Installation
 You can install FunctionalPlus in **one of the following ways**:
 
 
-### way 1: using [cmake](https://cmake.org/)
+### way 1: using [CMake](https://cmake.org/)
 
 ```bash
 git clone https://github.com/Dobiasd/FunctionalPlus
-cd FunctionalPlus
-mkdir build
-cd build
-cmake ..
-make
-sudo make install
+cmake -S FunctionalPlus -B FunctionalPlus/build
+cmake --build FunctionalPlus/build
+sudo cmake --install FunctionalPlus/build
 ```
 
 <a id="cmake-dependency"></a>
-And then, you can add **FunctionalPlus** as a dependency in your cmake project as in the following.
+And then, you can add **FunctionalPlus** as a dependency in your CMake project as in the following.
 
 ```cmake
 find_package(FunctionalPlus REQUIRED)
@@ -29,14 +26,16 @@ add_executable(HelloWorld main.cpp)
 target_link_libraries(HelloWorld FunctionalPlus::fplus)
 ```
 
-If you want cmake to download and install the package automatically,
-see [ExternalProject](#way-2-using-cmakes-externalproject) below.
+If you want CMake to download and install the package automatically,
+see [FetchContent](#way-3-using-cmake-314-fetchcontent) or
+[ExternalProject](#way-2-using-cmakes-externalproject) below.
 
 #### Building the unit tests
 
-Unit Tests are disabled by default. Building the tests (optional) requires [doctest](https://github.com/onqtam/doctest).
+Unit Tests are available from a separate CMakeLists.txt file. Building the
+tests requires [doctest](https://github.com/onqtam/doctest).
 
-First, install the required locales
+First, install the required locales:
 ````bash
 sudo locale-gen ru_RU
 sudo locale-gen ru_RU.UTF-8
@@ -49,40 +48,36 @@ sudo localedef -c -i el_GR -f CP1253 el_GR.CP1253
 Then, install doctest:
 ```bash
 git clone https://github.com/onqtam/doctest
-cd doctest
-mkdir -p build && cd build
-cmake .. -DDOCTEST_WITH_TESTS=off -DDOCTEST_WITH_MAIN_IN_STATIC_LIB=OFF
-make
-sudo make install
+cmake -S doctest -B doctest/build -DDOCTEST_WITH_TESTS=OFF -DDOCTEST_WITH_MAIN_IN_STATIC_LIB=OFF
+cmake --build doctest/build
+sudo cmake --install doctest/build
 ```
 
 Then, compile & run the tests
 ````bash
 git clone https://github.com/Dobiasd/FunctionalPlus
-cd FunctionalPlus
-mkdir build
-cd build
-cmake .. -DFPLUS_BUILD_UNITTEST=ON
-make
-make test
+cmake -S FunctionalPlus/test -B FunctionalPlus/build
+cmake --build FunctionalPlus/build
+(cd FunctionalPlus/build; ctest)
 ````
 
-As an alternative, doctest global installation can be skipped by using [conan](https://conan.io):
+As an alternative, doctest global installation can be skipped by installing to
+a local prefix:
 
 ````bash
-# pip install conan # (if conan is not installed)
+git clone https://github.com/onqtam/doctest
+cmake -S doctest -B doctest/build -DDOCTEST_WITH_TESTS=OFF -DDOCTEST_WITH_MAIN_IN_STATIC_LIB=OFF
+cmake --build doctest/build
+cmake --install doctest/build --prefix doctest
+
 git clone https://github.com/Dobiasd/FunctionalPlus
-cd FunctionalPlus
-mkdir build
-cd build
-conan install .. -obuild_unittest=True --build=missing
-cmake .. -DFPLUS_BUILD_UNITTEST=ON -DFPLUS_UNITTEST_USE_CONAN=ON
-make
-make test
+cmake -S FunctionalPlus/test -B FunctionalPlus/build -D "CMAKE_PREFIX_PATH=${PWD}/doctest"
+cmake --build FunctionalPlus/build
+(cd FunctionalPlus/build; ctest)
 ````
 
 
-### way 2: using [cmake's ExternalProject](https://cmake.org/cmake/help/v3.0/module/ExternalProject.html)
+### way 2: using [CMake's ExternalProject](https://cmake.org/cmake/help/latest/module/ExternalProject.html)
 
 You can also add `FunctionalPlus` as an `ExternalProject` to your CMakeLists.
 
@@ -94,35 +89,61 @@ The benefits of this:
   - When you build your project, it will automatically update the headers if there is a change
   - Or get the specific version by setting it to a specific commit point
 
-
 ```cmake
-cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.8)
 project(FplusMinimalExternalExample)
-set(CMAKE_CXX_STANDARD 14)
 
 include(ExternalProject)
-ExternalProject_Add(functional_plus
-  GIT_REPOSITORY https://github.com/Dobiasd/FunctionalPlus.git
-  GIT_TAG master
+ExternalProject_Add(
+    functional_plus
+    GIT_REPOSITORY https://github.com/Dobiasd/FunctionalPlus.git
+    GIT_TAG master
 
-  SOURCE_DIR "${CMAKE_BINARY_DIR}/thirdparty/fplus"
+    SOURCE_DIR "${CMAKE_BINARY_DIR}/thirdparty/fplus"
 
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND ""
-  INSTALL_COMMAND ""
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
 
-  LOG_DOWNLOAD ON
-  LOG_BUILD ON
+    LOG_DOWNLOAD ON
+    LOG_BUILD ON
 )
-set(FPLUS_INCLUDE_DIR ${CMAKE_BINARY_DIR}/thirdparty/fplus/include)
-include_directories(${FPLUS_INCLUDE_DIR})
+
+ExternalProject_Get_Property(functional_plus SOURCE_DIR)
 
 add_executable(main src/main.cpp)
 add_dependencies(main functional_plus)
+target_compile_features(main PRIVATE cxx_std_14)
+target_include_directories(main PRIVATE "${SOURCE_DIR}")
 ```
 
 
-### way 3: using [cget](https://github.com/pfultz2/cget/)
+### way 3: using [CMake 3.14 FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html)
+
+This should be preferred over the
+[ExternalProject](#way-2-using-cmakes-externalproject) method.
+
+This has similar benefits, but it's easier to set up in your CMakeLists.txt.
+
+```cmake
+cmake_minimum_required(VERSION 3.14)
+project(FplusMinimalExternalExample)
+
+include(FetchContent)
+FetchContent_Declare(
+    functional_plus
+    GIT_REPOSITORY https://github.com/Dobiasd/FunctionalPlus.git
+    GIT_TAG master
+)
+FetchContent_MakeAvailable(functional_plus)
+
+add_executable(main src/main.cpp)
+target_compile_features(main PRIVATE cxx_std_14)
+target_link_libraries(main PRIVATE FunctionalPlus::fplus)
+```
+
+
+### way 4: using [cget](https://github.com/pfultz2/cget/)
 
 ```bash
 # Setup up toolchain to use c++14
@@ -132,18 +153,18 @@ cget install Dobiasd/FunctionalPlus
 ```
 
 
-### way 4: download manually
+### way 5: download manually
 
 Just [download](https://github.com/Dobiasd/FunctionalPlus/archive/master.zip)/extract FunctionalPlus and tell your compiler to use the `include` directory.
 
 
-### way 5: using [Conan C/C++ package manager](https://conan.io)
+### way 6: using [Conan C/C++ package manager](https://conan.io)
 
 Just add a *conanfile.txt* with FunctionalPlus as a requirement and chose the generator for your project.
 
 ```
 [requires]
-functionalplus/v0.2.13-p0@dobiasd/stable
+functionalplus/0.2.13-p0
 
 [generators]
 cmake
@@ -156,7 +177,7 @@ conan install conanfile.txt
 ```
 
 
-### way 6: using [conda-forge](https://conda-forge.org/)
+### way 7: using [conda-forge](https://conda-forge.org/)
 
 ```bash
 conda config --add channels conda-forge
@@ -166,17 +187,19 @@ conda install FunctionalPlus
 Visit [`conda-forge/FunctionalPlus-feedstock`](https://github.com/conda-forge/FunctionalPlus-feedstock) for more details.
 
 
-### way 7: using [Homebrew](https://brew.sh/)
+### way 8: using [Homebrew](https://brew.sh/)
 
 ```bash
 brew install functionalplus
 ```
 
-And then, you can add **FunctionalPlus** as a dependency in your cmake project [as in way 1](#cmake-dependency).
+And then, you can add **FunctionalPlus** as a dependency in your CMake project [as in way 1](#cmake-dependency).
 
-If you're not using cmake, you might need to add `$(brew --prefix functionalplus)/include` to the additional include paths for your compiler.
+If you're not using CMake, you might need to add `$(brew --prefix functionalplus)/include` to the additional include paths for your compiler.
 
-### way 8: using the "all in one" include file
+
+### way 9: using the "all in one" include file
+
 [include_all_in_one/include/fplus/fplus.hpp](include_all_in_one/include/fplus/fplus.hpp) is a standalone header that groups all FunctionalPlus code.
 
 For example, download this file into external/fplus/include/fplus, like this:
@@ -191,12 +214,12 @@ Then, compile like this:
 g++ --std=c++14 src/main.cpp -Iexternal/fplus/include
 ````
 
-or, with cmake:
+or, with CMake:
 ````cmake
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.8)
 project(YourProjectName)
-set(CMAKE_CXX_STANDARD 14)
 add_executable(main src/main.cpp)
+target_compile_features(main PRIVATE cxx_std_14)
 target_include_directories(main PRIVATE external/fplus/include)
 ````
 
