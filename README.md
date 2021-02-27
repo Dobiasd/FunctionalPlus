@@ -317,7 +317,7 @@ Comparison with range-v3
 
 ```c++
 const auto times_3 = [](int i){return 3 * i;};
-const auto is_odd_int = [](int i){return i % 2 == 0;};
+const auto is_odd_int = [](int i){return i % 2 != 0;};
 const auto as_string_length = [](int i){return std::to_string(i).size();};
 
 // FunctionalPlus
