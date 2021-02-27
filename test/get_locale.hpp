@@ -1,3 +1,5 @@
+#pragma once
+
 #include <sstream>
 
 template<typename T>
