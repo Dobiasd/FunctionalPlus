@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace {
-    bool is_odd_int(int x) { return x % 2 == 1; }
+    bool is_odd_int(int x) { return x % 2 != 0; }
 }
 
 TEST_CASE("readme_examples_test, KeepIf")

@@ -32,7 +32,7 @@ Great code should mostly be self-documenting, but while using C++ in reality you
 Say you have a list of numbers and are interested in the odd ones only.
 
 ```c++
-bool is_odd_int(int x) { return x % 2 == 1; }
+bool is_odd_int(int x) { return x % 2 != 0; }
 
 int main()
 {

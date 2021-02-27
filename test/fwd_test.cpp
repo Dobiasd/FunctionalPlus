@@ -11,7 +11,7 @@ namespace {
     typedef std::vector<int> IntVector;
     bool is_odd_int(int x)
     {
-        return (x % 2 == 1);
+        return (x % 2 != 0);
     }
 
     bool is_even_int(int x)
