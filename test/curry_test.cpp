@@ -7,16 +7,11 @@
 #include <doctest/doctest.h>
 #include <fplus/fplus.hpp>
 
-namespace {
-
-}
-
 TEST_CASE("curry_test, show_fill_left")
 {
     using namespace fplus;
     REQUIRE_EQ(show_fill_left<int>(' ', 4, 3), "   3");
     const auto result_old_style = show_fill_left<int>(' ', 4, 3);
     const auto result_new_style = curry::show_fill_left(' ')(std::size_t(4))(3);
-    //const auto result_new_style = curry__show_fill_left(' ')(std::size_t(4))(3);
     REQUIRE_EQ(result_old_style, result_new_style);
 }
