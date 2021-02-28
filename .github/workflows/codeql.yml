@@ -1,0 +1,31 @@
+name: codeql
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 5 * * 3'
+
+jobs:
+  codeql:
+    runs-on: ubuntu-20.04
+    name: "CodeQL"
+    env:
+      CC: gcc-10
+      CXX: g++-10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Install dependencies
+        run: sudo script/ci_setup_dependencies.sh
+      - name: CodeQL Initialization
+        uses: github/codeql-action/init@v1
+        with:
+          languages: cpp
+          queries: +security-and-quality
+      - name: Build
+        run: |
+          cmake -S test -B build
+          cmake --build build -j 4
+      - name: CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
