@@ -32,7 +32,7 @@ Great code should mostly be self-documenting, but while using C++ in reality you
 Say you have a list of numbers and are interested in the odd ones only.
 
 ```c++
-bool is_odd_int(int x) { return x % 2 == 1; }
+bool is_odd_int(int x) { return x % 2 != 0; }
 
 int main()
 {
@@ -317,7 +317,7 @@ Comparison with range-v3
 
 ```c++
 const auto times_3 = [](int i){return 3 * i;};
-const auto is_odd_int = [](int i){return i % 2 == 0;};
+const auto is_odd_int = [](int i){return i % 2 != 0;};
 const auto as_string_length = [](int i){return std::to_string(i).size();};
 
 // FunctionalPlus

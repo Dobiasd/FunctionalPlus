@@ -11,7 +11,7 @@ namespace {
     typedef std::vector<int> IntVector;
     bool is_odd_int(int x)
     {
-        return (x % 2 == 1);
+        return (x % 2 != 0);
     }
 
     bool is_even_int(int x)
@@ -159,9 +159,6 @@ TEST_CASE("fwd_test, different_function_types_compose")
     REQUIRE_EQ(fwd::transform(fwd::compose(times_3_std_function, times_3_std_function))(xs), result);
     REQUIRE_EQ(fwd::transform(fwd::compose(&times_3_struct::sttcMemF, &times_3_struct::sttcMemF))(xs), result);
     REQUIRE_EQ(fwd::transform(fwd::compose(times_3_fn_ptr, times_3_fn_ptr))(xs), result);
-
-    //const auto times_3_instance = times_3_struct();
-    //REQUIRE_EQ(fwd::transform(fwd::compose(times_3_instance, times_3_instance))(xs), result);
 }
 
 std::list<int> collatz_seq(int x)

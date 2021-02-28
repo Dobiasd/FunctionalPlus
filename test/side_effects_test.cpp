@@ -32,7 +32,6 @@ TEST_CASE("side_effects_test, execute_parallelly")
     using namespace fplus;
     auto return_one = [&](){ return 1; };
     REQUIRE_EQ(execute_parallelly(replicate(4, return_one))(), std::vector<int>({1,1,1,1}));
-    //execute_fire_and_forget([](){std::cout << "Fired and forgotten." << std::endl;})();
 }
 
 TEST_CASE("side_effects_test, execute_max_n_times_until_success")

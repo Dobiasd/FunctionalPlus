@@ -13,7 +13,7 @@ namespace {
     auto squareLambda = [](int x) -> int { return x*x; };
     auto is_even_int = [](int x){ return x % 2 == 0; };
     auto is_even_size_t = [](std::size_t x){ return x % 2 == 0; };
-    auto is_odd_int = [](int x){ return x % 2 == 1; };
+    auto is_odd_int = [](int x){ return x % 2 != 0; };
     typedef std::pair<int, int> IntPair;
     typedef std::vector<IntPair> IntPairs;
     typedef std::vector<int> IntVector;
