@@ -178,3 +178,23 @@ TEST_CASE("pairs_test, first_match")
     REQUIRE_EQ(first_match(IntVector({1,2,3}), IntVector({5,2,3})), just(IntPair(2,2)));
     REQUIRE_EQ(first_match(IntVector(), IntVector({1,2})), nothing<IntPair>());
 }
+
+TEST_CASE("pairs_test, broadcast") {
+    using namespace fplus;
+    typedef std::vector<int> Ints;
+    typedef std::vector<std::string> Strings;
+    REQUIRE_EQ(broadcast(std::string{"number"}, Ints{}),
+               std::make_pair(Strings{}, Ints{}));
+    REQUIRE_EQ(broadcast(std::string{"number"}, Ints{0,1,2}),
+               std::make_pair(Strings{"number", "number", "number")}, Ints{0,1,2});
+}
+
+TEST_CASE("pairs_test, zip_broadcast") {
+    using namespace fplus;
+    typedef std::vector<int> Ints;
+    typedef std::pair<std::string, int> Pair;
+    typedef std::vector<Pair> Pairs;
+
+    REQUIRE_EQ(zip_broadcast(std::string{"number"}, Ints{0,1,2}),
+            Pairs{{"number", 0}, {"number", 1}, {"number", 2}});
+}

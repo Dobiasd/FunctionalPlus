@@ -151,6 +151,32 @@ auto zip(const ContainerIn1& xs, const ContainerIn2& ys)
     return zip_with(MakePair, xs, ys);
 }
 
+// API search type: broadcast : (a, [b])  -> ([a], [b])
+// fwd bind count: 1
+// Create a replicate sequence having value x of the same size as ys,
+// and return along with xs as a pair
+// broadcast(5, [1,2,3]) == ([5,5,5], [1,2,3])
+template <typename X, typename ContainerIn,
+        typename Y = typename ContainerIn::value_type,
+        typename ContainerOutX = typename internal::same_cont_new_t<ContainerIn, X>::type,
+        typename ContainerOutY = typename internal::same_cont_new_t<ContainerIn, Y>::type>
+auto broadcast(const X &x, const ContainerIn &ys) {
+    ContainerOutX firsts{ys.size(), x};
+    ContainerOutY seconds{ys.begin(), ys.end()};
+    return std::make_pair(firsts, seconds);
+}
+
+// API search type: broadcast : (a, [b])  -> [(a, b)]
+// fwd bind count: 1
+// Same as zip(broadcast(x, ys))
+// zip_broadcast(5, [1,2,3]) == [(5,1), (5,2), (5,3)]
+template <typename X, typename ContainerIn,
+        typename Y = typename ContainerIn::value_type,
+        typename ContainerOutX = typename internal::same_cont_new_t<ContainerIn, X>::type>
+auto zip_broadcast(const X &x, const ContainerIn &ys) {
+    return zip(broadcast(x, ys));
+}
+
 // API search type: unzip : [(a, b)] -> ([a], [b])
 // fwd bind count: 0
 // Split a sequence of pairs into two sequences.
