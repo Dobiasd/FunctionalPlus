@@ -174,7 +174,8 @@ template <typename X, typename ContainerIn,
         typename Y = typename ContainerIn::value_type,
         typename ContainerOutX = typename internal::same_cont_new_t<ContainerIn, X>::type>
 auto zip_broadcast(const X &x, const ContainerIn &ys) {
-    return zip(broadcast(x, ys));
+    auto temp = broadcast(x, ys);
+    return zip(temp.first, temp.second);
 }
 
 // API search type: unzip : [(a, b)] -> ([a], [b])
