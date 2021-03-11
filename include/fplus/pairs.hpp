@@ -161,7 +161,7 @@ template <typename X, typename ContainerIn,
         typename ContainerOutX = typename internal::same_cont_new_t<ContainerIn, X>::type,
         typename ContainerOutY = typename internal::same_cont_new_t<ContainerIn, Y>::type>
 auto broadcast(const X &x, const ContainerIn &ys) {
-    ContainerOutX firsts{ys.size(), x};
+    ContainerOutX firsts(ys.size(), x);
     ContainerOutY seconds{ys.begin(), ys.end()};
     return std::make_pair(firsts, seconds);
 }
