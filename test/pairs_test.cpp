@@ -184,9 +184,9 @@ TEST_CASE("pairs_test, broadcast") {
     typedef std::vector<int> Ints;
     typedef std::vector<std::string> Strings;
     REQUIRE_EQ(broadcast(std::string{"number"}, Ints{}),
-               std::make_pair(Strings{}, Ints{}));
+            std::make_pair(Strings{}, Ints{}));
     REQUIRE_EQ(broadcast(std::string{"number"}, Ints{0,1,2}),
-               std::make_pair(Strings{"number", "number", "number")}, Ints{0,1,2});
+            std::make_pair(Strings{"number", "number", "number"}, Ints{0,1,2}));
 }
 
 TEST_CASE("pairs_test, zip_broadcast") {
@@ -195,6 +195,6 @@ TEST_CASE("pairs_test, zip_broadcast") {
     typedef std::pair<std::string, int> Pair;
     typedef std::vector<Pair> Pairs;
 
-    REQUIRE_EQ(zip_broadcast(std::string{"number"}, Ints{0,1,2}),
-            Pairs{{"number", 0}, {"number", 1}, {"number", 2}});
+    auto expected = Pairs{{"number", 0}, {"number", 1}, {"number", 2}};
+    REQUIRE_EQ(zip_broadcast(std::string{"number"}, Ints{0,1,2}), expected);
 }
