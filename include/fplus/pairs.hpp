@@ -154,7 +154,7 @@ auto zip(const ContainerIn1& xs, const ContainerIn2& ys)
 // API search type: broadcast : (a, [b])  -> ([a], [b])
 // fwd bind count: 1
 // Create a replicate sequence having value x of the same size as ys,
-// and return along with xs as a pair
+// and return along with ys as a pair
 // broadcast(5, [1,2,3]) == ([5,5,5], [1,2,3])
 template <typename X, typename ContainerIn,
         typename Y = typename ContainerIn::value_type,
