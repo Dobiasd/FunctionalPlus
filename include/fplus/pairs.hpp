@@ -151,7 +151,7 @@ auto zip(const ContainerIn1& xs, const ContainerIn2& ys)
     return zip_with(MakePair, xs, ys);
 }
 
-// API search type: broadcast : (a, [b])  -> ([a], [b])
+// API search type: broadcast : (a, [b]) -> ([a], [b])
 // fwd bind count: 1
 // Create a replicate sequence having value x of the same size as ys,
 // and return along with ys as a pair
@@ -166,7 +166,7 @@ auto broadcast(const X &x, const ContainerIn &ys) {
     return std::make_pair(firsts, seconds);
 }
 
-// API search type: broadcast : (a, [b])  -> [(a, b)]
+// API search type: zip_broadcast : (a, [b]) -> [(a, b)]
 // fwd bind count: 1
 // Same as zip(broadcast(x, ys))
 // zip_broadcast(5, [1,2,3]) == [(5,1), (5,2), (5,3)]
