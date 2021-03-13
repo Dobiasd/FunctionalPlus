@@ -185,6 +185,8 @@ TEST_CASE("pairs_test, zip_repeat")
     typedef std::vector<std::string> Strings;
     typedef std::pair<std::string, int> Pairs;
     Strings label{"even", "odd"};
+    std::vector<Pairs> expected{{"even", 0}, {"odd", 1}, {"even", 2}};
     REQUIRE_EQ(zip_repeat(label, IntVector{0,1}), zip(label, IntVector{0, 1}));
-    REQUIRE_EQ(zip_repeat(label, IntVector{0,1,2}), std::vector<Pairs>{{"even", 0}, {"odd", 1}, {"even", 2}});
+    REQUIRE_EQ(zip_repeat(label, IntVector{0,1,2}), expected);
+    REQUIRE_EQ(zip_repeat(IntVector{0,1,2}, label), transform(fwd::swap_pair_elems(), expected));
 }
