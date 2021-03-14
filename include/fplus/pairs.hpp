@@ -16,7 +16,6 @@
 
 namespace fplus
 {
-
 // API search type: apply_to_pair : (((a, b) -> c), (a, b)) -> c
 // fwd bind count: 1
 // Apply binary function to parts of a pair.
