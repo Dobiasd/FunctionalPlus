@@ -17,11 +17,6 @@
 namespace fplus
 {
 
-// forward declare
-// it won't compile w/o this in clang
-template <typename Container>
-Container repeat(std::size_t n, const Container& xs);
-
 // API search type: apply_to_pair : (((a, b) -> c), (a, b)) -> c
 // fwd bind count: 1
 // Apply binary function to parts of a pair.
