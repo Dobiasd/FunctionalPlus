@@ -8,6 +8,7 @@
 
 #include <fplus/container_common.hpp>
 #include <fplus/function_traits.hpp>
+#include <fplus/generate.hpp>
 #include <fplus/internal/invoke.hpp>
 #include <fplus/internal/asserts/pairs.hpp>
 
@@ -149,6 +150,22 @@ auto zip(const ContainerIn1& xs, const ContainerIn2& ys)
     auto MakePair = [](const X& x, const Y& y)
         { return std::make_pair(x, y); };
     return zip_with(MakePair, xs, ys);
+}
+
+// API search type: zip_repeat : ([a], [b]) -> [(a, b)]
+// fwd bind count: 1
+// Similar to zip but repeats the shorter sequence
+// to align with the longer sequence.
+// zip([1, 2, 3, 4], [5, 6]) == [(1, 5), (2, 6), (3, 5), (4, 6)]
+template <typename ContainerIn1, typename ContainerIn2>
+auto zip_repeat(const ContainerIn1& xs, const ContainerIn2& ys)
+{
+    auto nx = xs.size();
+    auto ny = ys.size();
+    auto qx = ny/nx + (ny % nx ?  1 : 0);
+    auto qy = nx/ny + (nx % ny ?  1 : 0);
+    return zip(qx > 1 ? repeat(qx, xs) : xs,
+               qy > 1 ? repeat(qy, ys) : ys);
 }
 
 // API search type: unzip : [(a, b)] -> ([a], [b])

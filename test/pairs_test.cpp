@@ -178,3 +178,15 @@ TEST_CASE("pairs_test, first_match")
     REQUIRE_EQ(first_match(IntVector({1,2,3}), IntVector({5,2,3})), just(IntPair(2,2)));
     REQUIRE_EQ(first_match(IntVector(), IntVector({1,2})), nothing<IntPair>());
 }
+
+TEST_CASE("pairs_test, zip_repeat")
+{
+    using namespace fplus;
+    typedef std::vector<std::string> Strings;
+    typedef std::pair<std::string, int> Pairs;
+    Strings label{"even", "odd"};
+    std::vector<Pairs> expected{{"even", 0}, {"odd", 1}, {"even", 2}};
+    REQUIRE_EQ(zip_repeat(label, IntVector{0,1}), zip(label, IntVector{0, 1}));
+    REQUIRE_EQ(zip_repeat(label, IntVector{0,1,2}), expected);
+    REQUIRE_EQ(zip_repeat(IntVector{0,1,2}, label), transform(fwd::swap_pair_elems(), expected));
+}
