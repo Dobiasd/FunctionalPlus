@@ -124,12 +124,12 @@ MapType map_union(const MapType& dict1, const MapType& dict2)
 //     -> [("a", 1), ("a", 2), ("a", 4), ("b", 6)]
 template<typename MapType>
 auto map_grouped_to_pairs(const MapType &dict) {
-    using key_type = typename MapType::key_type;
-    using group_type = typename MapType::mapped_type;
+    using Key = typename MapType::key_type;
+    using Group = typename MapType::mapped_type;
 
     auto fn = [](const auto &pair) {
-        return apply_to_pair(zip_repeat<std::vector<key_type>, group_type>,
-                             transform_fst(singleton_seq<key_type>, pair));
+        return apply_to_pair(zip_repeat<std::vector<Key>, Group>,
+                             transform_fst(singleton_seq<Key>, pair));
     };
     return transform_and_concat(fn, map_to_pairs(dict));
 }
