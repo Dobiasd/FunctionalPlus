@@ -131,7 +131,7 @@ auto map_grouped_to_pairs(const MapType &dict) {
         const auto f = zip_repeat<std::vector<Key>, Group>;
         return apply_to_pair(f, transform_fst(singleton_seq<Key>, pair));
     };
-    return transform_and_concat(fn, map_to_pairs(dict));
+    return concat(transform(fn, map_to_pairs(dict)));
 }
 
 // API search type: get_map_keys : Map key val -> [key]
