@@ -211,3 +211,17 @@ TEST_CASE("maps_test, map functions")
         map_pluck('a', CharIntMaps({{{'a',1}, {'b',2}}, {{'a',3}}, {{'c',4}}})),
         MaybeInts({1, 3, {}}));
 }
+
+TEST_CASE("maps_test, map_grouped_to_pairs")
+{
+using namespace fplus;
+    std::map<std::string, std::vector<std::string>> teams = {
+            {"teamX", {"Ron", "Alice"}},
+            {"teamY", {"Joe", "Jane", "Ally"}}
+    };
+    using Pair = std::pair<std::string, std::string>;
+    const auto result = map_grouped_to_pairs(teams);
+    REQUIRE_EQ(result, std::vector<Pair>{{"teamX", "Ron"}, {"teamX", "Alice"},
+                                         {"teamY", "Joe"}, {"teamY", "Jane"}, {"teamY", "Ally"}});
+    REQUIRE_EQ(teams, pairs_to_map_grouped(result));
+}

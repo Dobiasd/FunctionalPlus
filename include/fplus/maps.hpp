@@ -102,7 +102,7 @@ auto map_union_with(F f, const MapIn& dict1, const MapIn& dict2)
 // API search type: map_union : (Map key val, Map key val) -> Map key val
 // fwd bind count: 1
 // Combine two dictionaries keeping the value of the first map
-// in case of key collissions.
+// in case of key collisions.
 // map_union({0: a, 1: b}, {0: c, 2: d}) == {0: a, 1: b, 2: d}
 template <typename MapType>
 MapType map_union(const MapType& dict1, const MapType& dict2)
@@ -114,6 +114,26 @@ MapType map_union(const MapType& dict1, const MapType& dict2)
         return a;
     };
     return map_union_with(get_first, dict1, dict2);
+}
+
+// API search type: map_grouped_to_pairs : Map key [val] -> [(key, val)]
+// fwd bind count: 0
+// Convert a dictionary with sequence values to a list of key-value pairs.
+// Inverse operation of pairs_to_map_grouped.
+// map_grouped_to_pairs({"a": [1, 2, 4], "b": [6]})
+//     -> [("a", 1), ("a", 2), ("a", 4), ("b", 6)]
+template<typename MapType>
+auto map_grouped_to_pairs(const MapType &dict)
+{
+    using Key = typename MapType::key_type;
+    using Group = typename MapType::mapped_type;
+
+    auto fn = [](const auto &pair)
+    {
+        const auto f = zip_repeat<std::vector<Key>, Group>;
+        return apply_to_pair(f, transform_fst(singleton_seq < Key > , pair));
+    };
+    return concat(transform(fn, map_to_pairs(dict)));
 }
 
 // API search type: get_map_keys : Map key val -> [key]
