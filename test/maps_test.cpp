@@ -221,6 +221,7 @@ using namespace fplus;
     };
     using Pair = std::pair<std::string, std::string>;
     const auto result = map_grouped_to_pairs(teams);
-            REQUIRE_EQ(result, std::vector<Pair>{{"teamX", "Ron"}, {"teamX", "Alice"},
-                                                 {"teamY", "Joe"}, {"teamY", "Jane"}, {"teamY", "Ally"}});
+    REQUIRE_EQ(result, std::vector<Pair>{{"teamX", "Ron"}, {"teamX", "Alice"},
+                                         {"teamY", "Joe"}, {"teamY", "Jane"}, {"teamY", "Ally"}});
+    REQUIRE_EQ(teams, pairs_to_map_grouped(result));
 }
