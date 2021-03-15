@@ -128,8 +128,8 @@ auto map_grouped_to_pairs(const MapType &dict) {
     using Group = typename MapType::mapped_type;
 
     auto fn = [](const auto &pair) {
-        return apply_to_pair(zip_repeat<std::vector<Key>, Group>,
-                             transform_fst(singleton_seq<Key>, pair));
+        const auto f = zip_repeat<std::vector<Key>, Group>;
+        return apply_to_pair(f, transform_fst(singleton_seq<Key>, pair));
     };
     return transform_and_concat(fn, map_to_pairs(dict));
 }
