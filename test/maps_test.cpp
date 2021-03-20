@@ -225,3 +225,19 @@ TEST_CASE("maps_test, map_grouped_to_pairs")
                                          {"teamY", "Joe"}, {"teamY", "Jane"}, {"teamY", "Ally"}});
     REQUIRE_EQ(teams, pairs_to_map_grouped(result));
 }
+
+TEST_CASE("maps_test, create_map_grouped")
+{
+    using namespace fplus;
+    const std::vector<std::string> words = {"one", "three", "two"};
+    const auto result = create_map_grouped(size_of_cont<std::string>, words);
+    REQUIRE_EQ(result.at(3), std::vector<std::string>{"one", "two"});
+}
+
+TEST_CASE("maps_test, create_unordered_map_grouped")
+{
+    using namespace fplus;
+    const std::vector<std::string> words = {"one", "three", "two"};
+    const auto result = create_unordered_map_grouped(size_of_cont<std::string>, words);
+    REQUIRE_EQ(result.at(3), std::vector<std::string>{"one", "two"});
+}
