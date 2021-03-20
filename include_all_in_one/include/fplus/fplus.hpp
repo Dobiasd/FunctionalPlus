@@ -9810,6 +9810,26 @@ MapOut pairs_to_map_grouped(const ContainerIn& pairs)
     return result;
 }
 
+// API search type: pairs_to_unordered_map_grouped : [(key, val)] -> Map key [val]
+// fwd bind count: 0
+// Convert a list of key-value pairs to a dictionary
+// while pushing values having the same key into a vector.
+// pairs_to_unordered_map_grouped([("a", 1), ("a", 2), ("b", 6), ("a", 4)])
+//     -> {"a": [1, 2, 4], "b": [6]}
+template <typename ContainerIn,
+    typename Key = typename ContainerIn::value_type::first_type,
+    typename SingleValue = typename ContainerIn::value_type::second_type,
+    typename MapOut = std::unordered_map<Key, std::vector<SingleValue>>>
+MapOut pairs_to_unordered_map_grouped(const ContainerIn& pairs)
+{
+    MapOut result;
+    for (const auto& p : pairs)
+    {
+        result[p.first].push_back(p.second);
+    }
+    return result;
+}
+
 // API search type: map_to_pairs : Map key val -> [(key, val)]
 // fwd bind count: 0
 // Converts a dictionary into a Container of pairs (key, value).
@@ -9972,6 +9992,18 @@ auto create_map_with(F f, const ContainerIn& keys)
     return create_map(keys, transform(f, keys));
 }
 
+// API search type: create_map_grouped : ((val -> key), [val]) -> Map key val
+// fwd bind count: 1
+// Take a list of values and create a grouped dictionary
+// generating the keys by applying f to each key.
+// create_map_grouped(length, ["one", "three", "two"]) == {3: ["one", "two"], 5: ["three"]}
+// Also known as group_by
+template <typename ContainerIn, typename F>
+auto create_map_grouped(F f, const ContainerIn& values)
+{
+    return pairs_to_map_grouped(zip(transform(f, values), values));
+}
+
 // API search type: create_unordered_map : ([key], [val]) -> Map key val
 // fwd bind count: 1
 // Zip a sequence of keys with a sequence of values to obtain a dictionary.
@@ -9997,6 +10029,18 @@ template <typename ContainerIn, typename F>
 auto create_unordered_map_with(F f, const ContainerIn& keys)
 {
     return create_unordered_map(keys, transform(f, keys));
+}
+
+// API search type: create_unordered_map_grouped : ((val -> key), [val]) -> Map key val
+// fwd bind count: 1
+// Take a list of values and create a grouped dictionary
+// generating the keys by applying f to each key.
+// create_unordered_map_grouped(length, ["one", "three", "two"]) == {3: ["one", "two"], 5: ["three"]}
+// Also known as group_by
+template <typename ContainerIn, typename F>
+auto create_unordered_map_grouped(F f, const ContainerIn& values)
+{
+    return pairs_to_unordered_map_grouped(zip(transform(f, values), values));
 }
 
 // API search type: get_from_map : (Map key val, key) -> Maybe val
@@ -15151,6 +15195,7 @@ fplus_curry_define_fn_2(extrapolate_wrap)
 fplus_curry_define_fn_1(elem_at_float_idx)
 fplus_curry_define_fn_0(pairs_to_map)
 fplus_curry_define_fn_0(pairs_to_map_grouped)
+fplus_curry_define_fn_0(pairs_to_unordered_map_grouped)
 fplus_curry_define_fn_0(map_to_pairs)
 fplus_curry_define_fn_1(transform_map_values)
 fplus_curry_define_fn_2(map_union_with)
@@ -15161,8 +15206,10 @@ fplus_curry_define_fn_0(get_map_values)
 fplus_curry_define_fn_0(swap_keys_and_values)
 fplus_curry_define_fn_1(create_map)
 fplus_curry_define_fn_1(create_map_with)
+fplus_curry_define_fn_1(create_map_grouped)
 fplus_curry_define_fn_1(create_unordered_map)
 fplus_curry_define_fn_1(create_unordered_map_with)
+fplus_curry_define_fn_1(create_unordered_map_grouped)
 fplus_curry_define_fn_1(get_from_map)
 fplus_curry_define_fn_1(get_from_map_unsafe)
 fplus_curry_define_fn_2(get_from_map_with_def)
@@ -15756,6 +15803,7 @@ fplus_fwd_define_fn_2(extrapolate_wrap)
 fplus_fwd_define_fn_1(elem_at_float_idx)
 fplus_fwd_define_fn_0(pairs_to_map)
 fplus_fwd_define_fn_0(pairs_to_map_grouped)
+fplus_fwd_define_fn_0(pairs_to_unordered_map_grouped)
 fplus_fwd_define_fn_0(map_to_pairs)
 fplus_fwd_define_fn_1(transform_map_values)
 fplus_fwd_define_fn_2(map_union_with)
@@ -15766,8 +15814,10 @@ fplus_fwd_define_fn_0(get_map_values)
 fplus_fwd_define_fn_0(swap_keys_and_values)
 fplus_fwd_define_fn_1(create_map)
 fplus_fwd_define_fn_1(create_map_with)
+fplus_fwd_define_fn_1(create_map_grouped)
 fplus_fwd_define_fn_1(create_unordered_map)
 fplus_fwd_define_fn_1(create_unordered_map_with)
+fplus_fwd_define_fn_1(create_unordered_map_grouped)
 fplus_fwd_define_fn_1(get_from_map)
 fplus_fwd_define_fn_1(get_from_map_unsafe)
 fplus_fwd_define_fn_2(get_from_map_with_def)
@@ -16065,8 +16115,10 @@ fplus_fwd_flip_define_fn_1(transform_map_values)
 fplus_fwd_flip_define_fn_1(map_union)
 fplus_fwd_flip_define_fn_1(create_map)
 fplus_fwd_flip_define_fn_1(create_map_with)
+fplus_fwd_flip_define_fn_1(create_map_grouped)
 fplus_fwd_flip_define_fn_1(create_unordered_map)
 fplus_fwd_flip_define_fn_1(create_unordered_map_with)
+fplus_fwd_flip_define_fn_1(create_unordered_map_grouped)
 fplus_fwd_flip_define_fn_1(get_from_map)
 fplus_fwd_flip_define_fn_1(get_from_map_unsafe)
 fplus_fwd_flip_define_fn_1(get_first_from_map)
