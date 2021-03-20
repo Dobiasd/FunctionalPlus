@@ -214,8 +214,8 @@ TEST_CASE("maps_test, map functions")
 
 TEST_CASE("maps_test, map_grouped_to_pairs")
 {
-using namespace fplus;
-    std::map<std::string, std::vector<std::string>> teams = {
+    using namespace fplus;
+    const std::map<std::string, std::vector<std::string>> teams = {
             {"teamX", {"Ron", "Alice"}},
             {"teamY", {"Joe", "Jane", "Ally"}}
     };
