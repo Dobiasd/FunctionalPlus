@@ -4,13 +4,14 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <doctest/doctest.h>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest/doctest.h"
 #include <fplus/fplus.hpp>
 #include <fplus/fwd.hpp>
 #include "get_locale.hpp"
 
 //TODO: google says there is no UTF8 locale on Windows, is it so?
-TEST_CASE("stringtools_test - to_lower/upper_case - utf8")
+TEST_CASE("stringtools_test, to_lower/upper_case, utf8")
 {
 #ifndef _MSC_VER // FATAL ERROR: Couldn't acquire locale: bad locale name. Is 'ru_RU.utf8' supported on your system?
     using namespace fplus;

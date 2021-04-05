@@ -4,12 +4,13 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <doctest/doctest.h>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest/doctest.h"
 #include <fplus/fplus.hpp>
 #include <fplus/fwd.hpp>
 #include "get_locale.hpp"
 
-TEST_CASE("stringtools_test - to_lower/upper_case - cp1253")
+TEST_CASE("stringtools_test, to_lower/upper_case, cp1253")
 {
     using namespace fplus;
     const std::locale loc = get_locale(
