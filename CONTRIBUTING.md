@@ -68,7 +68,7 @@ As the maintainer, I will run `cd api_search && ./compile_all_and_deploy.sh && c
 A few unit tests would also be nice. In our example they belong into `./test/filter_test.cpp`
 
 ```c++
-TEST_CASE("filter_test, without")
+TEST_CASE("filter_test - without")
 {
     using namespace fplus;
     typedef std::vector<int> Ints;
