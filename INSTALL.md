@@ -47,7 +47,7 @@ sudo localedef -c -i el_GR -f CP1253 el_GR.CP1253
 
 Then, install doctest:
 ```bash
-git clone https://github.com/onqtam/doctest
+git clone --depth=1 --branch=2.4.3 https://github.com/onqtam/doctest
 cmake -S doctest -B doctest/build -DDOCTEST_WITH_TESTS=OFF -DDOCTEST_WITH_MAIN_IN_STATIC_LIB=OFF
 cmake --build doctest/build
 sudo cmake --install doctest/build
