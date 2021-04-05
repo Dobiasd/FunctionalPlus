@@ -8,8 +8,7 @@
 #include <fplus/fplus.hpp>
 #include <fplus/fwd.hpp>
 #include "get_locale.hpp"
-// todo: re-enable
-/*
+
 //TODO: google says there is no UTF8 locale on Windows, is it so?
 TEST_CASE("stringtools_test - to_lower/upper_case - utf8")
 {
@@ -37,4 +36,3 @@ TEST_CASE("stringtools_test - to_lower/upper_case - utf8")
     REQUIRE_EQ(upper(std::wstring(L"αβγδεζηθικλμνξοπρστυφχψω")), std::wstring(L"ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ"));
 #endif
 }
-*/
