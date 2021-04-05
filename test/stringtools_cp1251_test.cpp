@@ -9,7 +9,7 @@
 #include <fplus/fwd.hpp>
 #include "get_locale.hpp"
 
-TEST_CASE("stringtools_test -  to_lower/upper_case, cp1251")
+TEST_CASE("stringtools_test -  to_lower/upper_case - cp1251")
 {
     using namespace fplus;
     const std::locale loc = get_locale(
