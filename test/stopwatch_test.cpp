@@ -32,7 +32,7 @@ TEST_CASE("Timer - test_accuracy")
   // we ask for a sleep of 0.05s, but we will have a duration that can be higher
   // (up to 15 ms higher, since the cpu scheduler might switch to another process during this sleep)
   // to account for the cpu/task scheduler
-  double max_acceptable_delta__task_scheduler = 0.02;
+  double max_acceptable_delta__task_scheduler = 0.2;
 
   // One run
   {
