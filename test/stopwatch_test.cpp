@@ -48,7 +48,7 @@ TEST_CASE("Timer - test_accuracy")
     });
     auto mean_dev = fplus::mean_stddev<double>(deltas);
     REQUIRE_LT(mean_dev.first, 0.06);
-    REQUIRE_LT(mean_dev.second, 0.02);
+    REQUIRE_LT(mean_dev.second, 0.05);
   }
 #endif
 }
