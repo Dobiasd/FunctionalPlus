@@ -49,7 +49,7 @@ Then, install doctest:
 ```bash
 git clone --depth=1 --branch=2.4.3 https://github.com/onqtam/doctest
 cmake -S doctest -B doctest/build -DDOCTEST_WITH_TESTS=OFF -DDOCTEST_WITH_MAIN_IN_STATIC_LIB=OFF
-cmake --build doctest/build
+cmake --build doctest/build -j
 sudo cmake --install doctest/build
 ```
 
