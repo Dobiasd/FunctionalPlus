@@ -9,7 +9,7 @@
 #include <fplus/fwd.hpp>
 #include "get_locale.hpp"
 
-TEST_CASE("stringtools_test -  to_lower/upper_case - cp1251")
+TEST_CASE("stringtools_test - to_lower/upper_case - cp1251")
 {
     using namespace fplus;
     const std::locale loc = get_locale(
@@ -21,9 +21,9 @@ TEST_CASE("stringtools_test -  to_lower/upper_case - cp1251")
     );
     auto lower = fwd::to_lower_case_loc(loc);
     auto upper = fwd::to_upper_case_loc(loc);
-    REQUIRE_EQ(lower(std::string("cYrIlLiC 123&? ���������")), std::string("cyrillic 123&? ���������"));
-    REQUIRE_EQ(lower(std::string("�����Ũ��������������������������")), std::string("��������������������������������"));
+    REQUIRE_EQ(lower(std::string("cYrIlLiC 123&? ÊèÐèËëÈöÀ")), std::string("cyrillic 123&? êèðèëëèöà"));
+    REQUIRE_EQ(lower(std::string("ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞß")), std::string("àáâãäå¸æçèéêëìíîïðñòóôõö÷øùúûüýþÿ"));
 
-    REQUIRE_EQ(upper(std::string("cYrIlLiC 123&? ���������")), std::string("CYRILLIC 123&? ���������"));
-    REQUIRE_EQ(upper(std::string("��������������������������������")), std::string("�����Ũ��������������������������"));
+    REQUIRE_EQ(upper(std::string("cYrIlLiC 123&? ÊèÐèËëÈöÀ")), std::string("CYRILLIC 123&? ÊÈÐÈËËÈÖÀ"));
+    REQUIRE_EQ(upper(std::string("àáâãäå¸æçèéêëìíîïðñòóôõö÷øùúûüýþÿ")), std::string("ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞß"));
 }
