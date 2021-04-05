@@ -14,7 +14,7 @@ namespace {
     IntVector xs = {1,2,2,3,2};
 }
 
-TEST_CASE("extrapolate_test, elem_at_idx_or_nothing")
+TEST_CASE("extrapolate_test - elem_at_idx_or_nothing")
 {
     using namespace fplus;
     REQUIRE_EQ(elem_at_idx_or_nothing(-4, xs), nothing<int>());
@@ -22,7 +22,7 @@ TEST_CASE("extrapolate_test, elem_at_idx_or_nothing")
     REQUIRE_EQ(elem_at_idx_or_nothing(3, xs), maybe<int>(3));
 }
 
-TEST_CASE("extrapolate_test, elem_at_idx_or_constant")
+TEST_CASE("extrapolate_test - elem_at_idx_or_constant")
 {
     using namespace fplus;
     REQUIRE_EQ(elem_at_idx_or_constant(4, -4, xs), 4);
@@ -30,7 +30,7 @@ TEST_CASE("extrapolate_test, elem_at_idx_or_constant")
     REQUIRE_EQ(elem_at_idx_or_constant(4, 3, xs), 3);
 }
 
-TEST_CASE("extrapolate_test, elem_at_idx_or_replicate")
+TEST_CASE("extrapolate_test - elem_at_idx_or_replicate")
 {
     using namespace fplus;
     REQUIRE_EQ(elem_at_idx_or_replicate(-2, xs), 1);
@@ -41,7 +41,7 @@ TEST_CASE("extrapolate_test, elem_at_idx_or_replicate")
     REQUIRE_EQ(elem_at_idx_or_replicate(6, xs), 2);
 }
 
-TEST_CASE("extrapolate_test, elem_at_idx_or_wrap")
+TEST_CASE("extrapolate_test - elem_at_idx_or_wrap")
 {
     using namespace fplus;
     REQUIRE_EQ(elem_at_idx_or_wrap(-2, xs), 3);
@@ -52,7 +52,7 @@ TEST_CASE("extrapolate_test, elem_at_idx_or_wrap")
     REQUIRE_EQ(elem_at_idx_or_wrap(6, xs), 2);
 }
 
-TEST_CASE("extrapolate_test, elem_at_idx_or_wrap")
+TEST_CASE("extrapolate_test - elem_at_idx_or_wrap")
 {
     using namespace fplus;
     REQUIRE_EQ(elem_at_idx_or_wrap(-2, xs), 3);
@@ -63,13 +63,13 @@ TEST_CASE("extrapolate_test, elem_at_idx_or_wrap")
     REQUIRE_EQ(elem_at_idx_or_wrap(6, xs), 2);
 }
 
-TEST_CASE("extrapolate_test, extrapolate_replicate")
+TEST_CASE("extrapolate_test - extrapolate_replicate")
 {
     using namespace fplus;
     REQUIRE_EQ(extrapolate_replicate(2, 2, xs), IntVector({1,1,1,2,2,3,2,2,2}));
 }
 
-TEST_CASE("extrapolate_test, extrapolate_wrap")
+TEST_CASE("extrapolate_test - extrapolate_wrap")
 {
     using namespace fplus;
     REQUIRE_EQ(extrapolate_wrap(2, 2, xs), IntVector({3,2,1,2,2,3,2,1,2}));

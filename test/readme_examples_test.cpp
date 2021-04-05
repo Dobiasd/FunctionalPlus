@@ -12,7 +12,7 @@ namespace {
     bool is_odd_int(int x) { return x % 2 != 0; }
 }
 
-TEST_CASE("readme_examples_test, KeepIf")
+TEST_CASE("readme_examples_test - KeepIf")
 {
     typedef std::vector<int> Ints;
     Ints values = { 24, 11, 65, 44, 80, 18, 73, 90, 69, 18 };
@@ -35,13 +35,13 @@ TEST_CASE("readme_examples_test, KeepIf")
     }
 }
 
-TEST_CASE("readme_examples_test, SameOldSameOld")
+TEST_CASE("readme_examples_test - SameOldSameOld")
 {
     std::list<std::string> things = {"same old", "same old"};
     REQUIRE(fplus::all_the_same(things));
 }
 
-TEST_CASE("readme_examples_test, eIInTeam")
+TEST_CASE("readme_examples_test - eIInTeam")
 {
     std::string team = "Our team is great. I love everybody I work with.";
     REQUIRE_EQ(fplus::count("I", fplus::split_words(false, team)), 2);
@@ -56,7 +56,7 @@ namespace {
     };
 }
 
-TEST_CASE("readme_examples_test, AllIsCalmAndBright")
+TEST_CASE("readme_examples_test - AllIsCalmAndBright")
 {
     auto isCalm = [](const Entity& e) { return e.calm_; };
     auto isBright = [](const Entity& e) { return e.bright_; };
@@ -80,7 +80,7 @@ namespace {
     };
 }
 
-TEST_CASE("readme_examples_test, TheCutestCat")
+TEST_CASE("readme_examples_test - TheCutestCat")
 {
     std::vector<cat> cats = {
         {"Tigger",   5, 5, 5, 5, 5},
@@ -109,7 +109,7 @@ namespace {
     }
 }
 
-TEST_CASE("readme_examples_test, CollatzSequence")
+TEST_CASE("readme_examples_test - CollatzSequence")
 {
     typedef std::list<int> Ints;
 
@@ -173,7 +173,7 @@ namespace {
     );
 }
 
-TEST_CASE("readme_examples_test, fwd_style")
+TEST_CASE("readme_examples_test - fwd_style")
 {
     const std::string input =
         "Lorem ipsum\ndolor sit amet,\nconsectetur,\nadipisci velit";
@@ -219,7 +219,7 @@ namespace {
     );
 }
 
-TEST_CASE("readme_examples_test, square_is_even")
+TEST_CASE("readme_examples_test - square_is_even")
 {
     const std::vector<int> xs = {0,1,2,3,4,5,6,7};
     const auto result = square_is_even(xs); // uses l-value keep_if internally

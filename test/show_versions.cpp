@@ -7,7 +7,7 @@
 #include <doctest/doctest.h>
 #include <fplus/fplus.hpp>
 
-TEST_CASE("show_versions, print_defines")
+TEST_CASE("show_versions - print_defines")
 {
 #ifdef __cplusplus
     std::cout << "__cplusplus: " << __cplusplus << std::endl;

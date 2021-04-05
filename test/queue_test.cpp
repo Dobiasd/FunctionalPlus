@@ -7,7 +7,7 @@
 #include <doctest/doctest.h>
 #include <fplus/fplus.hpp>
 
-TEST_CASE("queue_test, full")
+TEST_CASE("queue_test - full")
 {
     using namespace fplus;
     using namespace std::chrono_literals;
@@ -17,27 +17,27 @@ TEST_CASE("queue_test, full")
     std::thread producer([&q] {
         q.push(1);
         q.push(2);
-        std::this_thread::sleep_for(200ms);
+        std::this_thread::sleep_for(400ms);
         q.push(3);
         q.push(4);
-        std::this_thread::sleep_for(200ms);
+        std::this_thread::sleep_for(400ms);
         q.push(5);
-        std::this_thread::sleep_for(200ms);
+        std::this_thread::sleep_for(400ms);
         q.push(6);
     });
 
     std::thread consumer([&q] {
-        std::this_thread::sleep_for(100ms);
+        std::this_thread::sleep_for(200ms);
         REQUIRE_EQ(q.pop(), fplus::just(1));
         REQUIRE_EQ(q.pop(), fplus::just(2));
         REQUIRE_EQ(q.pop(), fplus::nothing<int>());
-        std::this_thread::sleep_for(200ms);
+        std::this_thread::sleep_for(400ms);
         REQUIRE_EQ(q.pop_all(), std::vector<int>({3, 4}));
         REQUIRE_EQ(q.pop_all(), std::vector<int>({}));
         REQUIRE_EQ(q.wait_and_pop_all(), std::vector<int>({5}));
-        REQUIRE_EQ(q.wait_for_and_pop_all(100000), std::vector<int>({}));
-        REQUIRE_EQ(q.wait_for_and_pop_all(200000), std::vector<int>({6}));
-        REQUIRE_EQ(q.wait_for_and_pop_all(100000), std::vector<int>({}));
+        REQUIRE_EQ(q.wait_for_and_pop_all(200000), std::vector<int>({}));
+        REQUIRE_EQ(q.wait_for_and_pop_all(400000), std::vector<int>({6}));
+        REQUIRE_EQ(q.wait_for_and_pop_all(200000), std::vector<int>({}));
     });
 
     producer.join();

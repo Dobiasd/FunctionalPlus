@@ -8,7 +8,7 @@
 #include <fplus/fplus.hpp>
 #include <array>
 
-TEST_CASE("optimize_test, minimize_downhill")
+TEST_CASE("optimize_test - minimize_downhill")
 {
     using namespace fplus;
     const auto objective = [](const std::array<double, 1>& x)

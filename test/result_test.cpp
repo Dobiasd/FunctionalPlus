@@ -41,7 +41,7 @@ private:
     int x_;
 };
 
-TEST_CASE("result_test, ok_with_default")
+TEST_CASE("result_test - ok_with_default")
 {
     using namespace fplus;
     auto x = ok<int, std::string>(2);
@@ -51,7 +51,7 @@ TEST_CASE("result_test, ok_with_default")
     REQUIRE_EQ(Or42(y), 42);
 }
 
-TEST_CASE("maybe_test, join_result")
+TEST_CASE("maybe_test - join_result")
 {
     using namespace fplus;
     using Ok = int;
@@ -62,7 +62,7 @@ TEST_CASE("maybe_test, join_result")
     REQUIRE_EQ(join_result(error<Res, Err>("e")), (error<Ok, Err>("e")));
 }
 
-TEST_CASE("result_test, and_then_result")
+TEST_CASE("result_test - and_then_result")
 {
     using namespace fplus;
     auto ok_4 = ok<int, std::string>(4);
@@ -82,7 +82,7 @@ TEST_CASE("result_test, and_then_result")
     REQUIRE_EQ(and_then_result(string_to_result_int_string, (error<std::string, std::string>("error"))), (error<int, std::string>("error")));
 }
 
-TEST_CASE("result_test, compose_result")
+TEST_CASE("result_test - compose_result")
 {
     using namespace fplus;
     auto x = ok<int, std::string>(2);
@@ -118,7 +118,7 @@ TEST_CASE("result_test, compose_result")
     REQUIRE_EQ(squareSumResult(5, 5), (ok<int, std::string>(100)));
 }
 
-TEST_CASE("result_test, lift")
+TEST_CASE("result_test - lift")
 {
     using namespace fplus;
     auto x = ok<int, std::string>(2);
@@ -129,7 +129,7 @@ TEST_CASE("result_test, lift")
                (ok<int, std::string>(16)));
 }
 
-TEST_CASE("result_test, lift_both")
+TEST_CASE("result_test - lift_both")
 {
     using namespace fplus;
     const auto x = ok<int, std::string>(2);
@@ -142,7 +142,7 @@ TEST_CASE("result_test, lift_both")
                (error<int, std::string>("AN ERROR")));
 }
 
-TEST_CASE("result_test, unify_result")
+TEST_CASE("result_test - unify_result")
 {
     using namespace fplus;
     const auto x = ok<int, std::string>(2);
@@ -163,7 +163,7 @@ TEST_CASE("result_test, unify_result")
     REQUIRE_EQ(unifyGeneric(y), "AN ERROR");
 }
 
-TEST_CASE("result_test, equality")
+TEST_CASE("result_test - equality")
 {
     using namespace fplus;
     IntResults results = {ok<int, std::string>(1), error<int>(std::string("no sqrt of negative numbers")), ok<int, std::string>(2)};
@@ -178,7 +178,7 @@ TEST_CASE("result_test, equality")
     REQUIRE(error<int>(std::string("fail 1")) != (error<int>(std::string("fail 2"))));
 }
 
-TEST_CASE("result_test, transform_and_keep_oks")
+TEST_CASE("result_test - transform_and_keep_oks")
 {
     using namespace fplus;
     Ints wholeNumbers = { -3, 4, 16, -1 };
@@ -190,7 +190,7 @@ TEST_CASE("result_test, transform_and_keep_oks")
            , Ints({ 1,1,1,2,2,2 }));
 }
 
-TEST_CASE("result_test, show_result")
+TEST_CASE("result_test - show_result")
 {
     using namespace fplus;
     REQUIRE_EQ(show_result(ok<int, std::string>(42)), std::string("Ok 42"));
@@ -200,7 +200,7 @@ TEST_CASE("result_test, show_result")
     REQUIRE_EQ((from_maybe<std::string, int>(std::string("no error"), just(2))), x);
 }
 
-TEST_CASE("result_test, exceptions")
+TEST_CASE("result_test - exceptions")
 {
     using namespace fplus;
     std::string thrown_str;
@@ -227,7 +227,7 @@ TEST_CASE("result_test, exceptions")
     thrown_str.clear();
 }
 
-TEST_CASE("result_test, copy")
+TEST_CASE("result_test - copy")
 {
     using namespace fplus;
     result<int, std::string> result_4 = ok<int, std::string>(4);

@@ -30,7 +30,7 @@ namespace {
     typedef std::vector<double> Doubles;
 }
 
-TEST_CASE("numeric_test, is_in_interval")
+TEST_CASE("numeric_test - is_in_interval")
 {
     REQUIRE(fplus::is_in_interval(1, 3, 1));
     REQUIRE(fplus::is_in_interval(1, 3, 2));
@@ -46,7 +46,7 @@ TEST_CASE("numeric_test, is_in_interval")
     REQUIRE(fplus::is_in_interval(0.09, 0.11, fplus::abs( 0.1)));
 }
 
-TEST_CASE("numeric_test, is_in_interval_around")
+TEST_CASE("numeric_test - is_in_interval_around")
 {
     REQUIRE_FALSE(fplus::is_in_interval_around(0.1, 2.0, 1.85));
     REQUIRE(fplus::is_in_interval_around(0.1, 2.0, 1.95));
@@ -57,7 +57,7 @@ TEST_CASE("numeric_test, is_in_interval_around")
     REQUIRE_FALSE(fplus::is_in_interval_around(1, 2, 3));
 }
 
-TEST_CASE("numeric_test, is_in_open_interval_around")
+TEST_CASE("numeric_test - is_in_open_interval_around")
 {
     REQUIRE_FALSE(fplus::is_in_open_interval_around(0.1, 2.0, 1.85));
     REQUIRE(fplus::is_in_open_interval_around(0.1, 2.0, 1.95));
@@ -68,7 +68,7 @@ TEST_CASE("numeric_test, is_in_open_interval_around")
     REQUIRE_FALSE(fplus::is_in_open_interval_around(1, 2, 3));
 }
 
-TEST_CASE("numeric_test, is_in_closed_interval_around")
+TEST_CASE("numeric_test - is_in_closed_interval_around")
 {
     REQUIRE_FALSE(fplus::is_in_closed_interval_around(0.1, 2.0, 1.85));
     REQUIRE(fplus::is_in_closed_interval_around(0.1, 2.0, 1.95));
@@ -79,25 +79,25 @@ TEST_CASE("numeric_test, is_in_closed_interval_around")
     REQUIRE(fplus::is_in_closed_interval_around(1, 2, 3));
 }
 
-TEST_CASE("numeric_test, is_negative")
+TEST_CASE("numeric_test - is_negative")
 {
     REQUIRE(fplus::is_negative(-0.1));
     REQUIRE_FALSE(fplus::is_negative(0.1));
 }
 
-TEST_CASE("numeric_test, is_positive")
+TEST_CASE("numeric_test - is_positive")
 {
     REQUIRE(fplus::is_positive(0.1));
     REQUIRE_FALSE(fplus::is_positive(-0.1));
 }
 
-TEST_CASE("numeric_test, sign")
+TEST_CASE("numeric_test - sign")
 {
     REQUIRE_EQ(fplus::sign(0.1), 1);
     REQUIRE_EQ(fplus::sign(-0.1), -1);
 }
 
-TEST_CASE("numeric_test, abs_diff")
+TEST_CASE("numeric_test - abs_diff")
 {
     REQUIRE_EQ(fplus::abs_diff<signed int>(3, 5), 2);
     REQUIRE_EQ(fplus::abs_diff<signed int>(5, 3), 2);
@@ -105,7 +105,7 @@ TEST_CASE("numeric_test, abs_diff")
     REQUIRE_EQ(fplus::abs_diff<unsigned int>(5, 3), 2);
 }
 
-TEST_CASE("numeric_test, cyclic_value")
+TEST_CASE("numeric_test - cyclic_value")
 {
     using namespace fplus;
     REQUIRE_EQ(cyclic_value(8.0)(3), 3);
@@ -129,7 +129,7 @@ TEST_CASE("numeric_test, cyclic_value")
     REQUIRE(is_in_interval(3.19, 3.21, cyclic_value(8.1)(3.2)));
 }
 
-TEST_CASE("numeric_test, cyclic_difference")
+TEST_CASE("numeric_test - cyclic_difference")
 {
     using namespace fplus;
     REQUIRE_EQ(cyclic_difference(100)(5, 2), 3);
@@ -145,7 +145,7 @@ TEST_CASE("numeric_test, cyclic_difference")
     REQUIRE_EQ(cyclic_difference<unsigned int>(100)(10, 90), 20);
 }
 
-TEST_CASE("numeric_test, cyclic_shortest_difference")
+TEST_CASE("numeric_test - cyclic_shortest_difference")
 {
     using namespace fplus;
     REQUIRE_EQ(cyclic_shortest_difference(100)(5, 2), 3);
@@ -156,7 +156,7 @@ TEST_CASE("numeric_test, cyclic_shortest_difference")
     REQUIRE_EQ(cyclic_shortest_difference(100)(10, 90), 20);
 }
 
-TEST_CASE("numeric_test, cyclic_distance")
+TEST_CASE("numeric_test - cyclic_distance")
 {
     using namespace fplus;
     REQUIRE_EQ(cyclic_distance(100)(2, 5), 3);
@@ -172,7 +172,7 @@ TEST_CASE("numeric_test, cyclic_distance")
     REQUIRE_EQ(cyclic_distance<unsigned int>(100)(90, 10), 20);
 }
 
-TEST_CASE("numeric_test, round")
+TEST_CASE("numeric_test - round")
 {
     // using namespace fplus;  // round is also defined in tgmath.h under msvc
     REQUIRE_EQ(round(1.4), 1);
@@ -188,7 +188,7 @@ TEST_CASE("numeric_test, round")
     REQUIRE_EQ(fplus::round(-1.6), -2);
 }
 
-TEST_CASE("numeric_test, integral_cast_clamp")
+TEST_CASE("numeric_test - integral_cast_clamp")
 {
     using namespace fplus;
     REQUIRE_EQ(integral_cast_clamp<std::uint8_t>(std::int32_t(-1)), std::uint8_t(0));
@@ -216,21 +216,21 @@ TEST_CASE("numeric_test, integral_cast_clamp")
     REQUIRE_EQ(integral_cast_clamp<std::int64_t>(std::numeric_limits<std::int16_t>::max()), static_cast<std::int64_t>(std::numeric_limits<std::int16_t>::max()));
 }
 
-TEST_CASE("numeric_test, ceil")
+TEST_CASE("numeric_test - ceil")
 {
     using namespace fplus;
     REQUIRE_EQ(ceil(1.4), 2);
     REQUIRE_EQ(ceil(-1.4), -1);
 }
 
-TEST_CASE("numeric_test, floor")
+TEST_CASE("numeric_test - floor")
 {
     using namespace fplus;
     REQUIRE_EQ(floor(1.4), 1);
     REQUIRE_EQ(floor(-1.4), -2);
 }
 
-TEST_CASE("numeric_test, floor_to_int_mult")
+TEST_CASE("numeric_test - floor_to_int_mult")
 {
     using namespace fplus;
     REQUIRE_EQ(floor_to_int_mult(2, -3), -4);
@@ -250,7 +250,7 @@ TEST_CASE("numeric_test, floor_to_int_mult")
     REQUIRE_EQ(floor_to_int_mult(1, 1), 1);
 }
 
-TEST_CASE("numeric_test, ceil_to_int_mult")
+TEST_CASE("numeric_test - ceil_to_int_mult")
 {
     using namespace fplus;
     REQUIRE_EQ(ceil_to_int_mult(2, -3), -2);
@@ -270,7 +270,7 @@ TEST_CASE("numeric_test, ceil_to_int_mult")
     REQUIRE_EQ(ceil_to_int_mult(1, 1), 1);
 }
 
-TEST_CASE("numeric_test, reference_interval")
+TEST_CASE("numeric_test - reference_interval")
 {
     using namespace fplus;
     REQUIRE_EQ(reference_interval(2, 6, 0, 4, 3), 5);
@@ -279,7 +279,7 @@ TEST_CASE("numeric_test, reference_interval")
     REQUIRE_EQ(reference_interval(2, 10, 0, 4, -1), 0);
 }
 
-TEST_CASE("numeric_test, clamp")
+TEST_CASE("numeric_test - clamp")
 {
     using namespace fplus;
     REQUIRE_EQ(clamp(2, 6, 5), 5);
@@ -287,7 +287,7 @@ TEST_CASE("numeric_test, clamp")
     REQUIRE_EQ(clamp(2, 6, 8), 6);
 }
 
-TEST_CASE("numeric_test, int_power")
+TEST_CASE("numeric_test - int_power")
 {
     using namespace fplus;
     REQUIRE_EQ(int_power(3, 0), 1);
@@ -297,7 +297,7 @@ TEST_CASE("numeric_test, int_power")
     REQUIRE_EQ(int_power(3, 4), 81);
 }
 
-TEST_CASE("numeric_test, min_on")
+TEST_CASE("numeric_test - min_on")
 {
     REQUIRE_EQ(fplus::min_on(mod2)(4, 4), 4);
     REQUIRE_EQ(fplus::min_on(mod2)(4, 3), 4);
@@ -332,7 +332,7 @@ TEST_CASE("numeric_test, min_on")
     REQUIRE_EQ(fplus::min_on(mod7)(1, 2, 3, 6, 77), 77);
 }
 
-TEST_CASE("numeric_test, max_on")
+TEST_CASE("numeric_test - max_on")
 {
     REQUIRE_EQ(fplus::max_on(mod2)(4, 4), 4);
     REQUIRE_EQ(fplus::max_on(mod2)(4, 3), 3);
@@ -367,14 +367,14 @@ TEST_CASE("numeric_test, max_on")
     REQUIRE_EQ(fplus::max_on(mod7)(1, 2, 3, 6, 77), 6);
 }
 
-TEST_CASE("numeric_test, mean")
+TEST_CASE("numeric_test - mean")
 {
     using namespace fplus;
     Ints xs = {1,4,4};
     REQUIRE_EQ(mean<int>(xs), 3);
 }
 
-TEST_CASE("numeric_test, mean_obj")
+TEST_CASE("numeric_test - mean_obj")
 {
     using namespace fplus;
     struct vec_2d
@@ -410,7 +410,7 @@ TEST_CASE("numeric_test, mean_obj")
         vec_2d_length_squared(mean_vec_div_size_t)));
 }
 
-TEST_CASE("numeric_test, variadic")
+TEST_CASE("numeric_test - variadic")
 {
     using namespace fplus;
     REQUIRE_EQ(min(1,2,3,4,5), 1);
@@ -446,7 +446,7 @@ TEST_CASE("numeric_test, variadic")
     REQUIRE_EQ(min_2(2, 3), 2);
 }
 
-TEST_CASE("numeric_test, normalize")
+TEST_CASE("numeric_test - normalize")
 {
     using namespace fplus;
 
@@ -467,7 +467,7 @@ TEST_CASE("numeric_test, normalize")
 
 }
 
-TEST_CASE("numeric_test, winsorize")
+TEST_CASE("numeric_test - winsorize")
 {
     using namespace fplus;
 
@@ -487,7 +487,7 @@ TEST_CASE("numeric_test, winsorize")
     REQUIRE(fplus::is_in_interval_around(0.001, 1.5, median_result[1]));
 }
 
-TEST_CASE("numeric_test, histogram")
+TEST_CASE("numeric_test - histogram")
 {
     using namespace fplus;
 
@@ -504,7 +504,7 @@ TEST_CASE("numeric_test, histogram")
     REQUIRE_EQ(histogram_using_intervals(intervals1, xs), result1);
 }
 
-TEST_CASE("numeric_test, generate_consecutive_intervals")
+TEST_CASE("numeric_test - generate_consecutive_intervals")
 {
     using namespace fplus;
 
@@ -516,7 +516,7 @@ TEST_CASE("numeric_test, generate_consecutive_intervals")
     REQUIRE_EQ(generate_consecutive_intervals(0, 2, 4), result);
 }
 
-TEST_CASE("numeric_test, histogram_intervals")
+TEST_CASE("numeric_test - histogram_intervals")
 {
     using namespace fplus;
 
@@ -530,7 +530,7 @@ TEST_CASE("numeric_test, histogram_intervals")
     REQUIRE_EQ(histogram(1, 2, 4, xs), result1);
 }
 
-TEST_CASE("numeric_test, modulo_chain")
+TEST_CASE("numeric_test - modulo_chain")
 {
     using namespace fplus;
     typedef std::vector<int> ints;
@@ -546,7 +546,7 @@ TEST_CASE("numeric_test, modulo_chain")
         ints({3, 17, 4, 31, 256}));
 }
 
-TEST_CASE("numeric_test, line_equation")
+TEST_CASE("numeric_test - line_equation")
 {
     using namespace fplus;
 

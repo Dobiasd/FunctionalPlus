@@ -22,7 +22,7 @@ namespace {
     };
 }
 
-TEST_CASE("pairs_test, zip_with")
+TEST_CASE("pairs_test - zip_with")
 {
     using namespace fplus;
     const auto multiply = [](int x, int y){ return x * y; };
@@ -37,7 +37,7 @@ TEST_CASE("pairs_test, zip_with")
     REQUIRE_EQ(zip_with(std::plus<>{}, IntVector({1,2,3}), IntVector({1,2})), IntVector({2,4}));
 }
 
-TEST_CASE("pairs_test, zip_with_3")
+TEST_CASE("pairs_test - zip_with_3")
 {
     using namespace fplus;
     const auto multiply = [](int x, int y, int z){ return x * y * z; };
@@ -47,7 +47,7 @@ TEST_CASE("pairs_test, zip_with_3")
     REQUIRE_EQ(zip_with_3(multiply_generic, xs, xs, xs), cubed);
 }
 
-TEST_CASE("pairs_test, zip_with_defaults")
+TEST_CASE("pairs_test - zip_with_defaults")
 {
     using namespace fplus;
     const auto add = [](int x, int y){ return x + y; };
@@ -57,14 +57,14 @@ TEST_CASE("pairs_test, zip_with_defaults")
     REQUIRE_EQ(zip_with_defaults(add_generic, 6, 7, IntVector({1,2}), IntVector({1,2,3})), IntVector({2,4,9}));
 }
 
-TEST_CASE("pairs_test, zip")
+TEST_CASE("pairs_test - zip")
 {
     using namespace fplus;
     auto xsZippedWithXs = zip(xs, xs);
     REQUIRE_EQ(unzip(xsZippedWithXs).first, xs);
 }
 
-TEST_CASE("pairs_test, pair functions")
+TEST_CASE("pairs_test - pair functions")
 {
     using namespace fplus;
     IntPair intPair = std::make_pair(2, 3);
@@ -104,32 +104,32 @@ TEST_CASE("pairs_test, pair functions")
     REQUIRE_EQ(result, std::make_pair(42, 42));
 }
 
-TEST_CASE("pairs_test, enumerate")
+TEST_CASE("pairs_test - enumerate")
 {
     using namespace fplus;
     REQUIRE_EQ(enumerate(xs), (std::vector<std::pair<std::size_t, int>>({{0,1}, {1,2}, {2,2}, {3,3}, {4,2}})));
 }
 
-TEST_CASE("pairs_test, adjacent_pairs")
+TEST_CASE("pairs_test - adjacent_pairs")
 {
     using namespace fplus;
     REQUIRE_EQ(adjacent_pairs(xs), IntPairs({{1,2},{2,3}}));
     REQUIRE_EQ(adjacent_pairs(IntVector({1,2,2,3})), IntPairs({{1,2},{2,3}}));
 }
 
-TEST_CASE("pairs_test, overlapping_pairs")
+TEST_CASE("pairs_test - overlapping_pairs")
 {
     using namespace fplus;
     REQUIRE_EQ(overlapping_pairs(xs), IntPairs({{1,2},{2,2},{2,3},{3,2}}));
 }
 
-TEST_CASE("pairs_test, overlapping_pairs_cyclic")
+TEST_CASE("pairs_test - overlapping_pairs_cyclic")
 {
     using namespace fplus;
     REQUIRE_EQ(overlapping_pairs_cyclic(xs), IntPairs({{1,2},{2,2},{2,3},{3,2},{2,1}}));
 }
 
-TEST_CASE("pairs_test, first_mismatch_idx_on")
+TEST_CASE("pairs_test - first_mismatch_idx_on")
 {
     using namespace fplus;
     REQUIRE_EQ(first_mismatch_idx_on(is_even<int>, IntVector({1,2,3}), IntVector({3,5,3})), just<std::size_t>(1));
@@ -138,7 +138,7 @@ TEST_CASE("pairs_test, first_mismatch_idx_on")
     REQUIRE_EQ(first_mismatch_idx_on(is_even<int>, IntVector(), IntVector({1,2})), nothing<std::size_t>());
 }
 
-TEST_CASE("pairs_test, first_mismatch_on")
+TEST_CASE("pairs_test - first_mismatch_on")
 {
     using namespace fplus;
     REQUIRE_EQ(first_mismatch_on(is_even<int>, IntVector({1,2,3}), IntVector({3,5,3})), just(IntPair(2,5)));
@@ -147,7 +147,7 @@ TEST_CASE("pairs_test, first_mismatch_on")
     REQUIRE_EQ(first_mismatch_on(is_even<int>, IntVector(), IntVector({1,2})), nothing<IntPair>());
 }
 
-TEST_CASE("pairs_test, first_mismatch_idx")
+TEST_CASE("pairs_test - first_mismatch_idx")
 {
     using namespace fplus;
     REQUIRE_EQ(first_mismatch_idx(IntVector({1,2,3}), IntVector({1,4,3})), just<std::size_t>(1));
@@ -156,7 +156,7 @@ TEST_CASE("pairs_test, first_mismatch_idx")
     REQUIRE_EQ(first_mismatch_idx(IntVector(), IntVector({1,2})), nothing<std::size_t>());
 }
 
-TEST_CASE("pairs_test, first_mismatch")
+TEST_CASE("pairs_test - first_mismatch")
 {
     using namespace fplus;
     REQUIRE_EQ(first_mismatch(IntVector({1,2,3}), IntVector({1,4,3})), just(IntPair(2,4)));
@@ -165,21 +165,21 @@ TEST_CASE("pairs_test, first_mismatch")
     REQUIRE_EQ(first_mismatch(IntVector(), IntVector({1,2})), nothing<IntPair>());
 }
 
-TEST_CASE("pairs_test, first_match_idx_on")
+TEST_CASE("pairs_test - first_match_idx_on")
 {
     using namespace fplus;
     REQUIRE_EQ(first_match_idx_on(is_even<int>, IntVector({1,2,3}), IntVector({2,4,3})), just<std::size_t>(1));
     REQUIRE_EQ(first_match_idx_on(is_even<int>, IntVector(), IntVector({1,2})), nothing<std::size_t>());
 }
 
-TEST_CASE("pairs_test, first_match")
+TEST_CASE("pairs_test - first_match")
 {
     using namespace fplus;
     REQUIRE_EQ(first_match(IntVector({1,2,3}), IntVector({5,2,3})), just(IntPair(2,2)));
     REQUIRE_EQ(first_match(IntVector(), IntVector({1,2})), nothing<IntPair>());
 }
 
-TEST_CASE("pairs_test, zip_repeat")
+TEST_CASE("pairs_test - zip_repeat")
 {
     using namespace fplus;
     typedef std::vector<std::string> Strings;

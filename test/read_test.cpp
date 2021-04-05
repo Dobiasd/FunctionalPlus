@@ -8,7 +8,7 @@
 #include <fplus/fplus.hpp>
 #include <vector>
 
-TEST_CASE("read_test, read_value")
+TEST_CASE("read_test - read_value")
 {
     using namespace fplus;
     REQUIRE_EQ(read_value<std::size_t>("42"), just<std::size_t>(42));
@@ -31,7 +31,7 @@ TEST_CASE("read_test, read_value")
     REQUIRE(is_in_interval(-42.4L, -42.2L, unsafe_get_just(read_value<long double>("-42.3"))));
 }
 
-TEST_CASE("read_test, read_value_result")
+TEST_CASE("read_test - read_value_result")
 {
     using namespace fplus;
     REQUIRE_EQ(read_value_result<int>("42"), (ok<int, std::string>(42)));

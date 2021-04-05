@@ -7,7 +7,7 @@
 #include <doctest/doctest.h>
 #include <fplus/fplus.hpp>
 
-TEST_CASE("container_traits_test, static_asserts")
+TEST_CASE("container_traits_test - static_asserts")
 {
     using namespace fplus;
 

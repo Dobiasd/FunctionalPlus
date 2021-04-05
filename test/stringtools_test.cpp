@@ -8,7 +8,7 @@
 #include <fplus/fplus.hpp>
 #include <vector>
 
-TEST_CASE("stringtools_test, trim")
+TEST_CASE("stringtools_test -  trim")
 {
     using namespace fplus;
     std::string untrimmed = "  \n \t   foo  ";
@@ -17,7 +17,7 @@ TEST_CASE("stringtools_test, trim")
     REQUIRE_EQ(trim_whitespace(untrimmed), "foo");
 }
 
-TEST_CASE("stringtools_test, split")
+TEST_CASE("stringtools_test -  split")
 {
     using namespace fplus;
     std::string text = "Hi,\nI am a\r\n***strange***\n\rstring.";
@@ -58,20 +58,20 @@ TEST_CASE("stringtools_test, split")
     REQUIRE_EQ(split_one_of(std::string{ " ,\r\n" }, false, text), textSplitBySpaceAndCommaAndLine);
 }
 
-TEST_CASE("stringtools_test, to_string_filled")
+TEST_CASE("stringtools_test -  to_string_filled")
 {
     using namespace fplus;
     REQUIRE_EQ(to_string_fill_left('0', 5, 42), std::string("00042") );
     REQUIRE_EQ(to_string_fill_right(' ', 5, 42), std::string("42   ") );
 }
 
-TEST_CASE("stringtools_test, to_lower_case")
+TEST_CASE("stringtools_test -  to_lower_case")
 {
     using namespace fplus;
     REQUIRE_EQ(to_lower_case(std::string("ChaRacTer&WorDs23")), std::string("character&words23"));
 }
 
-TEST_CASE("stringtools_test, to_upper_case")
+TEST_CASE("stringtools_test -  to_upper_case")
 {
     using namespace fplus;
     REQUIRE_EQ(to_upper_case(std::string("ChaRacTer&WorDs34")), std::string("CHARACTER&WORDS34"));

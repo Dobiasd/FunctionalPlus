@@ -39,7 +39,7 @@ namespace {
     }
 }
 
-TEST_CASE("variant_test, visit_one")
+TEST_CASE("variant_test - visit_one")
 {
     using namespace fplus;
 
@@ -79,7 +79,7 @@ TEST_CASE("variant_test, visit_one")
     print_output.clear();
 }
 
-TEST_CASE("variant_test, equality_test")
+TEST_CASE("variant_test - equality_test")
 {
     using namespace fplus;
     fplus::variant<int, std::string> int_or_string_i(3);
@@ -88,7 +88,7 @@ TEST_CASE("variant_test, equality_test")
     REQUIRE_FALSE(int_or_string_i == int_or_string_s);
 }
 
-TEST_CASE("variant_test, inequality_test")
+TEST_CASE("variant_test - inequality_test")
 {
     using namespace fplus;
     fplus::variant<int, std::string> int_or_string_i(3);
@@ -97,7 +97,7 @@ TEST_CASE("variant_test, inequality_test")
     REQUIRE(int_or_string_i != int_or_string_s);
 }
 
-TEST_CASE("variant_test, visit")
+TEST_CASE("variant_test - visit")
 {
     using namespace fplus;
 

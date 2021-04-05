@@ -42,7 +42,7 @@ struct foo {
 };
 std::vector<std::string> foo::msgs_;
 
-TEST_CASE("maybe_test, construction and assignment")
+TEST_CASE("maybe_test - construction and assignment")
 {
     using namespace fplus;
     foo::msgs_.clear();
@@ -61,7 +61,7 @@ TEST_CASE("maybe_test, construction and assignment")
     foo::msgs_.clear();
 }
 
-TEST_CASE("maybe_test, move semantics")
+TEST_CASE("maybe_test - move semantics")
 {
     using namespace fplus;
     foo::msgs_.clear();
@@ -77,7 +77,7 @@ TEST_CASE("maybe_test, move semantics")
     foo::msgs_.clear();
 }
 
-TEST_CASE("maybe_test, unsafe_get_just")
+TEST_CASE("maybe_test - unsafe_get_just")
 {
     using namespace fplus;
     fplus::maybe<int> m(4);
@@ -86,14 +86,14 @@ TEST_CASE("maybe_test, unsafe_get_just")
     REQUIRE_EQ(m.unsafe_get_just(), 5);
 }
 
-TEST_CASE("maybe_test, as_just_if")
+TEST_CASE("maybe_test - as_just_if")
 {
     using namespace fplus;
     REQUIRE_EQ(as_just_if(is_even<int>, 4), just<int>(4));
     REQUIRE_EQ(as_just_if(is_even<int>, 5), nothing<int>());
 }
 
-TEST_CASE("maybe_test, sequence")
+TEST_CASE("maybe_test - sequence")
 {
     using namespace fplus;
     REQUIRE_EQ(maybe_to_seq(just(4)), std::vector<int>(1, 4));
@@ -104,7 +104,7 @@ TEST_CASE("maybe_test, sequence")
     REQUIRE_EQ(singleton_seq_as_maybe(std::vector<int>(2, 4)), nothing<int>());
 }
 
-TEST_CASE("maybe_test, just_with_default")
+TEST_CASE("maybe_test - just_with_default")
 {
     using namespace fplus;
     auto x = just<int>(2);
@@ -114,7 +114,7 @@ TEST_CASE("maybe_test, just_with_default")
     REQUIRE_EQ(Or42(y), 42);
 }
 
-TEST_CASE("maybe_test, lift")
+TEST_CASE("maybe_test - lift")
 {
     using namespace fplus;
     auto x = just<int>(2);
@@ -144,7 +144,7 @@ TEST_CASE("maybe_test, lift")
     REQUIRE_EQ(lift_maybe_2_def(3, std::plus<>(), y, y), 3);
 }
 
-TEST_CASE("maybe_test, join_maybe")
+TEST_CASE("maybe_test - join_maybe")
 {
     using namespace fplus;
     REQUIRE_EQ(join_maybe(just(just(2))), just(2));
@@ -152,7 +152,7 @@ TEST_CASE("maybe_test, join_maybe")
     REQUIRE_EQ(join_maybe(nothing<maybe<int>>()), nothing<int>());
 }
 
-TEST_CASE("maybe_test, and_then_maybe")
+TEST_CASE("maybe_test - and_then_maybe")
 {
     using namespace fplus;
     REQUIRE_EQ(and_then_maybe(sqrtToMaybeInt, just(4)), just(2));
@@ -167,7 +167,7 @@ TEST_CASE("maybe_test, and_then_maybe")
     REQUIRE_EQ(and_then_maybe(string_to_maybe_int, nothing<std::string>()), nothing<int>());
 }
 
-TEST_CASE("maybe_test, compose")
+TEST_CASE("maybe_test - compose")
 {
     using namespace fplus;
     auto sqrtAndSqrt = compose_maybe(sqrtToMaybe, sqrtToMaybe);
@@ -193,7 +193,7 @@ TEST_CASE("maybe_test, compose")
             (IntToFloatAndSqrtAndSqrt(4))));
 }
 
-TEST_CASE("maybe_test, equality")
+TEST_CASE("maybe_test - equality")
 {
     using namespace fplus;
     IntMaybes maybes = {just(1), nothing<int>(), just(2)};
@@ -204,7 +204,7 @@ TEST_CASE("maybe_test, equality")
     REQUIRE(nothing<int>() == nothing<int>());
 }
 
-TEST_CASE("maybe_test, transform_and_keep_justs")
+TEST_CASE("maybe_test - transform_and_keep_justs")
 {
     using namespace fplus;
     Ints wholeNumbers = { -3, 4, 16, -1 };
@@ -215,14 +215,14 @@ TEST_CASE("maybe_test, transform_and_keep_justs")
            , Ints({ 1,1,1,2,2,2 }));
 }
 
-TEST_CASE("maybe_test, show_maybe")
+TEST_CASE("maybe_test - show_maybe")
 {
     using namespace fplus;
     REQUIRE_EQ(show_maybe(just<int>(42)), std::string("Just 42"));
     REQUIRE_EQ(show_maybe(nothing<int>()), std::string("Nothing"));
 }
 
-TEST_CASE("maybe_test, exceptions")
+TEST_CASE("maybe_test - exceptions")
 {
     using namespace fplus;
     std::string thrown_str;
@@ -237,7 +237,7 @@ TEST_CASE("maybe_test, exceptions")
     REQUIRE_EQ(thrown_str, std::string("raised"));
 }
 
-TEST_CASE("maybe_test, copy")
+TEST_CASE("maybe_test - copy")
 {
     using namespace fplus;
     maybe<int> maybe_4(4);
@@ -247,7 +247,7 @@ TEST_CASE("maybe_test, copy")
     REQUIRE_EQ(maybe_4_copy_2, just<int>(4));
 }
 
-TEST_CASE("maybe_test, flatten")
+TEST_CASE("maybe_test - flatten")
 {
     using namespace fplus;
     maybe<int> maybe_int_nothing;

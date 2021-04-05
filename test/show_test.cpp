@@ -25,7 +25,7 @@ namespace {
     std::string stringSetShown("[bar, foo]");
 }
 
-TEST_CASE("show_test, show")
+TEST_CASE("show_test - show")
 {
     using namespace fplus;
     std::map<int, std::string> mapToShow = {{1, "one"}, {2, "two"}};
@@ -53,7 +53,7 @@ TEST_CASE("show_test, show")
     REQUIRE_EQ(show(std::vector<std::vector<int>>({{1,2,3},{4,5,6}})), "[[1, 2, 3], [4, 5, 6]]");
 }
 
-TEST_CASE("show_test, show_float")
+TEST_CASE("show_test - show_float")
 {
     using namespace fplus;
     const double pi = 3.14159;

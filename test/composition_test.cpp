@@ -46,14 +46,14 @@ private:
     int x_;
 };
 
-TEST_CASE("composition_test, forward_apply")
+TEST_CASE("composition_test - forward_apply")
 {
     using namespace fplus;
     REQUIRE_EQ(forward_apply(3, square<int>), 9);
     REQUIRE_EQ(forward_apply(3, [](auto x) { return x * x; }), 9);
 }
 
-TEST_CASE("composition_test, lazy")
+TEST_CASE("composition_test - lazy")
 {
     using namespace fplus;
     const auto square_3_stub = lazy(square<int>, 3);
@@ -61,14 +61,14 @@ TEST_CASE("composition_test, lazy")
     REQUIRE_EQ(lazy([](auto x) { return x * x; }, 3)(), 9);
 }
 
-TEST_CASE("composition_test, fixed")
+TEST_CASE("composition_test - fixed")
 {
     using namespace fplus;
     const auto lazy_3 = fixed(3);
     REQUIRE_EQ(lazy_3(), 3);
 }
 
-TEST_CASE("composition_test, parameter_binding")
+TEST_CASE("composition_test - parameter_binding")
 {
     using namespace fplus;
     Row row = {1,2,3};
@@ -101,7 +101,7 @@ TEST_CASE("composition_test, parameter_binding")
     REQUIRE_EQ(bind_2nd_and_3rd_of_3(genericAdd3, 3, 5)(7), 15);
 }
 
-TEST_CASE("composition_test, compose")
+TEST_CASE("composition_test - compose")
 {
     using namespace fplus;
     auto square = [](int x){ return x*x; };
@@ -112,7 +112,7 @@ TEST_CASE("composition_test, compose")
     REQUIRE_EQ((compose(std::multiplies<>{}, square)(4, 2)), 64);
 }
 
-TEST_CASE("composition_test, flip")
+TEST_CASE("composition_test - flip")
 {
     using namespace fplus;
 
@@ -124,7 +124,7 @@ TEST_CASE("composition_test, flip")
     REQUIRE_EQ((flip(Minus)(1, 2, 3)), 0);
 }
 
-TEST_CASE("composition_test, logical")
+TEST_CASE("composition_test - logical")
 {
     using namespace fplus;
     auto is1 = [](int x) { return x == 1; };
@@ -142,7 +142,7 @@ TEST_CASE("composition_test, logical")
     REQUIRE_FALSE((logical_xor(is2, is2)(1)));
 }
 
-TEST_CASE("composition_test, apply_to_pair")
+TEST_CASE("composition_test - apply_to_pair")
 {
     using namespace fplus;
     auto APlusTwoTimesB = [](int a, int b) { return a + 2 * b; };
@@ -152,7 +152,7 @@ TEST_CASE("composition_test, apply_to_pair")
     REQUIRE_EQ((apply_to_pair(APlusTwoTimesBFunc, std::make_pair(1, 2))), 5);
 }
 
-TEST_CASE("composition_test, state")
+TEST_CASE("composition_test - state")
 {
     using namespace fplus;
     CompositionTestState state(1);
@@ -170,7 +170,7 @@ TEST_CASE("composition_test, state")
     REQUIRE_EQ(state.Get(), 6);
 }
 
-TEST_CASE("composition_test, memoize")
+TEST_CASE("composition_test - memoize")
 {
     using namespace fplus;
     auto f = memoize(square<int>);
@@ -205,7 +205,7 @@ TEST_CASE("composition_test, memoize")
     }
 }
 
-TEST_CASE("composition_test, constructor_as_function")
+TEST_CASE("composition_test - constructor_as_function")
 {
     using namespace fplus;
 
@@ -231,7 +231,7 @@ TEST_CASE("composition_test, constructor_as_function")
     REQUIRE_EQ(one_or_two.val_, 1);
 }
 
-TEST_CASE("composition_test, constructor_as_function")
+TEST_CASE("composition_test - constructor_as_function")
 {
     const std::vector<int> xs = {1,2,3,4,5};
     const auto ys = fplus::keep_if(
@@ -242,7 +242,7 @@ TEST_CASE("composition_test, constructor_as_function")
     REQUIRE_EQ(ys.size(), 4);
 }
 
-TEST_CASE("composition_test, get_mem")
+TEST_CASE("composition_test - get_mem")
 {
     struct foo
     {
@@ -254,7 +254,7 @@ TEST_CASE("composition_test, get_mem")
     REQUIRE(fplus::all_unique_on(fplus_get_c_mem_t(foo, bar_, int), foos));
 }
 
-TEST_CASE("composition_test, get_ptr_mem")
+TEST_CASE("composition_test - get_ptr_mem")
 {
     struct foo
     {
@@ -271,7 +271,7 @@ TEST_CASE("composition_test, get_ptr_mem")
         fplus_get_c_ptr_mem_t(std::shared_ptr<foo>, bar_, int), foo_ptrs));
 }
 
-TEST_CASE("composition_test, mem_func")
+TEST_CASE("composition_test - mem_func")
 {
     struct foo
     {
@@ -284,7 +284,7 @@ TEST_CASE("composition_test, mem_func")
     REQUIRE(fplus::all_unique_on(fplus_c_mem_fn_t(foo, bar, int), foos));
 }
 
-TEST_CASE("composition_test, ptr_mem_func")
+TEST_CASE("composition_test - ptr_mem_func")
 {
     struct foo
     {
