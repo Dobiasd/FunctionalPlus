@@ -54,9 +54,6 @@ set(
     split_test
     stopwatch_test
     stringtools_test
-    stringtools_utf8_test
-    stringtools_cp1251_test
-    stringtools_cp1253_test
     transform_test
     timed_test
     tree_test
@@ -81,13 +78,3 @@ foreach(name IN LISTS tests)
   target_compile_features("${name}" PRIVATE cxx_std_14)
   doctest_discover_tests("${name}")
 endforeach()
-
-if(NOT MSVC)
-  foreach(encoding IN ITEMS cp1251 cp1253 utf8)
-    target_compile_options(
-        "stringtools_${encoding}_test"
-        PRIVATE
-        -Wno-invalid-source-encoding
-    )
-  endforeach()
-endif()

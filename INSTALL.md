@@ -35,17 +35,7 @@ see [FetchContent](#way-3-using-cmake-314-fetchcontent) or
 Unit Tests are available from a separate CMakeLists.txt file. Building the
 tests requires [doctest](https://github.com/onqtam/doctest).
 
-First, install the required locales:
-````bash
-sudo locale-gen ru_RU
-sudo locale-gen ru_RU.UTF-8
-sudo locale-gen el_GR
-sudo locale-gen el_GR.UTF-8
-sudo localedef -c -i ru_RU -f CP1251 ru_RU.CP1251
-sudo localedef -c -i el_GR -f CP1253 el_GR.CP1253
-````
-
-Then, install doctest:
+Install doctest:
 ```bash
 git clone --depth=1 --branch=2.4.3 https://github.com/onqtam/doctest
 cmake -S doctest -B doctest/build -DDOCTEST_WITH_TESTS=OFF -DDOCTEST_WITH_MAIN_IN_STATIC_LIB=OFF
