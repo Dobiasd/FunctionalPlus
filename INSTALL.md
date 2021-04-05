@@ -57,7 +57,7 @@ Then, compile & run the tests
 ````bash
 git clone https://github.com/Dobiasd/FunctionalPlus
 cmake -S FunctionalPlus/test -B FunctionalPlus/build
-cmake --build FunctionalPlus/build
+cmake --build FunctionalPlus/build -j
 (cd FunctionalPlus/build; ctest)
 ````
 
