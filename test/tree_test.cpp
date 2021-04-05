@@ -17,7 +17,7 @@ namespace {
     typedef std::vector<IntPairTree> IntPairTreeVector;
 }
 
-TEST_CASE("tree_test, are_trees_equal")
+TEST_CASE("tree_test - are_trees_equal")
 {
     using namespace fplus;
 
@@ -34,7 +34,7 @@ TEST_CASE("tree_test, are_trees_equal")
     REQUIRE(are_trees_equal(a, b));
 }
 
-TEST_CASE("tree_test, sequence_to_tree small")
+TEST_CASE("tree_test - sequence_to_tree small")
 {
     using namespace fplus;
     IntPairVector elems = {
@@ -64,7 +64,7 @@ TEST_CASE("tree_test, sequence_to_tree small")
     REQUIRE(all(zip_with(are_trees_equal<IntPair>, result_1, result)));
 }
 
-TEST_CASE("tree_test, sequence_to_tree medium")
+TEST_CASE("tree_test - sequence_to_tree medium")
 {
     using namespace fplus;
     IntPairVector elems = {
@@ -110,7 +110,7 @@ TEST_CASE("tree_test, sequence_to_tree medium")
     REQUIRE(all(zip_with(are_trees_equal<IntPair>, result_1, result)));
 }
 
-TEST_CASE("tree_test, tree_depth")
+TEST_CASE("tree_test - tree_depth")
 {
     const IntTree t =
         {{0}, {
@@ -134,7 +134,7 @@ TEST_CASE("tree_test, tree_depth")
     REQUIRE_EQ(tree_depth(t), 4);
 }
 
-TEST_CASE("tree_test, flatten_tree_depth_first")
+TEST_CASE("tree_test - flatten_tree_depth_first")
 {
     const IntTree t =
         {{0}, {
@@ -158,7 +158,7 @@ TEST_CASE("tree_test, flatten_tree_depth_first")
     REQUIRE_EQ(flatten_tree_depth_first(t), IntVector({0,1,2,3,4,5,6,7,8}));
 }
 
-TEST_CASE("tree_test, flatten_tree_breadth_first")
+TEST_CASE("tree_test - flatten_tree_breadth_first")
 {
     const IntTree t =
         {{0}, {

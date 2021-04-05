@@ -14,7 +14,7 @@ namespace {
     FloatVector xs = {1.0, 2.0, 6.0};
 }
 
-TEST_CASE("interpolate_test, interpolate_linear")
+TEST_CASE("interpolate_test - interpolate_linear")
 {
     using namespace fplus;
     REQUIRE(is_in_interval_around(0.0001, 1.0, elem_at_float_idx(-1.7, xs)));

@@ -16,7 +16,7 @@ namespace {
     IntVector xs = {1,2,2,3,2};
 }
 
-TEST_CASE("container_properties_test, any")
+TEST_CASE("container_properties_test - any")
 {
     using namespace fplus;
     REQUIRE_EQ(any(BoolVector()), false);
@@ -33,7 +33,7 @@ TEST_CASE("container_properties_test, any")
 }
 
 
-TEST_CASE("container_properties_test, none")
+TEST_CASE("container_properties_test - none")
 {
     using namespace fplus;
     REQUIRE_EQ(none(BoolVector()), true);
@@ -49,7 +49,7 @@ TEST_CASE("container_properties_test, none")
     REQUIRE_EQ(none_by(is_even_int, IntVector({2, 1})), false);
 }
 
-TEST_CASE("container_properties_test, minmax")
+TEST_CASE("container_properties_test - minmax")
 {
     using namespace fplus;
     auto negateInt = [](int i) -> int { return -i; };
@@ -73,7 +73,7 @@ TEST_CASE("container_properties_test, minmax")
     REQUIRE_EQ(maximum_idx_on(negateInt, xs), 0);
 }
 
-TEST_CASE("container_properties_test, minmax_maybe")
+TEST_CASE("container_properties_test - minmax_maybe")
 {
     using namespace fplus;
     auto negateInt = [](int i) -> int { return -i; };
@@ -96,7 +96,7 @@ TEST_CASE("container_properties_test, minmax_maybe")
 
 }
 
-TEST_CASE("container_properties_test, mean")
+TEST_CASE("container_properties_test - mean")
 {
     using namespace fplus;
     std::vector<unsigned char> uchars = {200, 202};
@@ -118,14 +118,14 @@ TEST_CASE("container_properties_test, mean")
     REQUIRE(is_in_interval(2.16f, 2.17f, mean_stddev<float>(IntVector({ 1, 3, 7, 4 })).second));
 }
 
-TEST_CASE("container_properties_test, all_unique_less")
+TEST_CASE("container_properties_test - all_unique_less")
 {
     using namespace fplus;
     REQUIRE_FALSE(all_unique_less(IntVector({1,2,3,2})));
     REQUIRE(all_unique_less(IntVector({4,2,1,3})));
 }
 
-TEST_CASE("container_properties_test, infix")
+TEST_CASE("container_properties_test - infix")
 {
     using namespace fplus;
     REQUIRE_EQ(is_infix_of(IntVector({}), IntVector({})), true);
@@ -139,7 +139,7 @@ TEST_CASE("container_properties_test, infix")
     REQUIRE_EQ(is_suffix_of(IntVector({ 2,2 }), xs), false);
 }
 
-TEST_CASE("container_properties_test, subsequence")
+TEST_CASE("container_properties_test - subsequence")
 {
     using namespace fplus;
     REQUIRE_EQ(is_subsequence_of(IntVector(), IntVector()), true);
@@ -148,20 +148,20 @@ TEST_CASE("container_properties_test, subsequence")
     REQUIRE_EQ(is_subsequence_of(IntVector({ 3,1 }), xs), false);
 }
 
-TEST_CASE("container_properties_test, count")
+TEST_CASE("container_properties_test - count")
 {
     using namespace fplus;
     REQUIRE_EQ(count(2, xs), 3);
 }
 
-TEST_CASE("container_properties_test, is_unique_in")
+TEST_CASE("container_properties_test - is_unique_in")
 {
     using namespace fplus;
     REQUIRE_FALSE(is_unique_in(2, xs));
     REQUIRE(is_unique_in(3, xs));
 }
 
-TEST_CASE("container_properties_test, is_permutation_of")
+TEST_CASE("container_properties_test - is_permutation_of")
 {
     using namespace fplus;
     REQUIRE(is_permutation_of(IntVector({2,3,1}), IntVector({1,2,3})));
@@ -170,7 +170,7 @@ TEST_CASE("container_properties_test, is_permutation_of")
     REQUIRE_FALSE(is_permutation_of(IntVector({2,3,1}), IntVector({1,23})));
 }
 
-TEST_CASE("container_properties_test, fill_pigeonholes")
+TEST_CASE("container_properties_test - fill_pigeonholes")
 {
     const std::vector<unsigned int> ys = { 0, 1, 3, 1 };
     REQUIRE_EQ(fplus::fill_pigeonholes_to(5, ys), std::vector<std::size_t>({1,2,0,1,0}));
@@ -182,7 +182,7 @@ TEST_CASE("container_properties_test, fill_pigeonholes")
     REQUIRE_EQ(fplus::fill_pigeonholes_bool(ys), std::vector<unsigned char>({1,1,0,1}));
 }
 
-TEST_CASE("container_properties_test, present_in_all")
+TEST_CASE("container_properties_test - present_in_all")
 {
     using namespace fplus;
     const std::vector<std::vector<int>> xss = { {4,1,2}, {5,2,1}, {2,4,1} };

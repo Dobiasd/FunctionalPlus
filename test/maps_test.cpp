@@ -15,7 +15,7 @@ namespace {
     typedef std::vector<int> IntVector;
 }
 
-TEST_CASE("maps_test, transform_map_values")
+TEST_CASE("maps_test - transform_map_values")
 {
     using namespace fplus;
     typedef std::vector<std::pair<std::string, int>> StringIntPairs;
@@ -26,7 +26,7 @@ TEST_CASE("maps_test, transform_map_values")
     REQUIRE_EQ(groupNameToMedianMap, StringIntMap({{"a", 2}, {"b", 6}}));
 }
 
-TEST_CASE("maps_test, choose")
+TEST_CASE("maps_test - choose")
 {
     using namespace fplus;
     REQUIRE_EQ((choose<int, char>({{1, 'a'}, {2, 'b'}}, 2)), just('b'));
@@ -35,7 +35,7 @@ TEST_CASE("maps_test, choose")
     REQUIRE_EQ((choose<int, char>({}, 2)), nothing<char>());
 }
 
-TEST_CASE("maps_test, choose_by")
+TEST_CASE("maps_test - choose_by")
 {
     using namespace fplus;
     REQUIRE_EQ((choose_by<int, char>({{is_even_int, 'a'}, {is_bigger_than_3_int, 'b'}}, 2)), just('a'));
@@ -45,7 +45,7 @@ TEST_CASE("maps_test, choose_by")
     REQUIRE_EQ((choose_by<int, char>({}, 2)), nothing<char>());
 }
 
-TEST_CASE("maps_test, choose_lazy")
+TEST_CASE("maps_test - choose_lazy")
 {
     using namespace fplus;
     typedef std::function<char()> char_stub;
@@ -57,7 +57,7 @@ TEST_CASE("maps_test, choose_lazy")
     REQUIRE_EQ((choose_lazy<int, char_stub>({}, 2)), nothing<char>());
 }
 
-TEST_CASE("maps_test, choose_by_lazy")
+TEST_CASE("maps_test - choose_by_lazy")
 {
     using namespace fplus;
     typedef std::function<char()> char_stub;
@@ -70,7 +70,7 @@ TEST_CASE("maps_test, choose_by_lazy")
     REQUIRE_EQ((choose_by_lazy<int, char_stub>({}, 2)), nothing<char>());
 }
 
-TEST_CASE("maps_test, choose_def")
+TEST_CASE("maps_test - choose_def")
 {
     using namespace fplus;
     REQUIRE_EQ((choose_def<int>('c', {{1, 'a'}, {2, 'b'}}, 2)), 'b');
@@ -79,7 +79,7 @@ TEST_CASE("maps_test, choose_def")
     REQUIRE_EQ((choose_def<int>('c', {}, 2)), 'c');
 }
 
-TEST_CASE("maps_test, choose_by_def")
+TEST_CASE("maps_test - choose_by_def")
 {
     using namespace fplus;
     REQUIRE_EQ((choose_by_def<int, char>('c', {{is_even_int, 'a'}, {is_bigger_than_3_int, 'b'}}, 2)), 'a');
@@ -89,7 +89,7 @@ TEST_CASE("maps_test, choose_by_def")
     REQUIRE_EQ((choose_by_def<int, char>('c', {}, 2)), 'c');
 }
 
-TEST_CASE("maps_test, choose_def_lazy")
+TEST_CASE("maps_test - choose_def_lazy")
 {
     using namespace fplus;
     typedef std::function<char()> char_stub;
@@ -102,7 +102,7 @@ TEST_CASE("maps_test, choose_def_lazy")
     REQUIRE_EQ((choose_def_lazy<int>(c_stub, {}, 2)), 'c');
 }
 
-TEST_CASE("maps_test, choose_by_def_lazy")
+TEST_CASE("maps_test - choose_by_def_lazy")
 {
     using namespace fplus;
     typedef std::function<char()> char_stub;
@@ -116,7 +116,7 @@ TEST_CASE("maps_test, choose_by_def_lazy")
     REQUIRE_EQ((choose_by_def_lazy<int, char_stub>(c_stub, {}, 2)), 'c');
 }
 
-TEST_CASE("maps_test, map functions")
+TEST_CASE("maps_test - map functions")
 {
     using namespace fplus;
     typedef std::map<int, std::string> IntStringMap;
@@ -212,7 +212,7 @@ TEST_CASE("maps_test, map functions")
         MaybeInts({1, 3, {}}));
 }
 
-TEST_CASE("maps_test, map_grouped_to_pairs")
+TEST_CASE("maps_test - map_grouped_to_pairs")
 {
     using namespace fplus;
     const std::map<std::string, std::vector<std::string>> teams = {
@@ -226,7 +226,7 @@ TEST_CASE("maps_test, map_grouped_to_pairs")
     REQUIRE_EQ(teams, pairs_to_map_grouped(result));
 }
 
-TEST_CASE("maps_test, create_map_grouped")
+TEST_CASE("maps_test - create_map_grouped")
 {
     using namespace fplus;
     const std::vector<std::string> words = {"one", "three", "two"};
@@ -234,7 +234,7 @@ TEST_CASE("maps_test, create_map_grouped")
     REQUIRE_EQ(result.at(3), std::vector<std::string>{"one", "two"});
 }
 
-TEST_CASE("maps_test, create_unordered_map_grouped")
+TEST_CASE("maps_test - create_unordered_map_grouped")
 {
     using namespace fplus;
     const std::vector<std::string> words = {"one", "three", "two"};

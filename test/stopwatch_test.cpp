@@ -15,7 +15,7 @@ auto invoke_n_times(int n, Function f)
   }
 }
 
-TEST_CASE("Timer, test_accuracy")
+TEST_CASE("Timer - test_accuracy")
 {
 #ifdef NDEBUG  // only on release builds
   using namespace fplus;

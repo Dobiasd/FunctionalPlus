@@ -45,7 +45,7 @@ namespace {
     std::function<int(int)> times_3_std_function = times_3_lambda;
 }
 
-TEST_CASE("fwd_test, apply")
+TEST_CASE("fwd_test - apply")
 {
     using namespace fplus;
 
@@ -66,7 +66,7 @@ TEST_CASE("fwd_test, apply")
     REQUIRE_EQ(result_old_style, result_new_style);
 }
 
-TEST_CASE("fwd_test, compose")
+TEST_CASE("fwd_test - compose")
 {
     using namespace fplus;
 
@@ -86,7 +86,7 @@ TEST_CASE("fwd_test, compose")
     REQUIRE_EQ(function_chain_old_style(xs), function_chain_new_style(xs));
 }
 
-TEST_CASE("fwd_test, and_then_maybe")
+TEST_CASE("fwd_test - and_then_maybe")
 {
     using namespace fplus;
     const auto sqrtToMaybeInt = [](int x) -> fplus::maybe<int>
@@ -100,7 +100,7 @@ TEST_CASE("fwd_test, and_then_maybe")
         , just(2));
 }
 
-TEST_CASE("fwd_test, fold_left")
+TEST_CASE("fwd_test - fold_left")
 {
     using namespace fplus;
 
@@ -114,7 +114,7 @@ TEST_CASE("fwd_test, fold_left")
     REQUIRE_EQ(fold_result_old_style, fold_result_new_style);
 }
 
-TEST_CASE("fwd_test, transform_nested")
+TEST_CASE("fwd_test - transform_nested")
 {
     using namespace fplus;
 
@@ -132,7 +132,7 @@ TEST_CASE("fwd_test, transform_nested")
     REQUIRE_EQ(nested_transformed_old_style, nested_transformed_new_style);
 }
 
-TEST_CASE("fwd_test, different_function_types_apply")
+TEST_CASE("fwd_test - different_function_types_apply")
 {
     using namespace fplus;
 
@@ -147,7 +147,7 @@ TEST_CASE("fwd_test, different_function_types_apply")
     REQUIRE_EQ(fwd::apply(xs, fwd::transform(times_3_struct())), result);
 }
 
-TEST_CASE("fwd_test, different_function_types_compose")
+TEST_CASE("fwd_test - different_function_types_compose")
 {
     using namespace fplus;
 
@@ -176,7 +176,7 @@ std::list<int> collatz_seq(int x)
     return result;
 }
 
-TEST_CASE("fwd_test, collatz")
+TEST_CASE("fwd_test - collatz")
 {
     using namespace fplus;
 
@@ -188,7 +188,7 @@ TEST_CASE("fwd_test, collatz")
         );
 }
 
-TEST_CASE("fwd_test, fwd_flip")
+TEST_CASE("fwd_test - fwd_flip")
 {
     using namespace fplus;
     std::vector<std::vector<std::size_t>> idxs = {{0,1,2}, {2,0}};
@@ -198,20 +198,20 @@ TEST_CASE("fwd_test, fwd_flip")
     REQUIRE_EQ(ys, result);
 }
 
-TEST_CASE("fwd_test, keep_if")
+TEST_CASE("fwd_test - keep_if")
 {
     const std::vector<int> v = { 1, 2, 3, 2, 4, 5 };
     auto result = fplus::fwd::keep_if(is_even_int)(v);
     REQUIRE_EQ(result, std::vector<int>({2, 2, 4}));
 }
 
-TEST_CASE("fwd_test, keep_if_r_value")
+TEST_CASE("fwd_test - keep_if_r_value")
 {
     auto result = fplus::fwd::keep_if(is_even_int)(std::vector<int>({1,2,3,2,4,5}));
     REQUIRE_EQ(result, std::vector<int>({2, 2, 4}));
 }
 
-TEST_CASE("fwd_test, zip_with")
+TEST_CASE("fwd_test - zip_with")
 {
     using namespace fplus;
     const auto multiply_int = [](int x, int y) -> int { return x * y; };
@@ -225,7 +225,7 @@ TEST_CASE("fwd_test, zip_with")
     REQUIRE_EQ(fwd::zip_with(multiply_generic, ys)(xs), xs_mult_ys);
 }
 
-TEST_CASE("fwd_test, append")
+TEST_CASE("fwd_test - append")
 {
     using namespace fplus;
 

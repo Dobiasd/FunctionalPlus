@@ -8,7 +8,7 @@
 #include <fplus/fplus.hpp>
 #include <vector>
 
-TEST_CASE("side_effects_test, execute")
+TEST_CASE("side_effects_test - execute")
 {
     using namespace fplus;
     std::vector<int> buffer;
@@ -18,7 +18,7 @@ TEST_CASE("side_effects_test, execute")
     REQUIRE_EQ(buffer, std::vector<int>({1,1}));
 }
 
-TEST_CASE("side_effects_test, execute_serially")
+TEST_CASE("side_effects_test - execute_serially")
 {
     using namespace fplus;
     std::vector<int> buffer;
@@ -27,14 +27,14 @@ TEST_CASE("side_effects_test, execute_serially")
     REQUIRE_EQ(buffer, std::vector<int>({1,1,1}));
 }
 
-TEST_CASE("side_effects_test, execute_parallelly")
+TEST_CASE("side_effects_test - execute_parallelly")
 {
     using namespace fplus;
     auto return_one = [&](){ return 1; };
     REQUIRE_EQ(execute_parallelly(replicate(4, return_one))(), std::vector<int>({1,1,1,1}));
 }
 
-TEST_CASE("side_effects_test, execute_max_n_times_until_success")
+TEST_CASE("side_effects_test - execute_max_n_times_until_success")
 {
     using namespace fplus;
     std::vector<int> buffer;
@@ -44,7 +44,7 @@ TEST_CASE("side_effects_test, execute_max_n_times_until_success")
     REQUIRE_EQ(buffer, std::vector<int>({1,1,1,1,1,1,1,1}));
 }
 
-TEST_CASE("side_effects_test, execute_serially_until_success")
+TEST_CASE("side_effects_test - execute_serially_until_success")
 {
     using namespace fplus;
     std::vector<int> buffer;
@@ -56,7 +56,7 @@ TEST_CASE("side_effects_test, execute_serially_until_success")
     REQUIRE_EQ(buffer, std::vector<int>({1,1,1}));
 }
 
-TEST_CASE("side_effects_test, execute_serially_until_failure")
+TEST_CASE("side_effects_test - execute_serially_until_failure")
 {
     using namespace fplus;
     std::vector<int> buffer;
@@ -68,7 +68,7 @@ TEST_CASE("side_effects_test, execute_serially_until_failure")
     REQUIRE_EQ(buffer, std::vector<int>({1,1}));
 }
 
-TEST_CASE("side_effects_test, execute_parallelly_atomic")
+TEST_CASE("side_effects_test - execute_parallelly_atomic")
 {
     using namespace fplus;
     std::atomic<int> atomic_int(0);

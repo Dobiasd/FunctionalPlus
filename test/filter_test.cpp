@@ -28,7 +28,7 @@ namespace {
     typedef std::vector<IntVector> IntVectors;
 }
 
-TEST_CASE("filter_test, keep_if")
+TEST_CASE("filter_test - keep_if")
 {
     const std::vector<int> v = { 1, 2, 3, 2, 4, 5 };
     auto result = fplus::keep_if(is_even, v);
@@ -42,20 +42,20 @@ TEST_CASE("filter_test, keep_if")
         IntVectors({{4},{2}}));
 }
 
-TEST_CASE("filter_test, keep_if_r_value")
+TEST_CASE("filter_test - keep_if_r_value")
 {
     auto result = fplus::keep_if(is_even, std::vector<int>({1,2,3,2,4,5}));
     REQUIRE_EQ(result, std::vector<int>({2, 2, 4}));
 }
 
-TEST_CASE("filter_test, drop_if")
+TEST_CASE("filter_test - drop_if")
 {
     const std::vector<int> v = { 1, 2, 3, 2, 4, 5 };
     auto result = fplus::drop_if(is_even, v);
     REQUIRE_EQ(result, std::vector<int>({1, 3, 5}));
 }
 
-TEST_CASE("filter_test, without")
+TEST_CASE("filter_test - without")
 {
     using namespace fplus;
     typedef std::vector<int> Ints;
@@ -64,21 +64,21 @@ TEST_CASE("filter_test, without")
     REQUIRE_EQ(without(5, Ints({})), Ints({}));
 }
 
-TEST_CASE("filter_test, keep_if_with_idx")
+TEST_CASE("filter_test - keep_if_with_idx")
 {
     const std::vector<int> v = { 1, 20, 30, 4, 50, 60, 7 };
     auto result = fplus::keep_if_with_idx(accept_with_index, v);
     REQUIRE_EQ(result, std::vector<int>({30, 50}));
 }
 
-TEST_CASE("filter_test, drop_if_with_idx")
+TEST_CASE("filter_test - drop_if_with_idx")
 {
     const std::vector<int> v = { 1, 20, 30, 4, 50, 60, 7 };
     auto result = fplus::drop_if_with_idx(accept_with_index, v);
     REQUIRE_EQ(result, std::vector<int>({1, 20, 4, 60, 7}));
 }
 
-TEST_CASE("filter_test, keep_by_idx")
+TEST_CASE("filter_test - keep_by_idx")
 {
     const std::vector<int> v = { 11, 17, 3, 8, 49, 6 };
     auto result = fplus::keep_by_idx(is_even_size_t, v);
@@ -87,14 +87,14 @@ TEST_CASE("filter_test, keep_by_idx")
     REQUIRE_EQ(result_rvalue, std::vector<int>({11, 3, 49}));
 }
 
-TEST_CASE("filter_test, drop_by_idx")
+TEST_CASE("filter_test - drop_by_idx")
 {
     const std::vector<int> v = { 11, 17, 3, 8, 49, 6 };
     auto result = fplus::drop_by_idx(is_even_size_t, v);
     REQUIRE_EQ(result, std::vector<int>({17, 8, 6}));
 }
 
-TEST_CASE("filter_test, keep_idxs")
+TEST_CASE("filter_test - keep_idxs")
 {
     const std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7 };
     const std::vector<std::size_t> indices = { 2, 5 };
@@ -102,14 +102,14 @@ TEST_CASE("filter_test, keep_idxs")
     REQUIRE_EQ(result, std::vector<int>({3, 6}));
 }
 
-TEST_CASE("filter_test, drop_idx")
+TEST_CASE("filter_test - drop_idx")
 {
     const std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7 };
     auto result = fplus::drop_idx(2, v);
     REQUIRE_EQ(result, std::vector<int>({1, 2, 4, 5, 6, 7}));
 }
 
-TEST_CASE("filter_test, drop_idxs")
+TEST_CASE("filter_test - drop_idxs")
 {
     const std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7 };
     const std::vector<std::size_t> indices = { 2, 5 };
@@ -117,7 +117,7 @@ TEST_CASE("filter_test, drop_idxs")
     REQUIRE_EQ(result, std::vector<int>({1, 2, 4, 5, 7}));
 }
 
-TEST_CASE("filter_test, justs")
+TEST_CASE("filter_test - justs")
 {
     using fplus::maybe;
     using fplus::just;
@@ -128,7 +128,7 @@ TEST_CASE("filter_test, justs")
     REQUIRE_EQ(result, std::vector<int>({1, 2}));
 }
 
-TEST_CASE("filter_test, oks")
+TEST_CASE("filter_test - oks")
 {
     using fplus::ok;
     using fplus::error;
@@ -139,7 +139,7 @@ TEST_CASE("filter_test, oks")
     REQUIRE_EQ(result, std::vector<int>({1, 2}));
 }
 
-TEST_CASE("filter_test, errors")
+TEST_CASE("filter_test - errors")
 {
     using fplus::ok;
     using fplus::error;
@@ -150,14 +150,14 @@ TEST_CASE("filter_test, errors")
     REQUIRE_EQ(result, std::vector<std::string>({"abc"}));
 }
 
-TEST_CASE("filter_test, trim_left")
+TEST_CASE("filter_test - trim_left")
 {
     const std::vector<int> v = { 0, 0, 0, 5, 6, 7, 8, 6, 4 };
     auto result = fplus::trim_left(0, v);
     REQUIRE_EQ(result, std::vector<int>({5, 6, 7, 8, 6, 4}));
 }
 
-TEST_CASE("filter_test, trim_token_left")
+TEST_CASE("filter_test - trim_token_left")
 {
     const std::vector<int> v = { 0, 1, 2, 0, 1, 2, 7, 5, 9 };
     const std::vector<int> token = { 0, 1, 2 };
@@ -165,28 +165,28 @@ TEST_CASE("filter_test, trim_token_left")
     REQUIRE_EQ(result, std::vector<int>({7, 5, 9}));
 }
 
-TEST_CASE("filter_test, trim_right_by")
+TEST_CASE("filter_test - trim_right_by")
 {
     const std::vector<int> v = { 0, 2, 4, 5, 6, 7, 8, 6, 4 };
     auto result = fplus::trim_right_by(is_even, v);
     REQUIRE_EQ(result, std::vector<int>({0, 2, 4, 5, 6, 7}));
 }
 
-TEST_CASE("filter_test, trim_right_by_trims_all")
+TEST_CASE("filter_test - trim_right_by_trims_all")
 {
     const std::vector<int> v = { 4, 8 };
     auto result = fplus::trim_right_by(is_even, v);
     REQUIRE(result.empty());
 }
 
-TEST_CASE("filter_test, trim_right")
+TEST_CASE("filter_test - trim_right")
 {
     const std::vector<int> v = { 0, 2, 4, 5, 6, 7, 8, 4, 4 };
     auto result = fplus::trim_right(4, v);
     REQUIRE_EQ(result, std::vector<int>({0, 2, 4, 5, 6, 7, 8}));
 }
 
-TEST_CASE("filter_test, trim_token_right")
+TEST_CASE("filter_test - trim_token_right")
 {
     const std::vector<int> v = { 7, 5, 9, 0, 1, 2, 0, 1, 2 };
     const std::vector<int> token = { 0, 1, 2 };
@@ -194,21 +194,21 @@ TEST_CASE("filter_test, trim_token_right")
     REQUIRE_EQ(result, std::vector<int>({7, 5, 9}));
 }
 
-TEST_CASE("filter_test, trim_by")
+TEST_CASE("filter_test - trim_by")
 {
     const std::vector<int> v = { 0, 2, 4, 5, 6, 7, 8, 6, 4 };
     auto result = fplus::trim_by(is_even, v);
     REQUIRE_EQ(result, std::vector<int>({5, 6, 7}));
 }
 
-TEST_CASE("filter_test, trim")
+TEST_CASE("filter_test - trim")
 {
     const std::vector<int> v = { 0, 2, 4, 5, 6, 7, 8, 0, 0 };
     auto result = fplus::trim(0, v);
     REQUIRE_EQ(result, std::vector<int>({2, 4, 5, 6, 7, 8}));
 }
 
-TEST_CASE("filter_test, trim_token")
+TEST_CASE("filter_test - trim_token")
 {
     const std::vector<int> v = { 0, 1, 7, 8, 9, 0, 1 };
     const std::vector<int> token = { 0, 1 };
@@ -216,28 +216,28 @@ TEST_CASE("filter_test, trim_token")
     REQUIRE_EQ(result, std::vector<int>({7, 8, 9}));
 }
 
-TEST_CASE("filter_test, adjacent_keep_snd_if")
+TEST_CASE("filter_test - adjacent_keep_snd_if")
 {
     const std::vector<int> v = { 0, 1, 7, 8, 9, 0, 1 };
     REQUIRE_EQ(fplus::adjacent_keep_snd_if(std::greater<>(), v), std::vector<int>({0,0}));
     REQUIRE_EQ(fplus::adjacent_keep_snd_if(std::less<int>(), v), std::vector<int>({0,1,7,8,9,1}));
 }
 
-TEST_CASE("filter_test, adjacent_drop_snd_if")
+TEST_CASE("filter_test - adjacent_drop_snd_if")
 {
     const std::vector<int> v = { 0, 1, 7, 8, 9, 0, 1 };
     REQUIRE_EQ(fplus::adjacent_drop_snd_if(std::less<>(), v), std::vector<int>({0,0}));
     REQUIRE_EQ(fplus::adjacent_drop_snd_if(std::greater<int>(), v), std::vector<int>({0,1,7,8,9,1}));
 }
 
-TEST_CASE("filter_test, adjacent_drop_fst_if")
+TEST_CASE("filter_test - adjacent_drop_fst_if")
 {
     const std::vector<int> v = { 0, 1, 7, 8, 9, 0, 1 };
     REQUIRE_EQ(fplus::adjacent_drop_fst_if(std::less<>(), v), std::vector<int>({9,1}));
     REQUIRE_EQ(fplus::adjacent_drop_fst_if(std::greater<int>(), v), std::vector<int>({0,1,7,8,0,1}));
 }
 
-TEST_CASE("filter_test, adjacent_keep_fst_if")
+TEST_CASE("filter_test - adjacent_keep_fst_if")
 {
     const std::vector<int> v = { 0, 1, 7, 8, 9, 0, 1 };
     REQUIRE_EQ(fplus::adjacent_keep_fst_if(std::greater<>(), v), std::vector<int>({9,1}));

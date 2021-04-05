@@ -51,7 +51,7 @@ namespace
 
 
 // Test timed class
-TEST_CASE("timed, ctor")
+TEST_CASE("timed - ctor")
 {
     using namespace fplus;
     {
@@ -75,7 +75,7 @@ TEST_CASE("timed, ctor")
     }
 }
 
-TEST_CASE("timed, operator=")
+TEST_CASE("timed - operator=")
 {
     {
         auto v1 = fplus::timed<double>(1.);
@@ -87,7 +87,7 @@ TEST_CASE("timed, operator=")
 }
 
 
-TEST_CASE("timed, show_timed")
+TEST_CASE("timed - show_timed")
 {
     {
         fplus::timed<int> v(42, 1);
@@ -96,7 +96,7 @@ TEST_CASE("timed, show_timed")
     }
 }
 
-TEST_CASE("timed, duration_in_s")
+TEST_CASE("timed - duration_in_s")
 {
     {
         fplus::timed<int> v(42, 1.2345);

@@ -32,21 +32,21 @@ namespace {
 }
 
 
-TEST_CASE("compare_test, is_equal_to")
+TEST_CASE("compare_test - is_equal_to")
 {
     using namespace fplus;
     REQUIRE(is_equal_to(2)(2));
     REQUIRE_FALSE(is_equal_to(2)(3));
 }
 
-TEST_CASE("compare_test, is_not_equal_to")
+TEST_CASE("compare_test - is_not_equal_to")
 {
     using namespace fplus;
     REQUIRE_FALSE(is_not_equal_to(2)(2));
     REQUIRE(is_not_equal_to(2)(3));
 }
 
-TEST_CASE("compare_test, is_less")
+TEST_CASE("compare_test - is_less")
 {
     using namespace fplus;
     REQUIRE_FALSE(is_less(2, 2));
@@ -55,7 +55,7 @@ TEST_CASE("compare_test, is_less")
     REQUIRE(is_less_than(3)(2));
 }
 
-TEST_CASE("compare_test, is_less_or_equal")
+TEST_CASE("compare_test - is_less_or_equal")
 {
     using namespace fplus;
     REQUIRE(is_less_or_equal(2, 2));
@@ -66,7 +66,7 @@ TEST_CASE("compare_test, is_less_or_equal")
     REQUIRE(is_less_or_equal_by_than(squareGeneric, 5)(2));
 }
 
-TEST_CASE("compare_test, is_less_by")
+TEST_CASE("compare_test - is_less_by")
 {
     using namespace fplus;
     auto square = [](int x) { return x * x; };
@@ -74,7 +74,7 @@ TEST_CASE("compare_test, is_less_by")
     REQUIRE(is_less_by(squareGeneric)(2, -3));
 }
 
-TEST_CASE("compare_test, is_less_by_than")
+TEST_CASE("compare_test - is_less_by_than")
 {
     using namespace fplus;
     auto square = [](int x) { return x * x; };
@@ -82,7 +82,7 @@ TEST_CASE("compare_test, is_less_by_than")
     REQUIRE(is_less_by_than(squareGeneric, 5)(2));
 }
 
-TEST_CASE("compare_test, is_greater")
+TEST_CASE("compare_test - is_greater")
 {
     using namespace fplus;
     REQUIRE_FALSE(is_greater(2, 2));
@@ -92,7 +92,7 @@ TEST_CASE("compare_test, is_greater")
     REQUIRE(is_greater_by_and_by(squareGeneric, squareGeneric)(3, -2));
 }
 
-TEST_CASE("compare_test, is_greater_or_equal")
+TEST_CASE("compare_test - is_greater_or_equal")
 {
     using namespace fplus;
     REQUIRE(is_greater_or_equal(2, 2));
@@ -104,7 +104,7 @@ TEST_CASE("compare_test, is_greater_or_equal")
     REQUIRE(is_greater_or_equal_by_than(squareGeneric, 3)(-3));
 }
 
-TEST_CASE("compare_test, is_equal_by")
+TEST_CASE("compare_test - is_equal_by")
 {
     using namespace fplus;
     auto square = [](int x) { return x * x; };
@@ -119,7 +119,7 @@ TEST_CASE("compare_test, is_equal_by")
     REQUIRE(is_not_equal_by_to(squareGeneric, 5)(2));
 }
 
-TEST_CASE("compare_test, always")
+TEST_CASE("compare_test - always")
 {
     using namespace fplus;
     REQUIRE_EQ(identity(2), 2);
@@ -128,7 +128,7 @@ TEST_CASE("compare_test, always")
     REQUIRE_EQ(always_arg_2_of_2(2, 5), 5);
 }
 
-TEST_CASE("compare_test, xor_bools")
+TEST_CASE("compare_test - xor_bools")
 {
     using namespace fplus;
     REQUIRE(xor_bools(false, false) == false);
@@ -137,7 +137,7 @@ TEST_CASE("compare_test, xor_bools")
     REQUIRE(xor_bools(true, true) == false);
 }
 
-TEST_CASE("compare_test, ord_to_eq")
+TEST_CASE("compare_test - ord_to_eq")
 {
     using namespace fplus;
     REQUIRE(ord_to_eq(int_less)(1, 2) == false);
@@ -146,7 +146,7 @@ TEST_CASE("compare_test, ord_to_eq")
     REQUIRE(ord_to_eq(generic_less)(2, 1) == false);
 }
 
-TEST_CASE("compare_test, ord_to_not_eq")
+TEST_CASE("compare_test - ord_to_not_eq")
 {
     using namespace fplus;
     REQUIRE(ord_to_not_eq(int_less)(1, 2) == true);
@@ -155,7 +155,7 @@ TEST_CASE("compare_test, ord_to_not_eq")
     REQUIRE(ord_to_not_eq(generic_less)(2, 1) == true);
 }
 
-TEST_CASE("compare_test, ord_eq_to_eq")
+TEST_CASE("compare_test - ord_eq_to_eq")
 {
     using namespace fplus;
     REQUIRE(ord_eq_to_eq(int_less_eq)(1, 2) == false);
@@ -164,7 +164,7 @@ TEST_CASE("compare_test, ord_eq_to_eq")
     REQUIRE(ord_eq_to_eq(generic_less_eq)(2, 1) == false);
 }
 
-TEST_CASE("compare_test, ord_eq_to_not_eq")
+TEST_CASE("compare_test - ord_eq_to_not_eq")
 {
     using namespace fplus;
     REQUIRE(ord_eq_to_not_eq(int_less_eq)(1, 2) == true);
@@ -172,7 +172,7 @@ TEST_CASE("compare_test, ord_eq_to_not_eq")
     REQUIRE(ord_eq_to_not_eq(int_less_eq)(2, 1) == true);
 }
 
-TEST_CASE("compare_test, lexicographical_less")
+TEST_CASE("compare_test - lexicographical_less")
 {
     using namespace fplus;
     REQUIRE(lexicographical_less(std::vector<int>{0,1,2,2,4,5}, std::vector<int>{0,1,2,3,4,5}));
@@ -186,7 +186,7 @@ TEST_CASE("compare_test, lexicographical_less")
     REQUIRE_FALSE(lexicographical_less(std::string("012345"), std::string("01234")));
 }
 
-TEST_CASE("compare_test, lexicographical_sort")
+TEST_CASE("compare_test - lexicographical_sort")
 {
     using namespace fplus;
     std::vector<std::string> xs = {"012245", "012345", "01234"};

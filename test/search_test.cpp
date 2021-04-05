@@ -16,112 +16,112 @@ namespace
     }
 }
 
-TEST_CASE("search_test, find_first_by")
+TEST_CASE("search_test - find_first_by")
 {
     std::vector<int> v = { 1, 3, 4, 6, 9 };
     auto result = fplus::find_first_by(is_even, v);
     REQUIRE_EQ(result, fplus::just(4));
 }
 
-TEST_CASE("search_test, find_first_by_nothing_found")
+TEST_CASE("search_test - find_first_by_nothing_found")
 {
     std::vector<int> v = { 1, 3, 5, 7, 9 };
     auto result = fplus::find_first_by(is_even, v);
     REQUIRE_EQ(result, fplus::nothing<int>());
 }
 
-TEST_CASE("search_test, find_last_by")
+TEST_CASE("search_test - find_last_by")
 {
     std::vector<int> v = { 1, 3, 4, 6, 9 };
     auto result = fplus::find_last_by(is_even, v);
     REQUIRE_EQ(result, fplus::just(6));
 }
 
-TEST_CASE("search_test, find_last_by_nothing_found")
+TEST_CASE("search_test - find_last_by_nothing_found")
 {
     std::vector<int> v = { 1, 3, 5, 7, 9 };
     auto result = fplus::find_first_by(is_even, v);
     REQUIRE_EQ(result, fplus::nothing<int>());
 }
 
-TEST_CASE("search_test, find_first_idx_by")
+TEST_CASE("search_test - find_first_idx_by")
 {
     std::vector<int> v = { 1, 3, 4, 6, 9 };
     auto result = fplus::find_first_idx_by(is_even, v);
     REQUIRE_EQ(result, fplus::just<std::size_t>(2));
 }
 
-TEST_CASE("search_test, find_first_idx_by_nothing_found")
+TEST_CASE("search_test - find_first_idx_by_nothing_found")
 {
     std::vector<int> v = { 1, 3, 5, 7, 9 };
     auto result = fplus::find_first_idx_by(is_even, v);
     REQUIRE_EQ(result, fplus::nothing<size_t>());
 }
 
-TEST_CASE("search_test, find_last_idx_by")
+TEST_CASE("search_test - find_last_idx_by")
 {
     std::vector<int> v = { 1, 3, 4, 6, 9 };
     auto result = fplus::find_last_idx_by(is_even, v);
     REQUIRE_EQ(result, fplus::just<size_t>(3));
 }
 
-TEST_CASE("search_test, find_last_idx_by_nothing_found")
+TEST_CASE("search_test - find_last_idx_by_nothing_found")
 {
     std::vector<int> v = { 1, 3, 5, 7, 9 };
     auto result = fplus::find_last_idx_by(is_even, v);
     REQUIRE_EQ(result, fplus::nothing<size_t>());
 }
 
-TEST_CASE("search_test, find_first_idx")
+TEST_CASE("search_test - find_first_idx")
 {
     std::vector<int> v = { 1, 3, 4, 4, 9 };
     auto result = fplus::find_first_idx(4, v);
     REQUIRE_EQ(result, fplus::just<size_t>(2));
 }
 
-TEST_CASE("search_test, find_first_idx_nothing_found")
+TEST_CASE("search_test - find_first_idx_nothing_found")
 {
     std::vector<int> v = { 1, 3, 5, 7, 9 };
     auto result = fplus::find_first_idx(4, v);
     REQUIRE_EQ(result, fplus::nothing<size_t>());
 }
 
-TEST_CASE("search_test, find_last_idx")
+TEST_CASE("search_test - find_last_idx")
 {
     std::vector<int> v = { 1, 3, 4, 4, 9 };
     auto result = fplus::find_last_idx(4, v);
     REQUIRE_EQ(result, fplus::just<size_t>(3));
 }
 
-TEST_CASE("search_test, find_last_idx_nothing_found")
+TEST_CASE("search_test - find_last_idx_nothing_found")
 {
     std::vector<int> v = { 1, 3, 5, 7, 9 };
     auto result = fplus::find_last_idx(4, v);
     REQUIRE_EQ(result, fplus::nothing<size_t>());
 }
 
-TEST_CASE("search_test, find_all_idxs_by")
+TEST_CASE("search_test - find_all_idxs_by")
 {
     std::vector<int> v = { 1, 3, 4, 6, 9 };
     auto result = fplus::find_all_idxs_by(is_even, v);
     REQUIRE_EQ(result, std::vector<std::size_t>({2, 3}));
 }
 
-TEST_CASE("search_test, find_last_idxs_by_nothing_found")
+TEST_CASE("search_test - find_last_idxs_by_nothing_found")
 {
     std::vector<int> v = { 1, 3, 5, 7, 9 };
     auto result = fplus::find_all_idxs_by(is_even, v);
     REQUIRE(result.empty());
 }
 
-TEST_CASE("search_test, find_all_idxs_of")
+TEST_CASE("search_test - find_all_idxs_of")
 {
     std::vector<int> v = { 1, 3, 4, 4, 9 };
     auto result = fplus::find_all_idxs_of(4, v);
     REQUIRE_EQ(result, std::vector<size_t>({2, 3}));
 }
 
-TEST_CASE("search_test, find_all_instances_of_token")
+TEST_CASE("search_test - find_all_instances_of_token")
 {
     const std::string token = "haha";
     const std::string input = "oh, hahaha!";
@@ -129,14 +129,14 @@ TEST_CASE("search_test, find_all_instances_of_token")
     REQUIRE_EQ(result, std::vector<std::size_t>({4, 6}));
 }
 
-TEST_CASE("search_test, find_last_idxs_of_nothing_found")
+TEST_CASE("search_test - find_last_idxs_of_nothing_found")
 {
     std::vector<int> v = { 1, 3, 5, 7, 9 };
     auto result = fplus::find_all_idxs_of(4, v);
     REQUIRE(result.empty());
 }
 
-TEST_CASE("search_test, find_all_instances_of_token_oversized_token")
+TEST_CASE("search_test - find_all_instances_of_token_oversized_token")
 {
     const std::string token = "hahahahaha";
     const std::string input = "oh, hahaha!";
@@ -144,7 +144,7 @@ TEST_CASE("search_test, find_all_instances_of_token_oversized_token")
     REQUIRE(result.empty());
 }
 
-TEST_CASE("search_test, find_all_instances_of_token_non_overlapping")
+TEST_CASE("search_test - find_all_instances_of_token_non_overlapping")
 {
     const std::string token = "haha";
     const std::string input = "oh, hahaha!";
@@ -152,7 +152,7 @@ TEST_CASE("search_test, find_all_instances_of_token_non_overlapping")
     REQUIRE_EQ(result, std::vector<std::size_t>({4}));
 }
 
-TEST_CASE("search_test, find_first_instance_of_token")
+TEST_CASE("search_test - find_first_instance_of_token")
 {
     const std::string token = "haha";
     const std::string input = "oh, hahaha!";
@@ -160,7 +160,7 @@ TEST_CASE("search_test, find_first_instance_of_token")
     REQUIRE_EQ(result, fplus::just<size_t>(4));
 }
 
-TEST_CASE("search_test, find_first_instance_of_token_at_end")
+TEST_CASE("search_test - find_first_instance_of_token_at_end")
 {
     const std::string token = "haha";
     const std::string input = "oh, haha";
@@ -168,7 +168,7 @@ TEST_CASE("search_test, find_first_instance_of_token_at_end")
     REQUIRE_EQ(result, fplus::just<size_t>(4));
 }
 
-TEST_CASE("search_test, find_first_instance_of_token_nothing")
+TEST_CASE("search_test - find_first_instance_of_token_nothing")
 {
     const std::string token = "hihi";
     const std::string input = "oh, haha";
@@ -176,7 +176,7 @@ TEST_CASE("search_test, find_first_instance_of_token_nothing")
     REQUIRE_EQ(result, fplus::nothing<size_t>());
 }
 
-TEST_CASE("search_test, find_first_instance_of_token_oversized_token")
+TEST_CASE("search_test - find_first_instance_of_token_oversized_token")
 {
     const std::string token = "hahahahaha";
     const std::string input = "oh, hahaha!";

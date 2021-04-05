@@ -32,7 +32,7 @@ namespace
     };
 }
 
-TEST_CASE("shared_ref_test, full")
+TEST_CASE("shared_ref_test - full")
 {
     using namespace fplus;
 

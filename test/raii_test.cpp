@@ -7,7 +7,7 @@
 #include <doctest/doctest.h>
 #include <fplus/fplus.hpp>
 
-TEST_CASE("raii_test, make_raii")
+TEST_CASE("raii_test - make_raii")
 {
     std::string log = "nothing";
     const auto init = [&log]() { log = "init"; };

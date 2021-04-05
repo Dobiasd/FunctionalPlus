@@ -35,7 +35,7 @@ namespace Correctness_follows_from_expressiveness
     }
 }
 
-TEST_CASE("udemy_course_test, Correctness_follows_from_expressiveness")
+TEST_CASE("udemy_course_test - Correctness_follows_from_expressiveness")
 {
     using namespace Correctness_follows_from_expressiveness;
     std::vector<int> xs = {0,1,2,3,4};
@@ -53,7 +53,7 @@ namespace Programming_challenge_parse_and_product
     }
 }
 
-TEST_CASE("udemy_course_test, Programming_challenge_parse_and_product")
+TEST_CASE("udemy_course_test - Programming_challenge_parse_and_product")
 {
     using namespace Programming_challenge_parse_and_product;
     const std::string input = "1,5,4,7,2,2,3.34";
@@ -80,7 +80,7 @@ namespace Programming_challenge_longest_edge_of_polygon
     }
 }
 
-TEST_CASE("udemy_course_test, Programming_challenge_longest_edge_of_polygon")
+TEST_CASE("udemy_course_test - Programming_challenge_longest_edge_of_polygon")
 {
     using namespace std;
     using namespace Programming_challenge_longest_edge_of_polygon;
@@ -122,7 +122,7 @@ namespace The_problem_with_comments
     }
 }
 
-TEST_CASE("udemy_course_test, The_problem_with_comments")
+TEST_CASE("udemy_course_test - The_problem_with_comments")
 {
     using namespace The_problem_with_comments;
     const std::string input = "1,5,4,7,2,2,3";
@@ -156,7 +156,7 @@ namespace High_level_expressiveness_and_concise_code
     }
 }
 
-TEST_CASE("udemy_course_test, High_level_expressiveness_and_concise_code")
+TEST_CASE("udemy_course_test - High_level_expressiveness_and_concise_code")
 {
     using namespace std;
     using namespace High_level_expressiveness_and_concise_code;
@@ -175,7 +175,7 @@ namespace Currying_and_partial_function_application
 {
 }
 
-TEST_CASE("udemy_course_test, Currying_and_partial_function_application")
+TEST_CASE("udemy_course_test - Currying_and_partial_function_application")
 {
     using namespace Currying_and_partial_function_application;
 
@@ -227,7 +227,7 @@ namespace Forward_application
     }
 }
 
-TEST_CASE("udemy_course_test, Forward_application")
+TEST_CASE("udemy_course_test - Forward_application")
 {
     using namespace std;
     using namespace Forward_application;
@@ -281,7 +281,7 @@ namespace Programming_challenge_Interacting_with_the_command_line
     }
 }
 
-TEST_CASE("udemy_course_test, Programming_challenge_Interacting_with_the_command_line")
+TEST_CASE("udemy_course_test - Programming_challenge_Interacting_with_the_command_line")
 {
     using namespace fplus;
     using namespace Programming_challenge_Interacting_with_the_command_line;
@@ -312,7 +312,7 @@ namespace Function_composition
         fplus::fwd::product());
 }
 
-TEST_CASE("udemy_course_test, Function_composition")
+TEST_CASE("udemy_course_test - Function_composition")
 {
     using namespace Function_composition;
     const std::string input = "1,5,4,7,2,2,3.34";
@@ -340,7 +340,7 @@ namespace Programming_challenge_an_SQL_analogy
     }
 }
 
-TEST_CASE("udemy_course_test, Programming_challenge_an_SQL_analogy")
+TEST_CASE("udemy_course_test - Programming_challenge_an_SQL_analogy")
 {
     using namespace Programming_challenge_an_SQL_analogy;
 
@@ -392,7 +392,7 @@ namespace Functors
     }
 }
 
-TEST_CASE("udemy_course_test, Functors")
+TEST_CASE("udemy_course_test - Functors")
 {
     using namespace Functors;
     using namespace fplus;
@@ -468,7 +468,7 @@ namespace Monads
     }
 }
 
-TEST_CASE("udemy_course_test, Monads")
+TEST_CASE("udemy_course_test - Monads")
 {
     using namespace fplus;
     using namespace std;
@@ -504,7 +504,7 @@ namespace Multithreading
     FaceImage divide_values(FaceImage, std::size_t) { return {}; } // dummy
 }
 
-TEST_CASE("udemy_course_test, Multithreading")
+TEST_CASE("udemy_course_test - Multithreading")
 {
     using namespace Multithreading;
     fplus::transform_reduce_parallelly(
@@ -532,7 +532,7 @@ namespace OOP_Design_patterns_vanishing
     }
 }
 
-TEST_CASE("udemy_course_test, OOP_Design_patterns_vanishing")
+TEST_CASE("udemy_course_test - OOP_Design_patterns_vanishing")
 {
     using namespace OOP_Design_patterns_vanishing;
     const auto logging_square =

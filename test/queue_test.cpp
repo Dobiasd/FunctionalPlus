@@ -7,7 +7,7 @@
 #include <doctest/doctest.h>
 #include <fplus/fplus.hpp>
 
-TEST_CASE("queue_test, full")
+TEST_CASE("queue_test - full")
 {
     using namespace fplus;
     using namespace std::chrono_literals;

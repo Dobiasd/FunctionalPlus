@@ -22,13 +22,13 @@ namespace {
     }
 }
 
-TEST_CASE("transform_test, replicate_elems")
+TEST_CASE("transform_test - replicate_elems")
 {
     using namespace fplus;
     REQUIRE_EQ(replicate_elems(2, xs), IntVector({1,1,2,2,2,2,3,3,2,2}));
 }
 
-TEST_CASE("transform_test, interleave")
+TEST_CASE("transform_test - interleave")
 {
     using namespace fplus;
     REQUIRE_EQ(interleave(IntVectors()), IntVector());
@@ -40,7 +40,7 @@ TEST_CASE("transform_test, interleave")
     REQUIRE_EQ(interleave(IntVectors({{1,2,3},{4,5},{6,7,8}})), IntVector({1,4,6,2,5,7,3,8}));
 }
 
-TEST_CASE("transform_test, transpose")
+TEST_CASE("transform_test - transpose")
 {
     using namespace fplus;
     REQUIRE_EQ(transpose(IntVectors()), IntVectors());
@@ -54,7 +54,7 @@ TEST_CASE("transform_test, transpose")
     REQUIRE_EQ(transpose(IntVectors({{1,2,3},{4,5},{7,8,9}})), IntVectors({{1,4,7},{2,5,8},{3,9}}));
 }
 
-TEST_CASE("transform_test, shuffle")
+TEST_CASE("transform_test - shuffle")
 {
     using namespace fplus;
 
@@ -68,7 +68,7 @@ TEST_CASE("transform_test, shuffle")
     REQUIRE(is_permutation_of(shuffled2, xs));
 }
 
-TEST_CASE("transform_test, random_element")
+TEST_CASE("transform_test - random_element")
 {
     using namespace fplus;
 
@@ -79,7 +79,7 @@ TEST_CASE("transform_test, random_element")
     REQUIRE(is_elem_of(elem2, xs));
 }
 
-TEST_CASE("transform_test, random_elements")
+TEST_CASE("transform_test - random_elements")
 {
     using namespace fplus;
 
@@ -94,7 +94,7 @@ TEST_CASE("transform_test, random_elements")
     REQUIRE(all_by(check_is_elem_of_xs, sampled2));
 }
 
-TEST_CASE("transform_test, sample")
+TEST_CASE("transform_test - sample")
 {
     using namespace fplus;
 
@@ -109,7 +109,7 @@ TEST_CASE("transform_test, sample")
     REQUIRE(all_by(check_is_elem_of_xs, sampled2));
 }
 
-TEST_CASE("transform_test, transform")
+TEST_CASE("transform_test - transform")
 {
     using namespace fplus;
 
@@ -154,21 +154,21 @@ TEST_CASE("transform_test, transform")
     REQUIRE_EQ(transform(squareLambda, xs_array), IntArray5({{1,4,4,9,4}}));
 }
 
-TEST_CASE("transform_test, reduce")
+TEST_CASE("transform_test - reduce")
 {
     using namespace fplus;
     REQUIRE_EQ(reduce_parallelly(std::plus<int>(), 100, xs), 110);
     REQUIRE_EQ(reduce_1_parallelly(std::plus<int>(), xs), 10);
 }
 
-TEST_CASE("transform_test, keep_if_parallelly")
+TEST_CASE("transform_test - keep_if_parallelly")
 {
     const std::vector<int> v = {1, 2, 3, 2, 4, 5};
     auto result = fplus::keep_if_parallelly(is_even, v);
     REQUIRE_EQ(result, std::vector<int>({2, 2, 4}));
 }
 
-TEST_CASE("transform_test, transform_reduce")
+TEST_CASE("transform_test - transform_reduce")
 {
     const std::vector<int> v = {1, 2, 3, 4, 5};
     auto result = fplus::transform_reduce(
@@ -176,7 +176,7 @@ TEST_CASE("transform_test, transform_reduce")
     REQUIRE_EQ(result, 55);
 }
 
-TEST_CASE("transform_test, transform_reduce_1")
+TEST_CASE("transform_test - transform_reduce_1")
 {
     const std::vector<int> v = {1, 2, 3, 4, 5};
     auto result = fplus::transform_reduce_1(
@@ -184,7 +184,7 @@ TEST_CASE("transform_test, transform_reduce_1")
     REQUIRE_EQ(result, 55);
 }
 
-TEST_CASE("transform_test, transform_reduce_parallelly")
+TEST_CASE("transform_test - transform_reduce_parallelly")
 {
     const std::vector<int> v = {1, 2, 3, 4, 5};
     auto result = fplus::transform_reduce_parallelly(
@@ -192,7 +192,7 @@ TEST_CASE("transform_test, transform_reduce_parallelly")
     REQUIRE_EQ(result, 55);
 }
 
-TEST_CASE("transform_test, transform_reduce_1_parallelly")
+TEST_CASE("transform_test - transform_reduce_1_parallelly")
 {
     const std::vector<int> v = {1, 2, 3, 4, 5};
     auto result = fplus::transform_reduce_1_parallelly(

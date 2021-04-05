@@ -7,7 +7,7 @@
 #include <doctest/doctest.h>
 #include <fplus/fplus.hpp>
 
-TEST_CASE("curry_test, show_fill_left")
+TEST_CASE("curry_test - show_fill_left")
 {
     using namespace fplus;
     REQUIRE_EQ(show_fill_left<int>(' ', 4, 3), "   3");

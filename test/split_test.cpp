@@ -17,7 +17,7 @@ namespace {
     auto is_even_int = [](int x){ return x % 2 == 0; };
 }
 
-TEST_CASE("split_test, split functions")
+TEST_CASE("split_test - split functions")
 {
     using namespace fplus;
 

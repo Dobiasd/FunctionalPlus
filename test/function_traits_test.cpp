@@ -41,7 +41,7 @@ struct CcI2SStrct {
     { return CcI2SFree(str, x); }
 };
 
-TEST_CASE("function_traits_test, static_asserts")
+TEST_CASE("function_traits_test - static_asserts")
 {
     using namespace fplus;
     static_assert(std::is_same<

@@ -8,7 +8,7 @@
 #include <fplus/fplus.hpp>
 
 
-TEST_CASE("set_test, set functions")
+TEST_CASE("set_test - set functions")
 {
     using namespace fplus;
     using IntSet = std::set<int>;
