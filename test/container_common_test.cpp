@@ -384,7 +384,7 @@ TEST_CASE("container_common_test - all")
 TEST_CASE("container_common_test - size")
 {
     using namespace fplus;
-    REQUIRE_EQ(fplus::size_of_cont(xs), 51); // broken on purpose
+    REQUIRE_EQ(fplus::size_of_cont(xs), 5);
     REQUIRE_EQ(fplus::size_of_cont(IntVector()), 0);
     REQUIRE_EQ(is_not_empty(xs), true);
 }
