@@ -3766,11 +3766,12 @@ template <typename Container, typename UnaryPredicate>
 Container take_last_while(UnaryPredicate pred, const Container& xs)
 {
     internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
-    auto itFirstReverse = std::find_if(
-        std::rbegin(xs), std::rend(xs), logical_not(pred));
-    if (itFirstReverse == std::rbegin(xs))
+    const auto r_begin = std::make_reverse_iterator(std::end(xs));
+    const auto r_end = std::make_reverse_iterator(std::begin(xs));
+    const auto itFirstReverse = std::find_if(r_begin, r_end, logical_not(pred));
+    if (itFirstReverse == r_begin)
         return Container();
-    if (itFirstReverse == std::rend(xs))
+    if (itFirstReverse == r_end)
         return xs;
     return Container(itFirstReverse.base(), std::end(xs));
 }
@@ -3800,10 +3801,12 @@ template <typename Container, typename UnaryPredicate>
 Container drop_last_while(UnaryPredicate pred, const Container& xs)
 {
     internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
-    auto itFirstNotReverse = std::find_if_not(std::rbegin(xs), std::rend(xs), pred);
-    if (itFirstNotReverse == std::rbegin(xs))
+    const auto r_begin = std::make_reverse_iterator(std::end(xs));
+    const auto r_end = std::make_reverse_iterator(std::begin(xs));
+    const auto itFirstNotReverse = std::find_if_not(r_begin, r_end, pred);
+    if (itFirstNotReverse == r_begin)
         return xs;
-    if (itFirstNotReverse == std::rend(xs))
+    if (itFirstNotReverse == r_end)
         return Container();
     return Container(std::begin(xs), itFirstNotReverse.base());
 }
