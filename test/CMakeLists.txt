@@ -75,6 +75,11 @@ foreach(name IN LISTS tests)
       FunctionalPlus::fplus
       doctest::doctest
   )
+
+  if(TARGET auto_generate)
+    add_dependencies("${name}" auto_generate)
+  endif()
+
   target_compile_features("${name}" PRIVATE cxx_std_14)
   doctest_discover_tests("${name}")
 endforeach()
