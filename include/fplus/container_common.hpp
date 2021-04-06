@@ -217,6 +217,13 @@ namespace internal
         return std::next(it,
             static_cast<typename Iterator::difference_type>(distance));
     }
+
+    // GCC 4.9 does not support std::rbegin, std::rend and std::make_reverse_iterator
+    template <typename Iterator>
+    std::reverse_iterator<Iterator> make_reverse_iterator(Iterator it)
+    {
+        return std::reverse_iterator<Iterator>(it);
+    }
 } // namespace internal
 
 // API search type: is_empty : [a] -> Bool
@@ -833,8 +840,8 @@ template <typename Container, typename UnaryPredicate>
 Container take_last_while(UnaryPredicate pred, const Container& xs)
 {
     internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
-    const auto r_begin = std::make_reverse_iterator(std::end(xs));
-    const auto r_end = std::make_reverse_iterator(std::begin(xs));
+    const auto r_begin = internal::make_reverse_iterator(std::end(xs));
+    const auto r_end = internal::make_reverse_iterator(std::begin(xs));
     const auto itFirstReverse = std::find_if(r_begin, r_end, logical_not(pred));
     if (itFirstReverse == r_begin)
         return Container();
@@ -868,8 +875,8 @@ template <typename Container, typename UnaryPredicate>
 Container drop_last_while(UnaryPredicate pred, const Container& xs)
 {
     internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
-    const auto r_begin = std::make_reverse_iterator(std::end(xs));
-    const auto r_end = std::make_reverse_iterator(std::begin(xs));
+    const auto r_begin = internal::make_reverse_iterator(std::end(xs));
+    const auto r_end = internal::make_reverse_iterator(std::begin(xs));
     const auto itFirstNotReverse = std::find_if_not(r_begin, r_end, pred);
     if (itFirstNotReverse == r_begin)
         return xs;
