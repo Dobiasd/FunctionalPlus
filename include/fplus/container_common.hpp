@@ -824,6 +824,24 @@ Container take_while(UnaryPredicate pred, const Container& xs)
     return Container(std::begin(xs), itFirst);
 }
 
+// API search type: take_last_while : ((a -> Bool), [a]) -> [a]
+// fwd bind count: 1
+// Take elements from the beginning of a sequence
+// as long as they are fulfilling a predicate.
+// take_last_while(is_even, [0,2,7,5,6,4,8]) == [6,4,8]
+template <typename Container, typename UnaryPredicate>
+Container take_last_while(UnaryPredicate pred, const Container& xs)
+{
+    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
+    auto itFirstReverse = std::find_if(
+        std::rbegin(xs), std::rend(xs), logical_not(pred));
+    if (itFirstReverse == std::rbegin(xs))
+        return Container();
+    if (itFirstReverse == std::rend(xs))
+        return xs;
+    return Container(itFirstReverse.base(), std::end(xs));
+}
+
 // API search type: drop_while : ((a -> Bool), [a]) -> [a]
 // fwd bind count: 1
 // Remove elements from the beginning of a sequence
@@ -838,6 +856,23 @@ Container drop_while(UnaryPredicate pred, const Container& xs)
     if (itFirstNot == std::end(xs))
         return Container();
     return Container(itFirstNot, std::end(xs));
+}
+
+// API search type: drop_last_while : ((a -> Bool), [a]) -> [a]
+// fwd bind count: 1
+// Remove elements from the beginning of a sequence
+// as long as they are fulfilling a predicate.
+// drop_last_while(is_even, [0,2,7,5,6,4,8]) == [0,2,7,5]
+template <typename Container, typename UnaryPredicate>
+Container drop_last_while(UnaryPredicate pred, const Container& xs)
+{
+    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
+    auto itFirstNotReverse = std::find_if_not(std::rbegin(xs), std::rend(xs), pred);
+    if (itFirstNotReverse == std::rbegin(xs))
+        return xs;
+    if (itFirstNotReverse == std::rend(xs))
+        return Container();
+    return Container(std::begin(xs), itFirstNotReverse.base());
 }
 
 // API search type: fold_left : (((a, b) -> a), a, [b]) -> a
