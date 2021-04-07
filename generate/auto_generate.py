@@ -36,17 +36,33 @@ def fread_lines(filename):
     return f.readlines()
 
 
+def fread_content(filename):
+    """
+    Python 2 & 3 agnostic fopen + readlines
+    """
+    if version_info[0] >= 3:
+        f = open(filename, "r", encoding='utf-8', errors='ignore')
+    else:
+        f = open(filename, "r")
+    return f.read()
+
+
 def fwrite_content(filename, content):
     """
     Python 2 & 3 agnostic fopen + write
+    This function will not overwrite the file (and thus not update its modification date) 
+    if the new content is unchanged
     """
+    old_content = fread_content(filename)
+    if old_content == content:
+        return
+
     if version_info[0] >= 3:
         f = open(filename, "w", encoding='utf-8', errors='ignore')
     else:
         f = open(filename, "w")
     f.write(content)
     f.close()
-
 
 
 def is_fplus_include_line(code_line):
