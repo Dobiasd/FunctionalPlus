@@ -3150,6 +3150,13 @@ namespace internal
         return std::next(it,
             static_cast<typename Iterator::difference_type>(distance));
     }
+
+    // GCC 4.9 does not support std::rbegin, std::rend and std::make_reverse_iterator
+    template <typename Iterator>
+    std::reverse_iterator<Iterator> make_reverse_iterator(Iterator it)
+    {
+        return std::reverse_iterator<Iterator>(it);
+    }
 } // namespace internal
 
 // API search type: is_empty : [a] -> Bool
@@ -3757,6 +3764,25 @@ Container take_while(UnaryPredicate pred, const Container& xs)
     return Container(std::begin(xs), itFirst);
 }
 
+// API search type: take_last_while : ((a -> Bool), [a]) -> [a]
+// fwd bind count: 1
+// Take elements from the beginning of a sequence
+// as long as they are fulfilling a predicate.
+// take_last_while(is_even, [0,2,7,5,6,4,8]) == [6,4,8]
+template <typename Container, typename UnaryPredicate>
+Container take_last_while(UnaryPredicate pred, const Container& xs)
+{
+    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
+    const auto r_begin = internal::make_reverse_iterator(std::end(xs));
+    const auto r_end = internal::make_reverse_iterator(std::begin(xs));
+    const auto itFirstReverse = std::find_if(r_begin, r_end, logical_not(pred));
+    if (itFirstReverse == r_begin)
+        return Container();
+    if (itFirstReverse == r_end)
+        return xs;
+    return Container(itFirstReverse.base(), std::end(xs));
+}
+
 // API search type: drop_while : ((a -> Bool), [a]) -> [a]
 // fwd bind count: 1
 // Remove elements from the beginning of a sequence
@@ -3771,6 +3797,25 @@ Container drop_while(UnaryPredicate pred, const Container& xs)
     if (itFirstNot == std::end(xs))
         return Container();
     return Container(itFirstNot, std::end(xs));
+}
+
+// API search type: drop_last_while : ((a -> Bool), [a]) -> [a]
+// fwd bind count: 1
+// Remove elements from the beginning of a sequence
+// as long as they are fulfilling a predicate.
+// drop_last_while(is_even, [0,2,7,5,6,4,8]) == [0,2,7,5]
+template <typename Container, typename UnaryPredicate>
+Container drop_last_while(UnaryPredicate pred, const Container& xs)
+{
+    internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
+    const auto r_begin = internal::make_reverse_iterator(std::end(xs));
+    const auto r_end = internal::make_reverse_iterator(std::begin(xs));
+    const auto itFirstNotReverse = std::find_if_not(r_begin, r_end, pred);
+    if (itFirstNotReverse == r_begin)
+        return xs;
+    if (itFirstNotReverse == r_end)
+        return Container();
+    return Container(std::begin(xs), itFirstNotReverse.base());
 }
 
 // API search type: fold_left : (((a, b) -> a), a, [b]) -> a
@@ -14903,7 +14948,9 @@ fplus_curry_define_fn_1(take_last)
 fplus_curry_define_fn_1(drop_last)
 fplus_curry_define_fn_1(drop_exact)
 fplus_curry_define_fn_1(take_while)
+fplus_curry_define_fn_1(take_last_while)
 fplus_curry_define_fn_1(drop_while)
+fplus_curry_define_fn_1(drop_last_while)
 fplus_curry_define_fn_2(fold_left)
 fplus_curry_define_fn_2(reduce)
 fplus_curry_define_fn_1(fold_left_1)
@@ -15511,7 +15558,9 @@ fplus_fwd_define_fn_1(take_last)
 fplus_fwd_define_fn_1(drop_last)
 fplus_fwd_define_fn_1(drop_exact)
 fplus_fwd_define_fn_1(take_while)
+fplus_fwd_define_fn_1(take_last_while)
 fplus_fwd_define_fn_1(drop_while)
+fplus_fwd_define_fn_1(drop_last_while)
 fplus_fwd_define_fn_2(fold_left)
 fplus_fwd_define_fn_2(reduce)
 fplus_fwd_define_fn_1(fold_left_1)
@@ -15964,7 +16013,9 @@ fplus_fwd_flip_define_fn_1(take_last)
 fplus_fwd_flip_define_fn_1(drop_last)
 fplus_fwd_flip_define_fn_1(drop_exact)
 fplus_fwd_flip_define_fn_1(take_while)
+fplus_fwd_flip_define_fn_1(take_last_while)
 fplus_fwd_flip_define_fn_1(drop_while)
+fplus_fwd_flip_define_fn_1(drop_last_while)
 fplus_fwd_flip_define_fn_1(fold_left_1)
 fplus_fwd_flip_define_fn_1(reduce_1)
 fplus_fwd_flip_define_fn_1(fold_right_1)
