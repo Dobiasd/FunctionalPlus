@@ -85,6 +85,13 @@ TEST_CASE("filter_test - keep_by_idx")
     REQUIRE_EQ(result, std::vector<int>({11, 3, 49}));
     auto result_rvalue = fplus::keep_by_idx(is_even_size_t, std::vector<int>({ 11, 17, 3, 8, 49, 6 }));
     REQUIRE_EQ(result_rvalue, std::vector<int>({11, 3, 49}));
+
+    const std::vector<std::string> v_strs = { "foo", "bar" };
+    const auto result_kept_all_strs = fplus::keep_by_idx(fplus::always<std::size_t>(true), v_strs);
+    REQUIRE_EQ(result_kept_all_strs, v_strs);
+    const auto result_kept_all_strs_r_value =
+        fplus::keep_by_idx(fplus::always<std::size_t>(true), std::vector<std::string>({ "foo", "bar" }));
+    REQUIRE_EQ(result_kept_all_strs_r_value, std::vector<std::string>({ "foo", "bar" }));
 }
 
 TEST_CASE("filter_test - drop_by_idx")
