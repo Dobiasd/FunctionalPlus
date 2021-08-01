@@ -3071,6 +3071,13 @@ namespace internal
         return std::back_inserter(ys);
     }
 
+    // Avoid self-assignment.
+    template <typename T>
+    void assign(T& x, T&& y) {
+        if (&x != &y)
+            x = std::move(y);
+    }
+
     template <typename T, std::size_t N>
     struct array_back_insert_iterator : public std::back_insert_iterator<std::array<T, N>>
     {
@@ -3099,7 +3106,7 @@ namespace internal
         array_back_insert_iterator<T, N>& operator=(T&& x)
         {
             assert(pos_ < N);
-            (*arr_ptr_)[pos_] = std::move(x);
+            assign((*arr_ptr_)[pos_], std::move(x));
             ++pos_;
             return *this;
         }
@@ -5681,7 +5688,7 @@ Container keep_by_idx(internal::reuse_container_t,
     for (auto it = std::begin(xs); it != std::end(xs); ++it)
     {
         if (internal::invoke(pred, i++))
-            *itOut++ = std::move(*it);
+            assign(*itOut++, std::move(*it));
     }
     xs.erase(itOut, std::end(xs));
     return std::forward<Container>(xs);

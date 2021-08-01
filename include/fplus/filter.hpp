@@ -141,7 +141,7 @@ Container keep_by_idx(internal::reuse_container_t,
     for (auto it = std::begin(xs); it != std::end(xs); ++it)
     {
         if (internal::invoke(pred, i++))
-            *itOut++ = std::move(*it);
+            assign(*itOut++, std::move(*it));
     }
     xs.erase(itOut, std::end(xs));
     return std::forward<Container>(xs);
