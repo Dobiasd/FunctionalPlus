@@ -15,7 +15,7 @@ jobs:
       CXX: g++-10
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@main
       - name: Install dependencies
         run: sudo script/ci_setup_dependencies.sh
       - name: CodeQL Initialization
