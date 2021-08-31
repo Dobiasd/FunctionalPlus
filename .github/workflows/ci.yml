@@ -21,7 +21,7 @@ jobs:
       options: -v /usr/local:/host_usr_local
     name: "gcc-${{ matrix.build_config.version }}"
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@main
       - name: Setup
         run: |
           echo "/host_usr_local/bin" >> $GITHUB_PATH
@@ -54,7 +54,7 @@ jobs:
       CC: clang-${{ matrix.build_config.version }}${{ matrix.build_config.suffix }}
       CXX: clang++-${{ matrix.build_config.version }}${{ matrix.build_config.suffix }}
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@main
       - name: Setup
         run: |
           echo "/host_usr_local/bin" >> $GITHUB_PATH
@@ -78,7 +78,7 @@ jobs:
       CC: clang
       CXX: clang++
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@main
       - name: Setup
         run: script/ci_setup_dependencies.sh
       - name: Build
@@ -94,7 +94,7 @@ jobs:
           - 2016
     name: "Windows ${{ matrix.msvc_version }} MSVC"
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@main
       - uses: ilammy/msvc-dev-cmd@v1
       - name: Setup
         shell: bash
