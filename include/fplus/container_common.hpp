@@ -233,6 +233,26 @@ namespace internal
     }
 } // namespace internal
 
+// API search type: is_even : Int -> Bool
+// fwd bind count: 0
+// Checks if x is even.
+template <typename X>
+bool is_even(X x)
+{
+    static_assert(std::is_integral<X>::value, "type must be integral");
+    return x % 2 == 0;
+}
+
+// API search type: is_odd : Int -> Bool
+// fwd bind count: 0
+// Checks if x is odd.
+template <typename X>
+bool is_odd(X x)
+{
+    static_assert(std::is_integral<X>::value, "type must be integral");
+    return x % 2 != 0;
+}
+
 // API search type: is_empty : [a] -> Bool
 // fwd bind count: 0
 // Returns true if the container holds no elements.
@@ -1265,7 +1285,7 @@ template <typename Container>
 std::pair<Container, Container> unweave(const Container& xs)
 {
     std::pair<Container, Container> result;
-    if (size_of_cont(xs) % 2 == 0)
+    if (is_even(size_of_cont(xs)))
         internal::prepare_container(result.first, size_of_cont(xs) / 2);
     else
         internal::prepare_container(result.first, size_of_cont(xs) / 2 + 1);

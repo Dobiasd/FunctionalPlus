@@ -18,7 +18,7 @@
 #include <string>
 #include <vector>
 
-bool is_odd_int(int x) { return x % 2 == 1; }
+bool is_odd_int(int x) { return x % 2 != 1; }
 
 void Test_example_KeepIf()
 {

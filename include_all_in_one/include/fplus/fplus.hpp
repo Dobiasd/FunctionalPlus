@@ -3166,6 +3166,26 @@ namespace internal
     }
 } // namespace internal
 
+// API search type: is_even : Int -> Bool
+// fwd bind count: 0
+// Checks if x is even.
+template <typename X>
+bool is_even(X x)
+{
+    static_assert(std::is_integral<X>::value, "type must be integral");
+    return x % 2 == 0;
+}
+
+// API search type: is_odd : Int -> Bool
+// fwd bind count: 0
+// Checks if x is odd.
+template <typename X>
+bool is_odd(X x)
+{
+    static_assert(std::is_integral<X>::value, "type must be integral");
+    return x % 2 != 0;
+}
+
 // API search type: is_empty : [a] -> Bool
 // fwd bind count: 0
 // Returns true if the container holds no elements.
@@ -4198,7 +4218,7 @@ template <typename Container>
 std::pair<Container, Container> unweave(const Container& xs)
 {
     std::pair<Container, Container> result;
-    if (size_of_cont(xs) % 2 == 0)
+    if (is_even(size_of_cont(xs)))
         internal::prepare_container(result.first, size_of_cont(xs) / 2);
     else
         internal::prepare_container(result.first, size_of_cont(xs) / 2 + 1);
@@ -7525,26 +7545,6 @@ bool is_positive(X x)
     return !is_negative(x);
 }
 
-// API search type: is_even : Int -> Bool
-// fwd bind count: 0
-// Checks if x is even.
-template <typename X>
-bool is_even(X x)
-{
-    static_assert(std::is_integral<X>::value, "type must be integral");
-    return x % 2 == 0;
-}
-
-// API search type: is_odd : Int -> Bool
-// fwd bind count: 0
-// Checks if x is odd.
-template <typename X>
-bool is_odd(X x)
-{
-    static_assert(std::is_integral<X>::value, "type must be integral");
-    return x % 1 == 0;
-}
-
 namespace internal
 {
     template <typename X>
@@ -9353,7 +9353,7 @@ Result median(const Container& xs)
     // would be faster for random-access containers
     // but not work at all on other containers like std::list.
     auto xsSorted = sort(xs);
-    if (size_of_cont(xsSorted) % 2 == 1)
+    if (is_odd(size_of_cont(xsSorted)))
     {
         auto it = std::begin(xsSorted);
         internal::advance_iterator(it, size_of_cont(xsSorted) / 2);
@@ -11747,7 +11747,7 @@ typename Container::value_type reduce_parallelly(
         };
         auto transform_result =
             transform_parallelly(f_on_pair, adjacent_pairs(xs));
-        if (size_of_cont(xs) % 2 == 1)
+        if (is_odd(size_of_cont(xs)))
         {
             transform_result.push_back(last(xs));
         }
@@ -11784,7 +11784,7 @@ typename Container::value_type reduce_parallelly_n_threads(
         };
         auto transform_result =
             transform_parallelly_n_threads(n, f_on_pair, adjacent_pairs(xs));
-        if (size_of_cont(xs) % 2 == 1)
+        if (is_odd(size_of_cont(xs)))
         {
             transform_result.push_back(last(xs));
         }
@@ -11818,7 +11818,7 @@ typename Container::value_type reduce_1_parallelly(F f, const Container& xs)
         };
         auto transform_result =
             transform_parallelly(f_on_pair, adjacent_pairs(xs));
-        if (size_of_cont(xs) % 2 == 1)
+        if (is_odd(size_of_cont(xs)))
         {
             transform_result.push_back(last(xs));
         }
@@ -11851,7 +11851,7 @@ typename Container::value_type reduce_1_parallelly_n_threads(
         };
         auto transform_result =
             transform_parallelly_n_threads(n, f_on_pair, adjacent_pairs(xs));
-        if (size_of_cont(xs) % 2 == 1)
+        if (is_odd(size_of_cont(xs)))
         {
             transform_result.push_back(last(xs));
         }
@@ -14929,6 +14929,8 @@ fplus_curry_define_fn_2(lift_maybe_2)
 fplus_curry_define_fn_3(lift_maybe_2_def)
 fplus_curry_define_fn_1(and_then_maybe)
 fplus_curry_define_fn_0(flatten_maybe)
+fplus_curry_define_fn_0(is_even)
+fplus_curry_define_fn_0(is_odd)
 fplus_curry_define_fn_0(is_empty)
 fplus_curry_define_fn_0(is_not_empty)
 fplus_curry_define_fn_0(size_of_cont)
@@ -15138,8 +15140,6 @@ fplus_curry_define_fn_4(reference_interval)
 fplus_curry_define_fn_2(clamp)
 fplus_curry_define_fn_0(is_negative)
 fplus_curry_define_fn_0(is_positive)
-fplus_curry_define_fn_0(is_even)
-fplus_curry_define_fn_0(is_odd)
 fplus_curry_define_fn_0(abs)
 fplus_curry_define_fn_1(abs_diff)
 fplus_curry_define_fn_0(square)
@@ -15539,6 +15539,8 @@ fplus_fwd_define_fn_2(lift_maybe_2)
 fplus_fwd_define_fn_3(lift_maybe_2_def)
 fplus_fwd_define_fn_1(and_then_maybe)
 fplus_fwd_define_fn_0(flatten_maybe)
+fplus_fwd_define_fn_0(is_even)
+fplus_fwd_define_fn_0(is_odd)
 fplus_fwd_define_fn_0(is_empty)
 fplus_fwd_define_fn_0(is_not_empty)
 fplus_fwd_define_fn_0(size_of_cont)
@@ -15748,8 +15750,6 @@ fplus_fwd_define_fn_4(reference_interval)
 fplus_fwd_define_fn_2(clamp)
 fplus_fwd_define_fn_0(is_negative)
 fplus_fwd_define_fn_0(is_positive)
-fplus_fwd_define_fn_0(is_even)
-fplus_fwd_define_fn_0(is_odd)
 fplus_fwd_define_fn_0(abs)
 fplus_fwd_define_fn_1(abs_diff)
 fplus_fwd_define_fn_0(square)
