@@ -121,26 +121,6 @@ bool is_positive(X x)
     return !is_negative(x);
 }
 
-// API search type: is_even : Int -> Bool
-// fwd bind count: 0
-// Checks if x is even.
-template <typename X>
-bool is_even(X x)
-{
-    static_assert(std::is_integral<X>::value, "type must be integral");
-    return x % 2 == 0;
-}
-
-// API search type: is_odd : Int -> Bool
-// fwd bind count: 0
-// Checks if x is odd.
-template <typename X>
-bool is_odd(X x)
-{
-    static_assert(std::is_integral<X>::value, "type must be integral");
-    return x % 2 != 0;
-}
-
 namespace internal
 {
     template <typename X>
