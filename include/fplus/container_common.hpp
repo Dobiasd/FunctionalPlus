@@ -1265,7 +1265,7 @@ template <typename Container>
 std::pair<Container, Container> unweave(const Container& xs)
 {
     std::pair<Container, Container> result;
-    if (size_of_cont(xs) % 2 == 0)
+    if (is_even(size_of_cont(xs)))
         internal::prepare_container(result.first, size_of_cont(xs) / 2);
     else
         internal::prepare_container(result.first, size_of_cont(xs) / 2 + 1);

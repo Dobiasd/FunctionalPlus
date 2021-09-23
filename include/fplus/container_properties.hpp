@@ -487,7 +487,7 @@ Result median(const Container& xs)
     // would be faster for random-access containers
     // but not work at all on other containers like std::list.
     auto xsSorted = sort(xs);
-    if (size_of_cont(xsSorted) % 2 == 1)
+    if (is_odd(size_of_cont(xsSorted)))
     {
         auto it = std::begin(xsSorted);
         internal::advance_iterator(it, size_of_cont(xsSorted) / 2);

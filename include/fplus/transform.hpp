@@ -424,7 +424,7 @@ typename Container::value_type reduce_parallelly(
         };
         auto transform_result =
             transform_parallelly(f_on_pair, adjacent_pairs(xs));
-        if (size_of_cont(xs) % 2 == 1)
+        if (is_odd(size_of_cont(xs)))
         {
             transform_result.push_back(last(xs));
         }
@@ -461,7 +461,7 @@ typename Container::value_type reduce_parallelly_n_threads(
         };
         auto transform_result =
             transform_parallelly_n_threads(n, f_on_pair, adjacent_pairs(xs));
-        if (size_of_cont(xs) % 2 == 1)
+        if (is_odd(size_of_cont(xs)))
         {
             transform_result.push_back(last(xs));
         }
@@ -495,7 +495,7 @@ typename Container::value_type reduce_1_parallelly(F f, const Container& xs)
         };
         auto transform_result =
             transform_parallelly(f_on_pair, adjacent_pairs(xs));
-        if (size_of_cont(xs) % 2 == 1)
+        if (is_odd(size_of_cont(xs)))
         {
             transform_result.push_back(last(xs));
         }
@@ -528,7 +528,7 @@ typename Container::value_type reduce_1_parallelly_n_threads(
         };
         auto transform_result =
             transform_parallelly_n_threads(n, f_on_pair, adjacent_pairs(xs));
-        if (size_of_cont(xs) % 2 == 1)
+        if (is_odd(size_of_cont(xs)))
         {
             transform_result.push_back(last(xs));
         }
