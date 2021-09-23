@@ -91,6 +91,22 @@ TEST_CASE("numeric_test - is_positive")
     REQUIRE_FALSE(fplus::is_positive(-0.1));
 }
 
+TEST_CASE("numeric_test - is_even")
+{
+    REQUIRE(fplus::is_even(2));
+    REQUIRE(fplus::is_even(-2));
+    REQUIRE_FALSE(fplus::is_even(3));
+    REQUIRE_FALSE(fplus::is_even(-3));
+}
+
+TEST_CASE("numeric_test - is_odd")
+{
+    REQUIRE(fplus::is_odd(1));
+    REQUIRE(fplus::is_odd(-1));
+    REQUIRE_FALSE(fplus::is_odd(2));
+    REQUIRE_FALSE(fplus::is_odd(-2));
+}
+
 TEST_CASE("numeric_test - sign")
 {
     REQUIRE_EQ(fplus::sign(0.1), 1);

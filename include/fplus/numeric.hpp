@@ -138,7 +138,7 @@ template <typename X>
 bool is_odd(X x)
 {
     static_assert(std::is_integral<X>::value, "type must be integral");
-    return x % 1 == 0;
+    return x % 2 != 0;
 }
 
 namespace internal
