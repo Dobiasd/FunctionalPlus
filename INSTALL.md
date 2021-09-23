@@ -39,7 +39,7 @@ Install doctest:
 ```bash
 git clone --depth=1 --branch=2.4.3 https://github.com/onqtam/doctest
 cmake -S doctest -B doctest/build -DDOCTEST_WITH_TESTS=OFF -DDOCTEST_WITH_MAIN_IN_STATIC_LIB=OFF
-cmake --build doctest/build -j
+cmake --build doctest/build -j 4
 sudo cmake --install doctest/build
 ```
 
@@ -47,7 +47,7 @@ Then, compile & run the tests
 ````bash
 git clone https://github.com/Dobiasd/FunctionalPlus
 cmake -S FunctionalPlus/test -B FunctionalPlus/build
-cmake --build FunctionalPlus/build -j
+cmake --build FunctionalPlus/build -j 4
 (cd FunctionalPlus/build; ctest)
 ````
 
