@@ -37,6 +37,7 @@ jobs:
     strategy:
       matrix:
         build_config:
+          - { version: 13 }
           - { version: 12 }
           - { version: 11 }
           - { version: 10 }
@@ -63,6 +64,9 @@ jobs:
         run: |
           if [ "${{ matrix.build_config.version }}" -le "6" ]; then
             script/ci_setup_libcxx.sh ${{ matrix.build_config.version }}
+          fi
+          if [ "${{ matrix.build_config.version }}" -ge "12" ]; then
+            apt-get install -y --no-install-recommends libunwind-${{ matrix.build_config.version }}-dev;
           fi
           echo "CXXFLAGS=-stdlib=libc++" >> $GITHUB_ENV
       - name: Setup Dependencies
