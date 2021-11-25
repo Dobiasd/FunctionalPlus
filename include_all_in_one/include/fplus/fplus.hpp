@@ -3084,7 +3084,7 @@ namespace internal
         typedef std::back_insert_iterator<std::array<T, N>> base_type;
         explicit array_back_insert_iterator(std::array<T, N>& arr) :
             base_type(arr), arr_ptr_(&arr), pos_(0) {}
-        array_back_insert_iterator<T, N>(const array_back_insert_iterator<T, N>& other) :
+        array_back_insert_iterator(const array_back_insert_iterator<T, N>& other) :
             base_type(*other.arr_ptr_), arr_ptr_(other.arr_ptr_), pos_(other.pos_) {}
         array_back_insert_iterator<T, N>& operator=(const array_back_insert_iterator<T, N>& other)
         {
