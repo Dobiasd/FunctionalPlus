@@ -241,18 +241,3 @@ TEST_CASE("transform_test - custom_allocator")
     special_vector<int> xs = {1,2,2,3,2};
     special_vector<std::string> ys = fplus::transform([](auto x) { return std::to_string(x); }, xs);
 }
-
-
-
-#include <boost/align/aligned_allocator.hpp>
-
-template <typename T>
-using aligned_vector = std::vector<T, boost::alignment::aligned_allocator<T, 32>>;
-
-TEST_CASE("transform_test - todo_delete")
-{
-    typedef aligned_vector<int> AlignedIntVector;
-    AlignedIntVector aligned_xs = {1,2,2,3,2};
-    AlignedIntVector aligned_ys =
-        fplus::transform([](auto x) { return x*x; }, aligned_xs);
-}
