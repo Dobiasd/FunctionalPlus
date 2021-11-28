@@ -2371,15 +2371,19 @@ template<class T, std::size_t N, class NewT, int SizeOffset> struct same_cont_ne
     static_assert(SizeOffset != std::numeric_limits<int>::lowest(), "Size of std::array must be known at compile-time.");
     typedef typename std::array<NewT, static_cast<std::size_t>(static_cast<int>(N) + SizeOffset)> type;
 };
-template<class T, class Alloc, class NewT, int SizeOffset> struct same_cont_new_t<std::vector<T, Alloc>, NewT, SizeOffset> { typedef typename std::vector<NewT> type; };
-template<class T, class Alloc, class NewT, int SizeOffset> struct same_cont_new_t<std::deque<T, Alloc>, NewT, SizeOffset> { typedef typename std::deque<NewT> type; };
-template<class T, class Alloc, class NewT, int SizeOffset> struct same_cont_new_t<std::forward_list<T, Alloc>, NewT, SizeOffset> { typedef typename std::forward_list<NewT> type; };
-template<class T, class Alloc, class NewT, int SizeOffset> struct same_cont_new_t<std::list<T, Alloc>, NewT, SizeOffset> { typedef typename std::list<NewT> type; };
-template<class T, class Alloc, class NewT, int SizeOffset> struct same_cont_new_t<std::set<T, Alloc>, NewT, SizeOffset> { typedef typename std::set<NewT> type; };
+template<class T, template<class> class Alloc, class NewT, int SizeOffset> struct same_cont_new_t<std::vector<T, Alloc<T>>, NewT, SizeOffset> { typedef typename std::vector<NewT, Alloc<NewT>> type; };
+template<class T, template<class> class Alloc, class NewT, int SizeOffset> struct same_cont_new_t<std::deque<T, Alloc<T>>, NewT, SizeOffset> { typedef typename std::deque<NewT, Alloc<NewT>> type; };
+template<class T, template<class> class Alloc, class NewT, int SizeOffset> struct same_cont_new_t<std::forward_list<T, Alloc<T>>, NewT, SizeOffset> { typedef typename std::forward_list<NewT, Alloc<NewT>> type; };
+template<class T, template<class> class Alloc, class NewT, int SizeOffset> struct same_cont_new_t<std::list<T, Alloc<T>>, NewT, SizeOffset> { typedef typename std::list<NewT, Alloc<NewT>> type; };
+template<class T, template<class> class Alloc, class NewT, int SizeOffset> struct same_cont_new_t<std::set<T, Alloc<T>>, NewT, SizeOffset> { typedef typename std::set<NewT, Alloc<NewT>> type; };
 template<class T, class Container, class NewT, int SizeOffset> struct same_cont_new_t<std::stack<T, Container>, NewT, SizeOffset> { typedef typename std::stack<NewT, Container> type; };
 template<class T, class Container, class NewT, int SizeOffset> struct same_cont_new_t<std::queue<T, Container>, NewT, SizeOffset> { typedef typename std::queue<NewT, Container> type; };
 template<class T, class Container, class Compare, class NewT, int SizeOffset> struct same_cont_new_t<std::priority_queue<T, Container, Compare>, NewT, SizeOffset> { typedef typename std::priority_queue<NewT, Container, Compare> type; };
 template<class CharT, class Traits, class Alloc, class NewT, int SizeOffset> struct same_cont_new_t<std::basic_string<CharT, Traits, Alloc>, NewT, SizeOffset> { typedef typename std::basic_string<NewT, Traits, Alloc> type; };
+
+// For aligned allocators.
+template<class T, template<class, std::size_t> class Alloc, class NewT, int SizeOffset, std::size_t N> struct same_cont_new_t<std::vector<T, Alloc<T, N>>, NewT, SizeOffset> { typedef typename std::vector<NewT, Alloc<NewT, N>> type; };
+template<class T, template<class, std::size_t> class Alloc, class NewT, int SizeOffset, std::size_t N> struct same_cont_new_t<std::deque<T, Alloc<T, N>>, NewT, SizeOffset> { typedef typename std::deque<NewT, Alloc<NewT, N>> type; };
 
 template<class Cont, class NewKey, class NewVal> struct SameMapTypeNewTypes : public std::false_type {};
 template<class Key, class T, class Compare, class Alloc, class NewKey, class NewVal> struct SameMapTypeNewTypes<std::map<Key, T, Compare, Alloc>, NewKey, NewVal> { typedef typename std::map<NewKey, NewVal> type; };
