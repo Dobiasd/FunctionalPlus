@@ -199,3 +199,60 @@ TEST_CASE("transform_test - transform_reduce_1_parallelly")
         fplus::square<int>, std::plus<int>(), v);
     REQUIRE_EQ(result, 55);
 }
+
+// https://stackoverflow.com/a/21083096/1866775
+template <typename T>
+struct mallocator {
+  using value_type = T;
+
+  mallocator() = default;
+  template <class U>
+  mallocator(const mallocator<U>&) {}
+
+  T* allocate(std::size_t n) {
+    if (n <= std::numeric_limits<std::size_t>::max() / sizeof(T)) {
+      if (auto ptr = std::malloc(n * sizeof(T))) {
+        return static_cast<T*>(ptr);
+      }
+    }
+    throw std::bad_alloc();
+  }
+  void deallocate(T* ptr, std::size_t) {
+    std::free(ptr);
+  }
+};
+
+template <typename T, typename U>
+inline bool operator == (const mallocator<T>&, const mallocator<U>&) {
+  return true;
+}
+
+template <typename T, typename U>
+inline bool operator != (const mallocator<T>& a, const mallocator<U>& b) {
+  return !(a == b);
+}
+
+template <typename T>
+using special_vector = std::vector<T, mallocator<T>>;
+
+TEST_CASE("transform_test - custom_allocator")
+{
+    using namespace fplus;
+    special_vector<int> xs = {1,2,2,3,2};
+    special_vector<std::string> ys = fplus::transform([](auto x) { return std::to_string(x); }, xs);
+}
+
+
+
+#include <boost/align/aligned_allocator.hpp>
+
+template <typename T>
+using aligned_vector = std::vector<T, boost::alignment::aligned_allocator<T, 32>>;
+
+TEST_CASE("transform_test - todo_delete")
+{
+    typedef aligned_vector<int> AlignedIntVector;
+    AlignedIntVector aligned_xs = {1,2,2,3,2};
+    AlignedIntVector aligned_ys =
+        fplus::transform([](auto x) { return x*x; }, aligned_xs);
+}
