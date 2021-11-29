@@ -37,7 +37,7 @@ tests requires [doctest](https://github.com/onqtam/doctest).
 
 Install doctest:
 ```bash
-git clone --depth=1 --branch=2.4.3 https://github.com/onqtam/doctest
+git clone --depth=1 --branch=2.4.5 https://github.com/onqtam/doctest # 2.4.6 has a bug, see https://github.com/Dobiasd/FunctionalPlus/issues/250
 cmake -S doctest -B doctest/build -DDOCTEST_WITH_TESTS=OFF -DDOCTEST_WITH_MAIN_IN_STATIC_LIB=OFF
 cmake --build doctest/build -j 4
 sudo cmake --install doctest/build
@@ -55,7 +55,7 @@ As an alternative, doctest global installation can be skipped by installing to
 a local prefix:
 
 ````bash
-git clone --depth=1 --branch=2.4.3 https://github.com/onqtam/doctest
+git clone --depth=1 --branch=2.4.5 https://github.com/onqtam/doctest
 cmake -S doctest -B doctest/build -DDOCTEST_WITH_TESTS=OFF -DDOCTEST_WITH_MAIN_IN_STATIC_LIB=OFF
 cmake --build doctest/build
 cmake --install doctest/build --prefix doctest
