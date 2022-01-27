@@ -1,6 +1,6 @@
 name: ci
 
-on: [push, pull_request]
+on: [workflow_dispatch, push, pull_request]
 
 jobs:
   build_gcc:
