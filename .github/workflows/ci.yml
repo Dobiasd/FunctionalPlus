@@ -96,7 +96,6 @@ jobs:
       matrix:
         msvc_version:
           - 2019
-          - 2016
     name: "Windows ${{ matrix.msvc_version }} MSVC"
     steps:
       - uses: actions/checkout@main
