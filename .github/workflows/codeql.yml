@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: sudo script/ci_setup_dependencies.sh
       - name: CodeQL Initialization
-        uses: github/codeql-action/init@v1
+        uses: github/codeql-action/init@v2
         with:
           languages: cpp
           queries: +security-and-quality
@@ -28,4 +28,4 @@ jobs:
           cmake -S test -B build
           cmake --build build -j 4
       - name: CodeQL Analysis
-        uses: github/codeql-action/analyze@v1
+        uses: github/codeql-action/analyze@v2
