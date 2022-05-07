@@ -283,6 +283,48 @@ auto execute_n_times(std::size_t n, const Effect& eff)
     }
 }
 
+// API search type: for_each : (Io a, [a]) -> Io ()
+// Runs the function `f` on all the container elements.
+// The function will perform its side effects, and nothing is returned.
+template<typename F, typename Container>
+void for_each(F f, const Container& xs)
+{
+    using IdxType = typename Container::value_type;
+    auto f_dummy_return = [&f](const IdxType& v) {
+        f(v);
+        return true;
+    };
+    fplus::transform(f_dummy_return, xs);
+}
+
+// API search type: parallel_for_each : (Io a, [a]) -> Io ()
+// Runs the function `f` in parallel on all the container elements.
+// The function will perform its side effects, and nothing is returned.
+template<typename F, typename Container>
+void parallel_for_each(F f, const Container& xs)
+{
+    using IdxType = typename Container::value_type;
+    auto f_dummy_return = [&f](const IdxType& v) {
+        f(v);
+        return true;
+    };
+    fplus::transform_parallelly(f_dummy_return, xs);
+}
+
+// API search type: parallel_for_each_n_threads : (Int, Io a, [a]) -> Io ()
+// Runs the function `f` in parallel on all the container elements, using `n_threads` threads.
+// The function will perform its side effects, and nothing is returned.
+template<typename F, typename Container>
+void parallel_for_each_n_threads(size_t n_threads, F f, const Container& xs)
+{
+    using IdxType = typename Container::value_type;
+    auto f_dummy_return = [&f](const IdxType& v) {
+        f(v);
+        return true;
+    };
+    fplus::transform_parallelly_n_threads(n_threads, f_dummy_return, xs);
+}
+
 // API search type: execute_serially_until_failure : [Io Bool] -> Io Bool
 // Returns a function that (when called) executes the given side effects
 // one after another until one of them returns false.
