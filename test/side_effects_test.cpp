@@ -76,3 +76,24 @@ TEST_CASE("side_effects_test - execute_parallelly_atomic")
     execute_parallelly(replicate(4, inc_atomic_int_return_true))();
     REQUIRE_EQ(atomic_int.load(), 4);
 }
+
+TEST_CASE("side_effects_test - for_each (serial and parallel")
+{
+    using namespace fplus;
+    constexpr size_t nb_elems = 100;
+
+    for (auto i : fplus::numbers(0, 3))
+    {
+        std::vector<int> xs(nb_elems, 0);
+        auto idxs = fplus::numbers<size_t>(0, nb_elems);
+        auto fill_one_cell = [&](size_t idx) { xs[idx] = 1; };
+        if (i == 0)
+            fplus::for_each(fill_one_cell, idxs);
+        else if (i==1)
+            fplus::parallel_for_each(fill_one_cell, idxs);
+        else if (i==2)
+            fplus::parallel_for_each_n_threads(size_t(4), fill_one_cell, idxs);
+        size_t nb_filled = fplus::count_if([](int v) { return v== 1;}, xs);
+        REQUIRE_EQ(nb_filled, nb_elems);
+    }
+}
