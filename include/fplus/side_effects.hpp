@@ -284,6 +284,7 @@ auto execute_n_times(std::size_t n, const Effect& eff)
 }
 
 // API search type: for_each : (Io a, [a]) -> Io ()
+// fwd bind count: 1
 // Runs the function `f` on all the container elements.
 // The function will perform its side effects, and nothing is returned.
 template<typename F, typename Container>
@@ -298,6 +299,7 @@ void for_each(F f, const Container& xs)
 }
 
 // API search type: parallel_for_each : (Io a, [a]) -> Io ()
+// fwd bind count: 1
 // Runs the function `f` in parallel on all the container elements.
 // The function will perform its side effects, and nothing is returned.
 template<typename F, typename Container>
@@ -312,6 +314,7 @@ void parallel_for_each(F f, const Container& xs)
 }
 
 // API search type: parallel_for_each_n_threads : (Int, Io a, [a]) -> Io ()
+// fwd bind count: 2
 // Runs the function `f` in parallel on all the container elements, using `n_threads` threads.
 // The function will perform its side effects, and nothing is returned.
 template<typename F, typename Container>

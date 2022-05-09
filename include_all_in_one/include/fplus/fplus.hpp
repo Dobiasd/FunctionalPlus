@@ -13663,6 +13663,7 @@ auto execute_n_times(std::size_t n, const Effect& eff)
 }
 
 // API search type: for_each : (Io a, [a]) -> Io ()
+// fwd bind count: 1
 // Runs the function `f` on all the container elements.
 // The function will perform its side effects, and nothing is returned.
 template<typename F, typename Container>
@@ -13677,6 +13678,7 @@ void for_each(F f, const Container& xs)
 }
 
 // API search type: parallel_for_each : (Io a, [a]) -> Io ()
+// fwd bind count: 1
 // Runs the function `f` in parallel on all the container elements.
 // The function will perform its side effects, and nothing is returned.
 template<typename F, typename Container>
@@ -13691,6 +13693,7 @@ void parallel_for_each(F f, const Container& xs)
 }
 
 // API search type: parallel_for_each_n_threads : (Int, Io a, [a]) -> Io ()
+// fwd bind count: 2
 // Runs the function `f` in parallel on all the container elements, using `n_threads` threads.
 // The function will perform its side effects, and nothing is returned.
 template<typename F, typename Container>
@@ -15428,6 +15431,9 @@ fplus_curry_define_fn_0(tree_size)
 fplus_curry_define_fn_0(tree_depth)
 fplus_curry_define_fn_0(flatten_tree_depth_first)
 fplus_curry_define_fn_0(flatten_tree_breadth_first)
+fplus_curry_define_fn_1(for_each)
+fplus_curry_define_fn_1(parallel_for_each)
+fplus_curry_define_fn_2(parallel_for_each_n_threads)
 fplus_curry_define_fn_0(show_timed)
 fplus_curry_define_fn_0(make_timed_function)
 fplus_curry_define_fn_0(make_timed_void_function)
@@ -16038,6 +16044,9 @@ fplus_fwd_define_fn_0(tree_size)
 fplus_fwd_define_fn_0(tree_depth)
 fplus_fwd_define_fn_0(flatten_tree_depth_first)
 fplus_fwd_define_fn_0(flatten_tree_breadth_first)
+fplus_fwd_define_fn_1(for_each)
+fplus_fwd_define_fn_1(parallel_for_each)
+fplus_fwd_define_fn_2(parallel_for_each_n_threads)
 fplus_fwd_define_fn_0(show_timed)
 fplus_fwd_define_fn_0(make_timed_function)
 fplus_fwd_define_fn_0(make_timed_void_function)
@@ -16279,6 +16288,8 @@ fplus_fwd_flip_define_fn_1(to_lower_case_loc)
 fplus_fwd_flip_define_fn_1(to_upper_case_loc)
 fplus_fwd_flip_define_fn_1(trees_from_sequence)
 fplus_fwd_flip_define_fn_1(are_trees_equal)
+fplus_fwd_flip_define_fn_1(for_each)
+fplus_fwd_flip_define_fn_1(parallel_for_each)
 
 } // namespace fwd
 } // namespace fplus
