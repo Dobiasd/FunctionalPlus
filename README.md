@@ -130,7 +130,7 @@ struct cat
     double fur_amount_;
 };
 
-void Test_example_TheCutestCat()
+void main()
 {
     std::vector<cat> cats = {
         {"Tigger",   5, 5, 5, 5, 5},
