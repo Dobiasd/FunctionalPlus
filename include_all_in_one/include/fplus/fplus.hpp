@@ -1595,7 +1595,7 @@ auto logical_xor(UnaryPredicateF f, UnaryPredicateG g)
 // mapping input values to output values.
 template <typename F,
     typename FIn = typename utils::function_traits<F>::template arg<0>::type,
-    typename FOut = typename std::result_of<F(FIn)>::type,
+    typename FOut = typename internal::invoke_result_t<F, FIn>,
     typename MemoMap = std::unordered_map<
         typename std::remove_reference<typename std::remove_const<FIn>::type>::type,
         FOut>>
@@ -1622,7 +1622,7 @@ namespace internal
     template <typename F, typename Cache,
         typename FIn1 = typename utils::function_traits<F>::template arg<0>::type,
         typename FIn2 = typename utils::function_traits<F>::template arg<1>::type,
-        typename FOut = typename std::result_of<F(FIn1, FIn2)>::type,
+        typename FOut = typename internal::invoke_result_t<F, FIn1, FIn2>,
         typename ResultF = std::function<FOut(FIn2)>>
     ResultF memoize_recursive_helper(const F f, std::shared_ptr<Cache> storage)
     {
@@ -1653,7 +1653,7 @@ namespace internal
 template <typename F,
     typename FIn1 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn2 = typename utils::function_traits<F>::template arg<1>::type,
-    typename FOut = typename std::result_of<F(FIn1, FIn2)>::type,
+    typename FOut = typename internal::invoke_result_t<F, FIn1, FIn2>,
     typename MemoMap = std::unordered_map<
         typename std::remove_reference<typename std::remove_const<FIn2>::type>::type,
         FOut>>
@@ -1671,7 +1671,7 @@ std::function<FOut(FIn2)> memoize_recursive(F f)
 template <typename F,
     typename FIn1 = typename utils::function_traits<F>::template arg<0>::type,
     typename FIn2 = typename utils::function_traits<F>::template arg<1>::type,
-    typename FOut = typename std::result_of<F(FIn1, FIn2)>::type,
+    typename FOut = typename internal::invoke_result_t<F, FIn1, FIn2>,
     typename ParamPair = std::pair<
         typename std::remove_reference<typename std::remove_const<FIn1>::type>::type,
         typename std::remove_reference<typename std::remove_const<FIn2>::type>::type>,
