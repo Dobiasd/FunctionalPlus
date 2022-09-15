@@ -33,11 +33,11 @@ see [FetchContent](#way-3-using-cmake-314-fetchcontent) or
 #### Building the unit tests
 
 Unit Tests are available from a separate CMakeLists.txt file. Building the
-tests requires [doctest](https://github.com/onqtam/doctest).
+tests requires [doctest](https://github.com/doctest/doctest).
 
 Install doctest:
 ```bash
-git clone --depth=1 --branch=2.4.5 https://github.com/onqtam/doctest # 2.4.6 has a bug, see https://github.com/Dobiasd/FunctionalPlus/issues/250
+git clone --depth=1 --branch=v2.4.9 https://github.com/doctest/doctest
 cmake -S doctest -B doctest/build -DDOCTEST_WITH_TESTS=OFF -DDOCTEST_WITH_MAIN_IN_STATIC_LIB=OFF
 cmake --build doctest/build -j 4
 sudo cmake --install doctest/build
@@ -55,7 +55,7 @@ As an alternative, doctest global installation can be skipped by installing to
 a local prefix:
 
 ````bash
-git clone --depth=1 --branch=2.4.5 https://github.com/onqtam/doctest
+git clone --depth=1 --branch=v2.4.9 https://github.com/doctest/doctest
 cmake -S doctest -B doctest/build -DDOCTEST_WITH_TESTS=OFF -DDOCTEST_WITH_MAIN_IN_STATIC_LIB=OFF
 cmake --build doctest/build
 cmake --install doctest/build --prefix doctest
