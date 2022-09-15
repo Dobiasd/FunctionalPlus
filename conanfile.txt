@@ -1,5 +1,5 @@
 [requires]
-doctest/2.4.5
+doctest/2.4.9
 
 [generators]
 cmake_find_package

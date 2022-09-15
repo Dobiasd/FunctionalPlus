@@ -4,7 +4,7 @@ on: [workflow_dispatch, push, pull_request]
 
 jobs:
   build_gcc:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         build_config:
@@ -34,10 +34,11 @@ jobs:
 
 
   build_clang:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         build_config:
+          - { version: 15 }
           - { version: 14 }
           - { version: 13 }
           - { version: 12 }
@@ -78,7 +79,7 @@ jobs:
 
 
   build_osx:
-    runs-on: macos-11.0
+    runs-on: macos-latest
     name: "OS X"
     env:
       CC: clang
