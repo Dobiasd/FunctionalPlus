@@ -303,7 +303,7 @@ struct TupleStreamer<Tuple, 1> {
 // Based on https://en.cppreference.com/w/cpp/utility/tuple/tuple_cat
 // Case N=0
 template<typename... Args, std::enable_if_t<sizeof...(Args) == 0, int> = 0>
-void stream(const std::tuple<Args...>& t, std::list<std::string>& sl)
+void stream(const std::tuple<Args...>& , std::list<std::string>& )
 {
     return;
 }
