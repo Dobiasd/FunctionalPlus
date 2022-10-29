@@ -88,5 +88,5 @@ TEST_CASE("show_test - show_float")
     
     std::tuple<int, std::string, float> t1(10, "Test", 3.14);
     std::list<std::string> lt1 = stream(t1);
-    REQUIRE_EQ(show_cont(lt1),"10 Test 3.14");
+    REQUIRE_EQ(show_cont(lt1),"[10, Test, 3.14]");
 }
