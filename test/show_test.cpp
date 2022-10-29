@@ -85,4 +85,8 @@ TEST_CASE("show_test - show_float")
 
     REQUIRE_EQ(show_fill_right<int>(' ', 4, 3), "3   ");
     REQUIRE_EQ(show_fill_right<int>(' ', 4, 12345), "12345");
+    
+    std::tuple<int, std::string, float> t1(10, "Test", 3.14);
+    std::list<std::string> lt1 = stream(t1);
+    REQUIRE_EQ(show_cont(lt1),"[10, Test, 3.14]");
 }

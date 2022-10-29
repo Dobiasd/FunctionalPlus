@@ -13,8 +13,10 @@
 
 #include <iomanip>
 #include <ios>
+#include <list>
 #include <sstream>
 #include <string>
+#include <tuple>
 
 namespace fplus
 {
@@ -271,6 +273,52 @@ std::string show_fill_right(const std::string::value_type& filler,
     std::size_t min_size, const T& x)
 {
     return fill_right(filler, min_size, show<T>(x));
+}
+
+// Based on https://en.cppreference.com/w/cpp/utility/tuple/tuple_cat
+// Case N, recursive
+template<class Tuple, std::size_t N>
+struct TupleStreamer {
+    static void stream(const Tuple& t, std::list<std::string>& sl) 
+    {
+        TupleStreamer<Tuple, N-1>::stream(t,sl);
+        std::stringstream ss;
+        ss << std::get<N-1>(t);
+        sl.emplace_back(ss.str());
+    }
+};
+
+// Based on https://en.cppreference.com/w/cpp/utility/tuple/tuple_cat
+// Case N=1
+template<class Tuple>
+struct TupleStreamer<Tuple, 1> {
+    static void stream(const Tuple& t, std::list<std::string>& sl) 
+    {
+        std::stringstream ss;
+        ss << std::get<0>(t);
+        sl.emplace_back(ss.str());
+    }
+};
+
+// Based on https://en.cppreference.com/w/cpp/utility/tuple/tuple_cat
+// Case N=0
+template<typename... Args, std::enable_if_t<sizeof...(Args) == 0, int> = 0>
+void stream(const std::tuple<Args...>& , std::list<std::string>& )
+{
+    return;
+}
+
+// Based on https://en.cppreference.com/w/cpp/utility/tuple/tuple_cat
+// Example:
+// std::tuple<int, std::string, float> t1(10, "Test", 3.14);
+// std::list<std::string> lt1 = stream(t1);
+// std::cout << fplus::show_cont(lt1);
+template<typename... Args, std::enable_if_t<sizeof...(Args) != 0, int> = 0>
+std::list<std::string> stream(const std::tuple<Args...>& t)
+{
+    std::list<std::string> sl;
+    TupleStreamer<decltype(t), sizeof...(Args)>::stream(t,sl);
+    return sl;
 }
 
 } // namespace fplus
