@@ -318,7 +318,7 @@ std::list<std::string> stream(const std::tuple<Args...>& t)
 {
     std::list<std::string> sl;
     TupleStreamer<decltype(t), sizeof...(Args)>::stream(t,sl);
-    return std::move(sl);
+    return sl;
 }
 
 } // namespace fplus
