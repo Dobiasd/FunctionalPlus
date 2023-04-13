@@ -2,5 +2,5 @@
 doctest/2.4.9
 
 [generators]
-cmake_find_package
-cmake_paths
+CMakeToolchain
+CMakeDeps

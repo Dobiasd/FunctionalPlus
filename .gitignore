@@ -11,3 +11,4 @@ api_search/frontend/src/Database.elm
 .mypy_cache
 .idea
 cmake-build-*/
+CMakeUserPresets.json
