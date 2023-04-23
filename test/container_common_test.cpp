@@ -661,7 +661,7 @@ TEST_CASE("container_common_test - coucount_occurrences_bynt_occurrences_on")
     typedef std::map<int, std::size_t> IntSizeTMap;
     IntSizeTMap OccurrencesResult = {{1, 1}, {2, 3}, {3, 1}};
     std::vector<double> double_values = {1.1, 2.3, 2.7, 3.6, 2.4};
-    const auto f = floor<double>;
+    const auto f = fplus::floor<double>;
     REQUIRE_EQ(count_occurrences_by(f, double_values), OccurrencesResult);
 }
 
