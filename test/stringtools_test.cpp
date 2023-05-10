@@ -51,6 +51,8 @@ TEST_CASE("stringtools_test -  split")
         std::string("***strange***"),
         std::string("string.") };
 
+    REQUIRE_EQ(split_lines(false, std::string("")).size(), 0);
+    REQUIRE_EQ(split_lines(true, std::string("")).size(), 1);
     REQUIRE_EQ(split_lines(true, text), textAsLinesWithEmty);
     REQUIRE_EQ(split_lines(false, text), textAsLinesWithoutEmpty);
     REQUIRE_EQ(split_words(false, text), textAsWords);
