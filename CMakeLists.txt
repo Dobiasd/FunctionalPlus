@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(FunctionalPlus VERSION 0.2.18)
+project(FunctionalPlus VERSION 0.2.19)
 
 # ---- Warning guard ----
 
