@@ -8,14 +8,14 @@ on:
 
 jobs:
   codeql:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     name: "CodeQL"
     env:
       CC: gcc-10
       CXX: g++-10
     steps:
       - name: Checkout
-        uses: actions/checkout@main
+        uses: actions/checkout@v4
       - name: Install dependencies
         run: sudo script/ci_setup_dependencies.sh
       - name: CodeQL Initialization
