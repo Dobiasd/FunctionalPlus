@@ -14,9 +14,6 @@ jobs:
           - { version: 9 }
           - { version: 8 }
           - { version: 7 }
-          - { version: 6 }
-          - { version: 5 }
-          - { version: 4.9 }
     container:
       image: gcc:${{ matrix.build_config.version }}
       options: -v /usr/local:/host_usr_local
@@ -44,13 +41,6 @@ jobs:
           - { version: 13 }
           - { version: 12 }
           - { version: 11 }
-          - { version: 10 }
-          - { version: 9 }
-          - { version: 8 }
-          - { version: 7 }
-          - { version: 6, suffix: '.0' }
-          - { version: 5, suffix: '.0' }
-          - { version: 4, suffix: '.0' }
     container:
       image: teeks99/clang-ubuntu:${{ matrix.build_config.version }}
       options: -v /usr/local:/host_usr_local
