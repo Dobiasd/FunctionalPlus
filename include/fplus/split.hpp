@@ -713,7 +713,7 @@ Container stride(std::size_t step, const Container& xs)
 template <typename Container>
 Container winsorize(double trim_ratio, const Container& xs)
 {
-    if (size_of_cont(xs) < 2)
+    if (size_of_cont(xs) == 1 || size_of_cont(xs) == 0)
     {
         return xs;
     }
