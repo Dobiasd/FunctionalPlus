@@ -20,6 +20,7 @@
 #include <fplus/internal/invoke.hpp>
 
 #include <algorithm>
+#include <cstdint>
 #include <future>
 #include <iterator>
 #include <mutex>
