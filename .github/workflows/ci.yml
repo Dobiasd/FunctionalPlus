@@ -36,6 +36,7 @@ jobs:
     strategy:
       matrix:
         build_config:
+          - { version: 17 }
           - { version: 16 }
           - { version: 15 }
           - { version: 14 }
