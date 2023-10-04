@@ -7441,6 +7441,7 @@ maybe<TOut> first_match(const ContainerIn1& xs, const ContainerIn2& ys)
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <functional>
 #include <limits>
 #include <stdexcept>
@@ -8888,6 +8889,7 @@ UnordSetType unordered_sets_intersection(const ContainerIn& sets)
 
 
 #include <algorithm>
+#include <cstdint>
 #include <numeric>
 #include <type_traits>
 
@@ -11347,6 +11349,7 @@ ContainerOut separate(const ContainerIn& xs)
 
 
 #include <algorithm>
+#include <cstdint>
 #include <future>
 #include <iterator>
 #include <mutex>
