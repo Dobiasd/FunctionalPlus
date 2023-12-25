@@ -21,9 +21,23 @@ namespace fplus
 
 // Can hold a value of type T or nothing.
 template <typename T>
+class maybe;
+
+template <typename>
+struct is_maybe : std::false_type
+{
+};
+
+template <typename T>
+struct is_maybe<maybe<T>> : std::true_type
+{
+};
+
+template <typename T>
 class maybe
 {
 public:
+    using value_type = T;
     bool is_just() const { return is_present_; }
     bool is_nothing() const { return !is_just(); }
     const T& unsafe_get_just() const
@@ -95,6 +109,124 @@ public:
         }
         return *this;
     }
+
+    T get_with_default(const T& defaultValue) const
+    {
+        if (is_just())
+            return unsafe_get_just();
+        return defaultValue;
+    }
+
+    template <typename E>
+    T get_or_throw(const E& e) const
+    {
+        if (is_nothing())
+            throw e;
+        return unsafe_get_just();
+    }
+
+    template <typename Pred>
+    maybe<T> just_if(Pred pred) const
+    {
+        if (is_just() && pred(unsafe_get_just()))
+            return *this;
+        return maybe<T>{};
+    }
+
+    template <typename ContainerOut = std::vector<T>>
+    ContainerOut to_seq() const
+    {
+        if (is_just())
+            return ContainerOut(1, unsafe_get_just());
+        return {};
+    }
+
+    template <typename F>
+    auto lift(F f) const
+    {
+        internal::trigger_static_asserts<internal::check_arity_tag, F, T>();
+
+        using B = std::decay_t<internal::invoke_result_t<F, T>>;
+        if (is_just())
+            return maybe<B>(internal::invoke(f, unsafe_get_just()));
+        return maybe<B>{};
+    }
+
+    template <typename Default, typename F>
+    auto lift_def(const Default& def, F f) const
+    {
+        internal::trigger_static_asserts<internal::check_arity_tag, F, T>();
+
+        using B = std::decay_t<internal::invoke_result_t<F, T>>;
+        static_assert(
+            std::is_convertible<Default, B>::value,
+            "Default value must be convertible to Function's return type");
+        if (is_just())
+            return B(internal::invoke(f, unsafe_get_just()));
+        return B(def);
+    }
+
+    template <typename F, typename B>
+    auto lift_2(F f,  const maybe<B>& m_b) const
+    {
+        internal::trigger_static_asserts<internal::check_arity_tag, F, T, B>();
+
+        using FOut = std::decay_t<internal::invoke_result_t<F, T, B>>;
+        if (is_just() && m_b.is_just())
+        {
+            return maybe<FOut>(
+                internal::invoke(f, unsafe_get_just(), m_b.unsafe_get_just()));
+        }
+        return maybe<FOut>{};
+    }
+
+    template <typename F, typename B, typename Default>
+    auto lift_2_def(const Default& def,
+                      F f,
+                      const maybe<B>& m_b) const
+    {
+        internal::trigger_static_asserts<internal::check_arity_tag, F, T, B>();
+
+        using C = std::decay_t<internal::invoke_result_t<F, T, B>>;
+        static_assert(
+            std::is_convertible<Default, C>::value,
+            "Default value must be convertible to Function's return type");
+        if (is_just() && m_b.is_just())
+            return C(internal::invoke(f, unsafe_get_just(), m_b.unsafe_get_just()));
+        return C(def);
+    }
+
+    auto join() const
+    {
+        static_assert(
+            is_maybe<T>::value,
+            "Cannot join when value type is not also a maybe"
+            );
+        if (is_just())
+            return unsafe_get_just();
+        else
+            return maybe<typename T::value_type>{};
+    }
+
+    auto flatten() const
+    {
+        return join();
+    }
+
+    template <typename F>
+    auto and_then(F f) const
+    {
+        internal::trigger_static_asserts<internal::check_arity_tag, F, T>();
+        using FOut = std::decay_t<internal::invoke_result_t<F, T>>;
+        static_assert(is_maybe<FOut>::value,
+                      "Function must return a maybe<> type");
+        if (is_just())
+            return internal::invoke(f, unsafe_get_just());
+        else
+            return maybe<typename FOut::type>{};
+    }
+
+
 private:
     void destruct_content()
     {
@@ -107,19 +239,6 @@ private:
     bool is_present_;
     typename std::aligned_storage<sizeof(T), alignof(T)>::type value_;
 };
-
-namespace internal
-{
-template <typename>
-struct is_maybe : std::false_type
-{
-};
-
-template <typename T>
-struct is_maybe<maybe<T>> : std::true_type
-{
-};
-}
 
 // API search type: is_just : Maybe a -> Bool
 // fwd bind count: 0
@@ -154,9 +273,7 @@ T unsafe_get_just(const maybe<T>& maybe)
 template <typename T>
 T just_with_default(const T& defaultValue, const maybe<T>& maybe)
 {
-    if (is_just(maybe))
-        return unsafe_get_just(maybe);
-    return defaultValue;
+    return maybe.get_with_default(defaultValue);
 }
 
 // API search type: throw_on_nothing : (e, Maybe a) -> a
@@ -165,9 +282,7 @@ T just_with_default(const T& defaultValue, const maybe<T>& maybe)
 template <typename E, typename T>
 T throw_on_nothing(const E& e, const maybe<T>& maybe)
 {
-    if (is_nothing(maybe))
-        throw e;
-    return unsafe_get_just(maybe);
+    return maybe.get_or_throw(e);
 }
 
 // API search type: just : a -> Maybe a
@@ -193,6 +308,16 @@ maybe<T> as_just_if(Pred pred, const T& val)
         return {};
 }
 
+// API search type: just_if : ((a -> bool), Maybe a) -> Maybe a
+// fwd bind count: 1
+// Retain the Just value fulfilling a predicate.
+// A nothing is returned if predicate is false or the maybe is already nothing.
+template <typename Pred, typename T>
+maybe<T> just_if(Pred pred, const maybe<T>& maybe)
+{
+     return maybe.just_if(pred);
+}
+
 // API search type: maybe_to_seq : Maybe a -> [a]
 // fwd bind count: 0
 // Converts a maybe to a sequence.
@@ -201,9 +326,7 @@ maybe<T> as_just_if(Pred pred, const T& val)
 template <typename T, typename ContainerOut = std::vector<T>>
 ContainerOut maybe_to_seq(const maybe<T>& maybe)
 {
-    if (is_just(maybe))
-        return ContainerOut(1, unsafe_get_just(maybe));
-    return {};
+    return maybe.to_seq();
 }
 
 // API search type: singleton_seq_as_maybe : [a] -> Maybe a
@@ -254,12 +377,7 @@ bool operator != (const maybe<T>& x, const maybe<T>& y)
 template <typename F, typename A>
 auto lift_maybe(F f, const maybe<A>& m)
 {
-    internal::trigger_static_asserts<internal::check_arity_tag, F, A>();
-
-    using B = std::decay_t<internal::invoke_result_t<F, A>>;
-    if (is_just(m))
-        return just<B>(internal::invoke(f, unsafe_get_just(m)));
-    return nothing<B>();
+    return m.lift(f);
 }
 
 // API search type: lift_maybe_def : (b, (a -> b), Maybe a) -> b
@@ -272,15 +390,7 @@ auto lift_maybe(F f, const maybe<A>& m)
 template <typename F, typename A, typename Default>
 auto lift_maybe_def(const Default& def, F f, const maybe<A>& m)
 {
-    internal::trigger_static_asserts<internal::check_arity_tag, F, A>();
-
-    using B = std::decay_t<internal::invoke_result_t<F, A>>;
-    static_assert(
-        std::is_convertible<Default, B>::value,
-        "Default value must be convertible to Function's return type");
-    if (is_just(m))
-        return B(internal::invoke(f, unsafe_get_just(m)));
-    return B(def);
+    return m.lift_def(def, f);
 }
 
 // API search type: lift_maybe_2 : (((a, b) -> c), Maybe a, Maybe b) -> Maybe c
@@ -291,15 +401,7 @@ auto lift_maybe_def(const Default& def, F f, const maybe<A>& m)
 template <typename F, typename A, typename B>
 auto lift_maybe_2(F f, const maybe<A>& m_a, const maybe<B>& m_b)
 {
-    internal::trigger_static_asserts<internal::check_arity_tag, F, A, B>();
-
-    using FOut = std::decay_t<internal::invoke_result_t<F, A, B>>;
-    if (is_just(m_a) && is_just(m_b))
-    {
-        return just<FOut>(
-            internal::invoke(f, unsafe_get_just(m_a), unsafe_get_just(m_b)));
-    }
-    return nothing<FOut>();
+    return m_a.lift_2(f, m_b);
 }
 
 // API search type: lift_maybe_2_def : (c, ((a, b) -> c), Maybe a, Maybe b) -> c
@@ -316,15 +418,7 @@ auto lift_maybe_2_def(const Default& def,
                       const maybe<A>& m_a,
                       const maybe<B>& m_b)
 {
-    internal::trigger_static_asserts<internal::check_arity_tag, F, A, B>();
-
-    using C = std::decay_t<internal::invoke_result_t<F, A, B>>;
-    static_assert(
-        std::is_convertible<Default, C>::value,
-        "Default value must be convertible to Function's return type");
-    if (is_just(m_a) && is_just(m_b))
-        return C(internal::invoke(f, unsafe_get_just(m_a), unsafe_get_just(m_b)));
-    return C(def);
+    return m_a.lift_2_def(def, f, m_b);
 }
 
 // API search type: join_maybe : Maybe Maybe a -> Maybe a
@@ -335,10 +429,7 @@ auto lift_maybe_2_def(const Default& def,
 template <typename A>
 maybe<A> join_maybe(const maybe<maybe<A>>& m)
 {
-    if (is_just(m))
-        return unsafe_get_just(m);
-    else
-        return nothing<A>();
+    return m.join();
 }
 
 // API search type: and_then_maybe : ((a -> Maybe b), (Maybe a)) -> Maybe b
@@ -350,14 +441,7 @@ maybe<A> join_maybe(const maybe<maybe<A>>& m)
 template <typename T, typename F>
 auto and_then_maybe(F f, const maybe<T>& m)
 {
-    internal::trigger_static_asserts<internal::check_arity_tag, F, T>();
-    using FOut = std::decay_t<internal::invoke_result_t<F, T>>;
-    static_assert(internal::is_maybe<FOut>::value,
-                  "Function must return a maybe<> type");
-    if (is_just(m))
-        return internal::invoke(f, unsafe_get_just(m));
-    else
-        return nothing<typename FOut::type>();
+    return m.and_then(f);
 }
 
 // API search type: compose_maybe : ((a -> Maybe b), (b -> Maybe c)) -> (a -> Maybe c)
@@ -377,11 +461,11 @@ auto compose_maybe(Callables&&... callables)
         {
             using FOut = std::decay_t<
                 internal::invoke_result_t<decltype(f), decltype(args)...>>;
-            static_assert(internal::is_maybe<FOut>::value,
+            static_assert(is_maybe<FOut>::value,
                           "Functions must return a maybe<> type");
             using GOut = std::decay_t<
                 internal::invoke_result_t<decltype(g), typename FOut::type>>;
-            static_assert(internal::is_maybe<GOut>::value,
+            static_assert(is_maybe<GOut>::value,
                           "Functions must return a maybe<> type");
 
             auto maybeB =
@@ -402,9 +486,7 @@ auto compose_maybe(Callables&&... callables)
 template <typename T>
 maybe<T> flatten_maybe(const maybe<maybe<T>>& maybe_maybe)
 {
-    if (is_nothing(maybe_maybe))
-        return nothing<T>();
-    return unsafe_get_just(maybe_maybe);
+    return maybe_maybe.flatten();
 }
 
 } // namespace fplus
