@@ -93,11 +93,26 @@ TEST_CASE("maybe_test - as_just_if")
     REQUIRE_EQ(as_just_if(is_even<int>, 5), nothing<int>());
 }
 
+TEST_CASE("maybe_test - just_if")
+{
+    using namespace fplus;
+    REQUIRE_EQ(just_if(is_even<int>, nothing<int>()), nothing<int>());
+    REQUIRE_EQ(just_if(is_even<int>, just<int>(4)), just<int>(4));
+    REQUIRE_EQ(just_if(is_even<int>, just<int>(5)), nothing<int>());
+
+    REQUIRE_EQ(nothing<int>().just_if(is_even<int>), nothing<int>());
+    REQUIRE_EQ(just<int>(4).just_if(is_even<int>), just<int>(4));
+    REQUIRE_EQ(just<int>(5).just_if(is_even<int>), nothing<int>());
+}
+
 TEST_CASE("maybe_test - sequence")
 {
     using namespace fplus;
     REQUIRE_EQ(maybe_to_seq(just(4)), std::vector<int>(1, 4));
     REQUIRE_EQ(maybe_to_seq(nothing<int>()), std::vector<int>());
+
+    REQUIRE_EQ(just(4).to_seq(), std::vector<int>(1, 4));
+    REQUIRE_EQ(nothing<int>().to_seq(), std::vector<int>());
 
     REQUIRE_EQ(singleton_seq_as_maybe(std::vector<int>()), nothing<int>());
     REQUIRE_EQ(singleton_seq_as_maybe(std::vector<int>(1, 4)), just(4));
@@ -109,9 +124,13 @@ TEST_CASE("maybe_test - just_with_default")
     using namespace fplus;
     auto x = just<int>(2);
     maybe<int> y = nothing<int>();
+
     auto Or42 = bind_1st_of_2(just_with_default<int>, 42);
     REQUIRE_EQ(Or42(x), 2);
     REQUIRE_EQ(Or42(y), 42);
+
+    REQUIRE_EQ(x.get_with_default(42), 2);
+    REQUIRE_EQ(y.get_with_default(42), 42);
 }
 
 TEST_CASE("maybe_test - lift")
@@ -125,23 +144,45 @@ TEST_CASE("maybe_test - lift")
     REQUIRE_EQ(lift_maybe(square<int>, y), nothing<int>());
     REQUIRE_EQ(lift_maybe(squareGeneric, x), just(4));
     REQUIRE_EQ(lift_maybe(squareGeneric, y), nothing<int>());
+
+    REQUIRE_EQ(x.lift(square<int>), just(4));
+    REQUIRE_EQ(y.lift(square<int>), nothing<int>());
+    REQUIRE_EQ(x.lift(squareGeneric), just(4));
+    REQUIRE_EQ(y.lift(squareGeneric), nothing<int>());
+
     auto SquareAndSquare = compose(square<int>, square<int>);
     REQUIRE_EQ(lift_maybe(SquareAndSquare, x), just(16));
+    REQUIRE_EQ(x.lift(SquareAndSquare), just(16));
 
     REQUIRE_EQ(lift_maybe_def(3, square<int>, x), 4);
     REQUIRE_EQ(lift_maybe_def(3, square<int>, y), 3);
     REQUIRE_EQ(lift_maybe_def(3, squareGeneric, x), 4);
     REQUIRE_EQ(lift_maybe_def(3, squareGeneric, y), 3);
 
+    REQUIRE_EQ(x.lift_def(3, square<int>), 4);
+    REQUIRE_EQ(y.lift_def(3, square<int>), 3);
+    REQUIRE_EQ(x.lift_def(3, squareGeneric), 4);
+    REQUIRE_EQ(y.lift_def(3, squareGeneric), 3);
+
     REQUIRE_EQ(lift_maybe_2(std::plus<int>(), x, x), just(4));
     REQUIRE_EQ(lift_maybe_2(std::plus<int>(), x, y), y);
     REQUIRE_EQ(lift_maybe_2(std::plus<>(), y, x), y);
     REQUIRE_EQ(lift_maybe_2(std::plus<>(), y, y), y);
 
+    REQUIRE_EQ(x.lift_2(std::plus<int>(), x), just(4));
+    REQUIRE_EQ(x.lift_2(std::plus<int>(), y), y);
+    REQUIRE_EQ(y.lift_2(std::plus<>(), x), y);
+    REQUIRE_EQ(y.lift_2(std::plus<>(), y), y);
+
     REQUIRE_EQ(lift_maybe_2_def(3, std::plus<int>(), x, x), 4);
     REQUIRE_EQ(lift_maybe_2_def(3, std::plus<int>(), x, y), 3);
     REQUIRE_EQ(lift_maybe_2_def(3, std::plus<>(), y, x), 3);
     REQUIRE_EQ(lift_maybe_2_def(3, std::plus<>(), y, y), 3);
+
+    REQUIRE_EQ(x.lift_2_def(3, std::plus<int>(), x), 4);
+    REQUIRE_EQ(x.lift_2_def(3, std::plus<int>(), y), 3);
+    REQUIRE_EQ(y.lift_2_def(3, std::plus<>(), x), 3);
+    REQUIRE_EQ(y.lift_2_def(3, std::plus<>(), y), 3);
 }
 
 TEST_CASE("maybe_test - join_maybe")
@@ -150,6 +191,10 @@ TEST_CASE("maybe_test - join_maybe")
     REQUIRE_EQ(join_maybe(just(just(2))), just(2));
     REQUIRE_EQ(join_maybe(just(nothing<int>())), nothing<int>());
     REQUIRE_EQ(join_maybe(nothing<maybe<int>>()), nothing<int>());
+
+    REQUIRE_EQ(just(just(2)).join(), just(2));
+    REQUIRE_EQ(just(nothing<int>()).join(), nothing<int>());
+    REQUIRE_EQ(nothing<maybe<int>>().join(), nothing<int>());
 }
 
 TEST_CASE("maybe_test - and_then_maybe")
@@ -157,6 +202,10 @@ TEST_CASE("maybe_test - and_then_maybe")
     using namespace fplus;
     REQUIRE_EQ(and_then_maybe(sqrtToMaybeInt, just(4)), just(2));
     REQUIRE_EQ(and_then_maybe(sqrtToMaybeInt, nothing<int>()), nothing<int>());
+
+    REQUIRE_EQ(just(4).and_then(sqrtToMaybeInt), just(2));
+    REQUIRE_EQ(nothing<int>().and_then(sqrtToMaybeInt), nothing<int>());
+
     const auto string_to_maybe_int = [](const auto& str)
     {
         if (str == "42") return just<int>(42);
@@ -165,6 +214,10 @@ TEST_CASE("maybe_test - and_then_maybe")
     REQUIRE_EQ(and_then_maybe(string_to_maybe_int, just<std::string>("3")), nothing<int>());
     REQUIRE_EQ(and_then_maybe(string_to_maybe_int, just<std::string>("42")), just<int>(42));
     REQUIRE_EQ(and_then_maybe(string_to_maybe_int, nothing<std::string>()), nothing<int>());
+
+    REQUIRE_EQ(just<std::string>("3").and_then(string_to_maybe_int), nothing<int>());
+    REQUIRE_EQ(just<std::string>("42").and_then(string_to_maybe_int), just<int>(42));
+    REQUIRE_EQ(nothing<std::string>().and_then(string_to_maybe_int), nothing<int>());
 }
 
 TEST_CASE("maybe_test - compose")
@@ -225,16 +278,30 @@ TEST_CASE("maybe_test - show_maybe")
 TEST_CASE("maybe_test - exceptions")
 {
     using namespace fplus;
-    std::string thrown_str;
-    try
     {
-        throw_on_nothing(std::invalid_argument("raised"), nothing<int>());
+        std::string thrown_str;
+        try
+        {
+            throw_on_nothing(std::invalid_argument("raised"), nothing<int>());
+        }
+        catch (const std::exception& e)
+        {
+            thrown_str = e.what();
+        }
+        REQUIRE_EQ(thrown_str, std::string("raised"));
     }
-    catch (const std::exception& e)
     {
-        thrown_str = e.what();
+        std::string thrown_str;
+        try
+        {
+            nothing<int>().get_or_throw(std::invalid_argument("raised"));
+        }
+        catch (const std::exception& e)
+        {
+            thrown_str = e.what();
+        }
+        REQUIRE_EQ(thrown_str, std::string("raised"));
     }
-    REQUIRE_EQ(thrown_str, std::string("raised"));
 }
 
 TEST_CASE("maybe_test - copy")
@@ -258,4 +325,23 @@ TEST_CASE("maybe_test - flatten")
     REQUIRE_EQ(flatten_maybe(maybe<maybe<int>>(maybe<int>(1))), maybe<int>(1));
     REQUIRE_EQ(flatten_maybe(maybe<maybe<int>>(maybe<int>())), nothing<int>());
     REQUIRE_EQ(flatten_maybe(maybe<maybe<int>>()), nothing<int>());
+
+    REQUIRE_EQ(maybe<maybe<int>>(maybe<int>(1)).flatten(), maybe<int>(1));
+    REQUIRE_EQ(maybe<maybe<int>>(maybe<int>()).flatten(), nothing<int>());
+    REQUIRE_EQ(maybe<maybe<int>>().flatten(), nothing<int>());
+}
+
+TEST_CASE("maybe_test - fluent methods")
+{
+    using namespace fplus;
+    maybe<int> m(42);
+
+    REQUIRE_EQ(m
+               .just_if([](auto x) { return x > 0; })
+               .and_then([](auto x) { return x % 2 == 0 ?
+                   just<std::string>("a") : nothing<std::string>(); })
+               .lift([](auto x) { return just(x); })
+               .join()
+               .lift_def(nothing<std::string>(), [](auto x) {return just(x + "b");})
+               .get_with_default("c"), "ab");
 }
