@@ -119,6 +119,10 @@ TEST_CASE("variant_test - visit")
     REQUIRE_EQ(print_output, "string 3");
     print_output.clear();
 
+    // One can use fplus::identity to use visit_one as a getter:
+    const fplus::maybe<int> y = transform_result.visit_one(fplus::identity<int>);
+    std::cout << fplus::show_maybe(y) << std::endl;
+
     // should not compile
     //std::cout << int_or_string.visit(show_int, show_float) << std::endl;
 
