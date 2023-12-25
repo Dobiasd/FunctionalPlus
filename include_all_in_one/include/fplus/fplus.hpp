@@ -2628,7 +2628,7 @@ T unsafe_get_just(const maybe<T>& maybe)
 }
 
 // API search type: just_with_default : (a, Maybe a) -> a
-// fwd bind count: 0
+// fwd bind count: 1
 // Get the value from a maybe or the default in case it is nothing.
 template <typename T>
 T just_with_default(const T& defaultValue, const maybe<T>& maybe)
@@ -15017,7 +15017,7 @@ fplus_curry_define_fn_1(xor_bools)
 fplus_curry_define_fn_0(is_just)
 fplus_curry_define_fn_0(is_nothing)
 fplus_curry_define_fn_0(unsafe_get_just)
-fplus_curry_define_fn_0(just_with_default)
+fplus_curry_define_fn_1(just_with_default)
 fplus_curry_define_fn_1(throw_on_nothing)
 fplus_curry_define_fn_0(just)
 fplus_curry_define_fn_1(as_just_if)
@@ -15630,7 +15630,7 @@ fplus_fwd_define_fn_1(xor_bools)
 fplus_fwd_define_fn_0(is_just)
 fplus_fwd_define_fn_0(is_nothing)
 fplus_fwd_define_fn_0(unsafe_get_just)
-fplus_fwd_define_fn_0(just_with_default)
+fplus_fwd_define_fn_1(just_with_default)
 fplus_fwd_define_fn_1(throw_on_nothing)
 fplus_fwd_define_fn_0(just)
 fplus_fwd_define_fn_1(as_just_if)
@@ -16108,6 +16108,7 @@ fplus_fwd_flip_define_fn_1(is_less_or_equal)
 fplus_fwd_flip_define_fn_1(is_greater)
 fplus_fwd_flip_define_fn_1(is_greater_or_equal)
 fplus_fwd_flip_define_fn_1(xor_bools)
+fplus_fwd_flip_define_fn_1(just_with_default)
 fplus_fwd_flip_define_fn_1(throw_on_nothing)
 fplus_fwd_flip_define_fn_1(as_just_if)
 fplus_fwd_flip_define_fn_1(lift_maybe)

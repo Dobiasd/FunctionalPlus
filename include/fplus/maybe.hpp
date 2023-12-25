@@ -149,7 +149,7 @@ T unsafe_get_just(const maybe<T>& maybe)
 }
 
 // API search type: just_with_default : (a, Maybe a) -> a
-// fwd bind count: 0
+// fwd bind count: 1
 // Get the value from a maybe or the default in case it is nothing.
 template <typename T>
 T just_with_default(const T& defaultValue, const maybe<T>& maybe)
