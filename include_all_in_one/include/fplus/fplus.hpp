@@ -2803,8 +2803,8 @@ maybe<T> just_if(Pred pred, const maybe<T>& maybe)
 // API search type: maybe_to_seq : Maybe a -> [a]
 // fwd bind count: 0
 // Converts a maybe to a sequence.
-// singleton_seq(Just 3) == [3]
-// singleton_seq(Nothing) == []
+// maybe_to_seq(Just 3) == [3]
+// maybe_to_seq(Nothing) == []
 template <typename T, typename ContainerOut = std::vector<T>>
 ContainerOut maybe_to_seq(const maybe<T>& maybe)
 {
@@ -2814,9 +2814,9 @@ ContainerOut maybe_to_seq(const maybe<T>& maybe)
 // API search type: singleton_seq_as_maybe : [a] -> Maybe a
 // fwd bind count: 0
 // Converts a sequence to a maybe.
-// singleton_seq([]) == Nothing
-// singleton_seq([3]) == Just 3
-// singleton_seq([3,4]) == Nothing
+// singleton_seq_as_maybe([]) == Nothing
+// singleton_seq_as_maybe([3]) == Just 3
+// singleton_seq_as_maybe([3,4]) == Nothing
 template <typename Container>
 maybe<typename Container::value_type>
 singleton_seq_as_maybe(const Container& xs)
