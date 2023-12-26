@@ -23,6 +23,8 @@ namespace fplus
 template <typename T>
 class maybe;
 
+namespace internal
+{
 template <typename>
 struct is_maybe : std::false_type
 {
@@ -32,6 +34,7 @@ template <typename T>
 struct is_maybe<maybe<T>> : std::true_type
 {
 };
+}
 
 template <typename T>
 class maybe
@@ -199,7 +202,7 @@ public:
     auto join() const
     {
         static_assert(
-            is_maybe<T>::value,
+            internal::is_maybe<T>::value,
             "Cannot join when value type is not also a maybe"
             );
         if (is_just())
@@ -218,7 +221,7 @@ public:
     {
         internal::trigger_static_asserts<internal::check_arity_tag, F, T>();
         using FOut = std::decay_t<internal::invoke_result_t<F, T>>;
-        static_assert(is_maybe<FOut>::value,
+        static_assert(internal::is_maybe<FOut>::value,
                       "Function must return a maybe<> type");
         if (is_just())
             return internal::invoke(f, unsafe_get_just());
@@ -461,11 +464,11 @@ auto compose_maybe(Callables&&... callables)
         {
             using FOut = std::decay_t<
                 internal::invoke_result_t<decltype(f), decltype(args)...>>;
-            static_assert(is_maybe<FOut>::value,
+            static_assert(internal::is_maybe<FOut>::value,
                           "Functions must return a maybe<> type");
             using GOut = std::decay_t<
                 internal::invoke_result_t<decltype(g), typename FOut::type>>;
-            static_assert(is_maybe<GOut>::value,
+            static_assert(internal::is_maybe<GOut>::value,
                           "Functions must return a maybe<> type");
 
             auto maybeB =
