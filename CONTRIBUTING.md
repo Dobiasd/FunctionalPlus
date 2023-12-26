@@ -54,7 +54,7 @@ Container without(T elem, const Container& xs)
 
 The function resides in `./include/fplus/filter.hpp`, because, well, it is some kind of filter. ;)
 
-The coding style (what is lower/upper case, spaced instead of tabs, etc.) becomes apparent by just looking at the current code. Lines should not exceed 80 characters.
+Some parts of the coding style (what is lower/upper case, spaced instead of tabs, etc.) should(tm) be apparent from looking at the current code. Lines (if feasible) should not exceed 80 characters. And let's use `ms-vscode.cpptools` to auto-format code.
 
 Every public exposed function (so everything not in `namespace internal`) should have an `API search type`. So the `./api_search/compile_all_and_deploy.sh` can parse the type and show it on the [website](http://www.editgym.com/fplus-api-search/). It will be run by a website admin after merging your pull request
 
