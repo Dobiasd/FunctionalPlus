@@ -28,6 +28,16 @@ namespace {
         return true;
     }
 
+    void print_int_effect(int x)
+    {
+        print_output = "int " + std::to_string(x);
+    }
+
+    void print_string_effect(const std::string& str)
+    {
+        print_output = "string " + str;
+    }
+
     std::string show_int(int x)
     {
         return fplus::show(x);
@@ -134,4 +144,44 @@ TEST_CASE("variant_test - visit")
 
     // should not compile
     //std::cout << int_or_string.visit(show_int) << std::endl;
+}
+
+TEST_CASE("variant_test - effect")
+{
+    using namespace fplus;
+
+    // should not compile
+    //int_or_double.effect_one(print_string);
+
+    fplus::variant<int, std::string> int_or_string(3);
+    //
+    REQUIRE(int_or_string.is<int>());
+    REQUIRE_FALSE(int_or_string.is<std::string>());
+    //
+    int_or_string.effect(print_int_effect, print_string_effect);
+    REQUIRE_EQ(print_output, "int 3");
+    print_output.clear();
+
+    const auto transform_result =
+        int_or_string.transform(show_int, show_string);
+    transform_result.effect_one(print_string_effect);
+    REQUIRE_EQ(print_output, "string 3");
+    print_output.clear();
+}
+
+TEST_CASE("variant_test - get")
+{
+    using namespace fplus;
+    fplus::variant<int, std::string> int_or_string_i(3);
+    fplus::variant<int, std::string> int_or_string_s(std::string("hi"));
+
+    REQUIRE_EQ(int_or_string_i.get<int>(), just(3));
+    REQUIRE_EQ(int_or_string_i.get<std::string>(), nothing<std::string>());
+
+    REQUIRE_EQ(int_or_string_s.get<std::string>(), just<std::string>("hi"));
+    REQUIRE_EQ(int_or_string_s.get<int>(), nothing<int>());
+
+    // should not compile (type not in variant)
+    // REQUIRE_EQ(int_or_string_i.get<char>(), nothing<char>());
+    // REQUIRE_EQ(int_or_string_s.get<char>(), nothing<char>());
 }

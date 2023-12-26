@@ -9,7 +9,6 @@
 #include <fplus/container_common.hpp>
 #include <fplus/maybe.hpp>
 
-#include <iostream>
 #include <memory>
 #include <tuple>
 
@@ -267,6 +266,30 @@ struct variant
         return nothing<std::decay_t<Ret>>();
     }
 
+    template <typename F>
+    void effect_one(F f) const
+    {
+        using T = typename internal::function_first_input_type<F>::type;
+        using Ret = internal::invoke_result_t<F, T>;
+        internal::trigger_static_asserts<internal::unary_function_tag, F, T>();
+
+        static_assert(
+            internal::is_one_of<
+                typename internal::function_first_input_type<F>::type,
+                Types...>::value
+            , "Function input must match one variant type.");
+
+        static_assert(std::is_same<std::decay_t<Ret>, void>::value,
+                     "Function must return void type.");
+
+        const auto ptr =
+            std::get<internal::get_index<T, Types...>::value>(shared_ptrs_);
+        if (ptr)
+        {
+            internal::invoke(f, *ptr);
+        }
+    }
+
     template <typename ...Fs>
     auto visit(Fs ... fs) const ->
         typename internal::unary_function_result_type<
@@ -308,9 +331,52 @@ struct variant
             internal::type_set_eq<function_first_input_types_tuple, std::tuple<Types...>>::value,
             "Functions do not cover all possible types.");
 
-        const auto results = justs(visit_helper<Res>(fs...));
+        static_assert(!std::is_same<std::decay_t<Res>, void>::value,
+                      "Function must return non-void type.");
+
+        const auto results = justs(go_visit_one<Res>(fs...));
         assert(size_of_cont(results) == 1);
         return head(results);
+    }
+
+    template <typename ...Fs>
+    void effect(Fs ... fs) const
+    {
+
+        static_assert(
+            sizeof...(Fs) >= std::tuple_size<shared_ptr_pack>::value,
+            "Too few functions provided.");
+
+        static_assert(
+            sizeof...(Fs) <= std::tuple_size<shared_ptr_pack>::value,
+            "Too many functions provided.");
+
+
+        typedef typename internal::transform_parameter_pack<
+            std::tuple,
+            internal::unary_function_result_type,
+            Fs...
+            >::type return_types_tuple;
+
+        typedef typename internal::transform_parameter_pack<
+            std::tuple,
+            internal::function_first_input_type,
+            Fs...
+            >::type function_first_input_types_tuple;
+
+        static_assert(
+            internal::is_unique<function_first_input_types_tuple>::value,
+            "Only one function per input type allowed.");
+
+        static_assert(
+            internal::are_same<return_types_tuple>::value,
+            "All Functions must return the same type.");
+
+        static_assert(
+            internal::type_set_eq<function_first_input_types_tuple, std::tuple<Types...>>::value,
+            "Functions do not cover all possible types.");
+
+        go_effect_one(fs...);
     }
 
     template <typename ...Fs>
@@ -347,17 +413,36 @@ struct variant
         return visit(fs...);
     }
 
+    template <typename T>
+    maybe<T> get() const
+    {
+        return visit_one(identity<T>);
+    }
+
 private:
     template <typename Res, typename F>
-    std::vector<fplus::maybe<Res>> visit_helper(F f) const
+    std::vector<fplus::maybe<Res>> go_visit_one(F f) const
     {
         return {visit_one(f)};
     }
 
     template <typename Res, typename F, typename ...Fs>
-    std::vector<fplus::maybe<Res>> visit_helper(F f, Fs ... fs) const
+    std::vector<fplus::maybe<Res>> go_visit_one(F f, Fs ... fs) const
     {
-        return fplus::append(visit_helper<Res>(f), visit_helper<Res>(fs...));
+        return fplus::append(go_visit_one<Res>(f), go_visit_one<Res>(fs...));
+    }
+
+    template <typename F>
+    void go_effect_one(F f) const
+    {
+        effect_one(f);
+    }
+
+    template <typename F, typename ...Fs>
+    void go_effect_one(F f, Fs ... fs) const
+    {
+        go_effect_one(f);
+        go_effect_one(fs...);
     }
 
     typedef typename internal::transform_parameter_pack<
