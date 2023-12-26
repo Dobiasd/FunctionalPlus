@@ -11,34 +11,33 @@
 namespace fplus
 {
 
-// A generic RAII class.
-// It is recommended to use make_raii for constructing an instance.
-template <typename INIT, typename QUIT>
-class raii
-{
-public:
-    raii(INIT init, QUIT quit) :
-        quit_(quit)
+    // A generic RAII class.
+    // It is recommended to use make_raii for constructing an instance.
+    template <typename INIT, typename QUIT>
+    class raii
     {
-        init();
-    }
-    ~raii()
+    public:
+        raii(INIT init, QUIT quit) : quit_(quit)
+        {
+            init();
+        }
+        ~raii()
+        {
+            quit_();
+        }
+        raii(const raii &) = delete;
+        raii(raii &&) = default;
+        raii &operator=(const raii &) = delete;
+        raii &operator=(raii &&) = default;
+
+    private:
+        QUIT quit_;
+    };
+
+    template <typename INIT, typename QUIT>
+    shared_ref<raii<INIT, QUIT>> make_raii(INIT init, QUIT quit)
     {
-        quit_();
+        return make_shared_ref<raii<INIT, QUIT>>(init, quit);
     }
-    raii(const raii&) = delete;
-    raii(raii&&) = default;
-    raii& operator=(const raii&) = delete;
-    raii& operator=(raii&&) = default;
-private:
-    QUIT quit_;
-};
-
-template <typename INIT, typename QUIT>
-shared_ref<raii<INIT, QUIT>> make_raii(INIT init, QUIT quit)
-{
-    return make_shared_ref<raii<INIT, QUIT>>(init, quit);
-}
-
 
 } // namespace fplus

@@ -10,19 +10,19 @@
 #include <fplus/fplus.hpp>
 #include <fplus/benchmark_session.hpp>
 
-
 // This is an example on how to use benchmark_session in order to bench separate parts of an algorithm
 
 // We need to instantiate a session into which the stats will be collected
 fplus::benchmark_session my_benchmark_session;
 
 // antic C style qsort (will be benchmarked against std::sort)
-void qsort_vec_int(std::vector<int> & v)
+void qsort_vec_int(std::vector<int> &v)
 {
-    auto cmp = [](const void * a, const void * b) {
-        return ( *(static_cast<const int*>(a)) - *(static_cast<const int*>(b)) );
+    auto cmp = [](const void *a, const void *b)
+    {
+        return (*(static_cast<const int *>(a)) - *(static_cast<const int *>(b)));
     };
-    qsort (v.data(), v.size(), sizeof(int), cmp);
+    qsort(v.data(), v.size(), sizeof(int), cmp);
 }
 
 // Benchmarked function : several sub parts of this function are benchmarked separately
@@ -50,8 +50,7 @@ void benchmark_example()
     auto numbers_bench = make_benchmark_function(
         my_benchmark_session,
         "numbers",
-        fplus::numbers<int, std::vector<int>>
-    );
+        fplus::numbers<int, std::vector<int>>);
     // Then, we replace the original code "Ints ascending_numbers = fplus::numbers(0, 1000);"
     // by a code that uses the benchmarked function
     Ints ascending_numbers = numbers_bench(0, 100000);
@@ -72,8 +71,7 @@ void benchmark_example()
     Ints shuffled_numbers = benchmark_expression(
         my_benchmark_session,
         "shuffle",
-        fplus::shuffle(std::mt19937::default_seed, ascending_numbers);
-    );
+        fplus::shuffle(std::mt19937::default_seed, ascending_numbers););
 
     // Example 3: also benchmark by replacing an expression
     // The original expression was
@@ -81,8 +79,7 @@ void benchmark_example()
     const auto sorted_numbers = benchmark_expression(
         my_benchmark_session,
         "sort_shuffled_sequence",
-        fplus::sort(shuffled_numbers);
-    );
+        fplus::sort(shuffled_numbers););
     // Verify that the sort has worked
     assert(sorted_numbers == ascending_numbers);
 
@@ -95,16 +92,14 @@ void benchmark_example()
     const auto sorted_numbers2 = benchmark_expression(
         my_benchmark_session,
         "sort_reverse_sequence",
-        fplus::sort(descending_numbers);
-    );
+        fplus::sort(descending_numbers););
     // Verify that the sort has worked
     assert(sorted_numbers2 == ascending_numbers);
 
     // benchmark qsort
-    benchmark_void_expression(my_benchmark_session, "qsort_reverse_sequence",  qsort_vec_int(descending_numbers) );
+    benchmark_void_expression(my_benchmark_session, "qsort_reverse_sequence", qsort_vec_int(descending_numbers));
     REQUIRE(descending_numbers == ascending_numbers);
 }
-
 
 TEST_CASE("benchmark_example")
 {
@@ -116,7 +111,8 @@ TEST_CASE("benchmark_example")
         benchmark_example);
 
     // For the sake of this test, we will run the benchmarked function several times
-    fplus::execute_n_times(10, [&]() { benchmark_example_bench(); });
+    fplus::execute_n_times(10, [&]()
+                           { benchmark_example_bench(); });
 
     // A call to :
     //
@@ -133,48 +129,46 @@ TEST_CASE("benchmark_example")
     // sort_reverse_sequence |      10|   2.308ms|  230.782ns|  87.104ns|
     // numbers               |      10|   2.000ms|  199.965ns| 103.334ns|
 
-
     //////////// Unit tests assertions below ////////////////////////////
 
     // test report_list()
     {
         const auto reports = my_benchmark_session.report_list();
         REQUIRE_EQ(reports.size(), 6);
-        const auto & one_report = reports.at("benchmark_example");
+        const auto &one_report = reports.at("benchmark_example");
         REQUIRE_EQ(one_report.nb_calls, 10);
         REQUIRE(one_report.average_time == doctest::Approx(
-            one_report.total_time / static_cast<double>(one_report.nb_calls)));
+                                               one_report.total_time / static_cast<double>(one_report.nb_calls)));
     }
 
     // test report()
     {
-        const auto & report = my_benchmark_session.report();
+        const auto &report = my_benchmark_session.report();
 
-        const auto & lines  = fplus::split_lines(false, report);
+        const auto &lines = fplus::split_lines(false, report);
         REQUIRE_EQ(lines.size(), 8);
 
-        const auto & lines_sizes = fplus::transform([](const std::string & s) {
-            return s.size();
-        }, lines );
-        REQUIRE( fplus::all_the_same(lines_sizes) );
+        const auto &lines_sizes = fplus::transform([](const std::string &s)
+                                                   { return s.size(); },
+                                                   lines);
+        REQUIRE(fplus::all_the_same(lines_sizes));
 
-        const auto & check_nb_columns = fplus::transform([](const std::string & s) {
-            return (fplus::count('|', s) + fplus::count('+', s) ) == 5;
-        }, lines );
+        const auto &check_nb_columns = fplus::transform([](const std::string &s)
+                                                        { return (fplus::count('|', s) + fplus::count('+', s)) == 5; },
+                                                        lines);
         REQUIRE(fplus::all(check_nb_columns));
     }
 }
 
-
 //
 // The test below asserts that variadic arguments containing modifiable references are correctly forwarded
 //
-bool function_with_input_output_params(int input1, int& output2)
+bool function_with_input_output_params(int input1, int &output2)
 {
     output2 = input1 + 1;
     return true;
 }
-void void_function_with_input_output_params(int input1, int& output2)
+void void_function_with_input_output_params(int input1, int &output2)
 {
     output2 = input1 + 1;
 }
@@ -187,8 +181,7 @@ TEST_CASE("benchmark_input_output_args")
         auto function_with_input_output_params_bench = make_benchmark_function(
             my_benchmark_session,
             "function_with_input_output_params_bench",
-            function_with_input_output_params
-        );
+            function_with_input_output_params);
 
         int input1 = 1;
         int output2 = 42;
@@ -202,8 +195,7 @@ TEST_CASE("benchmark_input_output_args")
         auto void_function_with_input_output_params_bench = make_benchmark_void_function(
             my_benchmark_session,
             "void_function_with_input_output_params_bench",
-            void_function_with_input_output_params
-        );
+            void_function_with_input_output_params);
 
         int input1 = 1;
         int output2 = 42;

@@ -10,8 +10,10 @@
 TEST_CASE("raii_test - make_raii")
 {
     std::string log = "nothing";
-    const auto init = [&log]() { log = "init"; };
-    const auto quit = [&log]() { log = "quit"; };
+    const auto init = [&log]()
+    { log = "init"; };
+    const auto quit = [&log]()
+    { log = "quit"; };
 
     REQUIRE_EQ(log, "nothing");
     {

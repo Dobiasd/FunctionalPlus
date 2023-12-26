@@ -8,7 +8,8 @@
 #include <fplus/fplus.hpp>
 #include <vector>
 
-namespace {
+namespace
+{
 
     bool int_less(int x, int y)
     {
@@ -20,17 +21,19 @@ namespace {
         return x <= y;
     }
 
-    auto generic_less = [](auto x, auto y) {
-      return x < y;
+    auto generic_less = [](auto x, auto y)
+    {
+        return x < y;
     };
 
-    auto generic_less_eq = [](auto x, auto y) {
-      return x <= y;
+    auto generic_less_eq = [](auto x, auto y)
+    {
+        return x <= y;
     };
 
-    auto squareGeneric = [](auto x) { return x * x; };
+    auto squareGeneric = [](auto x)
+    { return x * x; };
 }
-
 
 TEST_CASE("compare_test - is_equal_to")
 {
@@ -69,7 +72,8 @@ TEST_CASE("compare_test - is_less_or_equal")
 TEST_CASE("compare_test - is_less_by")
 {
     using namespace fplus;
-    auto square = [](int x) { return x * x; };
+    auto square = [](int x)
+    { return x * x; };
     REQUIRE(is_less_by_and_by(squareGeneric, square)(2, -3));
     REQUIRE(is_less_by(squareGeneric)(2, -3));
 }
@@ -77,7 +81,8 @@ TEST_CASE("compare_test - is_less_by")
 TEST_CASE("compare_test - is_less_by_than")
 {
     using namespace fplus;
-    auto square = [](int x) { return x * x; };
+    auto square = [](int x)
+    { return x * x; };
     REQUIRE(is_less_by_than(square, 5)(2));
     REQUIRE(is_less_by_than(squareGeneric, 5)(2));
 }
@@ -107,7 +112,8 @@ TEST_CASE("compare_test - is_greater_or_equal")
 TEST_CASE("compare_test - is_equal_by")
 {
     using namespace fplus;
-    auto square = [](int x) { return x * x; };
+    auto square = [](int x)
+    { return x * x; };
     REQUIRE(is_equal_by_and_by(square, square)(2, -2));
     REQUIRE(is_equal_by_and_by(squareGeneric, square)(2, -2));
     REQUIRE(is_equal_by(square)(2, -2));
@@ -175,7 +181,7 @@ TEST_CASE("compare_test - ord_eq_to_not_eq")
 TEST_CASE("compare_test - lexicographical_less")
 {
     using namespace fplus;
-    REQUIRE(lexicographical_less(std::vector<int>{0,1,2,2,4,5}, std::vector<int>{0,1,2,3,4,5}));
+    REQUIRE(lexicographical_less(std::vector<int>{0, 1, 2, 2, 4, 5}, std::vector<int>{0, 1, 2, 3, 4, 5}));
     REQUIRE(lexicographical_less(std::vector<int>{}, std::vector<int>{1}));
     REQUIRE_FALSE(lexicographical_less(std::vector<int>{1}, std::vector<int>{}));
     REQUIRE(lexicographical_less(std::string("012245"), std::string("012345")));

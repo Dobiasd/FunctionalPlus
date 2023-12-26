@@ -16,129 +16,132 @@
 
 namespace fplus
 {
-using ExecutionTime = double; // in seconds
+    using ExecutionTime = double; // in seconds
 
-// Holds a value of type T plus an execution time
-template <typename T>
-class timed : public std::pair<T, ExecutionTime>
-{
-    using base_pair = std::pair<T, ExecutionTime>;
-public:
-    timed() : base_pair() {}
-    timed(const T& val, ExecutionTime t = 0.) : base_pair(val, t) {}
-
-    // Execution time in seconds (returns a double)
-    ExecutionTime time_in_s() const { return base_pair::second; }
-
-    // Execution time as a std::chrono::duration<double>
-    std::chrono::duration<double, std::ratio<1>> duration_in_s() const
+    // Holds a value of type T plus an execution time
+    template <typename T>
+    class timed : public std::pair<T, ExecutionTime>
     {
-        return std::chrono::duration<double, std::ratio<1>>(time_in_s());
+        using base_pair = std::pair<T, ExecutionTime>;
+
+    public:
+        timed() : base_pair() {}
+        timed(const T &val, ExecutionTime t = 0.) : base_pair(val, t) {}
+
+        // Execution time in seconds (returns a double)
+        ExecutionTime time_in_s() const { return base_pair::second; }
+
+        // Execution time as a std::chrono::duration<double>
+        std::chrono::duration<double, std::ratio<1>> duration_in_s() const
+        {
+            return std::chrono::duration<double, std::ratio<1>>(time_in_s());
+        }
+
+        // Inner value
+        const T &get() const { return base_pair::first; }
+        T &get() { return base_pair::first; }
+    };
+
+    // API search type: show_timed : Timed a -> String
+    // fwd bind count: 0
+    // show_timed((42,1)) -> "42 (1000ms)"
+    template <typename T>
+    std::string show_timed(const fplus::timed<T> &v)
+    {
+        std::string result =
+            fplus::show(v.get()) + " (" + fplus::show(v.time_in_s() * 1000.) + "ms)";
+        return result;
     }
 
-    // Inner value
-    const T& get() const            { return base_pair::first; }
-    T& get()                        { return base_pair::first; }
-};
-
-// API search type: show_timed : Timed a -> String
-// fwd bind count: 0
-// show_timed((42,1)) -> "42 (1000ms)"
-template <typename T>
-std::string show_timed(const fplus::timed<T>& v)
-{
-    std::string result =
-        fplus::show(v.get()) + " (" + fplus::show(v.time_in_s() * 1000.) + "ms)";
-    return result;
-}
-
-namespace internal
-{
-    template<typename Fn>
-    class timed_function_impl
+    namespace internal
     {
-    public:
-        explicit timed_function_impl(Fn fn) : _fn(fn) {};
-        template<typename ...Args> auto operator()(Args&&... args) 
-        { 
-            return _timed_result(std::forward<Args>(args)...); 
-        }
-
-    private:
-        template<typename ...Args>
-        auto _timed_result(Args&&... args)
+        template <typename Fn>
+        class timed_function_impl
         {
-            fplus::stopwatch timer;
-            auto r = _fn(std::forward<Args>(args)...);
-            auto r_t = fplus::timed<decltype(r)>(r, timer.elapsed());
-            return r_t;
-        }
+        public:
+            explicit timed_function_impl(Fn fn) : _fn(fn){};
+            template <typename... Args>
+            auto operator()(Args &&...args)
+            {
+                return _timed_result(std::forward<Args>(args)...);
+            }
 
-        Fn _fn;
-    };
-}
+        private:
+            template <typename... Args>
+            auto _timed_result(Args &&...args)
+            {
+                fplus::stopwatch timer;
+                auto r = _fn(std::forward<Args>(args)...);
+                auto r_t = fplus::timed<decltype(r)>(r, timer.elapsed());
+                return r_t;
+            }
 
-// API search type: make_timed_function : ((a -> b)) -> (a -> Timed b)
-// fwd bind count: 0
-// Transforms a function into a timed / benchmarked version of the same function.
-// -
-// Example:
-// -
-// using Ints = std::vector<int>;
-// Ints ascending_numbers = fplus::numbers(0, 1000);
-// Ints shuffled_numbers = fplus::shuffle(std::mt19937::default_seed, ascending_numbers);
-// auto sort_func = [](const Ints& values) { return fplus::sort(values); };
-// auto sort_bench = fplus::make_timed_function(sort_func);
-// auto sorted_numbers = sort_bench(shuffled_numbers);
-// assert(sorted_numbers.get() == ascending_numbers); // sorted_numbers.get() <=> actual output
-// assert(sorted_numbers.time_in_s() < 0.1); // // sorted_numbers.time_in_s() <=> execution time
-template<class Fn>
-auto make_timed_function(Fn f)
-{
-    return internal::timed_function_impl<decltype(f)>(f);
-}
+            Fn _fn;
+        };
+    }
 
-namespace internal
-{
-    template<typename Fn>
-    class timed_void_function_impl
+    // API search type: make_timed_function : ((a -> b)) -> (a -> Timed b)
+    // fwd bind count: 0
+    // Transforms a function into a timed / benchmarked version of the same function.
+    // -
+    // Example:
+    // -
+    // using Ints = std::vector<int>;
+    // Ints ascending_numbers = fplus::numbers(0, 1000);
+    // Ints shuffled_numbers = fplus::shuffle(std::mt19937::default_seed, ascending_numbers);
+    // auto sort_func = [](const Ints& values) { return fplus::sort(values); };
+    // auto sort_bench = fplus::make_timed_function(sort_func);
+    // auto sorted_numbers = sort_bench(shuffled_numbers);
+    // assert(sorted_numbers.get() == ascending_numbers); // sorted_numbers.get() <=> actual output
+    // assert(sorted_numbers.time_in_s() < 0.1); // // sorted_numbers.time_in_s() <=> execution time
+    template <class Fn>
+    auto make_timed_function(Fn f)
     {
-    public:
-        explicit timed_void_function_impl(Fn fn) : _fn(fn) {};
-        template<typename ...Args> auto operator()(Args&&... args)
+        return internal::timed_function_impl<decltype(f)>(f);
+    }
+
+    namespace internal
+    {
+        template <typename Fn>
+        class timed_void_function_impl
         {
-            return _timed_result(std::forward<Args>(args)...);
-        }
+        public:
+            explicit timed_void_function_impl(Fn fn) : _fn(fn){};
+            template <typename... Args>
+            auto operator()(Args &&...args)
+            {
+                return _timed_result(std::forward<Args>(args)...);
+            }
 
-    private:
-        template<typename ...Args>
-        auto _timed_result(Args&&... args)
-        {
-            fplus::stopwatch timer;
-            _fn(std::forward<Args>(args)...);
-            return timer.elapsed();
-        }
+        private:
+            template <typename... Args>
+            auto _timed_result(Args &&...args)
+            {
+                fplus::stopwatch timer;
+                _fn(std::forward<Args>(args)...);
+                return timer.elapsed();
+            }
 
-        Fn _fn;
-    };
+            Fn _fn;
+        };
 
-}
+    }
 
-// API search type: make_timed_void_function : ((a -> Void)) -> (a -> Double)
-// fwd bind count: 0
-// Transforms a void function into a timed / benchmarked version of the same function.
-// -
-// Example:
-// -
-// void foo() { std::this_thread::sleep_for(std::chrono::milliseconds(1000)); }
-// ...
-// auto foo_bench = make_timed_void_function(foo);
-// auto r = foo_bench();
-// double run_time = foo_bench(); // in seconds
-template<class Fn>
-auto make_timed_void_function(Fn f)
-{
-    return internal::timed_void_function_impl<decltype(f)>(f);
-}
+    // API search type: make_timed_void_function : ((a -> Void)) -> (a -> Double)
+    // fwd bind count: 0
+    // Transforms a void function into a timed / benchmarked version of the same function.
+    // -
+    // Example:
+    // -
+    // void foo() { std::this_thread::sleep_for(std::chrono::milliseconds(1000)); }
+    // ...
+    // auto foo_bench = make_timed_void_function(foo);
+    // auto r = foo_bench();
+    // double run_time = foo_bench(); // in seconds
+    template <class Fn>
+    auto make_timed_void_function(Fn f)
+    {
+        return internal::timed_void_function_impl<decltype(f)>(f);
+    }
 
 }

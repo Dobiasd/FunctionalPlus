@@ -8,21 +8,20 @@
 #include <fplus/fplus.hpp>
 #include <vector>
 
-namespace {
+namespace
+{
 
     auto sqrtToMaybe = [](auto x)
     {
-        return x < 0.0f ? fplus::nothing<float>() :
-                fplus::just(static_cast<float>(sqrt(static_cast<float>(x))));
+        return x < 0.0f ? fplus::nothing<float>() : fplus::just(static_cast<float>(sqrt(static_cast<float>(x))));
     };
 
     auto sqrtToMaybeInt = [](auto x)
     {
-        return x < 0 ? fplus::nothing<int>() :
-                fplus::just(fplus::round(sqrt(static_cast<float>(x))));
+        return x < 0 ? fplus::nothing<int>() : fplus::just(fplus::round(sqrt(static_cast<float>(x))));
     };
 
-    float IntToFloat(const int& x)
+    float IntToFloat(const int &x)
     {
         return static_cast<float>(x);
     }
@@ -31,12 +30,21 @@ namespace {
     typedef std::vector<int> Ints;
 }
 
-struct foo {
+struct foo
+{
     explicit foo(int) { msgs_.push_back("ctor"); }
-    foo(const foo&) { msgs_.push_back("copyctor"); }
-    foo(foo&&) noexcept { msgs_.push_back("movector"); }
-    foo& operator = (const foo&) { msgs_.push_back("assignment"); return *this; }
-    foo& operator = (foo&&) { msgs_.push_back("moveassignment"); return *this; }
+    foo(const foo &) { msgs_.push_back("copyctor"); }
+    foo(foo &&) noexcept { msgs_.push_back("movector"); }
+    foo &operator=(const foo &)
+    {
+        msgs_.push_back("assignment");
+        return *this;
+    }
+    foo &operator=(foo &&)
+    {
+        msgs_.push_back("moveassignment");
+        return *this;
+    }
     ~foo() { msgs_.push_back("dtor"); }
     static std::vector<std::string> msgs_;
 };
@@ -70,10 +78,9 @@ TEST_CASE("maybe_test - move semantics")
     maybe<foo> foo_b(foo(2));
     maybe<foo> foo_z(std::move(foo_a));
     foo_z = std::move(foo_b);
-    REQUIRE_EQ(foo::msgs_, Strings({
-        "ctor", "movector", "dtor",
-        "ctor", "movector", "dtor",
-        "movector", "dtor", "movector"}));
+    REQUIRE_EQ(foo::msgs_, Strings({"ctor", "movector", "dtor",
+                                    "ctor", "movector", "dtor",
+                                    "movector", "dtor", "movector"}));
     foo::msgs_.clear();
 }
 
@@ -138,7 +145,8 @@ TEST_CASE("maybe_test - lift")
     using namespace fplus;
     auto x = just<int>(2);
     maybe<int> y = nothing<int>();
-    auto squareGeneric = [](auto n) { return n * n; };
+    auto squareGeneric = [](auto n)
+    { return n * n; };
 
     REQUIRE_EQ(lift_maybe(square<int>, x), just(4));
     REQUIRE_EQ(lift_maybe(square<int>, y), nothing<int>());
@@ -206,10 +214,12 @@ TEST_CASE("maybe_test - and_then_maybe")
     REQUIRE_EQ(just(4).and_then(sqrtToMaybeInt), just(2));
     REQUIRE_EQ(nothing<int>().and_then(sqrtToMaybeInt), nothing<int>());
 
-    const auto string_to_maybe_int = [](const auto& str)
+    const auto string_to_maybe_int = [](const auto &str)
     {
-        if (str == "42") return just<int>(42);
-        else return nothing<int>();
+        if (str == "42")
+            return just<int>(42);
+        else
+            return nothing<int>();
     };
     REQUIRE_EQ(and_then_maybe(string_to_maybe_int, just<std::string>("3")), nothing<int>());
     REQUIRE_EQ(and_then_maybe(string_to_maybe_int, just<std::string>("42")), just<int>(42));
@@ -229,7 +239,7 @@ TEST_CASE("maybe_test - compose")
     auto sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt = compose_maybe(sqrtToMaybeInt, sqrtToMaybeInt, sqrtToMaybeInt, sqrtToMaybeInt);
     REQUIRE_EQ(sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt(65536), just(2));
 
-    auto LiftedIntToFloat = [](const maybe<int>& m) -> maybe<float>
+    auto LiftedIntToFloat = [](const maybe<int> &m) -> maybe<float>
     {
         return lift_maybe(IntToFloat, m);
     };
@@ -237,20 +247,21 @@ TEST_CASE("maybe_test - compose")
     auto IntToMaybeFloat = compose(JustInt, LiftedIntToFloat);
     auto IntToFloatAndSqrtAndSqrt = compose_maybe(IntToMaybeFloat, sqrtAndSqrt);
 
-    auto squareMaybe = [](auto n) { return just<decltype(n * n)>(n * n); };
-    auto plusMaybe = [](auto m, auto n) {
+    auto squareMaybe = [](auto n)
+    { return just<decltype(n * n)>(n * n); };
+    auto plusMaybe = [](auto m, auto n)
+    {
         return just<decltype(m + n)>(m + n);
     };
     REQUIRE_EQ(compose_maybe(plusMaybe, squareMaybe)(2, 3), just(25));
-    REQUIRE(is_in_interval(1.41f, 1.42f, unsafe_get_just<float>
-            (IntToFloatAndSqrtAndSqrt(4))));
+    REQUIRE(is_in_interval(1.41f, 1.42f, unsafe_get_just<float>(IntToFloatAndSqrtAndSqrt(4))));
 }
 
 TEST_CASE("maybe_test - equality")
 {
     using namespace fplus;
     IntMaybes maybes = {just(1), nothing<int>(), just(2)};
-    REQUIRE(justs(maybes) == Ints({ 1,2 }));
+    REQUIRE(justs(maybes) == Ints({1, 2}));
     REQUIRE(just(1) == just(1));
     REQUIRE(just(1) != just(2));
     REQUIRE(just(1) != nothing<int>());
@@ -260,12 +271,11 @@ TEST_CASE("maybe_test - equality")
 TEST_CASE("maybe_test - transform_and_keep_justs")
 {
     using namespace fplus;
-    Ints wholeNumbers = { -3, 4, 16, -1 };
-    REQUIRE_EQ(transform_and_keep_justs(sqrtToMaybeInt, wholeNumbers)
-           , Ints({2,4}));
+    Ints wholeNumbers = {-3, 4, 16, -1};
+    REQUIRE_EQ(transform_and_keep_justs(sqrtToMaybeInt, wholeNumbers), Ints({2, 4}));
     REQUIRE_EQ(transform_and_concat(
-            bind_1st_of_2(replicate<int>, std::size_t(3)), Ints{ 1,2 })
-           , Ints({ 1,1,1,2,2,2 }));
+                   bind_1st_of_2(replicate<int>, std::size_t(3)), Ints{1, 2}),
+               Ints({1, 1, 1, 2, 2, 2}));
 }
 
 TEST_CASE("maybe_test - show_maybe")
@@ -284,7 +294,7 @@ TEST_CASE("maybe_test - exceptions")
         {
             throw_on_nothing(std::invalid_argument("raised"), nothing<int>());
         }
-        catch (const std::exception& e)
+        catch (const std::exception &e)
         {
             thrown_str = e.what();
         }
@@ -296,7 +306,7 @@ TEST_CASE("maybe_test - exceptions")
         {
             nothing<int>().get_or_throw(std::invalid_argument("raised"));
         }
-        catch (const std::exception& e)
+        catch (const std::exception &e)
         {
             thrown_str = e.what();
         }
@@ -337,11 +347,15 @@ TEST_CASE("maybe_test - fluent methods")
     maybe<int> m(42);
 
     REQUIRE_EQ(m
-               .just_if([](auto x) { return x > 0; })
-               .and_then([](auto x) { return x % 2 == 0 ?
-                   just<std::string>("a") : nothing<std::string>(); })
-               .lift([](auto x) { return just(x); })
-               .join()
-               .lift_def(nothing<std::string>(), [](auto x) {return just(x + "b");})
-               .get_with_default("c"), "ab");
+                   .just_if([](auto x)
+                            { return x > 0; })
+                   .and_then([](auto x)
+                             { return x % 2 == 0 ? just<std::string>("a") : nothing<std::string>(); })
+                   .lift([](auto x)
+                         { return just(x); })
+                   .join()
+                   .lift_def(nothing<std::string>(), [](auto x)
+                             { return just(x + "b"); })
+                   .get_with_default("c"),
+               "ab");
 }

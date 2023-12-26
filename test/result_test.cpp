@@ -8,21 +8,20 @@
 #include <fplus/fplus.hpp>
 #include <vector>
 
-namespace {
+namespace
+{
 
     auto sqrtToResult = [](auto x)
     {
-        return x < 0.0f ? fplus::error<float>(std::string("no sqrt of negative numbers")) :
-                fplus::ok<float, std::string>(static_cast<float>(sqrt(static_cast<float>(x))));
+        return x < 0.0f ? fplus::error<float>(std::string("no sqrt of negative numbers")) : fplus::ok<float, std::string>(static_cast<float>(sqrt(static_cast<float>(x))));
     };
 
     auto sqrtToResultInt = [](auto x)
     {
-        return x < 0 ? fplus::error<int>(std::string("no sqrt of negative numbers")) :
-                fplus::ok<int, std::string>(fplus::round(sqrt(static_cast<float>(x))));
+        return x < 0 ? fplus::error<int>(std::string("no sqrt of negative numbers")) : fplus::ok<int, std::string>(fplus::round(sqrt(static_cast<float>(x))));
     };
 
-    float IntToFloat(const int& x)
+    float IntToFloat(const int &x)
     {
         return static_cast<float>(x);
     }
@@ -32,11 +31,13 @@ namespace {
     typedef std::vector<std::string> Strings;
 }
 
-class resultTestState {
+class resultTestState
+{
 public:
     explicit resultTestState(int x) : x_(x) {}
     void Add(int y) { x_ += y; }
     int Get() const { return x_; }
+
 private:
     int x_;
 };
@@ -71,7 +72,8 @@ TEST_CASE("result_test - and_then_result")
     REQUIRE_EQ(and_then_result(sqrtToResultInt, ok_4), ok_2);
     REQUIRE_EQ(and_then_result(sqrtToResultInt, an_error), an_error);
 
-    const auto string_to_result_int_string = [](const auto& str) {
+    const auto string_to_result_int_string = [](const auto &str)
+    {
         if (str == "42")
             return ok<int, std::string>(42);
         else
@@ -97,23 +99,22 @@ TEST_CASE("result_test - compose_result")
     REQUIRE_EQ(sqrtIntAndSqrtIntAndSqrtIntAndSqrtInt(65536), (ok<int, std::string>(2)));
 
     const auto LiftedIntToFloat =
-    [](const result<int, std::string>& r) -> result<float, std::string>
+        [](const result<int, std::string> &r) -> result<float, std::string>
     {
         return lift_result(IntToFloat, r);
     };
     auto OkInt = ok<int, std::string>;
     auto IntToResultFloat = compose(OkInt, LiftedIntToFloat);
     auto IntToFloatAndSqrtAndSqrt = compose_result(IntToResultFloat, sqrtAndSqrt);
-    REQUIRE(is_in_interval(1.41f, 1.42f, unsafe_get_ok<float>
-            (IntToFloatAndSqrtAndSqrt(4))));
+    REQUIRE(is_in_interval(1.41f, 1.42f, unsafe_get_ok<float>(IntToFloatAndSqrtAndSqrt(4))));
 
     // first callable can take a variadic number of arguments
-    auto sumToResult = [](auto a, auto b) {
+    auto sumToResult = [](auto a, auto b)
+    {
         return ok<decltype(a + b), std::string>(a + b);
     };
-    auto squareSumResult = compose_result(sumToResult, [](auto sum) {
-        return ok<decltype(sum * sum), std::string>(sum * sum);
-    });
+    auto squareSumResult = compose_result(sumToResult, [](auto sum)
+                                          { return ok<decltype(sum * sum), std::string>(sum * sum); });
 
     REQUIRE_EQ(squareSumResult(5, 5), (ok<int, std::string>(100)));
 }
@@ -125,7 +126,9 @@ TEST_CASE("result_test - lift")
     auto y = error<int, std::string>("an error");
     auto SquareAndSquare = compose(square<int>, square<int>);
     REQUIRE_EQ((lift_result(SquareAndSquare, x)), (ok<int, std::string>(16)));
-    REQUIRE_EQ((lift_result([](auto n) { return square(n) * square(n); }, x)),
+    REQUIRE_EQ((lift_result([](auto n)
+                            { return square(n) * square(n); },
+                            x)),
                (ok<int, std::string>(16)));
 }
 
@@ -136,8 +139,10 @@ TEST_CASE("result_test - lift_both")
     const auto y = error<int, std::string>("an error");
     REQUIRE_EQ(lift_result_both(square<int>, to_upper_case<std::string>, x), (ok<int, std::string>(4)));
     REQUIRE_EQ(lift_result_both(square<int>, to_upper_case<std::string>, y), (error<int, std::string>("AN ERROR")));
-    REQUIRE_EQ(lift_result_both([](auto z) { return z * z; },
-                                [](auto z) { return to_upper_case(z); },
+    REQUIRE_EQ(lift_result_both([](auto z)
+                                { return z * z; },
+                                [](auto z)
+                                { return to_upper_case(z); },
                                 y),
                (error<int, std::string>("AN ERROR")));
 }
@@ -147,14 +152,15 @@ TEST_CASE("result_test - unify_result")
     using namespace fplus;
     const auto x = ok<int, std::string>(2);
     const auto y = error<int, std::string>("an error");
-    const auto unify = [](const result<int, std::string>& r) -> std::string
+    const auto unify = [](const result<int, std::string> &r) -> std::string
     {
         return unify_result(show<int>, to_upper_case<std::string>, r);
     };
     REQUIRE_EQ(unify(x), "2");
     REQUIRE_EQ(unify(y), "AN ERROR");
 
-    const auto unifyGeneric = [](auto r) {
+    const auto unifyGeneric = [](auto r)
+    {
         return unify_result(show<typename decltype(r)::ok_t>,
                             to_upper_case<typename decltype(r)::error_t>,
                             r);
@@ -168,7 +174,7 @@ TEST_CASE("result_test - equality")
     using namespace fplus;
     IntResults results = {ok<int, std::string>(1), error<int>(std::string("no sqrt of negative numbers")), ok<int, std::string>(2)};
 
-    REQUIRE(oks(results) == Ints({ 1,2 }));
+    REQUIRE(oks(results) == Ints({1, 2}));
     REQUIRE(errors(results) == Strings({std::string("no sqrt of negative numbers")}));
 
     REQUIRE((ok<int, std::string>(1)) == (ok<int, std::string>(1)));
@@ -181,13 +187,12 @@ TEST_CASE("result_test - equality")
 TEST_CASE("result_test - transform_and_keep_oks")
 {
     using namespace fplus;
-    Ints wholeNumbers = { -3, 4, 16, -1 };
-    REQUIRE_EQ(transform_and_keep_oks(sqrtToResultInt, wholeNumbers)
-           , Ints({2,4}));
+    Ints wholeNumbers = {-3, 4, 16, -1};
+    REQUIRE_EQ(transform_and_keep_oks(sqrtToResultInt, wholeNumbers), Ints({2, 4}));
 
     REQUIRE_EQ(transform_and_concat(
-            bind_1st_of_2(replicate<int>, std::size_t(3)), Ints{ 1,2 })
-           , Ints({ 1,1,1,2,2,2 }));
+                   bind_1st_of_2(replicate<int>, std::size_t(3)), Ints{1, 2}),
+               Ints({1, 1, 1, 2, 2, 2}));
 }
 
 TEST_CASE("result_test - show_result")
@@ -208,7 +213,7 @@ TEST_CASE("result_test - exceptions")
     {
         throw_on_error(std::invalid_argument("exception string"), error<int, std::string>("failed"));
     }
-    catch (const std::exception& e)
+    catch (const std::exception &e)
     {
         thrown_str = e.what();
     }
@@ -219,7 +224,7 @@ TEST_CASE("result_test - exceptions")
     {
         throw_type_on_error<std::invalid_argument>(error<int, std::string>("failed"));
     }
-    catch (const std::exception& e)
+    catch (const std::exception &e)
     {
         thrown_str = e.what();
     }
