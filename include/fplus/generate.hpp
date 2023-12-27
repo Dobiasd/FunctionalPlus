@@ -6,13 +6,12 @@
 
 #pragma once
 
-#include <fplus/filter.hpp>
 #include <fplus/composition.hpp>
+#include <fplus/filter.hpp>
 
 #include <fplus/internal/asserts/functions.hpp>
 
-namespace fplus
-{
+namespace fplus {
 
 // API search type: generate : ((() -> a), Int) -> [a]
 // Grab values from executing a nullary function
@@ -26,8 +25,7 @@ ContainerOut generate(F f, std::size_t amount)
     ContainerOut ys;
     internal::prepare_container(ys, amount);
     auto it = internal::get_back_inserter<ContainerOut>(ys);
-    for (std::size_t i = 0; i < amount; ++i)
-    {
+    for (std::size_t i = 0; i < amount; ++i) {
         *it = internal::invoke(f);
     }
     return ys;
@@ -47,8 +45,7 @@ ContainerOut generate_by_idx(F f, std::size_t amount)
     ContainerOut ys;
     internal::prepare_container(ys, amount);
     auto it = internal::get_back_inserter<ContainerOut>(ys);
-    for (std::size_t i = 0; i < amount; ++i)
-    {
+    for (std::size_t i = 0; i < amount; ++i) {
         *it = internal::invoke(f, i);
     }
     return ys;
@@ -76,15 +73,14 @@ ContainerOut infixes(std::size_t length, const ContainerIn& xs)
 {
     assert(length > 0);
     static_assert(std::is_convertible<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "ContainerOut can not take values of type ContainerIn as elements.");
     ContainerOut result;
     if (size_of_cont(xs) < length)
         return result;
     internal::prepare_container(result, size_of_cont(xs) - length);
     auto itOut = internal::get_back_inserter(result);
-    for (std::size_t idx = 0; idx <= size_of_cont(xs) - length; ++idx)
-    {
+    for (std::size_t idx = 0; idx <= size_of_cont(xs) - length; ++idx) {
         *itOut = get_segment(idx, idx + length, xs);
     }
     return result;
@@ -102,9 +98,9 @@ ContainerOut infixes(std::size_t length, const ContainerIn& xs)
 //   WHERE pred(xs.x, ys.y);
 template <typename F, typename Pred, typename Container1, typename Container2>
 auto carthesian_product_with_where(F f,
-                                   Pred pred,
-                                   const Container1& xs,
-                                   const Container2& ys)
+    Pred pred,
+    const Container1& xs,
+    const Container2& ys)
 {
     using X = typename Container1::value_type;
     using Y = typename Container2::value_type;
@@ -113,12 +109,9 @@ auto carthesian_product_with_where(F f,
 
     ContainerOut result;
     auto itOut = internal::get_back_inserter(result);
-    for (const auto& x : xs)
-    {
-        for (const auto& y : ys)
-        {
-            if (internal::invoke(pred, x, y))
-            {
+    for (const auto& x : xs) {
+        for (const auto& y : ys) {
+            if (internal::invoke(pred, x, y)) {
                 itOut = f(x, y);
             }
         }
@@ -156,8 +149,7 @@ template <typename Pred, typename Container1, typename Container2>
 auto carthesian_product_where(Pred pred,
     const Container1& xs, const Container2& ys)
 {
-    auto make_res_pair = [](const auto& x, const auto& y)
-    {
+    auto make_res_pair = [](const auto& x, const auto& y) {
         return std::make_pair(x, y);
     };
     return carthesian_product_with_where(make_res_pair, pred, xs, ys);
@@ -175,8 +167,7 @@ auto carthesian_product_where(Pred pred,
 template <typename Container1, typename Container2>
 auto carthesian_product(const Container1& xs, const Container2& ys)
 {
-    auto make_res_pair = [](const auto& x, const auto& y)
-    {
+    auto make_res_pair = [](const auto& x, const auto& y) {
         return std::make_pair(x, y);
     };
     auto always_true_x_y = [](const auto&, const auto&) { return true; };
@@ -184,15 +175,12 @@ auto carthesian_product(const Container1& xs, const Container2& ys)
         make_res_pair, always_true_x_y, xs, ys);
 }
 
-
-namespace internal
-{
+namespace internal {
     // productN :: Int -> [a] -> [[a]]
     // productN n = foldr go [[]] . replicate n
     //     where go elems acc = [x:xs | x <- elems, xs <- acc]
     template <typename T>
-    std::vector<std::vector<T>> helper_carthesian_product_n_idxs
-            (std::size_t power, const std::vector<T>& xs)
+    std::vector<std::vector<T>> helper_carthesian_product_n_idxs(std::size_t power, const std::vector<T>& xs)
     {
         static_assert(std::is_same<T, std::size_t>::value,
             "T must be std::size_t");
@@ -200,13 +188,10 @@ namespace internal
         typedef std::vector<Vec> VecVec;
         if (power == 0)
             return VecVec();
-        auto go = [](const Vec& elems, const VecVec& acc)
-        {
+        auto go = [](const Vec& elems, const VecVec& acc) {
             VecVec result;
-            for (const T& x : elems)
-            {
-                for (const Vec& tail : acc)
-                {
+            for (const T& x : elems) {
+                for (const Vec& tail : acc) {
                     result.push_back(append(Vec(1, x), tail));
                 }
             }
@@ -232,8 +217,7 @@ ContainerOut carthesian_product_n(std::size_t power, const ContainerIn& xs_in)
     auto idxs = all_idxs(xs);
     auto result_idxss = internal::helper_carthesian_product_n_idxs(power, idxs);
     typedef typename ContainerOut::value_type ContainerOutInner;
-    auto to_result_cont = [&](const std::vector<std::size_t>& indices)
-    {
+    auto to_result_cont = [&](const std::vector<std::size_t>& indices) {
         return convert_container_and_elems<ContainerOutInner>(
             elems_at_idxs(indices, xs));
     };
@@ -257,8 +241,7 @@ ContainerOut permutations(std::size_t power, const ContainerIn& xs_in)
     auto result_idxss = keep_if(all_unique<idx_vec>,
         internal::helper_carthesian_product_n_idxs(power, idxs));
     typedef typename ContainerOut::value_type ContainerOutInner;
-    auto to_result_cont = [&](const std::vector<std::size_t>& indices)
-    {
+    auto to_result_cont = [&](const std::vector<std::size_t>& indices) {
         return convert_container_and_elems<ContainerOutInner>(
             elems_at_idxs(indices, xs));
     };
@@ -282,8 +265,7 @@ ContainerOut combinations(std::size_t power, const ContainerIn& xs_in)
     auto result_idxss = keep_if(is_strictly_sorted<idx_vec>,
         internal::helper_carthesian_product_n_idxs(power, idxs));
     typedef typename ContainerOut::value_type ContainerOutInner;
-    auto to_result_cont = [&](const std::vector<std::size_t>& indices)
-    {
+    auto to_result_cont = [&](const std::vector<std::size_t>& indices) {
         return convert_container_and_elems<ContainerOutInner>(
             elems_at_idxs(indices, xs));
     };
@@ -298,7 +280,7 @@ template <typename ContainerIn,
     typename T = typename ContainerIn::value_type,
     typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut combinations_with_replacement(std::size_t power,
-        const ContainerIn& xs_in)
+    const ContainerIn& xs_in)
 {
     if (power == 0)
         return ContainerOut(1);
@@ -308,8 +290,7 @@ ContainerOut combinations_with_replacement(std::size_t power,
     auto result_idxss = keep_if(is_sorted<idx_vec>,
         internal::helper_carthesian_product_n_idxs(power, idxs));
     typedef typename ContainerOut::value_type ContainerOutInner;
-    auto to_result_cont = [&](const std::vector<std::size_t>& indices)
-    {
+    auto to_result_cont = [&](const std::vector<std::size_t>& indices) {
         return convert_container_and_elems<ContainerOutInner>(
             elems_at_idxs(indices, xs));
     };
@@ -353,8 +334,7 @@ ContainerOut iterate(F f, std::size_t size, const T& x)
     auto it_out = internal::get_back_inserter(result);
     T current = x;
     *it_out = current;
-    for (std::size_t i = 1; i < size; ++i)
-    {
+    for (std::size_t i = 1; i < size; ++i) {
         current = internal::invoke(f, current);
         *it_out = current;
     }
@@ -375,8 +355,7 @@ ContainerOut iterate_maybe(F f, const T& x)
     ContainerOut result;
     auto it_out = internal::get_back_inserter(result);
     maybe<T> current(x);
-    while (current.is_just())
-    {
+    while (current.is_just()) {
         *it_out = current.unsafe_get_just();
         current = internal::invoke(f, current.unsafe_get_just());
     }
@@ -432,8 +411,7 @@ Container rotate_left(const Container& xs)
     auto it = std::begin(xs);
     auto it_out = internal::get_back_inserter(ys);
     ++it;
-    while (it != std::end(xs))
-    {
+    while (it != std::end(xs)) {
         *it_out = *it;
         ++it;
     }
@@ -481,7 +459,7 @@ ContainerOut rotations_right(const ContainerIn& xs_in)
 // fill_left(0, 6, [1,2,3,4]) == [0,0,1,2,3,4]
 // Also known as pad_left.
 template <typename Container,
-        typename T = typename Container::value_type>
+    typename T = typename Container::value_type>
 Container fill_left(const T& x, std::size_t min_size, const Container& xs)
 {
     if (min_size <= size_of_cont(xs))
@@ -494,7 +472,7 @@ Container fill_left(const T& x, std::size_t min_size, const Container& xs)
 // Left-align a sequence.
 // fill_right(0, 6, [1,2,3,4]) == [1,2,3,4,0,0]
 template <typename Container,
-        typename T = typename Container::value_type>
+    typename T = typename Container::value_type>
 Container fill_right(const T& x, std::size_t min_size, const Container& xs)
 {
     if (min_size <= size_of_cont(xs))

@@ -18,8 +18,7 @@
 #include <string>
 #include <tuple>
 
-namespace fplus
-{
+namespace fplus {
 
 // API search type: show : a -> String
 // fwd bind count: 0
@@ -41,8 +40,7 @@ std::string show(const T& x)
 
 // string identity
 // "foo" -> "foo"
-inline
-std::string show(const std::string& str)
+inline std::string show(const std::string& str)
 {
     return str;
 }
@@ -60,7 +58,8 @@ std::string show(const std::pair<X, Y>& p)
     return std::string("(") + show(p.first) + ", " + show(p.second) + ")";
 }
 
-template <typename Container> std::string show_cont(const Container& xs);
+template <typename Container>
+std::string show_cont(const Container& xs);
 
 template <typename T, typename A>
 std::string show(const std::vector<T, A>& xs)
@@ -97,25 +96,19 @@ std::string show_cont_with_frame_and_newlines(
     const std::string& separator,
     const std::string& prefix, const std::string& suffix,
     const Container& xs,
-    std::size_t new_line_every_nth_elem )
+    std::size_t new_line_every_nth_elem)
 {
     std::vector<std::string> elemStrs;
     elemStrs.reserve(xs.size());
-    if (new_line_every_nth_elem == 0)
-    {
-        for (const auto& x : xs)
-        {
+    if (new_line_every_nth_elem == 0) {
+        for (const auto& x : xs) {
             elemStrs.push_back(show(x));
         }
-    }
-    else
-    {
+    } else {
         std::size_t i = 0;
-        std::string newline =
-            std::string("\n") + std::string(prefix.size(), ' ');
-        for (const auto& x : xs)
-        {
-            if ( i && i % new_line_every_nth_elem == 0)
+        std::string newline = std::string("\n") + std::string(prefix.size(), ' ');
+        for (const auto& x : xs) {
+            if (i && i % new_line_every_nth_elem == 0)
                 elemStrs.push_back(newline + show(x));
             else
                 elemStrs.push_back(show(x));
@@ -134,8 +127,7 @@ std::string show_cont_with_frame(
     const std::string& prefix, const std::string& suffix,
     const Container& xs)
 {
-    return
-        show_cont_with_frame_and_newlines( separator, prefix, suffix, xs, 0);
+    return show_cont_with_frame_and_newlines(separator, prefix, suffix, xs, 0);
 }
 
 // API search type: show_cont_with : (String, [a]) -> String
@@ -209,8 +201,7 @@ std::string show_float(
     std::size_t min_left_chars, std::size_t right_char_count, const T& x)
 {
     bool is_negative = x < 0;
-    std::size_t min_left_chars_final =
-        is_negative && min_left_chars > 0
+    std::size_t min_left_chars_final = is_negative && min_left_chars > 0
         ? min_left_chars - 1
         : min_left_chars;
     std::stringstream stream;
@@ -221,8 +212,7 @@ std::string show_float(
     std::string s = stream.str();
     std::size_t min_dest_length = min_left_chars_final + 1 + right_char_count;
     std::string result = fill_left('0', min_dest_length, s);
-    if (is_negative)
-    {
+    if (is_negative) {
         result = std::string("-") + result;
     }
     return result;
@@ -241,7 +231,7 @@ std::string show_float(
 // show_float_fill_left<double>(' ', 2, 3, -pi) == "-3.142"
 template <typename T>
 std::string show_float_fill_left(const std::string::value_type& filler,
-        std::size_t min_size, std::size_t right_char_count, const T& x)
+    std::size_t min_size, std::size_t right_char_count, const T& x)
 {
     return fill_left(filler, min_size, show_float<T>(0, right_char_count, x));
 }
@@ -277,22 +267,22 @@ std::string show_fill_right(const std::string::value_type& filler,
 
 // Based on https://en.cppreference.com/w/cpp/utility/tuple/tuple_cat
 // Case N, recursive
-template<class Tuple, std::size_t N>
+template <class Tuple, std::size_t N>
 struct TupleStreamer {
-    static void stream(const Tuple& t, std::list<std::string>& sl) 
+    static void stream(const Tuple& t, std::list<std::string>& sl)
     {
-        TupleStreamer<Tuple, N-1>::stream(t,sl);
+        TupleStreamer<Tuple, N - 1>::stream(t, sl);
         std::stringstream ss;
-        ss << std::get<N-1>(t);
+        ss << std::get<N - 1>(t);
         sl.emplace_back(ss.str());
     }
 };
 
 // Based on https://en.cppreference.com/w/cpp/utility/tuple/tuple_cat
 // Case N=1
-template<class Tuple>
+template <class Tuple>
 struct TupleStreamer<Tuple, 1> {
-    static void stream(const Tuple& t, std::list<std::string>& sl) 
+    static void stream(const Tuple& t, std::list<std::string>& sl)
     {
         std::stringstream ss;
         ss << std::get<0>(t);
@@ -302,8 +292,8 @@ struct TupleStreamer<Tuple, 1> {
 
 // Based on https://en.cppreference.com/w/cpp/utility/tuple/tuple_cat
 // Case N=0
-template<typename... Args, std::enable_if_t<sizeof...(Args) == 0, int> = 0>
-void stream(const std::tuple<Args...>& , std::list<std::string>& )
+template <typename... Args, std::enable_if_t<sizeof...(Args) == 0, int> = 0>
+void stream(const std::tuple<Args...>&, std::list<std::string>&)
 {
     return;
 }
@@ -313,11 +303,11 @@ void stream(const std::tuple<Args...>& , std::list<std::string>& )
 // std::tuple<int, std::string, float> t1(10, "Test", 3.14);
 // std::list<std::string> lt1 = stream(t1);
 // std::cout << fplus::show_cont(lt1);
-template<typename... Args, std::enable_if_t<sizeof...(Args) != 0, int> = 0>
+template <typename... Args, std::enable_if_t<sizeof...(Args) != 0, int> = 0>
 std::list<std::string> stream(const std::tuple<Args...>& t)
 {
     std::list<std::string> sl;
-    TupleStreamer<decltype(t), sizeof...(Args)>::stream(t,sl);
+    TupleStreamer<decltype(t), sizeof...(Args)>::stream(t, sl);
     return sl;
 }
 

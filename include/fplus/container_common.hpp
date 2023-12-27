@@ -6,14 +6,14 @@
 
 #pragma once
 
+#include <fplus/compare.hpp>
 #include <fplus/composition.hpp>
 #include <fplus/container_traits.hpp>
 #include <fplus/maybe.hpp>
-#include <fplus/compare.hpp>
 
-#include <fplus/internal/meta.hpp>
-#include <fplus/internal/invoke.hpp>
 #include <fplus/internal/container_common.hpp>
+#include <fplus/internal/invoke.hpp>
+#include <fplus/internal/meta.hpp>
 
 #include <algorithm>
 #include <cassert>
@@ -22,11 +22,9 @@
 #include <iterator>
 #include <numeric>
 
-namespace fplus
-{
+namespace fplus {
 
-namespace internal
-{
+namespace internal {
     template <typename UnaryPredicate, typename Container>
     void check_unary_predicate_for_container()
     {
@@ -40,7 +38,7 @@ namespace internal
         typedef typename Container::value_type T;
         internal::trigger_static_asserts<internal::binary_function_tag, F, std::size_t, T>();
         static_assert(std::is_convertible<
-            internal::invoke_result_t<F, std::size_t, T>, bool>::value,
+                          internal::invoke_result_t<F, std::size_t, T>, bool>::value,
             "Function must return bool.");
     }
 
@@ -67,7 +65,8 @@ namespace internal
     // for transform.
     template <typename C>
     void prepare_container(const std::basic_string<C, std::char_traits<C>,
-        std::allocator<C>>& ys, std::size_t size)
+                               std::allocator<C>>& ys,
+        std::size_t size)
     {
         ys.reserve(size);
     }
@@ -140,19 +139,27 @@ namespace internal
 
     // Avoid self-assignment.
     template <typename T>
-    void assign(T& x, T&& y) {
+    void assign(T& x, T&& y)
+    {
         if (&x != &y)
             x = std::move(y);
     }
 
     template <typename T, std::size_t N>
-    struct array_back_insert_iterator : public std::back_insert_iterator<std::array<T, N>>
-    {
+    struct array_back_insert_iterator : public std::back_insert_iterator<std::array<T, N>> {
         typedef std::back_insert_iterator<std::array<T, N>> base_type;
-        explicit array_back_insert_iterator(std::array<T, N>& arr) :
-            base_type(arr), arr_ptr_(&arr), pos_(0) {}
-        array_back_insert_iterator(const array_back_insert_iterator<T, N>& other) :
-            base_type(*other.arr_ptr_), arr_ptr_(other.arr_ptr_), pos_(other.pos_) {}
+        explicit array_back_insert_iterator(std::array<T, N>& arr)
+            : base_type(arr)
+            , arr_ptr_(&arr)
+            , pos_(0)
+        {
+        }
+        array_back_insert_iterator(const array_back_insert_iterator<T, N>& other)
+            : base_type(*other.arr_ptr_)
+            , arr_ptr_(other.arr_ptr_)
+            , pos_(other.pos_)
+        {
+        }
         array_back_insert_iterator<T, N>& operator=(const array_back_insert_iterator<T, N>& other)
         {
             arr_ptr_ = other.arr_ptr_;
@@ -180,6 +187,7 @@ namespace internal
         array_back_insert_iterator<T, N>& operator*() { return *this; }
         array_back_insert_iterator<T, N>& operator++() { return *this; }
         array_back_insert_iterator<T, N> operator++(int) { return *this; }
+
     private:
         std::array<T, N>* arr_ptr_;
         std::size_t pos_;
@@ -188,8 +196,7 @@ namespace internal
 #if defined(_MSC_VER) && _MSC_VER >= 1900
     template <typename T, std::size_t N>
     struct std::_Is_checked_helper<array_back_insert_iterator<T, N>>
-        : public true_type
-    { // mark array_back_insert_iterator as checked
+        : public true_type { // mark array_back_insert_iterator as checked
     };
 #endif
 
@@ -302,7 +309,7 @@ template <typename NewT, typename ContainerIn,
 ContainerOut convert_elems(const ContainerIn& xs)
 {
     static_assert(std::is_constructible<NewT,
-        typename ContainerIn::value_type>::value,
+                      typename ContainerIn::value_type>::value,
         "Elements not convertible.");
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
@@ -310,8 +317,7 @@ ContainerOut convert_elems(const ContainerIn& xs)
     // using 'for (const auto& x ...)' is even for ints as fast as
     // using 'for (int x ...)' (GCC, O3), so there is no need to
     // check if the type is fundamental and then dispatch accordingly.
-    for (const auto& x : xs)
-    {
+    for (const auto& x : xs) {
         *it = convert<NewT>(x);
     }
     return ys;
@@ -346,57 +352,53 @@ template <typename ContainerOut, typename ContainerIn>
 ContainerOut convert_container_and_elems(const ContainerIn& xs)
 {
     static_assert(std::is_convertible<typename ContainerIn::value_type,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Elements not convertible.");
     typedef typename ContainerOut::value_type DestElem;
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
     auto it = internal::get_back_inserter<ContainerOut>(ys);
-    for (const auto& x : xs)
-    {
+    for (const auto& x : xs) {
         *it = convert<DestElem>(x);
     }
     return ys;
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename Container>
-Container get_segment(internal::reuse_container_t,
-    std::size_t idx_begin, std::size_t idx_end, Container&& xs)
-{
-    idx_end = std::min(idx_end, size_of_cont(xs));
-    if (idx_end <= idx_begin)
+    template <typename Container>
+    Container get_segment(internal::reuse_container_t,
+        std::size_t idx_begin, std::size_t idx_end, Container&& xs)
     {
-        xs.clear();
+        idx_end = std::min(idx_end, size_of_cont(xs));
+        if (idx_end <= idx_begin) {
+            xs.clear();
+            return std::forward<Container>(xs);
+        }
+        auto itBegin = std::begin(xs);
+        internal::advance_iterator(itBegin, idx_begin);
+        auto itEnd = itBegin;
+        internal::advance_iterator(itEnd, idx_end - idx_begin);
+        xs.erase(std::copy(itBegin, itEnd, std::begin(xs)), std::end(xs));
         return std::forward<Container>(xs);
     }
-    auto itBegin = std::begin(xs);
-    internal::advance_iterator(itBegin, idx_begin);
-    auto itEnd = itBegin;
-    internal::advance_iterator(itEnd, idx_end - idx_begin);
-    xs.erase(std::copy(itBegin, itEnd, std::begin(xs)), std::end(xs));
-    return std::forward<Container>(xs);
-}
 
-template <typename Container>
-Container get_segment(internal::create_new_container_t,
-    std::size_t idx_begin, std::size_t idx_end, const Container& xs)
-{
-    idx_end = std::min(idx_end, size_of_cont(xs));
-    if (idx_end <= idx_begin)
+    template <typename Container>
+    Container get_segment(internal::create_new_container_t,
+        std::size_t idx_begin, std::size_t idx_end, const Container& xs)
     {
-        return {};
+        idx_end = std::min(idx_end, size_of_cont(xs));
+        if (idx_end <= idx_begin) {
+            return {};
+        }
+        Container result;
+        auto itBegin = std::begin(xs);
+        internal::advance_iterator(itBegin, idx_begin);
+        auto itEnd = itBegin;
+        internal::advance_iterator(itEnd, idx_end - idx_begin);
+        std::copy(itBegin, itEnd, internal::get_back_inserter(result));
+        return result;
     }
-    Container result;
-    auto itBegin = std::begin(xs);
-    internal::advance_iterator(itBegin, idx_begin);
-    auto itEnd = itBegin;
-    internal::advance_iterator(itEnd, idx_end - idx_begin);
-    std::copy(itBegin, itEnd, internal::get_back_inserter(result));
-    return result;
-}
 
 } // namespace internal
 
@@ -409,35 +411,33 @@ Container get_segment(internal::create_new_container_t,
 // Also known as slice.
 template <typename Container,
     typename ContainerOut = internal::remove_const_and_ref_t<Container>>
-ContainerOut get_segment
-        (std::size_t idx_begin, std::size_t idx_end, Container&& xs)
+ContainerOut get_segment(std::size_t idx_begin, std::size_t idx_end, Container&& xs)
 {
-    return internal::get_segment(internal::can_reuse_v<Container>{},
+    return internal::get_segment(internal::can_reuse_v<Container> {},
         idx_begin, idx_end, std::forward<Container>(xs));
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename ContainerToken, typename Container>
-Container set_segment(internal::reuse_container_t,
-    std::size_t idx_begin, const ContainerToken& token, Container&& xs)
-{
-    assert(idx_begin + size_of_cont(token) < size_of_cont(xs));
-    auto itBegin = std::begin(xs);
-    internal::advance_iterator(itBegin, idx_begin);
-    std::copy(std::begin(token), std::end(token), itBegin);
-    return std::forward<Container>(xs);
-}
+    template <typename ContainerToken, typename Container>
+    Container set_segment(internal::reuse_container_t,
+        std::size_t idx_begin, const ContainerToken& token, Container&& xs)
+    {
+        assert(idx_begin + size_of_cont(token) < size_of_cont(xs));
+        auto itBegin = std::begin(xs);
+        internal::advance_iterator(itBegin, idx_begin);
+        std::copy(std::begin(token), std::end(token), itBegin);
+        return std::forward<Container>(xs);
+    }
 
-template <typename ContainerToken, typename Container>
-Container set_segment(internal::create_new_container_t,
-    std::size_t idx_begin, const ContainerToken& token, const Container& xs)
-{
-    Container result = xs;
-    return set_segment(internal::reuse_container_t(),
-        idx_begin, token, std::move(result));
-}
+    template <typename ContainerToken, typename Container>
+    Container set_segment(internal::create_new_container_t,
+        std::size_t idx_begin, const ContainerToken& token, const Container& xs)
+    {
+        Container result = xs;
+        return set_segment(internal::reuse_container_t(),
+            idx_begin, token, std::move(result));
+    }
 
 } // namespace internal
 
@@ -449,55 +449,53 @@ Container set_segment(internal::create_new_container_t,
 // Also known as replace_segment.
 template <typename ContainerToken, typename Container,
     typename ContainerOut = internal::remove_const_and_ref_t<Container>>
-ContainerOut set_segment
-        (std::size_t idx_begin, const ContainerToken& token, Container&& xs)
+ContainerOut set_segment(std::size_t idx_begin, const ContainerToken& token, Container&& xs)
 {
-    return internal::set_segment(internal::can_reuse_v<Container>{},
+    return internal::set_segment(internal::can_reuse_v<Container> {},
         idx_begin, token, std::forward<Container>(xs));
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename Container>
-Container remove_segment(internal::reuse_container_t,
-    std::size_t idx_begin, std::size_t idx_end, Container&& xs)
-{
-    assert(idx_begin <= idx_end);
-    assert(idx_end <= size_of_cont(xs));
+    template <typename Container>
+    Container remove_segment(internal::reuse_container_t,
+        std::size_t idx_begin, std::size_t idx_end, Container&& xs)
+    {
+        assert(idx_begin <= idx_end);
+        assert(idx_end <= size_of_cont(xs));
 
-    auto firstBreakIt = std::begin(xs);
-    internal::advance_iterator(firstBreakIt, idx_begin);
+        auto firstBreakIt = std::begin(xs);
+        internal::advance_iterator(firstBreakIt, idx_begin);
 
-    auto secondBreakIt = std::begin(xs);
-    internal::advance_iterator(secondBreakIt, idx_end);
+        auto secondBreakIt = std::begin(xs);
+        internal::advance_iterator(secondBreakIt, idx_end);
 
-    xs.erase(
-        std::copy(secondBreakIt, std::end(xs), firstBreakIt), std::end(xs));
-    return std::forward<Container>(xs);
-}
+        xs.erase(
+            std::copy(secondBreakIt, std::end(xs), firstBreakIt), std::end(xs));
+        return std::forward<Container>(xs);
+    }
 
-template <typename Container>
-Container remove_segment(internal::create_new_container_t,
-    std::size_t idx_begin, std::size_t idx_end, const Container& xs)
-{
-    assert(idx_begin <= idx_end);
-    assert(idx_end <= size_of_cont(xs));
+    template <typename Container>
+    Container remove_segment(internal::create_new_container_t,
+        std::size_t idx_begin, std::size_t idx_end, const Container& xs)
+    {
+        assert(idx_begin <= idx_end);
+        assert(idx_end <= size_of_cont(xs));
 
-    Container result;
-    std::size_t length = idx_end - idx_begin;
-    internal::prepare_container(result, size_of_cont(xs) - length);
+        Container result;
+        std::size_t length = idx_end - idx_begin;
+        internal::prepare_container(result, size_of_cont(xs) - length);
 
-    auto firstBreakIt = std::begin(xs);
-    internal::advance_iterator(firstBreakIt, idx_begin);
-    std::copy(std::begin(xs), firstBreakIt, internal::get_back_inserter(result));
+        auto firstBreakIt = std::begin(xs);
+        internal::advance_iterator(firstBreakIt, idx_begin);
+        std::copy(std::begin(xs), firstBreakIt, internal::get_back_inserter(result));
 
-    auto secondBreakIt = std::begin(xs);
-    internal::advance_iterator(secondBreakIt, idx_end);
-    std::copy(secondBreakIt, std::end(xs), internal::get_back_inserter(result));
+        auto secondBreakIt = std::begin(xs);
+        internal::advance_iterator(secondBreakIt, idx_end);
+        std::copy(secondBreakIt, std::end(xs), internal::get_back_inserter(result));
 
-    return result;
-}
+        return result;
+    }
 
 } // namespace internal
 
@@ -509,9 +507,9 @@ Container remove_segment(internal::create_new_container_t,
 template <typename Container,
     typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut remove_segment(
-        std::size_t idx_begin, std::size_t idx_end, Container&& xs)
+    std::size_t idx_begin, std::size_t idx_end, Container&& xs)
 {
-    return internal::remove_segment(internal::can_reuse_v<Container>{},
+    return internal::remove_segment(internal::can_reuse_v<Container> {},
         idx_begin, idx_end, std::forward<Container>(xs));
 }
 
@@ -522,7 +520,7 @@ ContainerOut remove_segment(
 // Unsafe! Crashes on invalid index.
 template <typename Container>
 Container insert_at(std::size_t idx_begin,
-        const Container& token, const Container& xs)
+    const Container& token, const Container& xs)
 {
     assert(idx_begin <= size_of_cont(xs));
 
@@ -562,8 +560,7 @@ template <typename Container,
     typename T = typename Container::value_type>
 maybe<T> elem_at_idx_maybe(std::size_t idx, const Container& xs)
 {
-    if (size_of_cont(xs) < idx)
-    {
+    if (size_of_cont(xs) < idx) {
         return {};
     }
     auto it = std::begin(xs);
@@ -586,39 +583,37 @@ std::vector<T> elems_at_idxs(const ContainerIdxs& idxs, const Container& xs)
     ContainerOut result;
     internal::prepare_container(result, size_of_cont(idxs));
     auto itOut = internal::get_back_inserter(result);
-    for (std::size_t idx : idxs)
-    {
+    for (std::size_t idx : idxs) {
         *itOut = elem_at_idx(idx, xs);
     }
     return result;
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename Container, typename F>
-Container transform(internal::reuse_container_t, F f, Container&& xs)
-{
-    internal::trigger_static_asserts<internal::unary_function_tag,
-                                         F,
-                                         decltype(*std::begin(xs))>();
-    std::transform(std::begin(xs), std::end(xs), std::begin(xs), f);
-    return std::forward<Container>(xs);
-}
+    template <typename Container, typename F>
+    Container transform(internal::reuse_container_t, F f, Container&& xs)
+    {
+        internal::trigger_static_asserts<internal::unary_function_tag,
+            F,
+            decltype(*std::begin(xs))>();
+        std::transform(std::begin(xs), std::end(xs), std::begin(xs), f);
+        return std::forward<Container>(xs);
+    }
 
-template <typename ContainerOut, typename F, typename ContainerIn>
-ContainerOut transform(internal::create_new_container_t, F f,
-    const ContainerIn& xs)
-{
-    internal::trigger_static_asserts<internal::unary_function_tag,
-                                         F,
-                                         decltype(*std::begin(xs))>();
-    ContainerOut ys;
-    internal::prepare_container(ys, size_of_cont(xs));
-    auto it = internal::get_back_inserter<ContainerOut>(ys);
-    std::transform(std::begin(xs), std::end(xs), it, f);
-    return ys;
-}
+    template <typename ContainerOut, typename F, typename ContainerIn>
+    ContainerOut transform(internal::create_new_container_t, F f,
+        const ContainerIn& xs)
+    {
+        internal::trigger_static_asserts<internal::unary_function_tag,
+            F,
+            decltype(*std::begin(xs))>();
+        ContainerOut ys;
+        internal::prepare_container(ys, size_of_cont(xs));
+        auto it = internal::get_back_inserter<ContainerOut>(ys);
+        std::transform(std::begin(xs), std::end(xs), it, f);
+        return ys;
+    }
 
 } // namespace internal
 
@@ -635,17 +630,17 @@ ContainerOut transform(F f, ContainerIn&& xs)
     using reuse_t = typename std::conditional<
         std::is_same<
             internal::can_reuse_v<ContainerIn>,
-            internal::reuse_container_t>::value &&
-        std::is_base_of<
-            std::true_type,
-            internal::has_order<ContainerIn>>::value &&
-        std::is_same<
-            internal::remove_const_and_ref_t<ContainerIn>,
-            ContainerOut>::value,
+            internal::reuse_container_t>::value
+            && std::is_base_of<
+                std::true_type,
+                internal::has_order<ContainerIn>>::value
+            && std::is_same<
+                internal::remove_const_and_ref_t<ContainerIn>,
+                ContainerOut>::value,
         internal::reuse_container_t,
         internal::create_new_container_t>::type;
     return internal::transform<ContainerOut>(
-        reuse_t{}, f, std::forward<ContainerIn>(xs));
+        reuse_t {}, f, std::forward<ContainerIn>(xs));
 }
 
 // API search type: transform_convert : ((a -> b), [a]) -> [b]
@@ -675,9 +670,8 @@ template <typename F, typename ContainerIn,
         typename internal::same_cont_new_t<
             ContainerIn,
             typename internal::same_cont_new_t_from_unary_f<
-                typename ContainerIn::value_type, F, 0
-            >::type, 0
-        >::type>
+                typename ContainerIn::value_type, F, 0>::type,
+            0>::type>
 ContainerOut transform_inner(F f, const ContainerIn& xs)
 {
     internal::trigger_static_asserts<internal::unary_function_tag, F, typename ContainerIn::value_type::value_type>();
@@ -687,27 +681,26 @@ ContainerOut transform_inner(F f, const ContainerIn& xs)
         xs);
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename Container>
-Container reverse(internal::reuse_container_t, Container&& xs)
-{
-    static_assert(internal::has_order<Container>::value,
-        "Reverse: Container has no order.");
-    std::reverse(std::begin(xs), std::end(xs));
-    return std::forward<Container>(xs);
-}
+    template <typename Container>
+    Container reverse(internal::reuse_container_t, Container&& xs)
+    {
+        static_assert(internal::has_order<Container>::value,
+            "Reverse: Container has no order.");
+        std::reverse(std::begin(xs), std::end(xs));
+        return std::forward<Container>(xs);
+    }
 
-template <typename Container>
-Container reverse(internal::create_new_container_t, const Container& xs)
-{
-    static_assert(internal::has_order<Container>::value,
-        "Reverse: Container has no order.");
-    Container ys = xs;
-    std::reverse(std::begin(ys), std::end(ys));
-    return ys;
-}
+    template <typename Container>
+    Container reverse(internal::create_new_container_t, const Container& xs)
+    {
+        static_assert(internal::has_order<Container>::value,
+            "Reverse: Container has no order.");
+        Container ys = xs;
+        std::reverse(std::begin(ys), std::end(ys));
+        return ys;
+    }
 
 } // namespace internal
 
@@ -719,7 +712,7 @@ template <typename Container,
     typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut reverse(Container&& xs)
 {
-    return internal::reverse(internal::can_reuse_v<Container>{},
+    return internal::reverse(internal::can_reuse_v<Container> {},
         std::forward<Container>(xs));
 }
 
@@ -772,13 +765,11 @@ Container take_cyclic(std::size_t amount, const Container& xs)
     auto it_out = internal::get_back_inserter(ys);
     auto it_in = std::begin(xs);
 
-    while (amount != 0)
-    {
+    while (amount != 0) {
         *it_out = *it_in;
         --amount;
         ++it_in;
-        if (it_in == std::end(xs))
-        {
+        if (it_in == std::end(xs)) {
             it_in = std::begin(xs);
         }
     }
@@ -1044,10 +1035,10 @@ auto scan_left_1(F f, const ContainerIn& xs)
     ContainerOut result;
     internal::prepare_container(result, size_of_cont(xs));
     internal::scan_impl(f,
-                      *beginIt,
-                      internal::get_back_inserter(result),
-                      std::next(beginIt),
-                      end(xs));
+        *beginIt,
+        internal::get_back_inserter(result),
+        std::next(beginIt),
+        end(xs));
     return result;
 }
 
@@ -1090,8 +1081,7 @@ template <typename Container,
 T sum(const Container& xs)
 {
     T result = T();
-    for (const auto& x : xs)
-    {
+    for (const auto& x : xs) {
         result = result + x;
     }
     return result;
@@ -1106,35 +1096,33 @@ template <typename Container,
     typename T = typename Container::value_type>
 T product(const Container& xs)
 {
-    T result{1};
-    for (const auto& x : xs)
-    {
+    T result { 1 };
+    for (const auto& x : xs) {
         result = result * x;
     }
     return result;
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename T, typename Container>
-Container append_elem(internal::reuse_container_t, const T& y, Container&& xs)
-{
-    *internal::get_back_inserter(xs) = y;
-    return std::forward<Container>(xs);
-}
+    template <typename T, typename Container>
+    Container append_elem(internal::reuse_container_t, const T& y, Container&& xs)
+    {
+        *internal::get_back_inserter(xs) = y;
+        return std::forward<Container>(xs);
+    }
 
-template <typename T, typename Container>
-Container append_elem(internal::create_new_container_t, const T& y,
-    const Container& xs)
-{
-    Container result;
-    internal::prepare_container(result, size_of_cont(xs) + 1);
-    std::copy(std::begin(xs), std::end(xs),
-        internal::get_back_inserter(result));
-    *internal::get_back_inserter(result) = y;
-    return result;
-}
+    template <typename T, typename Container>
+    Container append_elem(internal::create_new_container_t, const T& y,
+        const Container& xs)
+    {
+        Container result;
+        internal::prepare_container(result, size_of_cont(xs) + 1);
+        std::copy(std::begin(xs), std::end(xs),
+            internal::get_back_inserter(result));
+        *internal::get_back_inserter(result) = y;
+        return result;
+    }
 
 } // namespace internal
 
@@ -1147,42 +1135,41 @@ template <typename Container,
     typename T = typename ContainerOut::value_type>
 ContainerOut append_elem(const T& y, Container&& xs)
 {
-    return internal::append_elem(internal::can_reuse_v<Container>{},
+    return internal::append_elem(internal::can_reuse_v<Container> {},
         y, std::forward<Container>(xs));
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename T>
-std::list<T> prepend_elem(internal::reuse_container_t,
-    const T& y, std::list<T>&& xs)
-{
-    xs.push_front(y);
-    return std::forward<std::list<T>>(xs);
-}
+    template <typename T>
+    std::list<T> prepend_elem(internal::reuse_container_t,
+        const T& y, std::list<T>&& xs)
+    {
+        xs.push_front(y);
+        return std::forward<std::list<T>>(xs);
+    }
 
-template <typename T, typename Container>
-Container prepend_elem(internal::reuse_container_t,
-    const T& y, Container&& xs)
-{
-    xs.resize(size_of_cont(xs) + 1);
-    std::copy(++xs.rbegin(), xs.rend(), xs.rbegin());
-    *std::begin(xs) = y;
-    return std::forward<Container>(xs);
-}
+    template <typename T, typename Container>
+    Container prepend_elem(internal::reuse_container_t,
+        const T& y, Container&& xs)
+    {
+        xs.resize(size_of_cont(xs) + 1);
+        std::copy(++xs.rbegin(), xs.rend(), xs.rbegin());
+        *std::begin(xs) = y;
+        return std::forward<Container>(xs);
+    }
 
-template <typename T, typename Container>
-Container prepend_elem(internal::create_new_container_t, const T& y,
-    const Container& xs)
-{
-    Container result;
-    internal::prepare_container(result, size_of_cont(xs) + 1);
-    *internal::get_back_inserter(result) = y;
-    std::copy(std::begin(xs), std::end(xs),
-        internal::get_back_inserter(result));
-    return result;
-}
+    template <typename T, typename Container>
+    Container prepend_elem(internal::create_new_container_t, const T& y,
+        const Container& xs)
+    {
+        Container result;
+        internal::prepare_container(result, size_of_cont(xs) + 1);
+        *internal::get_back_inserter(result) = y;
+        std::copy(std::begin(xs), std::end(xs),
+            internal::get_back_inserter(result));
+        return result;
+    }
 
 } // namespace internal
 
@@ -1195,7 +1182,7 @@ template <typename Container,
     typename T = typename ContainerOut::value_type>
 ContainerOut prepend_elem(const T& y, Container&& xs)
 {
-    return internal::prepend_elem(internal::can_reuse_v<Container>{},
+    return internal::prepend_elem(internal::can_reuse_v<Container> {},
         y, std::forward<Container>(xs));
 }
 
@@ -1214,7 +1201,6 @@ ContainerOut append(const ContainerIn1& xs, const ContainerIn2& ys)
         internal::get_back_inserter(result));
     return result;
 }
-
 
 // API search type: append_convert : ([a], [a]) -> [a]
 // fwd bind count: 1
@@ -1241,8 +1227,7 @@ ContainerOut concat(const ContainerIn& xss)
     internal::prepare_container(result, length);
     using std::begin;
     using std::end;
-    for(const auto& xs : xss)
-    {
+    for (const auto& xs : xss) {
         result.insert(end(result), begin(xs), end(xs));
     }
     return result;
@@ -1264,8 +1249,7 @@ Container interweave(const Container& xs, const Container& ys)
     auto it = internal::get_back_inserter<Container>(result);
     auto it_xs = std::begin(xs);
     auto it_ys = std::begin(ys);
-    while (it_xs != std::end(xs) || it_ys != std::end(ys))
-    {
+    while (it_xs != std::end(xs) || it_ys != std::end(ys)) {
         if (it_xs != std::end(xs))
             *it = *(it_xs++);
         if (it_ys != std::end(ys))
@@ -1293,8 +1277,7 @@ std::pair<Container, Container> unweave(const Container& xs)
     auto it_even = internal::get_back_inserter<Container>(result.first);
     auto it_odd = internal::get_back_inserter<Container>(result.second);
     std::size_t counter = 0;
-    for (const auto& x : xs)
-    {
+    for (const auto& x : xs) {
         if (counter++ % 2 == 0)
             *it_even = x;
         else
@@ -1303,41 +1286,40 @@ std::pair<Container, Container> unweave(const Container& xs)
     return result;
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename Compare, typename T>
-std::list<T> sort_by(internal::reuse_container_t, Compare comp,
-    std::list<T>&& xs)
-{
-    xs.sort(comp);
-    return std::forward<std::list<T>>(xs);
-}
+    template <typename Compare, typename T>
+    std::list<T> sort_by(internal::reuse_container_t, Compare comp,
+        std::list<T>&& xs)
+    {
+        xs.sort(comp);
+        return std::forward<std::list<T>>(xs);
+    }
 
-template <typename Compare, typename T>
-std::list<T> sort_by(internal::create_new_container_t, Compare comp,
-    const std::list<T>& xs)
-{
-    auto result = xs;
-    result.sort(comp);
-    return result;
-}
+    template <typename Compare, typename T>
+    std::list<T> sort_by(internal::create_new_container_t, Compare comp,
+        const std::list<T>& xs)
+    {
+        auto result = xs;
+        result.sort(comp);
+        return result;
+    }
 
-template <typename Compare, typename Container>
-Container sort_by(internal::reuse_container_t, Compare comp, Container&& xs)
-{
-    std::sort(std::begin(xs), std::end(xs), comp);
-    return std::forward<Container>(xs);
-}
+    template <typename Compare, typename Container>
+    Container sort_by(internal::reuse_container_t, Compare comp, Container&& xs)
+    {
+        std::sort(std::begin(xs), std::end(xs), comp);
+        return std::forward<Container>(xs);
+    }
 
-template <typename Compare, typename Container>
-Container sort_by(internal::create_new_container_t, Compare comp,
-    const Container& xs)
-{
-    auto result = xs;
-    std::sort(std::begin(result), std::end(result), comp);
-    return result;
-}
+    template <typename Compare, typename Container>
+    Container sort_by(internal::create_new_container_t, Compare comp,
+        const Container& xs)
+    {
+        auto result = xs;
+        std::sort(std::begin(result), std::end(result), comp);
+        return result;
+    }
 
 } // namespace internal
 
@@ -1348,36 +1330,37 @@ template <typename Compare, typename Container,
     typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut sort_by(Compare comp, Container&& xs)
 {
-    return internal::sort_by(internal::can_reuse_v<Container>{},
+    return internal::sort_by(internal::can_reuse_v<Container> {},
         comp, std::forward<Container>(xs));
 }
 
-namespace internal
-{
+namespace internal {
     // workarounds for clang bug 24115
     // (std::sort and std::unique with std::function as comp)
     // https://llvm.org/bugs/show_bug.cgi?id=24115
     template <typename F>
-    struct is_less_by_struct
-    {
-        is_less_by_struct(F f) : f_(f) {};
+    struct is_less_by_struct {
+        is_less_by_struct(F f)
+            : f_(f) {};
         template <typename T>
         bool operator()(const T& x, const T& y)
         {
             return f_(x) < f_(y);
         }
+
     private:
         F f_;
     };
     template <typename F>
-    struct is_equal_by_struct
-    {
-        is_equal_by_struct(F f) : f_(f) {};
+    struct is_equal_by_struct {
+        is_equal_by_struct(F f)
+            : f_(f) {};
         template <typename T>
         bool operator()(const T& x, const T& y)
         {
             return f_(x) == f_(y);
         }
+
     private:
         F f_;
     };
@@ -1405,45 +1388,43 @@ ContainerOut sort(Container&& xs)
     return sort_by(std::less<T>(), std::forward<Container>(xs));
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename Compare, typename T>
-std::list<T> stable_sort_by(internal::reuse_container_t, Compare comp,
-    std::list<T>&& xs)
-{
-    xs.sort(comp); // std::list<T>::sort ist already stable.
-    return std::forward<std::list<T>>(xs);
-}
+    template <typename Compare, typename T>
+    std::list<T> stable_sort_by(internal::reuse_container_t, Compare comp,
+        std::list<T>&& xs)
+    {
+        xs.sort(comp); // std::list<T>::sort ist already stable.
+        return std::forward<std::list<T>>(xs);
+    }
 
-template <typename Compare, typename T>
-std::list<T> stable_sort_by(internal::create_new_container_t, Compare comp,
-    const std::list<T>& xs)
-{
-    auto result = xs;
-    result.sort(comp); // std::list<T>::sort ist already stable.
-    return result;
-}
+    template <typename Compare, typename T>
+    std::list<T> stable_sort_by(internal::create_new_container_t, Compare comp,
+        const std::list<T>& xs)
+    {
+        auto result = xs;
+        result.sort(comp); // std::list<T>::sort ist already stable.
+        return result;
+    }
 
-template <typename Compare, typename Container>
-Container stable_sort_by(internal::reuse_container_t, Compare comp,
-    Container&& xs)
-{
-    std::sort(std::begin(xs), std::end(xs), comp);
-    return std::forward<Container>(xs);
-}
+    template <typename Compare, typename Container>
+    Container stable_sort_by(internal::reuse_container_t, Compare comp,
+        Container&& xs)
+    {
+        std::sort(std::begin(xs), std::end(xs), comp);
+        return std::forward<Container>(xs);
+    }
 
-template <typename Compare, typename Container>
-Container stable_sort_by(internal::create_new_container_t, Compare comp,
-    const Container& xs)
-{
-    auto result = xs;
-    std::sort(std::begin(result), std::end(result), comp);
-    return result;
-}
+    template <typename Compare, typename Container>
+    Container stable_sort_by(internal::create_new_container_t, Compare comp,
+        const Container& xs)
+    {
+        auto result = xs;
+        std::sort(std::begin(result), std::end(result), comp);
+        return result;
+    }
 
 } // namespace internal
-
 
 // API search type: stable_sort_by : (((a, a) -> Bool), [a]) -> [a]
 // fwd bind count: 1
@@ -1452,7 +1433,7 @@ template <typename Compare, typename Container,
     typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut stable_sort_by(Compare comp, Container&& xs)
 {
-    return internal::stable_sort_by(internal::can_reuse_v<Container>{},
+    return internal::stable_sort_by(internal::can_reuse_v<Container> {},
         comp, std::forward<Container>(xs));
 }
 
@@ -1478,32 +1459,30 @@ ContainerOut stable_sort(Container&& xs)
     return stable_sort_by(std::less<T>(), std::forward<Container>(xs));
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename Compare, typename Container>
-Container partial_sort_by(internal::reuse_container_t, Compare comp,
-    std::size_t count, Container&& xs)
-{
-    if (count > xs.size())
+    template <typename Compare, typename Container>
+    Container partial_sort_by(internal::reuse_container_t, Compare comp,
+        std::size_t count, Container&& xs)
     {
-        count = xs.size();
+        if (count > xs.size()) {
+            count = xs.size();
+        }
+        auto middle = std::begin(xs);
+        internal::advance_iterator(middle, count);
+        std::partial_sort(std::begin(xs), middle, std::end(xs), comp);
+        return std::forward<Container>(get_segment(internal::reuse_container_t(),
+            0, count, xs));
     }
-    auto middle = std::begin(xs);
-    internal::advance_iterator(middle, count);
-    std::partial_sort(std::begin(xs), middle, std::end(xs), comp);
-    return std::forward<Container>(get_segment(internal::reuse_container_t(),
-        0, count, xs));
-}
 
-template <typename Compare, typename Container>
-Container partial_sort_by(internal::create_new_container_t, Compare comp,
-    std::size_t count, const Container& xs)
-{
-    auto result = xs;
-    return partial_sort_by(
-        internal::reuse_container_t(), comp, count, std::move(result));
-}
+    template <typename Compare, typename Container>
+    Container partial_sort_by(internal::create_new_container_t, Compare comp,
+        std::size_t count, const Container& xs)
+    {
+        auto result = xs;
+        return partial_sort_by(
+            internal::reuse_container_t(), comp, count, std::move(result));
+    }
 
 } // namespace internal
 
@@ -1515,7 +1494,7 @@ template <typename Compare, typename Container,
     typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut partial_sort_by(Compare comp, std::size_t count, Container&& xs)
 {
-    return internal::partial_sort_by(internal::can_reuse_v<Container>{},
+    return internal::partial_sort_by(internal::can_reuse_v<Container> {},
         comp, count, std::forward<Container>(xs));
 }
 
@@ -1579,26 +1558,25 @@ T nth_element(std::size_t n, const Container& xs)
     return nth_element_by(std::less<T>(), n, xs);
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename BinaryPredicate, typename Container>
-Container unique_by(internal::reuse_container_t,
-    BinaryPredicate pred, Container&& xs)
-{
-    internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
-    const auto it_end = std::unique(std::begin(xs), std::end(xs), pred);
-    xs.erase(it_end, std::end(xs));
-    return std::forward<Container>(xs);
-}
+    template <typename BinaryPredicate, typename Container>
+    Container unique_by(internal::reuse_container_t,
+        BinaryPredicate pred, Container&& xs)
+    {
+        internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
+        const auto it_end = std::unique(std::begin(xs), std::end(xs), pred);
+        xs.erase(it_end, std::end(xs));
+        return std::forward<Container>(xs);
+    }
 
-template <typename BinaryPredicate, typename Container>
-Container unique_by(internal::create_new_container_t,
-    BinaryPredicate pred, const Container& xs)
-{
-    auto result = xs;
-    return unique_by(internal::reuse_container_t(), pred, std::move(result));
-}
+    template <typename BinaryPredicate, typename Container>
+    Container unique_by(internal::create_new_container_t,
+        BinaryPredicate pred, const Container& xs)
+    {
+        auto result = xs;
+        return unique_by(internal::reuse_container_t(), pred, std::move(result));
+    }
 
 } // namespace internal
 
@@ -1613,7 +1591,7 @@ template <typename BinaryPredicate, typename Container,
     typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut unique_by(BinaryPredicate pred, Container&& xs)
 {
-    return internal::unique_by(internal::can_reuse_v<Container>{},
+    return internal::unique_by(internal::can_reuse_v<Container> {},
         pred, std::forward<Container>(xs));
 }
 
@@ -1662,10 +1640,9 @@ Container intersperse(const X& value, const Container& xs)
     if (size_of_cont(xs) == 1)
         return xs;
     Container result;
-    internal::prepare_container(result, std::max<std::size_t>(0, size_of_cont(xs)*2-1));
+    internal::prepare_container(result, std::max<std::size_t>(0, size_of_cont(xs) * 2 - 1));
     auto it = internal::get_back_inserter(result);
-    for_each(std::begin(xs), --std::end(xs), [&value, &it](const X& x)
-    {
+    for_each(std::begin(xs), --std::end(xs), [&value, &it](const X& x) {
         *it = x;
         *it = value;
     });
@@ -1733,11 +1710,9 @@ Container nub_by(BinaryPredicate p, const Container& xs)
 {
     Container result;
     auto itOut = internal::get_back_inserter(result);
-    for (const auto &x : xs)
-    {
+    for (const auto& x : xs) {
         auto eqToX = bind_1st_of_2(p, x);
-        if (!is_elem_of_by(eqToX, result))
-        {
+        if (!is_elem_of_by(eqToX, result)) {
             *itOut = x;
         }
     }
@@ -1911,7 +1886,8 @@ bool is_suffix_of(const Container& token, const Container& xs)
     if (size_of_cont(token) > size_of_cont(xs))
         return false;
     return get_segment(size_of_cont(xs) - size_of_cont(token),
-        size_of_cont(xs), xs) == token;
+               size_of_cont(xs), xs)
+        == token;
 }
 
 // API search type: all_by : ((a -> Bool), [a]) -> Bool
@@ -1982,15 +1958,11 @@ bool all_the_same(const Container& xs)
 // Return a sequence of numbers using a specific step.
 // numbers_step(2, 9, 2) == [2, 4, 6, 8]
 template <typename T,
-        typename ContainerOut = std::vector<T>>
-ContainerOut numbers_step
-        (const T start, const T end, const T step)
+    typename ContainerOut = std::vector<T>>
+ContainerOut numbers_step(const T start, const T end, const T step)
 {
     ContainerOut result;
-    if ((step > 0 && start >= end) ||
-        (step < 0 && start <= end) ||
-        step == 0)
-    {
+    if ((step > 0 && start >= end) || (step < 0 && start <= end) || step == 0) {
         return result;
     }
     std::size_t size = static_cast<std::size_t>((end - start) / step);
@@ -2007,7 +1979,7 @@ ContainerOut numbers_step
 // Also known as range.
 // numbers(2, 9) == [2, 3, 4, 5, 6, 7, 8]
 template <typename T,
-        typename ContainerOut = std::vector<T>>
+    typename ContainerOut = std::vector<T>>
 ContainerOut numbers(const T start, const T end)
 {
     return numbers_step<T, ContainerOut>(start, end, 1);
@@ -2101,8 +2073,7 @@ std::pair<Result, Result> mean_stddev(const Container& xs)
 
     std::vector<Result> diff(xs.size());
     std::transform(xs.begin(), xs.end(), diff.begin(),
-        [mean](Result x)
-        {
+        [mean](Result x) {
             return x - mean;
         });
     Result sq_sum = std::inner_product(
@@ -2121,13 +2092,11 @@ template <typename F, typename ContainerIn>
 auto count_occurrences_by(F f, const ContainerIn& xs)
 {
     using In = typename ContainerIn::value_type;
-    using MapOut =
-        std::map<std::decay_t<internal::invoke_result_t<F, In>>, std::size_t>;
+    using MapOut = std::map<std::decay_t<internal::invoke_result_t<F, In>>, std::size_t>;
 
     internal::trigger_static_asserts<internal::unary_function_tag, F, typename ContainerIn::value_type>();
     MapOut result;
-    for (const auto& x : xs)
-    {
+    for (const auto& x : xs) {
         ++result[internal::invoke(f, x)];
     }
     return result;
@@ -2141,8 +2110,8 @@ auto count_occurrences_by(F f, const ContainerIn& xs)
 // count_occurrences([1,2,2,3,2]) == [(1, 1), (2, 3), (3, 1)]
 // O(n)
 template <typename ContainerIn,
-        typename MapOut = typename std::map<
-            typename ContainerIn::value_type, std::size_t>>
+    typename MapOut = typename std::map<
+        typename ContainerIn::value_type, std::size_t>>
 MapOut count_occurrences(const ContainerIn& xs)
 {
     return count_occurrences_by(identity<typename ContainerIn::value_type>, xs);
@@ -2158,26 +2127,22 @@ MapOut count_occurrences(const ContainerIn& xs)
 // lexicographical_less_by((<), "012345", "012345") == false
 template <typename Container, typename BinaryPredicate>
 bool lexicographical_less_by(BinaryPredicate p,
-        const Container& xs, const Container& ys)
+    const Container& xs, const Container& ys)
 {
     internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
     auto itXs = std::begin(xs);
     auto itYs = std::begin(ys);
-    while (itXs != std::end(xs) && itYs != std::end(ys))
-    {
-        if (internal::invoke(p, *itXs, *itYs))
-        {
+    while (itXs != std::end(xs) && itYs != std::end(ys)) {
+        if (internal::invoke(p, *itXs, *itYs)) {
             return true;
         }
-        if (internal::invoke(p, *itYs, *itXs))
-        {
+        if (internal::invoke(p, *itYs, *itXs)) {
             return false;
         }
         ++itXs;
         ++itYs;
     }
-    if (size_of_cont(xs) < size_of_cont(ys))
-    {
+    if (size_of_cont(xs) < size_of_cont(ys)) {
         return true;
     }
     return false;
@@ -2214,34 +2179,33 @@ ContainerOut lexicographical_sort(Container&& xs)
 // Create a sequence containing x n times.
 // replicate(3, 1) == [1, 1, 1]
 template <typename T,
-        typename ContainerOut = std::vector<T>>
+    typename ContainerOut = std::vector<T>>
 ContainerOut replicate(std::size_t n, const T& x)
 {
     return ContainerOut(n, x);
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename UnaryPredicate, typename T>
-T instead_of_if(internal::reuse_container_t, UnaryPredicate pred,
-    const T& alt, T&& x)
-{
-    if (internal::invoke(pred, x))
-        return alt;
-    else
-        return std::forward<T>(x);
-}
+    template <typename UnaryPredicate, typename T>
+    T instead_of_if(internal::reuse_container_t, UnaryPredicate pred,
+        const T& alt, T&& x)
+    {
+        if (internal::invoke(pred, x))
+            return alt;
+        else
+            return std::forward<T>(x);
+    }
 
-template <typename UnaryPredicate, typename T>
-T instead_of_if(internal::create_new_container_t, UnaryPredicate pred,
-    const T& alt, const T& x)
-{
-    if (internal::invoke(pred, x))
-        return alt;
-    else
-        return x;
-}
+    template <typename UnaryPredicate, typename T>
+    T instead_of_if(internal::create_new_container_t, UnaryPredicate pred,
+        const T& alt, const T& x)
+    {
+        if (internal::invoke(pred, x))
+            return alt;
+        else
+            return x;
+    }
 
 } // namespace internal
 
@@ -2251,7 +2215,7 @@ T instead_of_if(internal::create_new_container_t, UnaryPredicate pred,
 template <typename UnaryPredicate, typename T, typename TAlt>
 auto instead_of_if(UnaryPredicate pred, const TAlt& alt, T&& x)
 {
-    return internal::instead_of_if(internal::can_reuse_v<T>{},
+    return internal::instead_of_if(internal::can_reuse_v<T> {},
         pred, alt, std::forward<T>(x));
 }
 

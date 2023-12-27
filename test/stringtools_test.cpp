@@ -26,30 +26,35 @@ TEST_CASE("stringtools_test -  split")
         std::string("I am a"),
         std::string("***strange***"),
         std::string(""),
-        std::string("string.") };
+        std::string("string.")
+    };
     std::vector<std::string> textAsLinesWithoutEmpty = {
         std::string("Hi,"),
         std::string("I am a"),
         std::string("***strange***"),
-        std::string("string.") };
+        std::string("string.")
+    };
     std::vector<std::string> textAsWords = {
         std::string("Hi"),
         std::string("I"),
         std::string("am"),
         std::string("a"),
         std::string("strange"),
-        std::string("string") };
+        std::string("string")
+    };
     std::vector<std::string> textSplitBySpaceOnly = {
         std::string("Hi,\nI"),
         std::string("am"),
-        std::string("a\r\n***strange***\n\rstring.") };
+        std::string("a\r\n***strange***\n\rstring.")
+    };
     std::vector<std::string> textSplitBySpaceAndCommaAndLine = {
         std::string("Hi"),
         std::string("I"),
         std::string("am"),
         std::string("a"),
         std::string("***strange***"),
-        std::string("string.") };
+        std::string("string.")
+    };
 
     REQUIRE_EQ(split_lines(false, std::string("")).size(), 0);
     REQUIRE_EQ(split_lines(true, std::string("")).size(), 1);
@@ -57,14 +62,14 @@ TEST_CASE("stringtools_test -  split")
     REQUIRE_EQ(split_lines(false, text), textAsLinesWithoutEmpty);
     REQUIRE_EQ(split_words(false, text), textAsWords);
     REQUIRE_EQ(split(' ', false, text), textSplitBySpaceOnly);
-    REQUIRE_EQ(split_one_of(std::string{ " ,\r\n" }, false, text), textSplitBySpaceAndCommaAndLine);
+    REQUIRE_EQ(split_one_of(std::string { " ,\r\n" }, false, text), textSplitBySpaceAndCommaAndLine);
 }
 
 TEST_CASE("stringtools_test -  to_string_filled")
 {
     using namespace fplus;
-    REQUIRE_EQ(to_string_fill_left('0', 5, 42), std::string("00042") );
-    REQUIRE_EQ(to_string_fill_right(' ', 5, 42), std::string("42   ") );
+    REQUIRE_EQ(to_string_fill_left('0', 5, 42), std::string("00042"));
+    REQUIRE_EQ(to_string_fill_right(' ', 5, 42), std::string("42   "));
 }
 
 TEST_CASE("stringtools_test -  to_lower_case")

@@ -6,15 +6,15 @@
 
 #pragma once
 
+#include <fplus/composition.hpp>
 #include <fplus/container_common.hpp>
 #include <fplus/filter.hpp>
+#include <fplus/function_traits.hpp>
 #include <fplus/generate.hpp>
-#include <fplus/maybe.hpp>
 #include <fplus/maps.hpp>
+#include <fplus/maybe.hpp>
 #include <fplus/result.hpp>
 #include <fplus/split.hpp>
-#include <fplus/composition.hpp>
-#include <fplus/function_traits.hpp>
 
 #include <fplus/internal/asserts/functions.hpp>
 #include <fplus/internal/invoke.hpp>
@@ -26,8 +26,7 @@
 #include <mutex>
 #include <random>
 
-namespace fplus
-{
+namespace fplus {
 
 // API search type: transform_with_idx : (((Int, a) -> b), [a]) -> [b]
 // fwd bind count: 1
@@ -43,8 +42,7 @@ ContainerOut transform_with_idx(F f, const ContainerIn& xs)
     internal::prepare_container(ys, size_of_cont(xs));
     auto it = internal::get_back_inserter<ContainerOut>(ys);
     std::size_t idx = 0;
-    for (const auto& x : xs)
-    {
+    for (const auto& x : xs) {
         *it = internal::invoke(f, idx++, x);
     }
     return ys;
@@ -131,13 +129,10 @@ ContainerOut interleave(const ContainerIn& xss)
     internal::prepare_container(result, length);
     auto it_out = internal::get_back_inserter<ContainerOut>(result);
     bool still_appending = true;
-    while (still_appending)
-    {
+    while (still_appending) {
         still_appending = false;
-        for (auto& it_pair : it_pairs)
-        {
-            if (it_pair.first != it_pair.second)
-            {
+        for (auto& it_pair : it_pairs) {
+            if (it_pair.first != it_pair.second) {
                 *it_out = *it_pair.first;
                 still_appending = true;
                 ++it_pair.first;
@@ -155,33 +150,31 @@ ContainerOut interleave(const ContainerIn& xss)
 template <typename Container>
 Container transpose(const Container& rows)
 {
-    if (is_empty(rows))
-    {
+    if (is_empty(rows)) {
         return {};
     }
     return split_every<typename Container::value_type, Container>(
         size_of_cont(rows), interleave(rows));
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename Container>
-Container shuffle(internal::reuse_container_t,
-    std::uint_fast32_t seed, Container&& xs)
-{
-    std::mt19937 g(seed);
-    std::shuffle(std::begin(xs), std::end(xs), g);
-    return std::forward<Container>(xs);
-}
+    template <typename Container>
+    Container shuffle(internal::reuse_container_t,
+        std::uint_fast32_t seed, Container&& xs)
+    {
+        std::mt19937 g(seed);
+        std::shuffle(std::begin(xs), std::end(xs), g);
+        return std::forward<Container>(xs);
+    }
 
-template <typename Container>
-Container shuffle(internal::create_new_container_t,
-    std::uint_fast32_t seed, const Container& xs)
-{
-    Container ys = xs;
-    return internal::shuffle(internal::reuse_container_t(), seed, std::move(ys));
-}
+    template <typename Container>
+    Container shuffle(internal::create_new_container_t,
+        std::uint_fast32_t seed, const Container& xs)
+    {
+        Container ys = xs;
+        return internal::shuffle(internal::reuse_container_t(), seed, std::move(ys));
+    }
 
 } // namespace internal
 
@@ -193,7 +186,7 @@ Container shuffle(internal::create_new_container_t,
 template <typename Container>
 auto shuffle(std::uint_fast32_t seed, Container&& xs)
 {
-    return(internal::shuffle(internal::can_reuse_v<Container>{},
+    return (internal::shuffle(internal::can_reuse_v<Container> {},
         seed, std::forward<Container>(xs)));
 }
 
@@ -241,8 +234,7 @@ Container random_elements(
     assert(is_not_empty(xs));
     std::mt19937 gen(seed);
     std::uniform_int_distribution<std::size_t> dis(0, size_of_cont(xs) - 1);
-    const auto draw = [&]() -> typename Container::value_type
-    {
+    const auto draw = [&]() -> typename Container::value_type {
         return elem_at_idx(dis(gen), xs);
     };
     return generate<Container>(draw, n);
@@ -252,8 +244,8 @@ Container random_elements(
 // fwd bind count: 1
 // Applies a list of functions to a value.
 template <typename FunctionContainer,
-          typename F = typename FunctionContainer::value_type,
-          typename FIn>
+    typename F = typename FunctionContainer::value_type,
+    typename FIn>
 auto apply_functions(const FunctionContainer& functions, const FIn& x)
 {
     internal::trigger_static_asserts<internal::unary_function_tag, F, FIn>();
@@ -265,8 +257,7 @@ auto apply_functions(const FunctionContainer& functions, const FIn& x)
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(functions));
     auto it = internal::get_back_inserter<ContainerOut>(ys);
-    for (const auto& f : functions)
-    {
+    for (const auto& f : functions) {
         *it = internal::invoke(f, x);
     }
     return ys;
@@ -281,14 +272,12 @@ auto apply_function_n_times(F f, std::size_t n, const FIn& x)
     internal::trigger_static_asserts<internal::unary_function_tag, F, FIn>();
     using FOut = std::decay_t<internal::invoke_result_t<F, FIn>>;
     static_assert(std::is_same<FOut, FIn>::value,
-                  "Input and output of F must be the same type.");
-    if (n == 0)
-    {
+        "Input and output of F must be the same type.");
+    if (n == 0) {
         return x;
     }
     FOut y = internal::invoke(f, x);
-    for (std::size_t i = 1; i < n; ++i)
-    {
+    for (std::size_t i = 1; i < n; ++i) {
         y = internal::invoke(f, y);
     }
     return y;
@@ -309,19 +298,17 @@ auto transform_parallelly(F f, const ContainerIn& xs)
         same_cont_new_t_from_unary_f<ContainerIn, F, 0>::type;
     using X = typename ContainerIn::value_type;
     internal::trigger_static_asserts<internal::unary_function_tag, F, X>();
-    auto handles = transform([&f](const X& x)
-    {
-        return std::async(std::launch::async, [&x, &f]()
-        {
+    auto handles = transform([&f](const X& x) {
+        return std::async(std::launch::async, [&x, &f]() {
             return internal::invoke(f, x);
         });
-    }, xs);
+    },
+        xs);
 
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
     auto it = internal::get_back_inserter<ContainerOut>(ys);
-    for (auto& handle : handles)
-    {
+    for (auto& handle : handles) {
         *it = handle.get();
     }
     return ys;
@@ -341,28 +328,25 @@ auto transform_parallelly_n_threads(std::size_t n, F f, const ContainerIn& xs)
         same_cont_new_t_from_unary_f<ContainerIn, F, 0>::type;
     using X = typename ContainerIn::value_type;
     using Y = internal::invoke_result_t<F, X>;
-    using x_ptr_t =  const X*;
+    using x_ptr_t = const X*;
     auto queue = transform_convert<std::vector<x_ptr_t>>(
-        [](const X& x) -> x_ptr_t
-        {
+        [](const X& x) -> x_ptr_t {
             return &x;
-        }, xs);
+        },
+        xs);
 
     std::mutex queue_mutex;
     std::mutex thread_results_mutex;
     std::map<std::size_t, std::decay_t<Y>> thread_results;
     std::size_t queue_idx = 0;
 
-    const auto worker_func = [&]()
-    {
-        for (;;)
-        {
+    const auto worker_func = [&]() {
+        for (;;) {
             std::size_t idx = std::numeric_limits<std::size_t>::max();
             x_ptr_t x_ptr = nullptr;
             {
                 std::lock_guard<std::mutex> queue_lock(queue_mutex);
-                if (queue_idx == queue.size())
-                {
+                if (queue_idx == queue.size()) {
                     return;
                 }
                 idx = queue_idx;
@@ -380,14 +364,12 @@ auto transform_parallelly_n_threads(std::size_t n, F f, const ContainerIn& xs)
         }
     };
 
-    const auto create_thread = [&]() -> std::thread
-    {
+    const auto create_thread = [&]() -> std::thread {
         return std::thread(worker_func);
     };
     auto threads = generate<std::vector<std::thread>>(create_thread, n);
 
-    for (auto& thread : threads)
-    {
+    for (auto& thread : threads) {
         thread.join();
     }
 
@@ -408,25 +390,17 @@ template <typename F, typename Container>
 typename Container::value_type reduce_parallelly(
     F f, const typename Container::value_type& init, const Container& xs)
 {
-    if (is_empty(xs))
-    {
+    if (is_empty(xs)) {
         return init;
-    }
-    else if (size_of_cont(xs) == 1)
-    {
+    } else if (size_of_cont(xs) == 1) {
         return internal::invoke(f, init, xs.front());
-    }
-    else
-    {
+    } else {
         typedef typename Container::value_type T;
-        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T
-        {
+        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T {
             return internal::invoke(f, p.first, p.second);
         };
-        auto transform_result =
-            transform_parallelly(f_on_pair, adjacent_pairs(xs));
-        if (is_odd(size_of_cont(xs)))
-        {
+        auto transform_result = transform_parallelly(f_on_pair, adjacent_pairs(xs));
+        if (is_odd(size_of_cont(xs))) {
             transform_result.push_back(last(xs));
         }
         return reduce_parallelly(f, init, transform_result);
@@ -445,25 +419,17 @@ typename Container::value_type reduce_parallelly_n_threads(
     std::size_t n,
     F f, const typename Container::value_type& init, const Container& xs)
 {
-    if (is_empty(xs))
-    {
+    if (is_empty(xs)) {
         return init;
-    }
-    else if (size_of_cont(xs) == 1)
-    {
+    } else if (size_of_cont(xs) == 1) {
         return internal::invoke(f, init, xs.front());
-    }
-    else
-    {
+    } else {
         typedef typename Container::value_type T;
-        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T
-        {
+        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T {
             return internal::invoke(f, p.first, p.second);
         };
-        auto transform_result =
-            transform_parallelly_n_threads(n, f_on_pair, adjacent_pairs(xs));
-        if (is_odd(size_of_cont(xs)))
-        {
+        auto transform_result = transform_parallelly_n_threads(n, f_on_pair, adjacent_pairs(xs));
+        if (is_odd(size_of_cont(xs))) {
             transform_result.push_back(last(xs));
         }
         return reduce_parallelly_n_threads(n, f, init, transform_result);
@@ -483,21 +449,15 @@ template <typename F, typename Container>
 typename Container::value_type reduce_1_parallelly(F f, const Container& xs)
 {
     assert(is_not_empty(xs));
-    if (size_of_cont(xs) == 1)
-    {
+    if (size_of_cont(xs) == 1) {
         return xs.front();
-    }
-    else
-    {
+    } else {
         typedef typename Container::value_type T;
-        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T
-        {
+        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T {
             return internal::invoke(f, p.first, p.second);
         };
-        auto transform_result =
-            transform_parallelly(f_on_pair, adjacent_pairs(xs));
-        if (is_odd(size_of_cont(xs)))
-        {
+        auto transform_result = transform_parallelly(f_on_pair, adjacent_pairs(xs));
+        if (is_odd(size_of_cont(xs))) {
             transform_result.push_back(last(xs));
         }
         return reduce_1_parallelly(f, transform_result);
@@ -516,21 +476,15 @@ typename Container::value_type reduce_1_parallelly_n_threads(
     std::size_t n, F f, const Container& xs)
 {
     assert(is_not_empty(xs));
-    if (size_of_cont(xs) == 1)
-    {
+    if (size_of_cont(xs) == 1) {
         return xs.front();
-    }
-    else
-    {
+    } else {
         typedef typename Container::value_type T;
-        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T
-        {
+        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T {
             return internal::invoke(f, p.first, p.second);
         };
-        auto transform_result =
-            transform_parallelly_n_threads(n, f_on_pair, adjacent_pairs(xs));
-        if (is_odd(size_of_cont(xs)))
-        {
+        auto transform_result = transform_parallelly_n_threads(n, f_on_pair, adjacent_pairs(xs));
+        if (is_odd(size_of_cont(xs))) {
             transform_result.push_back(last(xs));
         }
         return reduce_1_parallelly_n_threads(n, f, transform_result);
@@ -550,9 +504,10 @@ Container keep_if_parallelly(Pred pred, const Container& xs)
     // Avoid a temporary std::vector<bool>.
     const auto idxs = find_all_idxs_by(
         is_equal_to<std::uint8_t>(1),
-        transform_parallelly([pred](const auto & x) -> std::uint8_t {
+        transform_parallelly([pred](const auto& x) -> std::uint8_t {
             return pred(x) ? 1 : 0;
-        }, xs));
+        },
+            xs));
     return elems_at_idxs(idxs, xs);
 }
 
@@ -568,9 +523,11 @@ Container keep_if_parallelly_n_threads(
     // Avoid a temporary std::vector<bool>.
     const auto idxs = find_all_idxs_by(
         is_equal_to<std::uint8_t>(1),
-        transform_parallelly_n_threads(n, [pred](const auto & x) -> std::uint8_t {
-            return pred(x) ? 1 : 0;
-        }, xs));
+        transform_parallelly_n_threads(
+            n, [pred](const auto& x) -> std::uint8_t {
+                return pred(x) ? 1 : 0;
+            },
+            xs));
     return elems_at_idxs(idxs, xs);
 }
 
@@ -581,9 +538,9 @@ Container keep_if_parallelly_n_threads(
 // commutative monoid.
 template <typename UnaryF, typename BinaryF, typename Container, typename Acc>
 auto transform_reduce(UnaryF unary_f,
-                      BinaryF binary_f,
-                      const Acc& init,
-                      const Container& xs)
+    BinaryF binary_f,
+    const Acc& init,
+    const Container& xs)
 {
     return reduce(binary_f, init, transform(unary_f, xs));
 }
@@ -609,9 +566,9 @@ auto transform_reduce_1(UnaryF unary_f, BinaryF binary_f, const Container& xs)
 // Check out transform_reduce_parallelly_n_threads to limit the number of threads.
 template <typename UnaryF, typename BinaryF, typename Container, typename Acc>
 auto transform_reduce_parallelly(UnaryF unary_f,
-                                 BinaryF binary_f,
-                                 const Acc& init,
-                                 const Container& xs)
+    BinaryF binary_f,
+    const Acc& init,
+    const Container& xs)
 {
     return reduce_parallelly(binary_f, init, transform_parallelly(unary_f, xs));
 }
@@ -624,10 +581,10 @@ auto transform_reduce_parallelly(UnaryF unary_f,
 // should form a commutative monoid.
 template <typename UnaryF, typename BinaryF, typename Container, typename Acc>
 auto transform_reduce_parallelly_n_threads(std::size_t n,
-                                           UnaryF unary_f,
-                                           BinaryF binary_f,
-                                           const Acc& init,
-                                           const Container& xs)
+    UnaryF unary_f,
+    BinaryF binary_f,
+    const Acc& init,
+    const Container& xs)
 {
     return reduce_parallelly_n_threads(
         n, binary_f, init, transform_parallelly_n_threads(n, unary_f, xs));
@@ -643,8 +600,8 @@ auto transform_reduce_parallelly_n_threads(std::size_t n,
 // Check out transform_reduce_1_parallelly_n_threads to limit the number of threads.
 template <typename UnaryF, typename BinaryF, typename Container>
 auto transform_reduce_1_parallelly(UnaryF unary_f,
-                                   BinaryF binary_f,
-                                   const Container& xs)
+    BinaryF binary_f,
+    const Container& xs)
 {
     return reduce_1_parallelly(binary_f, transform_parallelly(unary_f, xs));
 }
@@ -657,9 +614,9 @@ auto transform_reduce_1_parallelly(UnaryF unary_f,
 // should form a commutative semigroup.
 template <typename UnaryF, typename BinaryF, typename Container>
 auto transform_reduce_1_parallelly_n_threads(std::size_t n,
-                                             UnaryF unary_f,
-                                             BinaryF binary_f,
-                                             const Container& xs)
+    UnaryF unary_f,
+    BinaryF binary_f,
+    const Container& xs)
 {
     return reduce_1_parallelly_n_threads(
         n, binary_f, transform_parallelly_n_threads(n, unary_f, xs));

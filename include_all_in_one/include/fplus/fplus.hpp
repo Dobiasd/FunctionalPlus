@@ -13,7 +13,42 @@
 
 
 //
+// benchmark_session.hpp
+//
+
+// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
+// https://github.com/Dobiasd/FunctionalPlus
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+
+
+//
+// container_common.hpp
+//
+
+// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
+// https://github.com/Dobiasd/FunctionalPlus
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+
+
+
+//
 // compare.hpp
+//
+
+// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
+// https://github.com/Dobiasd/FunctionalPlus
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+
+
+
+//
+// composition.hpp
 //
 
 // Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
@@ -51,8 +86,8 @@ the standard library.
 #define TRAITS_HPP_9ALQFEFX7TO 1
 
 #include <cstdlib>
-#include <tuple>
 #include <functional>
+#include <tuple>
 #include <type_traits>
 
 
@@ -69,74 +104,63 @@ the standard library.
 
 #include <type_traits>
 
-namespace fplus
-{
-namespace internal
-{
-// C++14 compatible void_t (http://en.cppreference.com/w/cpp/types/void_t)
-template <typename... Ts>
-struct make_void
-{
-  using type = void;
-};
+namespace fplus {
+namespace internal {
+    // C++14 compatible void_t (http://en.cppreference.com/w/cpp/types/void_t)
+    template <typename... Ts>
+    struct make_void {
+        using type = void;
+    };
 
-template <typename... Ts>
-using void_t = typename make_void<Ts...>::type;
+    template <typename... Ts>
+    using void_t = typename make_void<Ts...>::type;
 
-// Sometimes you don't want to use std::decay_t, and the temptation of short
-// writing can be huge...
-template <typename T>
-using uncvref_t = std::remove_cv_t<std::remove_reference_t<T>>;
+    // Sometimes you don't want to use std::decay_t, and the temptation of short
+    // writing can be huge...
+    template <typename T>
+    using uncvref_t = std::remove_cv_t<std::remove_reference_t<T>>;
 
-// disjunction/conjunction/negation, useful to short circuit SFINAE checks
-// Use with parsimony, MSVC 2015 can have ICEs quite easily
-template <typename...>
-struct disjunction : std::false_type
-{
-};
+    // disjunction/conjunction/negation, useful to short circuit SFINAE checks
+    // Use with parsimony, MSVC 2015 can have ICEs quite easily
+    template <typename...>
+    struct disjunction : std::false_type {
+    };
 
-template <typename B1>
-struct disjunction<B1> : B1
-{
-};
+    template <typename B1>
+    struct disjunction<B1> : B1 {
+    };
 
-template <typename B1, typename... Bn>
-struct disjunction<B1, Bn...>
-    : std::conditional<bool(B1::value), B1, disjunction<Bn...>>::type
-{
-};
+    template <typename B1, typename... Bn>
+    struct disjunction<B1, Bn...>
+        : std::conditional<bool(B1::value), B1, disjunction<Bn...>>::type {
+    };
 
-template <typename...>
-struct conjunction : std::true_type
-{
-};
+    template <typename...>
+    struct conjunction : std::true_type {
+    };
 
-template <typename B1>
-struct conjunction<B1> : B1
-{
-};
+    template <typename B1>
+    struct conjunction<B1> : B1 {
+    };
 
-template <typename B1, typename... Bn>
-struct conjunction<B1, Bn...>
-    : std::conditional<bool(B1::value), conjunction<Bn...>, B1>::type
-{
-};
+    template <typename B1, typename... Bn>
+    struct conjunction<B1, Bn...>
+        : std::conditional<bool(B1::value), conjunction<Bn...>, B1>::type {
+    };
 
-template <typename B>
-struct negation : std::integral_constant<bool, !bool(B::value)>
-{
-};
+    template <typename B>
+    struct negation : std::integral_constant<bool, !bool(B::value)> {
+    };
 
-// non short-circuiting meta functions
-// source: https://stackoverflow.com/a/27221517/4116453
-template <bool...>
-struct bool_pack;
+    // non short-circuiting meta functions
+    // source: https://stackoverflow.com/a/27221517/4116453
+    template <bool...>
+    struct bool_pack;
 
-template <bool... Values>
-struct all_of
-    : std::is_same<bool_pack<Values..., true>, bool_pack<true, Values...>>
-{
-};
+    template <bool... Values>
+    struct all_of
+        : std::is_same<bool_pack<Values..., true>, bool_pack<true, Values...>> {
+    };
 
 // there seems to be a bug in libc++'s std::is_function
 // provide our own (cppreference one)
@@ -146,99 +170,119 @@ struct all_of
 #endif
 
 #ifndef PROVIDE_IS_FUNCTION_POLYFILL
-template<class... Any>
-using is_function = std::is_function<Any...>;
+    template <class... Any>
+    using is_function = std::is_function<Any...>;
 #else //PROVIDE_IS_FUNCTION_POLYFILL
-// primary template
-template<class>
-struct is_function : std::false_type { };
+    // primary template
+    template <class>
+    struct is_function : std::false_type {
+    };
 
-// specialization for regular functions
-template<class Ret, class... Args>
-struct is_function<Ret(Args...)> : std::true_type {};
+    // specialization for regular functions
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args...)> : std::true_type {
+    };
 
-// specialization for variadic functions such as std::printf
-template<class Ret, class... Args>
-struct is_function<Ret(Args...,...)> : std::true_type {};
+    // specialization for variadic functions such as std::printf
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args..., ...)> : std::true_type {
+    };
 
-// specialization for function types that have cv-qualifiers
-template<class Ret, class... Args>
-struct is_function<Ret(Args...) const> : std::true_type {};
-template<class Ret, class... Args>
-struct is_function<Ret(Args...) volatile> : std::true_type {};
-template<class Ret, class... Args>
-struct is_function<Ret(Args...) const volatile> : std::true_type {};
-template<class Ret, class... Args>
-struct is_function<Ret(Args...,...) const> : std::true_type {};
-template<class Ret, class... Args>
-struct is_function<Ret(Args...,...) volatile> : std::true_type {};
-template<class Ret, class... Args>
-struct is_function<Ret(Args...,...) const volatile> : std::true_type {};
+    // specialization for function types that have cv-qualifiers
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args...) const> : std::true_type {
+    };
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args...) volatile> : std::true_type {
+    };
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args...) const volatile> : std::true_type {
+    };
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args..., ...) const> : std::true_type {
+    };
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args..., ...) volatile> : std::true_type {
+    };
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args..., ...) const volatile> : std::true_type {
+    };
 
-// specialization for function types that have ref-qualifiers
-template<class Ret, class... Args>
-struct is_function<Ret(Args...) &> : std::true_type {};
-template<class Ret, class... Args>
-struct is_function<Ret(Args...) const &> : std::true_type {};
-template<class Ret, class... Args>
-struct is_function<Ret(Args...) volatile &> : std::true_type {};
-template<class Ret, class... Args>
-struct is_function<Ret(Args...) const volatile &> : std::true_type {};
-template<class Ret, class... Args>
-struct is_function<Ret(Args...,...) &> : std::true_type {};
-template<class Ret, class... Args>
-struct is_function<Ret(Args...,...) const &> : std::true_type {};
-template<class Ret, class... Args>
-struct is_function<Ret(Args...,...) volatile &> : std::true_type {};
-template<class Ret, class... Args>
-struct is_function<Ret(Args...,...) const volatile &> : std::true_type {};
-template<class Ret, class... Args>
-struct is_function<Ret(Args...) &&> : std::true_type {};
-template<class Ret, class... Args>
-struct is_function<Ret(Args...) const &&> : std::true_type {};
-template<class Ret, class... Args>
-struct is_function<Ret(Args...) volatile &&> : std::true_type {};
-template<class Ret, class... Args>
-struct is_function<Ret(Args...) const volatile &&> : std::true_type {};
-template<class Ret, class... Args>
-struct is_function<Ret(Args...,...) &&> : std::true_type {};
-template<class Ret, class... Args>
-struct is_function<Ret(Args...,...) const &&> : std::true_type {};
-template<class Ret, class... Args>
-struct is_function<Ret(Args...,...) volatile &&> : std::true_type {};
-template<class Ret, class... Args>
-struct is_function<Ret(Args...,...) const volatile &&> : std::true_type {};
+    // specialization for function types that have ref-qualifiers
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args...)&> : std::true_type {
+    };
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args...) const&> : std::true_type {
+    };
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args...) volatile&> : std::true_type {
+    };
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args...) const volatile&> : std::true_type {
+    };
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args..., ...)&> : std::true_type {
+    };
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args..., ...) const&> : std::true_type {
+    };
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args..., ...) volatile&> : std::true_type {
+    };
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args..., ...) const volatile&> : std::true_type {
+    };
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args...) &&> : std::true_type {
+    };
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args...) const&&> : std::true_type {
+    };
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args...) volatile&&> : std::true_type {
+    };
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args...) const volatile&&> : std::true_type {
+    };
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args..., ...) &&> : std::true_type {
+    };
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args..., ...) const&&> : std::true_type {
+    };
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args..., ...) volatile&&> : std::true_type {
+    };
+    template <class Ret, class... Args>
+    struct is_function<Ret(Args..., ...) const volatile&&> : std::true_type {
+    };
 #endif //PROVIDE_IS_FUNCTION_POLYFILL
 
-template <typename>
-struct reverse_integer_sequence_impl;
+    template <typename>
+    struct reverse_integer_sequence_impl;
 
-template <typename T>
-struct reverse_integer_sequence_impl<std::integer_sequence<T>>
-    : std::integer_sequence<T>
-{
-};
+    template <typename T>
+    struct reverse_integer_sequence_impl<std::integer_sequence<T>>
+        : std::integer_sequence<T> {
+    };
 
-template <typename T, T... Ints>
-struct reverse_integer_sequence_impl<std::integer_sequence<T, Ints...>>
-    : std::integer_sequence<T, sizeof...(Ints) - 1 - Ints...>
-{
-};
+    template <typename T, T... Ints>
+    struct reverse_integer_sequence_impl<std::integer_sequence<T, Ints...>>
+        : std::integer_sequence<T, sizeof...(Ints) - 1 - Ints...> {
+    };
 
-template <typename Seq>
-using reverse_integer_sequence = reverse_integer_sequence_impl<Seq>;
+    template <typename Seq>
+    using reverse_integer_sequence = reverse_integer_sequence_impl<Seq>;
 
-template <typename T, T N>
-using make_reverse_integer_sequence =
-    reverse_integer_sequence<std::make_integer_sequence<T, N>>;
+    template <typename T, T N>
+    using make_reverse_integer_sequence = reverse_integer_sequence<std::make_integer_sequence<T, N>>;
 
-template <std::size_t... Idx>
-using reverse_index_sequence =
-    reverse_integer_sequence<std::index_sequence<Idx...>>;
+    template <std::size_t... Idx>
+    using reverse_index_sequence = reverse_integer_sequence<std::index_sequence<Idx...>>;
 
-template <std::size_t N>
-using make_reverse_index_sequence =
-    make_reverse_integer_sequence<std::size_t, N>;
+    template <std::size_t N>
+    using make_reverse_index_sequence = make_reverse_integer_sequence<std::size_t, N>;
 }
 }
 
@@ -269,15 +313,17 @@ namespace utils {
         printf("%d\n", has_result_type< double(*)() >::value);
         // ^ prints '0' (false)
 */
-#define DECLARE_HAS_TYPE_MEMBER(member_name) \
-    template <typename, typename = void> \
-    struct has_##member_name \
-    { enum { value = false }; }; \
-    template <typename T> \
-    struct has_##member_name<T, typename std::enable_if<sizeof(typename T::member_name)||true>::type> \
-    { enum { value = true }; };
+#define DECLARE_HAS_TYPE_MEMBER(member_name)                                                              \
+    template <typename, typename = void>                                                                  \
+    struct has_##member_name {                                                                            \
+        enum { value = false };                                                                           \
+    };                                                                                                    \
+    template <typename T>                                                                                 \
+    struct has_##member_name<T, typename std::enable_if<sizeof(typename T::member_name) || true>::type> { \
+        enum { value = true };                                                                            \
+    };
 
-/**
+    /**
 .. type:: struct utils::function_traits<F>
 
     Obtain compile-time information about a function object *F*.
@@ -293,116 +339,104 @@ namespace utils {
     * Type of ``std::mem_fn`` (only for GCC's libstdc++ and LLVM's libc++).
       Following the C++ spec, the first argument will be a raw pointer.
 */
-template <typename T>
-struct function_traits
-    : public function_traits<decltype(&T::operator())>
-{};
-
-namespace xx_impl
-{
-    template <typename C, typename R, typename... A>
-    struct memfn_type
-    {
-        typedef typename std::conditional<
-            std::is_const<C>::value,
-            typename std::conditional<
-                std::is_volatile<C>::value,
-                R (C::*)(A...) const volatile,
-                R (C::*)(A...) const
-            >::type,
-            typename std::conditional<
-                std::is_volatile<C>::value,
-                R (C::*)(A...) volatile,
-                R (C::*)(A...)
-            >::type
-        >::type type;
+    template <typename T>
+    struct function_traits
+        : public function_traits<decltype(&T::operator())> {
     };
-}
 
-template <typename ReturnType, typename... Args>
-struct function_traits<ReturnType(Args...)>
-{
-    /**
+    namespace xx_impl {
+        template <typename C, typename R, typename... A>
+        struct memfn_type {
+            typedef typename std::conditional<
+                std::is_const<C>::value,
+                typename std::conditional<
+                    std::is_volatile<C>::value,
+                    R (C::*)(A...) const volatile,
+                    R (C::*)(A...) const>::type,
+                typename std::conditional<
+                    std::is_volatile<C>::value,
+                    R (C::*)(A...) volatile,
+                    R (C::*)(A...)>::type>::type type;
+        };
+    }
+
+    template <typename ReturnType, typename... Args>
+    struct function_traits<ReturnType(Args...)> {
+        /**
     .. type:: type result_type
 
         The type returned by calling an instance of the function object type *F*.
     */
-    typedef ReturnType result_type;
+        typedef ReturnType result_type;
 
-    /**
+        /**
     .. type:: type function_type
 
         The function type (``R(T...)``).
     */
-    typedef ReturnType function_type(Args...);
+        typedef ReturnType function_type(Args...);
 
-    /**
+        /**
     .. type:: type member_function_type<OwnerType>
 
         The member function type for an *OwnerType* (``R(OwnerType::*)(T...)``).
     */
-    template <typename OwnerType>
-    using member_function_type = typename xx_impl::memfn_type<
-        typename std::remove_pointer<typename std::remove_reference<OwnerType>::type>::type,
-        ReturnType, Args...
-    >::type;
+        template <typename OwnerType>
+        using member_function_type = typename xx_impl::memfn_type<
+            typename std::remove_pointer<typename std::remove_reference<OwnerType>::type>::type,
+            ReturnType, Args...>::type;
 
-    /**
+        /**
     .. data:: static const size_t arity
 
         Number of arguments the function object will take.
     */
-    enum { arity = sizeof...(Args) };
+        enum { arity = sizeof...(Args) };
 
-    /**
+        /**
     .. type:: type arg<n>::type
 
         The type of the *n*-th argument.
     */
-    template <size_t i>
-    struct arg
-    {
-        typedef typename std::tuple_element<i, std::tuple<Args...>>::type type;
+        template <size_t i>
+        struct arg {
+            typedef typename std::tuple_element<i, std::tuple<Args...>>::type type;
+        };
     };
-};
 
-template <typename ReturnType, typename... Args>
-struct function_traits<ReturnType(*)(Args...)>
-    : public function_traits<ReturnType(Args...)>
-{};
+    template <typename ReturnType, typename... Args>
+    struct function_traits<ReturnType (*)(Args...)>
+        : public function_traits<ReturnType(Args...)> {
+    };
 
-template <typename ClassType, typename ReturnType, typename... Args>
-struct function_traits<ReturnType(ClassType::*)(Args...)>
-    : public function_traits<ReturnType(Args...)>
-{
-    typedef ClassType& owner_type;
-};
+    template <typename ClassType, typename ReturnType, typename... Args>
+    struct function_traits<ReturnType (ClassType::*)(Args...)>
+        : public function_traits<ReturnType(Args...)> {
+        typedef ClassType& owner_type;
+    };
 
-template <typename ClassType, typename ReturnType, typename... Args>
-struct function_traits<ReturnType(ClassType::*)(Args...) const>
-    : public function_traits<ReturnType(Args...)>
-{
-    typedef const ClassType& owner_type;
-};
+    template <typename ClassType, typename ReturnType, typename... Args>
+    struct function_traits<ReturnType (ClassType::*)(Args...) const>
+        : public function_traits<ReturnType(Args...)> {
+        typedef const ClassType& owner_type;
+    };
 
-template <typename ClassType, typename ReturnType, typename... Args>
-struct function_traits<ReturnType(ClassType::*)(Args...) volatile>
-    : public function_traits<ReturnType(Args...)>
-{
-    typedef volatile ClassType& owner_type;
-};
+    template <typename ClassType, typename ReturnType, typename... Args>
+    struct function_traits<ReturnType (ClassType::*)(Args...) volatile>
+        : public function_traits<ReturnType(Args...)> {
+        typedef volatile ClassType& owner_type;
+    };
 
-template <typename ClassType, typename ReturnType, typename... Args>
-struct function_traits<ReturnType(ClassType::*)(Args...) const volatile>
-    : public function_traits<ReturnType(Args...)>
-{
-    typedef const volatile ClassType& owner_type;
-};
+    template <typename ClassType, typename ReturnType, typename... Args>
+    struct function_traits<ReturnType (ClassType::*)(Args...) const volatile>
+        : public function_traits<ReturnType(Args...)> {
+        typedef const volatile ClassType& owner_type;
+    };
 
-template <typename FunctionType>
-struct function_traits<std::function<FunctionType>>
-    : public function_traits<FunctionType>
-{};
+    template <typename FunctionType>
+    struct function_traits<std::function<FunctionType>>
+        : public function_traits<FunctionType> {
+    };
 
 #if defined(_GLIBCXX_FUNCTIONAL)
 #define MEM_FN_SYMBOL_XX0SL7G4Z0J std::_Mem_fn
@@ -412,56 +446,62 @@ struct function_traits<std::function<FunctionType>>
 
 #ifdef MEM_FN_SYMBOL_XX0SL7G4Z0J
 
-template <typename R, typename C>
-struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R C::*>>
-    : public function_traits<R(C*)>
-{};
-template <typename R, typename C, typename... A>
-struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R(C::*)(A...)>>
-    : public function_traits<R(C*, A...)>
-{};
-template <typename R, typename C, typename... A>
-struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R(C::*)(A...) const>>
-    : public function_traits<R(const C*, A...)>
-{};
-template <typename R, typename C, typename... A>
-struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R(C::*)(A...) volatile>>
-    : public function_traits<R(volatile C*, A...)>
-{};
-template <typename R, typename C, typename... A>
-struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R(C::*)(A...) const volatile>>
-    : public function_traits<R(const volatile C*, A...)>
-{};
+    template <typename R, typename C>
+    struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R C::*>>
+        : public function_traits<R(C*)> {
+    };
+    template <typename R, typename C, typename... A>
+    struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R (C::*)(A...)>>
+        : public function_traits<R(C*, A...)> {
+    };
+    template <typename R, typename C, typename... A>
+    struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R (C::*)(A...) const>>
+        : public function_traits<R(const C*, A...)> {
+    };
+    template <typename R, typename C, typename... A>
+    struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R (C::*)(A...) volatile>>
+        : public function_traits<R(volatile C*, A...)> {
+    };
+    template <typename R, typename C, typename... A>
+    struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R (C::*)(A...) const volatile>>
+        : public function_traits<R(const volatile C*, A...)> {
+    };
 
 #undef MEM_FN_SYMBOL_XX0SL7G4Z0J
 #endif
 
-template <typename T>
-struct function_traits<T&> : public function_traits<T> {};
-template <typename T>
-struct function_traits<const T&> : public function_traits<T> {};
-template <typename T>
-struct function_traits<volatile T&> : public function_traits<T> {};
-template <typename T>
-struct function_traits<const volatile T&> : public function_traits<T> {};
-template <typename T>
-struct function_traits<T&&> : public function_traits<T> {};
-template <typename T>
-struct function_traits<const T&&> : public function_traits<T> {};
-template <typename T>
-struct function_traits<volatile T&&> : public function_traits<T> {};
-template <typename T>
-struct function_traits<const volatile T&&> : public function_traits<T> {};
+    template <typename T>
+    struct function_traits<T&> : public function_traits<T> {
+    };
+    template <typename T>
+    struct function_traits<const T&> : public function_traits<T> {
+    };
+    template <typename T>
+    struct function_traits<volatile T&> : public function_traits<T> {
+    };
+    template <typename T>
+    struct function_traits<const volatile T&> : public function_traits<T> {
+    };
+    template <typename T>
+    struct function_traits<T&&> : public function_traits<T> {
+    };
+    template <typename T>
+    struct function_traits<const T&&> : public function_traits<T> {
+    };
+    template <typename T>
+    struct function_traits<volatile T&&> : public function_traits<T> {
+    };
+    template <typename T>
+    struct function_traits<const volatile T&&> : public function_traits<T> {
+    };
 
-
-#define FORWARD_RES_8QR485JMSBT \
-    typename std::conditional< \
+#define FORWARD_RES_8QR485JMSBT             \
+    typename std::conditional<              \
         std::is_lvalue_reference<R>::value, \
-        T&, \
-        typename std::remove_reference<T>::type&& \
-    >::type
+        T&,                                 \
+        typename std::remove_reference<T>::type&&>::type
 
-/**
+    /**
 .. function:: auto utils::forward_like<Like, T>(T&& t) noexcept
 
     Forward the reference *t* like the type of *Like*. That means, if *Like* is
@@ -472,66 +512,65 @@ struct function_traits<const volatile T&&> : public function_traits<T> {};
     This is mainly used to propagate the expression category (lvalue/rvalue) of
     a member of *Like*, generalizing ``std::forward``.
 */
-template <typename R, typename T>
-FORWARD_RES_8QR485JMSBT forward_like(T&& input) noexcept
-{
-    return static_cast<FORWARD_RES_8QR485JMSBT>(input);
-}
+    template <typename R, typename T>
+    FORWARD_RES_8QR485JMSBT forward_like(T&& input) noexcept
+    {
+        return static_cast<FORWARD_RES_8QR485JMSBT>(input);
+    }
 
 #undef FORWARD_RES_8QR485JMSBT
 
-/**
+    /**
 .. type:: struct utils::copy_cv<From, To>
 
     Copy the CV qualifier between the two types. For example,
     ``utils::copy_cv<const int, double>::type`` will become ``const double``.
 */
-template <typename From, typename To>
-struct copy_cv
-{
-private:
-    typedef typename std::remove_cv<To>::type raw_To;
-    typedef typename std::conditional<std::is_const<From>::value,
-                                      const raw_To, raw_To>::type const_raw_To;
-public:
-    /**
+    template <typename From, typename To>
+    struct copy_cv {
+    private:
+        typedef typename std::remove_cv<To>::type raw_To;
+        typedef typename std::conditional<std::is_const<From>::value,
+            const raw_To, raw_To>::type const_raw_To;
+
+    public:
+        /**
     .. type:: type type
 
         Result of cv-copying.
     */
-    typedef typename std::conditional<std::is_volatile<From>::value,
-                                      volatile const_raw_To, const_raw_To>::type type;
-};
+        typedef typename std::conditional<std::is_volatile<From>::value,
+            volatile const_raw_To, const_raw_To>::type type;
+    };
 
-/**
+    /**
 .. type:: struct utils::pointee<T>
 
     Returns the type by derefering an instance of *T*. This is a generalization
     of ``std::remove_pointer``, that it also works with iterators.
 */
-template <typename T>
-struct pointee
-{
-    /**
+    template <typename T>
+    struct pointee {
+        /**
     .. type:: type type
 
         Result of dereferencing.
     */
-    typedef typename std::remove_reference<decltype(*std::declval<T>())>::type type;
-};
+        typedef typename std::remove_reference<decltype(*std::declval<T>())>::type type;
+    };
 
-/**
+    /**
 .. function:: std::add_rvalue_reference<T>::type utils::rt_val<T>() noexcept
 
     Returns a value of type *T*. It is guaranteed to do nothing and will not
     throw a compile-time error, but using the returned result will cause
     undefined behavior.
 */
-template <typename T>
-typename std::add_rvalue_reference<T>::type rt_val() noexcept
-{
-    return std::move(*static_cast<T*>(nullptr));
-}
+    template <typename T>
+    typename std::add_rvalue_reference<T>::type rt_val() noexcept
+    {
+        return std::move(*static_cast<T*>(nullptr));
+    }
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
@@ -540,141 +579,108 @@ typename std::add_rvalue_reference<T>::type rt_val() noexcept
 }
 }
 
-namespace fplus
-{
-namespace internal
-{
-template <typename>
-struct is_std_function : std::false_type
-{
-};
+namespace fplus {
+namespace internal {
+    template <typename>
+    struct is_std_function : std::false_type {
+    };
 
-template <typename T>
-struct is_std_function<std::function<T>> : std::true_type
-{
-};
+    template <typename T>
+    struct is_std_function<std::function<T>> : std::true_type {
+    };
 
-// Those traits are needed to not perform arity checks on a generic-lambd
-// or a templated/overloaded operator()
-template <typename T, typename = void>
-struct has_function_traits : std::false_type
-{
-};
+    // Those traits are needed to not perform arity checks on a generic-lambd
+    // or a templated/overloaded operator()
+    template <typename T, typename = void>
+    struct has_function_traits : std::false_type {
+    };
 
-// There is a bug with GCC 7 when a std::function is passed as T.
-// It produces an ambiguous call between this one and the std::function overload
-// It's related to our void_t implementation, the C++14 compatible version does not
-// work, whereas the C++17 one does...
-//
-// So, help GCC a bit with is_std_function
-template <typename T>
-struct has_function_traits<T,
-                           std::enable_if_t<!is_std_function<T>::value,
-                                            void_t<decltype(&T::operator())>>>
-    : std::true_type
-{
-};
+    // There is a bug with GCC 7 when a std::function is passed as T.
+    // It produces an ambiguous call between this one and the std::function overload
+    // It's related to our void_t implementation, the C++14 compatible version does not
+    // work, whereas the C++17 one does...
+    //
+    // So, help GCC a bit with is_std_function
+    template <typename T>
+    struct has_function_traits<T,
+        std::enable_if_t<!is_std_function<T>::value,
+            void_t<decltype(&T::operator())>>>
+        : std::true_type {
+    };
 
-template <typename ReturnType, typename... Args>
-struct has_function_traits<ReturnType(Args...)> : std::true_type
-{
-};
+    template <typename ReturnType, typename... Args>
+    struct has_function_traits<ReturnType(Args...)> : std::true_type {
+    };
 
-template <typename ReturnType, typename... Args>
-struct has_function_traits<ReturnType (*)(Args...)> : std::true_type
-{
-};
+    template <typename ReturnType, typename... Args>
+    struct has_function_traits<ReturnType (*)(Args...)> : std::true_type {
+    };
 
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...)> : std::true_type
-{
-};
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...)> : std::true_type {
+    };
 
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...) const>
-    : std::true_type
-{
-};
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) const>
+        : std::true_type {
+    };
 
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...) volatile>
-    : std::true_type
-{
-};
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) volatile>
+        : std::true_type {
+    };
 
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...) const volatile>
-    : std::true_type
-{
-};
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) const volatile>
+        : std::true_type {
+    };
 
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...)&> : std::true_type
-{
-};
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...)&> : std::true_type {
+    };
 
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...) const &>
-    : std::true_type
-{
-};
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) const&>
+        : std::true_type {
+    };
 
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...) volatile&>
-    : std::true_type
-{
-};
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) volatile&>
+        : std::true_type {
+    };
 
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...) const volatile&>
-    : std::true_type
-{
-};
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) const volatile&>
+        : std::true_type {
+    };
 
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...) &&>
-    : std::true_type
-{
-};
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) &&>
+        : std::true_type {
+    };
 
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...) const &&>
-    : std::true_type
-{
-};
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) const&&>
+        : std::true_type {
+    };
 
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...) volatile&&>
-    : std::true_type
-{
-};
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) volatile&&>
+        : std::true_type {
+    };
 
-template <typename ReturnType, typename ClassType, typename... Args>
-struct has_function_traits<ReturnType (ClassType::*)(Args...) const volatile&&>
-    : std::true_type
-{
-};
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) const volatile&&>
+        : std::true_type {
+    };
 
-template <typename FunctionType>
-struct has_function_traits<std::function<FunctionType>> : std::true_type
-{
-};
+    template <typename FunctionType>
+    struct has_function_traits<std::function<FunctionType>> : std::true_type {
+    };
 }
 }
 
 #endif
-
-//
-// composition.hpp
-//
-
-// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
-// https://github.com/Dobiasd/FunctionalPlus
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
-
-
 
 //
 // internal/apply.hpp
@@ -710,292 +716,252 @@ struct has_function_traits<std::function<FunctionType>> : std::true_type
 
 // borrowed to libc++
 #define FPLUS_INVOKE_RETURN(...) \
-  ->decltype(__VA_ARGS__)        \
-  {                              \
-    return __VA_ARGS__;          \
-  }
+    ->decltype(__VA_ARGS__)      \
+    {                            \
+        return __VA_ARGS__;      \
+    }
 
-namespace fplus
-{
-namespace internal
-{
-// We need std::invoke to detect callable objects
-//
-// source:
-// http://en.cppreference.com/mwiki/index.php?title=cpp/utility/functional/invoke&oldid=82514
-template <typename U>
-static std::true_type is_refwrap_test(const std::reference_wrapper<U>&);
+namespace fplus {
+namespace internal {
+    // We need std::invoke to detect callable objects
+    //
+    // source:
+    // http://en.cppreference.com/mwiki/index.php?title=cpp/utility/functional/invoke&oldid=82514
+    template <typename U>
+    static std::true_type is_refwrap_test(const std::reference_wrapper<U>&);
 
-template <typename U>
-static std::false_type is_refwrap_test(const U&);
+    template <typename U>
+    static std::false_type is_refwrap_test(const U&);
 
-template <typename T>
-struct is_reference_wrapper : decltype(is_refwrap_test(std::declval<T>()))
-{
-};
+    template <typename T>
+    struct is_reference_wrapper : decltype(is_refwrap_test(std::declval<T>())) {
+    };
 
-template <typename T, typename U = typename std::decay<T>::type>
-struct unwrap_reference_wrapper
-{
-  using type = T;
-};
+    template <typename T, typename U = typename std::decay<T>::type>
+    struct unwrap_reference_wrapper {
+        using type = T;
+    };
 
-template <typename T, typename U>
-struct unwrap_reference_wrapper<T, std::reference_wrapper<U>>
-{
-  using type = U&;
-};
+    template <typename T, typename U>
+    struct unwrap_reference_wrapper<T, std::reference_wrapper<U>> {
+        using type = U&;
+    };
 
-template <typename T>
-using unwrap_reference_wrapper_t = typename unwrap_reference_wrapper<T>::type;
+    template <typename T>
+    using unwrap_reference_wrapper_t = typename unwrap_reference_wrapper<T>::type;
 
-// note: clang only triggers the second static_assert
-//      - static_assert(is_invocable<&base_class::non_const_method, const derived_class&>::value, "");
-//      - static_assert(is_invocable<&base_class::non_const_method, const base_class&>::value, "");
-// GCC triggers both. To workaround this clang bug, we have to manage cv correctness ourselves
+    // note: clang only triggers the second static_assert
+    //      - static_assert(is_invocable<&base_class::non_const_method, const derived_class&>::value, "");
+    //      - static_assert(is_invocable<&base_class::non_const_method, const base_class&>::value, "");
+    // GCC triggers both. To workaround this clang bug, we have to manage cv correctness ourselves
 
-template <typename T>
-struct is_const_member_function : std::false_type
-{
-};
+    template <typename T>
+    struct is_const_member_function : std::false_type {
+    };
 
-// decay doesn't add pointer to abominable functions, don't bother writing them
-template <typename R, typename... Args>
-struct is_const_member_function<R(Args...) const> : std::true_type
-{
-};
+    // decay doesn't add pointer to abominable functions, don't bother writing them
+    template <typename R, typename... Args>
+    struct is_const_member_function<R(Args...) const> : std::true_type {
+    };
 
-template <typename R, typename... Args>
-struct is_const_member_function<R(Args...) const&> : std::true_type
-{
-};
+    template <typename R, typename... Args>
+    struct is_const_member_function<R(Args...) const&> : std::true_type {
+    };
 
-template <typename R, typename... Args>
-struct is_const_member_function<R(Args...) const&&> : std::true_type
-{
-};
+    template <typename R, typename... Args>
+    struct is_const_member_function<R(Args...) const&&> : std::true_type {
+    };
 
-template <typename R, typename... Args>
-struct is_const_member_function<R(Args...) const volatile> : std::true_type
-{
-};
+    template <typename R, typename... Args>
+    struct is_const_member_function<R(Args...) const volatile> : std::true_type {
+    };
 
-template <typename R, typename... Args>
-struct is_const_member_function<R(Args...) const volatile&> : std::true_type
-{
-};
+    template <typename R, typename... Args>
+    struct is_const_member_function<R(Args...) const volatile&> : std::true_type {
+    };
 
-template <typename R, typename... Args>
-struct is_const_member_function<R(Args...) const volatile&&> : std::true_type
-{
-};
+    template <typename R, typename... Args>
+    struct is_const_member_function<R(Args...) const volatile&&> : std::true_type {
+    };
 
-template <typename T>
-struct is_volatile_member_function : std::false_type
-{
-};
+    template <typename T>
+    struct is_volatile_member_function : std::false_type {
+    };
 
-// decay doesn't add pointer to abominable functions, don't bother writing them
-template <typename R, typename... Args>
-struct is_volatile_member_function<R(Args...) volatile> : std::true_type
-{
-};
+    // decay doesn't add pointer to abominable functions, don't bother writing them
+    template <typename R, typename... Args>
+    struct is_volatile_member_function<R(Args...) volatile> : std::true_type {
+    };
 
-template <typename R, typename... Args>
-struct is_volatile_member_function<R(Args...) volatile&> : std::true_type
-{
-};
+    template <typename R, typename... Args>
+    struct is_volatile_member_function<R(Args...) volatile&> : std::true_type {
+    };
 
-template <typename R, typename... Args>
-struct is_volatile_member_function<R(Args...) volatile&&> : std::true_type
-{
-};
+    template <typename R, typename... Args>
+    struct is_volatile_member_function<R(Args...) volatile&&> : std::true_type {
+    };
 
-template <typename R, typename... Args>
-struct is_volatile_member_function<R(Args...) const volatile> : std::true_type
-{
-};
+    template <typename R, typename... Args>
+    struct is_volatile_member_function<R(Args...) const volatile> : std::true_type {
+    };
 
-template <typename R, typename... Args>
-struct is_volatile_member_function<R(Args...) const volatile&> : std::true_type
-{
-};
+    template <typename R, typename... Args>
+    struct is_volatile_member_function<R(Args...) const volatile&> : std::true_type {
+    };
 
-template <typename R, typename... Args>
-struct is_volatile_member_function<R(Args...) const volatile&&> : std::true_type
-{
-};
+    template <typename R, typename... Args>
+    struct is_volatile_member_function<R(Args...) const volatile&&> : std::true_type {
+    };
 
-template <typename Object, typename Signature>
-struct has_correct_cv
-{
-  // if object has no cv, every method can be called
-  // else the method must have the same cv than the object
-  static constexpr bool value =
-      std::is_same<typename std::remove_cv<Object>::type, Object>::value ||
-      ((is_volatile_member_function<Signature>::value ==
-        std::is_volatile<Object>::value) &&
-       (is_const_member_function<Signature>::value ==
-        std::is_const<Object>::value));
-};
+    template <typename Object, typename Signature>
+    struct has_correct_cv {
+        // if object has no cv, every method can be called
+        // else the method must have the same cv than the object
+        static constexpr bool value = std::is_same<typename std::remove_cv<Object>::type, Object>::value || ((is_volatile_member_function<Signature>::value == std::is_volatile<Object>::value) && (is_const_member_function<Signature>::value == std::is_const<Object>::value));
+    };
 
-// pointer to member function - reference to object
-template <
-    typename Base,
-    typename T,
-    typename Derived,
-    typename... Args,
-    typename Unwrapped = unwrap_reference_wrapper_t<Derived>,
-    typename std::enable_if<
-        is_function<T>::value &&
-            has_correct_cv<typename std::remove_reference<Unwrapped>::type, T>::value &&
-            std::is_base_of<Base, typename std::decay<Unwrapped>::type>::value,
-        int>::type = 0>
-inline auto invoke_impl(T Base::*pmf, Derived&& ref, Args&&... args)
-    FPLUS_INVOKE_RETURN((std::forward<Unwrapped>(ref).*
-                         pmf)(std::forward<Args>(args)...))
+    // pointer to member function - reference to object
+    template <
+        typename Base,
+        typename T,
+        typename Derived,
+        typename... Args,
+        typename Unwrapped = unwrap_reference_wrapper_t<Derived>,
+        typename std::enable_if<
+            is_function<T>::value && has_correct_cv<typename std::remove_reference<Unwrapped>::type, T>::value && std::is_base_of<Base, typename std::decay<Unwrapped>::type>::value,
+            int>::type
+        = 0>
+    inline auto invoke_impl(T Base::*pmf, Derived&& ref, Args&&... args)
+        FPLUS_INVOKE_RETURN((std::forward<Unwrapped>(ref).*pmf)(std::forward<Args>(args)...))
 
-// pointer to member function - pointer to object
-template <
-    typename Base,
-    typename T,
-    typename Pointer,
-    typename... Args,
-    typename std::enable_if<
-        is_function<T>::value &&
-            has_correct_cv<typename std::remove_pointer<
-                               typename std::decay<Pointer>::type>::type,
-                           T>::value &&
-            !std::is_base_of<Base, typename std::decay<Pointer>::type>::value,
-        int>::type = 0>
-inline auto invoke_impl(T Base::*pmf, Pointer&& ptr, Args&&... args)
-    FPLUS_INVOKE_RETURN(((*std::forward<Pointer>(ptr)).*
-                         pmf)(std::forward<Args>(args)...))
+        // pointer to member function - pointer to object
+        template <
+            typename Base,
+            typename T,
+            typename Pointer,
+            typename... Args,
+            typename std::enable_if<
+                is_function<T>::value && has_correct_cv<typename std::remove_pointer<typename std::decay<Pointer>::type>::type, T>::value && !std::is_base_of<Base, typename std::decay<Pointer>::type>::value,
+                int>::type
+            = 0>
+        inline auto invoke_impl(T Base::*pmf, Pointer&& ptr, Args&&... args)
+            FPLUS_INVOKE_RETURN(((*std::forward<Pointer>(ptr)).*pmf)(std::forward<Args>(args)...))
 
-// pointer to non-static data member - reference to object
-template <
-    typename Base,
-    typename T,
-    typename Derived,
-    typename Unwrapped = unwrap_reference_wrapper_t<Derived>,
-    typename std::enable_if<
-        !is_function<T>::value &&
-            std::is_base_of<Base, typename std::decay<Unwrapped>::type>::value,
-        int>::type = 0>
-inline auto invoke_impl(T Base::*pmd, Derived&& ref)
-    FPLUS_INVOKE_RETURN((std::forward<Unwrapped>(ref).*pmd))
+        // pointer to non-static data member - reference to object
+        template <
+            typename Base,
+            typename T,
+            typename Derived,
+            typename Unwrapped = unwrap_reference_wrapper_t<Derived>,
+            typename std::enable_if<
+                !is_function<T>::value && std::is_base_of<Base, typename std::decay<Unwrapped>::type>::value,
+                int>::type
+            = 0>
+        inline auto invoke_impl(T Base::*pmd, Derived&& ref)
+            FPLUS_INVOKE_RETURN((std::forward<Unwrapped>(ref).*pmd))
 
-// pointer to non-static data member - pointer to object
-template <
-    typename Base,
-    typename T,
-    typename Pointer,
-    typename std::enable_if<
-        !is_function<T>::value &&
-            !std::is_base_of<Base, typename std::decay<Pointer>::type>::value,
-        int>::type = 0>
-inline auto invoke_impl(T Base::*pmd, Pointer&& ptr)
-    FPLUS_INVOKE_RETURN((*std::forward<Pointer>(ptr)).*pmd)
+        // pointer to non-static data member - pointer to object
+        template <
+            typename Base,
+            typename T,
+            typename Pointer,
+            typename std::enable_if<
+                !is_function<T>::value && !std::is_base_of<Base, typename std::decay<Pointer>::type>::value,
+                int>::type
+            = 0>
+        inline auto invoke_impl(T Base::*pmd, Pointer&& ptr)
+            FPLUS_INVOKE_RETURN((*std::forward<Pointer>(ptr)).*pmd)
 
-// normal case - functions, lambdas, function objects
-template <typename F,
-          typename... Args,
-          typename std::enable_if<
-              !std::is_member_pointer<typename std::decay<F>::type>::value,
-              int>::type = 0>
-inline auto invoke_impl(F&& f, Args&&... args)
-    FPLUS_INVOKE_RETURN((std::forward<F>(f)(std::forward<Args>(args)...)))
+        // normal case - functions, lambdas, function objects
+        template <typename F,
+            typename... Args,
+            typename std::enable_if<
+                !std::is_member_pointer<typename std::decay<F>::type>::value,
+                int>::type
+            = 0>
+        inline auto invoke_impl(F&& f, Args&&... args)
+            FPLUS_INVOKE_RETURN((std::forward<F>(f)(std::forward<Args>(args)...)))
 
-template <typename AlwaysVoid, typename, typename...>
-struct invoke_result_impl
-{
-};
+                template <typename AlwaysVoid, typename, typename...>
+                struct invoke_result_impl {
+    };
 
-template <typename F, typename... Args>
-struct invoke_result_impl<decltype(void(invoke_impl(std::declval<F>(),
-                                                    std::declval<Args>()...))),
-                          F,
-                          Args...>
-{
-  using type =
-      decltype(invoke_impl(std::declval<F>(), std::declval<Args>()...));
-};
+    template <typename F, typename... Args>
+    struct invoke_result_impl<decltype(void(invoke_impl(std::declval<F>(),
+                                  std::declval<Args>()...))),
+        F,
+        Args...> {
+        using type = decltype(invoke_impl(std::declval<F>(), std::declval<Args>()...));
+    };
 
-template <typename F, typename... ArgTypes>
-struct invoke_result : invoke_result_impl<void, F, ArgTypes...>
-{
-};
+    template <typename F, typename... ArgTypes>
+    struct invoke_result : invoke_result_impl<void, F, ArgTypes...> {
+    };
 
-template <typename F, typename... Args>
-using invoke_result_t = typename invoke_result<F, Args...>::type;
+    template <typename F, typename... Args>
+    using invoke_result_t = typename invoke_result<F, Args...>::type;
 
-// noexcept omitted on purpose, cannot be implemented without C++17.
-// GCC 7.1 works with libstdc++, but clang fails, even with latest build,
-// on both libstdc++/libc++, I suspect an internal compiler trait is at
-// play to make GCC work.
-//
-// We could detect if C++17 is used and use std::invoke directly.
-template <typename F, typename... ArgTypes>
-invoke_result_t<F, ArgTypes...> invoke(F&& f, ArgTypes&&... args)
-{
-  return invoke_impl(std::forward<F>(f), std::forward<ArgTypes>(args)...);
-}
+    // noexcept omitted on purpose, cannot be implemented without C++17.
+    // GCC 7.1 works with libstdc++, but clang fails, even with latest build,
+    // on both libstdc++/libc++, I suspect an internal compiler trait is at
+    // play to make GCC work.
+    //
+    // We could detect if C++17 is used and use std::invoke directly.
+    template <typename F, typename... ArgTypes>
+    invoke_result_t<F, ArgTypes...> invoke(F&& f, ArgTypes&&... args)
+    {
+        return invoke_impl(std::forward<F>(f), std::forward<ArgTypes>(args)...);
+    }
 
-// Invoke useful traits (libstdc++ 7.1.0's implementation, ugly-case removed)
-template <typename Result, typename ReturnType, typename = void>
-struct is_invocable_impl : std::false_type
-{
-};
+    // Invoke useful traits (libstdc++ 7.1.0's implementation, ugly-case removed)
+    template <typename Result, typename ReturnType, typename = void>
+    struct is_invocable_impl : std::false_type {
+    };
 
-template <typename Result, typename ReturnType>
-struct is_invocable_impl<Result, ReturnType, void_t<typename Result::type>>
-    : disjunction<std::is_void<ReturnType>,
-                  std::is_convertible<typename Result::type, ReturnType>>::type
-{
-};
+    template <typename Result, typename ReturnType>
+    struct is_invocable_impl<Result, ReturnType, void_t<typename Result::type>>
+        : disjunction<std::is_void<ReturnType>,
+              std::is_convertible<typename Result::type, ReturnType>>::type {
+    };
 
-template <typename F, typename... ArgTypes>
-struct is_invocable
-    : is_invocable_impl<invoke_result<F, ArgTypes...>, void>::type
-{
-};
+    template <typename F, typename... ArgTypes>
+    struct is_invocable
+        : is_invocable_impl<invoke_result<F, ArgTypes...>, void>::type {
+    };
 
-template <typename ReturnType, typename F, typename... ArgTypes>
-struct is_invocable_r
-    : is_invocable_impl<invoke_result<F, ArgTypes...>, ReturnType>::type
-{
-};
+    template <typename ReturnType, typename F, typename... ArgTypes>
+    struct is_invocable_r
+        : is_invocable_impl<invoke_result<F, ArgTypes...>, ReturnType>::type {
+    };
 }
 }
 
 #undef FPLUS_INVOKE_RETURN
 
-namespace fplus
-{
-namespace internal
-{
-// C++17 std::apply (http://en.cppreference.com/w/cpp/utility/apply)
-template <typename F, typename Tuple, std::size_t... I>
-constexpr decltype(auto) apply_impl(F&& f, Tuple&& t, std::index_sequence<I...>)
-{
-    return internal::invoke(std::forward<F>(f),
-                          std::get<I>(std::forward<Tuple>(t))...);
-}
+namespace fplus {
+namespace internal {
+    // C++17 std::apply (http://en.cppreference.com/w/cpp/utility/apply)
+    template <typename F, typename Tuple, std::size_t... I>
+    constexpr decltype(auto) apply_impl(F&& f, Tuple&& t, std::index_sequence<I...>)
+    {
+        return internal::invoke(std::forward<F>(f),
+            std::get<I>(std::forward<Tuple>(t))...);
+    }
 
-template <typename F, typename Tuple>
-constexpr decltype(auto) apply(F&& f, Tuple&& t)
-{
-    return internal::apply_impl(
-        std::forward<F>(f),
-        std::forward<Tuple>(t),
-        std::make_index_sequence<
-            std::tuple_size<std::decay_t<Tuple>>::value>{});
-}
+    template <typename F, typename Tuple>
+    constexpr decltype(auto) apply(F&& f, Tuple&& t)
+    {
+        return internal::apply_impl(
+            std::forward<F>(f),
+            std::forward<Tuple>(t),
+            std::make_index_sequence<
+                std::tuple_size<std::decay_t<Tuple>>::value> {});
+    }
 }
 }
 
 //
-// internal/asserts/functions.hpp
+// internal/asserts/composition.hpp
 //
 
 // Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
@@ -1018,140 +984,143 @@ constexpr decltype(auto) apply(F&& f, Tuple&& t)
 
 
 
-namespace fplus
-{
-namespace internal
-{
-template <typename T, typename...>
-struct function_traits_asserts;
+namespace fplus {
+namespace internal {
+    template <typename T, typename...>
+    struct function_traits_asserts;
 
-template <
-    typename,
-    typename F,
-    typename... Args,
-    typename std::enable_if<is_invocable<F, Args...>::value, int>::type = 0>
-constexpr void trigger_static_asserts()
-{
-}
+    template <
+        typename,
+        typename F,
+        typename... Args,
+        typename std::enable_if<is_invocable<F, Args...>::value, int>::type = 0>
+    constexpr void trigger_static_asserts()
+    {
+    }
 
-// Marks a variable as unused. Prevents the compiler warning
-// for set but unused variables.
-template<class T>
-inline void unused(T&&) { }
+    // Marks a variable as unused. Prevents the compiler warning
+    // for set but unused variables.
+    template <class T>
+    inline void unused(T&&) { }
 
-template <typename Tag,
-          typename F,
-          typename... Args,
-          typename std::enable_if<has_function_traits<F>::value &&
-                                      !is_invocable<F, Args...>::value,
-                                  int>::type = 0>
-constexpr void trigger_static_asserts()
-{
-    // don't perform checks if function_traits<F> doesn't exist
-    unused(function_traits_asserts<Tag, F, Args...>{});
-}
+    template <typename Tag,
+        typename F,
+        typename... Args,
+        typename std::enable_if<has_function_traits<F>::value && !is_invocable<F, Args...>::value,
+            int>::type
+        = 0>
+    constexpr void trigger_static_asserts()
+    {
+        // don't perform checks if function_traits<F> doesn't exist
+        unused(function_traits_asserts<Tag, F, Args...> {});
+    }
 
-template <typename,
-          typename F,
-          typename... Args,
-          typename std::enable_if<!has_function_traits<F>::value &&
-                                      !is_invocable<F, Args...>::value,
-                                  int>::type = 0>
-constexpr void trigger_static_asserts()
-{
-  static_assert(sizeof(F) == 0,
-                "F is not a Callable, or its definition is ill-formed");
-}
+    template <typename,
+        typename F,
+        typename... Args,
+        typename std::enable_if<!has_function_traits<F>::value && !is_invocable<F, Args...>::value,
+            int>::type
+        = 0>
+    constexpr void trigger_static_asserts()
+    {
+        static_assert(sizeof(F) == 0,
+            "F is not a Callable, or its definition is ill-formed");
+    }
 }
 }
 
-namespace fplus
-{
-namespace internal
-{
+namespace fplus {
+namespace internal {
 
-struct nullary_function_tag
-{
-};
+    struct bind_1st_of_2_tag {
+    };
 
-struct unary_function_tag
-{
-};
+    struct bind_2nd_of_2_tag {
+    };
 
-struct binary_function_tag
-{
-};
+    struct bind_1st_of_3_tag {
+    };
 
-struct binary_predicate_tag
-{
-};
+    struct bind_1st_and_2nd_of_3_tag {
+    };
 
-struct check_arity_tag
-{
-};
+    struct bind_2nd_and_3rd_of_3_tag {
+    };
 
-template <typename F>
-struct function_traits_asserts<nullary_function_tag, F>
-{
-    static_assert(utils::function_traits<F>::arity == 0,
-                  "Function must take no parameters.");
-};
+    template <typename F, typename X, typename Y>
+    struct function_traits_asserts<bind_1st_of_2_tag, F, X, Y> {
+        static_assert(utils::function_traits<F>::arity == 2,
+            "Function must take two parameters.");
+        typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+        typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
+        static_assert(std::is_convertible<X, FIn0>::value,
+            "Function can not take bound parameter type");
+        static_assert(std::is_convertible<Y, FIn1>::value,
+            "Function can not take provided parameter type");
+    };
 
-template <typename F, typename X>
-struct function_traits_asserts<unary_function_tag, F, X>
-{
-    static_assert(utils::function_traits<F>::arity == 1,
-                  "Function must take one parameter.");
-    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
-    static_assert(std::is_convertible<X, FIn0>::value,
-                  "Invalid argument type for function");
-};
+    template <typename F, typename X, typename Y>
+    struct function_traits_asserts<bind_2nd_of_2_tag, F, X, Y> {
+        static_assert(utils::function_traits<F>::arity == 2,
+            "Function must take two parameters.");
+        typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+        typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
+        static_assert(std::is_convertible<X, FIn0>::value,
+            "Function can not take provided parameter type");
+        static_assert(std::is_convertible<Y, FIn1>::value,
+            "Function can not take bound parameter type");
+    };
 
-template <typename F>
-struct function_traits_asserts<binary_function_tag, F>
-{
-    static_assert(utils::function_traits<F>::arity == 2,
-        "Function must take two parameters.");
-};
+    template <typename F, typename X, typename Y, typename Z>
+    struct function_traits_asserts<bind_1st_of_3_tag, F, X, Y, Z> {
+        static_assert(utils::function_traits<F>::arity == 3,
+            "Function must take three parameters.");
+        typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+        typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
+        typedef typename utils::function_traits<F>::template arg<2>::type FIn2;
+        static_assert(std::is_convertible<X, FIn0>::value,
+            "Function can not take bound parameter type");
+        static_assert(std::is_convertible<Y, FIn1>::value,
+            "Function can not take provided first parameter type");
+        static_assert(std::is_convertible<Z, FIn2>::value,
+            "Function can not take provided second parameter type");
+    };
 
-template <typename F, typename X, typename Y>
-struct function_traits_asserts<binary_function_tag, F, X ,Y>
-{
-    static_assert(utils::function_traits<F>::arity == 2,
-        "Function must take two parameters.");
-    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
-    static_assert(std::is_convertible<X, FIn0>::value,
-                  "Invalid first argument type for function");
-    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
-    static_assert(std::is_convertible<Y, FIn1>::value,
-                  "Invalid second argument type for function");
-};
+    template <typename F, typename X, typename Y, typename Z>
+    struct function_traits_asserts<bind_1st_and_2nd_of_3_tag, F, X, Y, Z> {
+        static_assert(utils::function_traits<F>::arity == 3,
+            "Function must take three parameters.");
+        typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+        typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
+        typedef typename utils::function_traits<F>::template arg<2>::type FIn2;
+        static_assert(std::is_convertible<X, FIn0>::value,
+            "Function can not take first bound parameter type");
+        static_assert(std::is_convertible<Y, FIn1>::value,
+            "Function can not take second bound parameter type");
+        static_assert(std::is_convertible<Z, FIn2>::value,
+            "Function can not take provided parameter type");
+    };
 
-template <typename F>
-struct function_traits_asserts<binary_predicate_tag, F>
-{
-    static_assert(utils::function_traits<F>::arity == 2,
-        "Function must take two parameters.");
-    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
-    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
-    static_assert(std::is_same<FIn0, FIn1>::value,
-                  "Both parameters must have the same type.");
-    static_assert(std::is_same<std::decay_t<internal::invoke_result_t<F, FIn0, FIn1>>, bool>::value,
-                "Predicate must return bool.");
-};
-
-template <typename F, typename... Args>
-struct function_traits_asserts<check_arity_tag, F, Args...>
-{
-    static_assert(utils::function_traits<F>::arity == sizeof...(Args),
-                  "Wrong arity.");
-};
+    template <typename F, typename X, typename Y, typename Z>
+    struct function_traits_asserts<bind_2nd_and_3rd_of_3_tag, F, X, Y, Z> {
+        static_assert(utils::function_traits<F>::arity == 3,
+            "Function must take three parameters.");
+        typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+        typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
+        typedef typename utils::function_traits<F>::template arg<2>::type FIn2;
+        static_assert(std::is_convertible<X, FIn0>::value,
+            "Function can not take provided parameter type");
+        static_assert(std::is_convertible<Y, FIn1>::value,
+            "Function can not take second bound parameter type");
+        static_assert(std::is_convertible<Z, FIn2>::value,
+            "Function can not take first bound parameter type");
+    };
 
 }
 }
 
 //
-// internal/asserts/composition.hpp
+// internal/asserts/functions.hpp
 //
 
 // Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
@@ -1162,104 +1131,74 @@ struct function_traits_asserts<check_arity_tag, F, Args...>
 
 
 
-namespace fplus
-{
-namespace internal
-{
+namespace fplus {
+namespace internal {
 
-struct bind_1st_of_2_tag
-{
-};
+    struct nullary_function_tag {
+    };
 
-struct bind_2nd_of_2_tag
-{
-};
+    struct unary_function_tag {
+    };
 
-struct bind_1st_of_3_tag
-{
-};
+    struct binary_function_tag {
+    };
 
-struct bind_1st_and_2nd_of_3_tag
-{
-};
+    struct binary_predicate_tag {
+    };
 
-struct bind_2nd_and_3rd_of_3_tag
-{
-};
+    struct check_arity_tag {
+    };
 
-template <typename F, typename X, typename Y>
-struct function_traits_asserts<bind_1st_of_2_tag, F, X, Y>
-{
-    static_assert(utils::function_traits<F>::arity == 2,
-                  "Function must take two parameters.");
-    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
-    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
-    static_assert(std::is_convertible<X, FIn0>::value,
-                  "Function can not take bound parameter type");
-    static_assert(std::is_convertible<Y, FIn1>::value,
-                  "Function can not take provided parameter type");
-};
+    template <typename F>
+    struct function_traits_asserts<nullary_function_tag, F> {
+        static_assert(utils::function_traits<F>::arity == 0,
+            "Function must take no parameters.");
+    };
 
-template <typename F, typename X, typename Y>
-struct function_traits_asserts<bind_2nd_of_2_tag, F, X, Y>
-{
-    static_assert(utils::function_traits<F>::arity == 2,
-                  "Function must take two parameters.");
-    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
-    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
-    static_assert(std::is_convertible<X, FIn0>::value,
-                  "Function can not take provided parameter type");
-    static_assert(std::is_convertible<Y, FIn1>::value,
-                  "Function can not take bound parameter type");
-};
+    template <typename F, typename X>
+    struct function_traits_asserts<unary_function_tag, F, X> {
+        static_assert(utils::function_traits<F>::arity == 1,
+            "Function must take one parameter.");
+        typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+        static_assert(std::is_convertible<X, FIn0>::value,
+            "Invalid argument type for function");
+    };
 
-template <typename F, typename X, typename Y, typename Z>
-struct function_traits_asserts<bind_1st_of_3_tag, F, X, Y, Z>
-{
-    static_assert(utils::function_traits<F>::arity == 3,
-                  "Function must take three parameters.");
-    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
-    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
-    typedef typename utils::function_traits<F>::template arg<2>::type FIn2;
-    static_assert(std::is_convertible<X, FIn0>::value,
-                  "Function can not take bound parameter type");
-    static_assert(std::is_convertible<Y, FIn1>::value,
-                  "Function can not take provided first parameter type");
-    static_assert(std::is_convertible<Z, FIn2>::value,
-                  "Function can not take provided second parameter type");
-};
+    template <typename F>
+    struct function_traits_asserts<binary_function_tag, F> {
+        static_assert(utils::function_traits<F>::arity == 2,
+            "Function must take two parameters.");
+    };
 
-template <typename F, typename X, typename Y, typename Z>
-struct function_traits_asserts<bind_1st_and_2nd_of_3_tag, F, X, Y, Z>
-{
-    static_assert(utils::function_traits<F>::arity == 3,
-                  "Function must take three parameters.");
-    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
-    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
-    typedef typename utils::function_traits<F>::template arg<2>::type FIn2;
-    static_assert(std::is_convertible<X, FIn0>::value,
-                  "Function can not take first bound parameter type");
-    static_assert(std::is_convertible<Y, FIn1>::value,
-                  "Function can not take second bound parameter type");
-    static_assert(std::is_convertible<Z, FIn2>::value,
-                  "Function can not take provided parameter type");
-};
+    template <typename F, typename X, typename Y>
+    struct function_traits_asserts<binary_function_tag, F, X, Y> {
+        static_assert(utils::function_traits<F>::arity == 2,
+            "Function must take two parameters.");
+        typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+        static_assert(std::is_convertible<X, FIn0>::value,
+            "Invalid first argument type for function");
+        typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
+        static_assert(std::is_convertible<Y, FIn1>::value,
+            "Invalid second argument type for function");
+    };
 
-template <typename F, typename X, typename Y, typename Z>
-struct function_traits_asserts<bind_2nd_and_3rd_of_3_tag, F, X, Y, Z>
-{
-    static_assert(utils::function_traits<F>::arity == 3,
-                  "Function must take three parameters.");
-    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
-    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
-    typedef typename utils::function_traits<F>::template arg<2>::type FIn2;
-    static_assert(std::is_convertible<X, FIn0>::value,
-                  "Function can not take provided parameter type");
-    static_assert(std::is_convertible<Y, FIn1>::value,
-                  "Function can not take second bound parameter type");
-    static_assert(std::is_convertible<Z, FIn2>::value,
-                  "Function can not take first bound parameter type");
-};
+    template <typename F>
+    struct function_traits_asserts<binary_predicate_tag, F> {
+        static_assert(utils::function_traits<F>::arity == 2,
+            "Function must take two parameters.");
+        typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+        typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
+        static_assert(std::is_same<FIn0, FIn1>::value,
+            "Both parameters must have the same type.");
+        static_assert(std::is_same<std::decay_t<internal::invoke_result_t<F, FIn0, FIn1>>, bool>::value,
+            "Predicate must return bool.");
+    };
+
+    template <typename F, typename... Args>
+    struct function_traits_asserts<check_arity_tag, F, Args...> {
+        static_assert(utils::function_traits<F>::arity == sizeof...(Args),
+            "Wrong arity.");
+    };
 
 }
 }
@@ -1279,102 +1218,100 @@ struct function_traits_asserts<bind_2nd_and_3rd_of_3_tag, F, X, Y, Z>
 #include <utility>
 
 
-namespace fplus
-{
-namespace internal
-{
-// source: https://codereview.stackexchange.com/a/63893
-// note: the code in the link above is called with the arguments in reverse order
-template <typename... Fs>
-class compose_impl
-{
-    static constexpr std::size_t size = sizeof...(Fs);
-    static_assert(size > 1,
-                  "Invalid number of functions to compose, minimum is two.");
+namespace fplus {
+namespace internal {
+    // source: https://codereview.stackexchange.com/a/63893
+    // note: the code in the link above is called with the arguments in reverse order
+    template <typename... Fs>
+    class compose_impl {
+        static constexpr std::size_t size = sizeof...(Fs);
+        static_assert(size > 1,
+            "Invalid number of functions to compose, minimum is two.");
 
-  public:
-    compose_impl(Fs&&... fs) : _functionTuple(std::forward<Fs>(fs)...)
-    {
-    }
+    public:
+        compose_impl(Fs&&... fs)
+            : _functionTuple(std::forward<Fs>(fs)...)
+        {
+        }
 
-    template <typename... Ts>
-    auto operator()(Ts&&... ts) const
-    {
-        return _apply(std::integral_constant<std::size_t, 0>{},
-                      std::forward<Ts>(ts)...);
-    }
+        template <typename... Ts>
+        auto operator()(Ts&&... ts) const
+        {
+            return _apply(std::integral_constant<std::size_t, 0> {},
+                std::forward<Ts>(ts)...);
+        }
 
-  private:
-    template <std::size_t N, typename... Ts>
-    auto _apply(std::integral_constant<std::size_t, N>, Ts&&... ts) const
-    {
-        return _apply(std::integral_constant<std::size_t, N + 1>{},
-                      std::get<N>(_functionTuple)(std::forward<Ts>(ts)...));
-    }
+    private:
+        template <std::size_t N, typename... Ts>
+        auto _apply(std::integral_constant<std::size_t, N>, Ts&&... ts) const
+        {
+            return _apply(std::integral_constant<std::size_t, N + 1> {},
+                std::get<N>(_functionTuple)(std::forward<Ts>(ts)...));
+        }
 
-    template <typename... Ts>
-    auto _apply(std::integral_constant<std::size_t, size - 1>, Ts&&... ts) const
-    {
-        return internal::invoke(std::get<size - 1>(_functionTuple),
-                              std::forward<Ts>(ts)...);
-    }
+        template <typename... Ts>
+        auto _apply(std::integral_constant<std::size_t, size - 1>, Ts&&... ts) const
+        {
+            return internal::invoke(std::get<size - 1>(_functionTuple),
+                std::forward<Ts>(ts)...);
+        }
 
-    std::tuple<Fs...> _functionTuple;
-};
-
-// Is BinaryLift really correct?
-template <typename Tuple, typename BinaryLift>
-auto compose_binary_lift_impl(std::integral_constant<std::size_t, 1>,
-                              const Tuple& tup,
-                              const BinaryLift& lifter)
-{
-    return lifter(std::get<0>(tup), std::get<1>(tup));
-}
-
-template <std::size_t N, typename Tuple, typename BinaryLift>
-auto compose_binary_lift_impl(std::integral_constant<std::size_t, N>,
-                              const Tuple& tup,
-                              const BinaryLift& lifter)
-{
-    return lifter(
-        compose_binary_lift_impl(
-            std::integral_constant<std::size_t, N - 1>{}, tup, lifter),
-        std::get<N>(tup));
-}
-
-template <typename BinaryLift, typename... Callables>
-auto compose_binary_lift(const BinaryLift& lifter, Callables&&... args)
-{
-    static_assert(sizeof...(Callables) > 1,
-                  "Invalid number of functions to compose, minimum is two.");
-    const auto tup = std::forward_as_tuple(std::forward<Callables>(args)...);
-    return compose_binary_lift_impl(
-        std::integral_constant<std::size_t, sizeof...(Callables) - 1>{},
-        tup,
-        lifter);
-}
-
-// concentrate asserts in this method. Lambda is provided by the library.
-template <typename Lambda, typename F, typename G>
-auto logical_binary_op(Lambda op, F f, G g)
-{
-    // Perfect-forwarding might move twice, if we add a requirement on F and G,
-    // that might not be an issue.
-    return [op, f, g](auto x) {
-        internal::trigger_static_asserts<internal::unary_function_tag,
-                                             F,
-                                             decltype(x)>();
-        internal::trigger_static_asserts<internal::unary_function_tag,
-                                             G,
-                                             decltype(x)>();
-        using FRes = std::decay_t<internal::invoke_result_t<F, decltype(x)>>;
-        using GRes = std::decay_t<internal::invoke_result_t<G, decltype(x)>>;
-        static_assert(std::is_same<FRes, bool>::value, "Must return bool.");
-        static_assert(std::is_same<GRes, bool>::value, "Must return bool.");
-
-        return op(f, g, x);
+        std::tuple<Fs...> _functionTuple;
     };
-}
+
+    // Is BinaryLift really correct?
+    template <typename Tuple, typename BinaryLift>
+    auto compose_binary_lift_impl(std::integral_constant<std::size_t, 1>,
+        const Tuple& tup,
+        const BinaryLift& lifter)
+    {
+        return lifter(std::get<0>(tup), std::get<1>(tup));
+    }
+
+    template <std::size_t N, typename Tuple, typename BinaryLift>
+    auto compose_binary_lift_impl(std::integral_constant<std::size_t, N>,
+        const Tuple& tup,
+        const BinaryLift& lifter)
+    {
+        return lifter(
+            compose_binary_lift_impl(
+                std::integral_constant<std::size_t, N - 1> {}, tup, lifter),
+            std::get<N>(tup));
+    }
+
+    template <typename BinaryLift, typename... Callables>
+    auto compose_binary_lift(const BinaryLift& lifter, Callables&&... args)
+    {
+        static_assert(sizeof...(Callables) > 1,
+            "Invalid number of functions to compose, minimum is two.");
+        const auto tup = std::forward_as_tuple(std::forward<Callables>(args)...);
+        return compose_binary_lift_impl(
+            std::integral_constant<std::size_t, sizeof...(Callables) - 1> {},
+            tup,
+            lifter);
+    }
+
+    // concentrate asserts in this method. Lambda is provided by the library.
+    template <typename Lambda, typename F, typename G>
+    auto logical_binary_op(Lambda op, F f, G g)
+    {
+        // Perfect-forwarding might move twice, if we add a requirement on F and G,
+        // that might not be an issue.
+        return [op, f, g](auto x) {
+            internal::trigger_static_asserts<internal::unary_function_tag,
+                F,
+                decltype(x)>();
+            internal::trigger_static_asserts<internal::unary_function_tag,
+                G,
+                decltype(x)>();
+            using FRes = std::decay_t<internal::invoke_result_t<F, decltype(x)>>;
+            using GRes = std::decay_t<internal::invoke_result_t<G, decltype(x)>>;
+            static_assert(std::is_same<FRes, bool>::value, "Must return bool.");
+            static_assert(std::is_same<GRes, bool>::value, "Must return bool.");
+
+            return op(f, g, x);
+        };
+    }
 }
 }
 
@@ -1385,8 +1322,7 @@ auto logical_binary_op(Lambda op, F f, G g)
 #include <unordered_map>
 #include <utility>
 
-namespace fplus
-{
+namespace fplus {
 
 // API search type: bind_1st_of_2 : (((a, b) -> c), a) -> (b -> c)
 // Bind first parameter of binary function.
@@ -1395,9 +1331,9 @@ auto bind_1st_of_2(F f, T x)
 {
     return [f, x](auto&& y) {
         internal::trigger_static_asserts<internal::bind_1st_of_2_tag,
-                                             F,
-                                             T,
-                                             decltype(y)>();
+            F,
+            T,
+            decltype(y)>();
         return internal::invoke(f, x, std::forward<decltype(y)>(y));
     };
 }
@@ -1409,9 +1345,9 @@ auto bind_2nd_of_2(F f, T y)
 {
     return [f, y](auto&& x) {
         internal::trigger_static_asserts<internal::bind_2nd_of_2_tag,
-                                             F,
-                                             decltype(x),
-                                             T>();
+            F,
+            decltype(x),
+            T>();
         return internal::invoke(f, std::forward<decltype(x)>(x), y);
     };
 }
@@ -1423,10 +1359,10 @@ auto bind_1st_of_3(F f, X x)
 {
     return [f, x](auto&& y, auto&& z) {
         internal::trigger_static_asserts<internal::bind_1st_of_3_tag,
-                                             F,
-                                             X,
-                                             decltype(y),
-                                             decltype(z)>();
+            F,
+            X,
+            decltype(y),
+            decltype(z)>();
         return internal::invoke(
             f, x, std::forward<decltype(y)>(y), std::forward<decltype(z)>(z));
     };
@@ -1439,10 +1375,10 @@ auto bind_1st_and_2nd_of_3(F f, X x, Y y)
 {
     return [f, x, y](auto&& z) {
         internal::trigger_static_asserts<internal::bind_1st_and_2nd_of_3_tag,
-                                             F,
-                                             X,
-                                             Y,
-                                             decltype(z)>();
+            F,
+            X,
+            Y,
+            decltype(z)>();
         return internal::invoke(f, x, y, std::forward<decltype(z)>(z));
     };
 }
@@ -1454,10 +1390,10 @@ auto bind_2nd_and_3rd_of_3(F f, Y y, Z z)
 {
     return [f, y, z](auto&& x) {
         internal::trigger_static_asserts<internal::bind_2nd_and_3rd_of_3_tag,
-                                             F,
-                                             decltype(x),
-                                             Y,
-                                             Z>();
+            F,
+            decltype(x),
+            Y,
+            Z>();
         return internal::invoke(f, std::forward<decltype(x)>(x), y, z);
     };
 }
@@ -1472,7 +1408,7 @@ auto flip(F f)
         return internal::apply_impl(
             f,
             std::forward_as_tuple(std::forward<decltype(args)>(args)...),
-            internal::make_reverse_index_sequence<sizeof...(args)>{});
+            internal::make_reverse_index_sequence<sizeof...(args)> {});
     };
 }
 
@@ -1491,8 +1427,8 @@ auto forward_apply(X&& x, F f)
 // Returns a function evaluating f with the given arguments when called.
 // Also known as defer.
 // Note: f can take a variadic number of parameters
-template<typename F, typename... Args>
-auto lazy(F f, Args ... args)
+template <typename F, typename... Args>
+auto lazy(F f, Args... args)
 {
     return [f, args...] {
         internal::trigger_static_asserts<internal::check_arity_tag, F, Args...>();
@@ -1504,11 +1440,10 @@ auto lazy(F f, Args ... args)
 // Identity as a nullary function.
 // Returns a function returning x when called.
 // Like lazy with identity as f.
-template<typename T>
+template <typename T>
 auto fixed(T x)
 {
-    return [x]() -> T
-    {
+    return [x]() -> T {
         return x;
     };
 }
@@ -1536,10 +1471,9 @@ auto logical_not(Predicate f)
 {
     return [f](auto&&... args) {
         internal::trigger_static_asserts<internal::unary_function_tag,
-                                             Predicate,
-                                             decltype(args)...>();
-        using Res =
-            std::decay_t<internal::invoke_result_t<Predicate, decltype(args)...>>;
+            Predicate,
+            decltype(args)...>();
+        using Res = std::decay_t<internal::invoke_result_t<Predicate, decltype(args)...>>;
         static_assert(std::is_same<Res, bool>::value, "Function must return bool.");
 
         return !internal::invoke(f, std::forward<decltype(args)>(args)...);
@@ -1567,11 +1501,11 @@ auto logical_or(UnaryPredicateF f, UnaryPredicateG g)
 template <typename UnaryPredicateF, typename UnaryPredicateG>
 auto logical_and(UnaryPredicateF f, UnaryPredicateG g)
 {
-  auto op = [](auto f1, auto f2, auto x) {
-    return internal::invoke(f1, x) && internal::invoke(f2, x);
-  };
+    auto op = [](auto f1, auto f2, auto x) {
+        return internal::invoke(f1, x) && internal::invoke(f2, x);
+    };
 
-  return internal::logical_binary_op(op, f, g);
+    return internal::logical_binary_op(op, f, g);
 }
 
 // API search type: logical_xor : ((a -> Bool), (a -> Bool)) -> (a -> Bool)
@@ -1581,11 +1515,11 @@ auto logical_and(UnaryPredicateF f, UnaryPredicateG g)
 template <typename UnaryPredicateF, typename UnaryPredicateG>
 auto logical_xor(UnaryPredicateF f, UnaryPredicateG g)
 {
-  auto op = [](auto f1, auto f2, auto x) {
-    return internal::invoke(f1, x) != internal::invoke(f2, x);
-  };
+    auto op = [](auto f1, auto f2, auto x) {
+        return internal::invoke(f1, x) != internal::invoke(f2, x);
+    };
 
-  return internal::logical_binary_op(op, f, g);
+    return internal::logical_binary_op(op, f, g);
 }
 
 // API search type: memoize : (a -> b) -> (a -> b)
@@ -1603,22 +1537,17 @@ std::function<FOut(FIn)> memoize(F f)
 {
     static_assert(utils::function_traits<F>::arity == 1, "Wrong arity.");
     MemoMap storage;
-    return [=](FIn x) mutable -> FOut
-    {
+    return [=](FIn x) mutable -> FOut {
         const auto it = storage.find(x);
-        if (it == storage.end())
-        {
+        if (it == storage.end()) {
             return storage.emplace(x, internal::invoke(f, x)).first->second;
-        }
-        else
-        {
+        } else {
             return it->second;
         }
     };
 }
 
-namespace internal
-{
+namespace internal {
     template <typename F, typename Cache,
         typename FIn1 = typename utils::function_traits<F>::template arg<0>::type,
         typename FIn2 = typename utils::function_traits<F>::template arg<1>::type,
@@ -1626,11 +1555,9 @@ namespace internal
         typename ResultF = std::function<FOut(FIn2)>>
     ResultF memoize_recursive_helper(const F f, std::shared_ptr<Cache> storage)
     {
-        return [f, storage](FIn2 x)
-        {
+        return [f, storage](FIn2 x) {
             const auto it = storage->find(x);
-            if (it == storage->end())
-            {
+            if (it == storage->end()) {
                 const auto g = memoize_recursive_helper(f, storage);
                 (*storage)[x] = f(g, x);
             }
@@ -1678,14 +1605,12 @@ template <typename F,
     typename MemoMap = std::unordered_map<ParamPair, FOut>>
 std::function<FOut(FIn1, FIn2)> memoize_binary(F f)
 {
-    const auto unary_f = [f](const ParamPair& params) -> FOut
-    {
+    const auto unary_f = [f](const ParamPair& params) -> FOut {
         return internal::invoke(f, params.first, params.second);
     };
     auto unary_f_memoized = memoize<decltype(unary_f),
         ParamPair, FOut, std::map<ParamPair, FOut>>(unary_f);
-    return [unary_f_memoized](FIn1 a, FIn2 b) mutable -> FOut
-    {
+    return [unary_f_memoized](FIn1 a, FIn2 b) mutable -> FOut {
         return unary_f_memoized(std::make_pair(a, b));
     };
 }
@@ -1699,61 +1624,53 @@ std::function<FOut(FIn1, FIn2)> memoize_binary(F f)
 // };
 // const auto create_foo = constructor_as_function<foo, int, int>;
 // create_foo(1,2) == foo(1, 2);
-template <typename T, class ... Types>
-T constructor_as_function(Types ... args)
+template <typename T, class... Types>
+T constructor_as_function(Types... args)
 {
     return T(args...);
 }
 
 } // namespace fplus
 
-#define fplus_get_mem(fplus_get_mem_name) \
-[](const auto& fplus_get_mem_x) \
-{ \
-    return fplus_get_mem_x.fplus_get_mem_name; \
-}
+#define fplus_get_mem(fplus_get_mem_name)          \
+    [](const auto& fplus_get_mem_x) {              \
+        return fplus_get_mem_x.fplus_get_mem_name; \
+    }
 
-#define fplus_get_ptr_mem(fplus_get_ptr_mem_name) \
-[](const auto& fplus_get_ptr_mem_x) \
-{ \
-    return fplus_get_ptr_mem_x->fplus_get_ptr_mem_name; \
-}
+#define fplus_get_ptr_mem(fplus_get_ptr_mem_name)           \
+    [](const auto& fplus_get_ptr_mem_x) {                   \
+        return fplus_get_ptr_mem_x->fplus_get_ptr_mem_name; \
+    }
 
 #define fplus_get_c_mem_t(fplus_get_c_mem_t_c, fplus_get_c_mem_t_name, fplus_get_c_mem_t_t) \
-[](const fplus_get_c_mem_t_c& fplus_get_c_mem_t_x) -> fplus_get_c_mem_t_t \
-{ \
-    return fplus_get_c_mem_t_x.fplus_get_c_mem_t_name; \
-}
+    [](const fplus_get_c_mem_t_c& fplus_get_c_mem_t_x) -> fplus_get_c_mem_t_t {             \
+        return fplus_get_c_mem_t_x.fplus_get_c_mem_t_name;                                  \
+    }
 
 #define fplus_get_c_ptr_mem_t(fplus_get_c_ptr_mem_t_c, fplus_get_c_ptr_mem_t_name, fplus_get_c_ptr_mem_t_t) \
-[](const fplus_get_c_ptr_mem_t_c& fplus_get_c_ptr_mem_t_x) -> fplus_get_c_ptr_mem_t_t \
-{ \
-    return fplus_get_c_ptr_mem_t_x->fplus_get_c_ptr_mem_t_name; \
-}
+    [](const fplus_get_c_ptr_mem_t_c& fplus_get_c_ptr_mem_t_x) -> fplus_get_c_ptr_mem_t_t {                 \
+        return fplus_get_c_ptr_mem_t_x->fplus_get_c_ptr_mem_t_name;                                         \
+    }
 
-#define fplus_mem_fn(fplus_mem_fn_name) \
-[](const auto& fplus_mem_fn_x) \
-{ \
-    return fplus_mem_fn_x.fplus_mem_fn_name(); \
-}
+#define fplus_mem_fn(fplus_mem_fn_name)            \
+    [](const auto& fplus_mem_fn_x) {               \
+        return fplus_mem_fn_x.fplus_mem_fn_name(); \
+    }
 
-#define fplus_ptr_mem_fn(fplus_ptr_mem_fn_name) \
-[](const auto& fplus_ptr_mem_fn_x) \
-{ \
-    return fplus_ptr_mem_fn_x->fplus_ptr_mem_fn_name(); \
-}
+#define fplus_ptr_mem_fn(fplus_ptr_mem_fn_name)             \
+    [](const auto& fplus_ptr_mem_fn_x) {                    \
+        return fplus_ptr_mem_fn_x->fplus_ptr_mem_fn_name(); \
+    }
 
 #define fplus_c_mem_fn_t(fplus_c_mem_fn_t_c, fplus_c_mem_fn_t_name, fplus_c_mem_fn_t_t) \
-[](const fplus_c_mem_fn_t_c& fplus_c_mem_fn_t_x) -> fplus_c_mem_fn_t_t \
-{ \
-    return fplus_c_mem_fn_t_x.fplus_c_mem_fn_t_name(); \
-}
+    [](const fplus_c_mem_fn_t_c& fplus_c_mem_fn_t_x) -> fplus_c_mem_fn_t_t {            \
+        return fplus_c_mem_fn_t_x.fplus_c_mem_fn_t_name();                              \
+    }
 
 #define fplus_c_ptr_mem_fn_t(fplus_c_ptr_mem_fn_t_c, fplus_c_ptr_mem_fn_t_name, fplus_c_ptr_mem_fn_t_t) \
-[](const fplus_c_ptr_mem_fn_t_c& fplus_c_ptr_mem_fn_t_x) -> fplus_c_ptr_mem_fn_t_t \
-{ \
-    return fplus_c_ptr_mem_fn_t_x->fplus_c_ptr_mem_fn_t_name(); \
-}
+    [](const fplus_c_ptr_mem_fn_t_c& fplus_c_ptr_mem_fn_t_x) -> fplus_c_ptr_mem_fn_t_t {                \
+        return fplus_c_ptr_mem_fn_t_x->fplus_c_ptr_mem_fn_t_name();                                     \
+    }
 
 
 //
@@ -1770,41 +1687,36 @@ T constructor_as_function(Types ... args)
 #include <type_traits>
 
 
-namespace fplus
-{
-namespace internal
-{
-template <typename Compare>
-auto ord_to_impl(Compare comp)
-{
-    return [comp](auto x, auto y)
+namespace fplus {
+namespace internal {
+    template <typename Compare>
+    auto ord_to_impl(Compare comp)
     {
-        static_assert(std::is_same<decltype(x), decltype(y)>::value,
-            "Argument types must be the same");
-        using In = decltype(x);
-        internal::trigger_static_asserts<internal::binary_predicate_tag, Compare, In, In>();
+        return [comp](auto x, auto y) {
+            static_assert(std::is_same<decltype(x), decltype(y)>::value,
+                "Argument types must be the same");
+            using In = decltype(x);
+            internal::trigger_static_asserts<internal::binary_predicate_tag, Compare, In, In>();
 
-        using CompareOut = std::decay_t<internal::invoke_result_t<Compare, In, In>>;
-        static_assert(std::is_same<CompareOut, bool>::value,
-                      "Function must return bool.");
-        return std::make_pair(internal::invoke(comp, x, y),
-                              internal::invoke(comp, y, x));
-    };
+            using CompareOut = std::decay_t<internal::invoke_result_t<Compare, In, In>>;
+            static_assert(std::is_same<CompareOut, bool>::value,
+                "Function must return bool.");
+            return std::make_pair(internal::invoke(comp, x, y),
+                internal::invoke(comp, y, x));
+        };
+    }
 }
 }
-}
 
-namespace fplus
-{
+namespace fplus {
 
-namespace internal
-{
+namespace internal {
     template <typename UnaryPredicate, typename T>
     void check_unary_predicate_for_type()
     {
         internal::trigger_static_asserts<internal::unary_function_tag, UnaryPredicate, T>();
         static_assert(std::is_convertible<
-            internal::invoke_result_t<UnaryPredicate, T>, bool>::value,
+                          internal::invoke_result_t<UnaryPredicate, T>, bool>::value,
             "Predicate must return bool.");
     }
     template <typename F, typename G, typename X, typename Y>
@@ -1813,8 +1725,8 @@ namespace internal
         internal::trigger_static_asserts<internal::unary_function_tag, F, X>();
         internal::trigger_static_asserts<internal::unary_function_tag, G, Y>();
         static_assert(std::is_same<
-            std::decay_t<internal::invoke_result_t<F, X>>,
-            std::decay_t<internal::invoke_result_t<G, Y>>>::value,
+                          std::decay_t<internal::invoke_result_t<F, X>>,
+                          std::decay_t<internal::invoke_result_t<G, Y>>>::value,
             "Both functions must return the same type.");
     }
 } // namespace internal
@@ -1871,11 +1783,11 @@ auto is_equal_by_and_by(F f, G g)
 {
     return [f, g](const auto& x, const auto& y) {
         internal::trigger_static_asserts<internal::unary_function_tag,
-                                             F,
-                                             decltype(x)>();
+            F,
+            decltype(x)>();
         internal::trigger_static_asserts<internal::unary_function_tag,
-                                             G,
-                                             decltype(y)>();
+            G,
+            decltype(y)>();
         return is_equal(internal::invoke(f, x), internal::invoke(g, y));
     };
 }
@@ -1897,11 +1809,10 @@ auto is_equal_by(F f)
 template <typename F, typename X>
 auto is_equal_by_to(F f, const X& x)
 {
-    return [f, x](const auto& y)
-    {
+    return [f, x](const auto& y) {
         internal::trigger_static_asserts<internal::unary_function_tag,
-                                             F,
-                                             decltype(y)>();
+            F,
+            decltype(y)>();
         return is_equal(internal::invoke(f, y), x);
     };
 }
@@ -1935,15 +1846,15 @@ auto is_not_equal_by_and_by(F f, G g)
 {
     return [f, g](const auto& x, const auto& y) {
         internal::trigger_static_asserts<internal::unary_function_tag,
-                                             F,
-                                             decltype(x)>();
+            F,
+            decltype(x)>();
         internal::trigger_static_asserts<internal::unary_function_tag,
-                                             G,
-                                             decltype(y)>();
+            G,
+            decltype(y)>();
         using FOut = std::decay_t<internal::invoke_result_t<F, decltype(x)>>;
         using GOut = std::decay_t<internal::invoke_result_t<G, decltype(y)>>;
         static_assert(std::is_same<FOut, GOut>::value,
-                      "Functions must return the same type.");
+            "Functions must return the same type.");
         return is_not_equal(internal::invoke(f, x), internal::invoke(g, y));
     };
 }
@@ -1967,8 +1878,8 @@ auto is_not_equal_by_to(F f, const X& x)
 {
     return [f, x](const auto& y) {
         internal::trigger_static_asserts<internal::unary_function_tag,
-                                             F,
-                                             decltype(y)>();
+            F,
+            decltype(y)>();
         return is_not_equal(internal::invoke(f, y), x);
     };
 }
@@ -2000,18 +1911,17 @@ bool is_less(const T& x, const T& y)
 template <typename F, typename G>
 auto is_less_by_and_by(F f, G g)
 {
-    return [f, g](const auto& x, const auto& y)
-    {
+    return [f, g](const auto& x, const auto& y) {
         internal::trigger_static_asserts<internal::unary_function_tag,
-                                             F,
-                                             decltype(x)>();
+            F,
+            decltype(x)>();
         internal::trigger_static_asserts<internal::unary_function_tag,
-                                             G,
-                                             decltype(y)>();
+            G,
+            decltype(y)>();
         using FOut = std::decay_t<internal::invoke_result_t<F, decltype(x)>>;
         using GOut = std::decay_t<internal::invoke_result_t<G, decltype(y)>>;
         static_assert(std::is_same<FOut, GOut>::value,
-                      "Functions must return the same type.");
+            "Functions must return the same type.");
         return is_less(internal::invoke(f, x), internal::invoke(g, y));
     };
 }
@@ -2033,11 +1943,10 @@ auto is_less_by(F f)
 template <typename F, typename X>
 auto is_less_by_than(F f, const X& x)
 {
-    return [f, x](const auto& y)
-    {
+    return [f, x](const auto& y) {
         internal::trigger_static_asserts<internal::unary_function_tag,
-                                             F,
-                                             decltype(y)>();
+            F,
+            decltype(y)>();
         return is_less(internal::invoke(f, y), x);
     };
 }
@@ -2069,8 +1978,7 @@ bool is_less_or_equal(const T& x, const T& y)
 template <typename F, typename G>
 auto is_less_or_equal_by_and_by(F f, G g)
 {
-    return [f, g](const auto& x, const auto& y)
-    {
+    return [f, g](const auto& x, const auto& y) {
         using FIn = decltype(x);
         using GIn = decltype(y);
         internal::check_compare_preprocessors_for_types<F, G, FIn, GIn>();
@@ -2095,8 +2003,7 @@ auto is_less_or_equal_by(F f)
 template <typename F, typename X>
 auto is_less_or_equal_by_than(F f, const X& x)
 {
-    return [f, x](const auto& y)
-    {
+    return [f, x](const auto& y) {
         internal::
             trigger_static_asserts<internal::unary_function_tag, F, decltype(y)>();
         return is_less_or_equal(internal::invoke(f, y), x);
@@ -2130,8 +2037,7 @@ bool is_greater(const T& x, const T& y)
 template <typename F, typename G>
 auto is_greater_by_and_by(F f, G g)
 {
-    return [f, g](const auto& x, const auto& y)
-    {
+    return [f, g](const auto& x, const auto& y) {
         using FIn = decltype(x);
         using GIn = decltype(y);
 
@@ -2157,8 +2063,7 @@ auto is_greater_by(F f)
 template <typename F, typename X>
 auto is_greater_by_than(F f, const X& x)
 {
-    return [f, x](const auto& y)
-    {
+    return [f, x](const auto& y) {
         return is_greater(internal::invoke(f, y), x);
     };
 }
@@ -2190,8 +2095,7 @@ bool is_greater_or_equal(const T& x, const T& y)
 template <typename F, typename G>
 auto is_greater_or_equal_by_and_by(F f, G g)
 {
-    return [f, g](const auto& x, const auto& y)
-    {
+    return [f, g](const auto& x, const auto& y) {
         using FIn = decltype(x);
         using GIn = decltype(y);
         internal::check_compare_preprocessors_for_types<F, G, FIn, GIn>();
@@ -2216,8 +2120,7 @@ auto is_greater_or_equal_by(F f)
 template <typename F, typename X>
 auto is_greater_or_equal_by_than(F f, const X& x)
 {
-    return [f, x](const auto& y)
-    {
+    return [f, x](const auto& y) {
         internal::trigger_static_asserts<internal::unary_function_tag, F, decltype(y)>();
         return is_greater_or_equal(internal::invoke(f, y), x);
     };
@@ -2252,8 +2155,7 @@ bool xor_bools(const T& x, const T& y)
 template <typename Compare>
 auto ord_to_eq(Compare comp)
 {
-    return [comp](auto x, auto y)
-    {
+    return [comp](auto x, auto y) {
         static_assert(std::is_same<decltype(x), decltype(y)>::value,
             "Argument types must be the same");
         auto p = internal::ord_to_impl(comp)(x, y);
@@ -2281,8 +2183,7 @@ auto ord_to_not_eq(Compare comp)
 template <typename Compare>
 auto ord_eq_to_eq(Compare comp)
 {
-    return [comp](auto x, auto y)
-    {
+    return [comp](auto x, auto y) {
         static_assert(std::is_same<decltype(x), decltype(y)>::value,
             "Argument types must be the same");
         auto p = internal::ord_to_impl(comp)(x, y);
@@ -2298,22 +2199,10 @@ auto ord_eq_to_eq(Compare comp)
 template <typename Compare>
 auto ord_eq_to_not_eq(Compare comp)
 {
-  return logical_not(ord_eq_to_eq(comp));
+    return logical_not(ord_eq_to_eq(comp));
 }
 
 } // namespace fplus
-
-//
-// container_common.hpp
-//
-
-// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
-// https://github.com/Dobiasd/FunctionalPlus
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
-
-
 
 //
 // container_traits.hpp
@@ -2329,150 +2218,205 @@ auto ord_eq_to_not_eq(Compare comp)
 #include <array>
 #include <deque>
 #include <forward_list>
+#include <limits>
 #include <list>
 #include <map>
-#include <limits>
-#include <unordered_map>
-#include <unordered_set>
 #include <queue>
 #include <set>
 #include <stack>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 
-namespace fplus
-{
+namespace fplus {
 
-namespace internal
-{
+namespace internal {
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Weffc++"
 #endif
 
-template<class T> struct has_order : public std::false_type {};
-template<class T, std::size_t N> struct has_order<std::array<T, N>> : public std::true_type {};
-template<class T, class Alloc> struct has_order<std::vector<T, Alloc>> : public std::true_type {};
-template<class T, class Alloc> struct has_order<std::deque<T, Alloc>> : public std::true_type {};
-template<class T, class Alloc> struct has_order<std::forward_list<T, Alloc>> : public std::true_type {};
-template<class T, class Alloc> struct has_order<std::list<T, Alloc>> : public std::true_type {};
-template<class T, class Alloc> struct has_order<std::set<T, Alloc>> : public std::false_type {};
-template<class T, class Container> struct has_order<std::stack<T, Container>> : public std::true_type {};
-template<class T, class Container> struct has_order<std::queue<T, Container>> : public std::true_type {};
-template<class T, class Container, class Compare> struct has_order<std::priority_queue<T, Container, Compare>> : public std::false_type {};
-template<class CharT, class Traits, class Alloc> struct has_order<std::basic_string<CharT, Traits, Alloc>> : public std::true_type {};
+    template <class T>
+    struct has_order : public std::false_type {
+    };
+    template <class T, std::size_t N>
+    struct has_order<std::array<T, N>> : public std::true_type {
+    };
+    template <class T, class Alloc>
+    struct has_order<std::vector<T, Alloc>> : public std::true_type {
+    };
+    template <class T, class Alloc>
+    struct has_order<std::deque<T, Alloc>> : public std::true_type {
+    };
+    template <class T, class Alloc>
+    struct has_order<std::forward_list<T, Alloc>> : public std::true_type {
+    };
+    template <class T, class Alloc>
+    struct has_order<std::list<T, Alloc>> : public std::true_type {
+    };
+    template <class T, class Alloc>
+    struct has_order<std::set<T, Alloc>> : public std::false_type {
+    };
+    template <class T, class Container>
+    struct has_order<std::stack<T, Container>> : public std::true_type {
+    };
+    template <class T, class Container>
+    struct has_order<std::queue<T, Container>> : public std::true_type {
+    };
+    template <class T, class Container, class Compare>
+    struct has_order<std::priority_queue<T, Container, Compare>> : public std::false_type {
+    };
+    template <class CharT, class Traits, class Alloc>
+    struct has_order<std::basic_string<CharT, Traits, Alloc>> : public std::true_type {
+    };
 
-// http://stackoverflow.com/a/33828321/1866775
-template<class Cont, class NewT, int SizeOffset = std::numeric_limits<int>::lowest()> struct same_cont_new_t : public std::false_type{};
-template<class T, std::size_t N, class NewT, int SizeOffset> struct same_cont_new_t<std::array<T, N>, NewT, SizeOffset>
-{
-    static_assert(SizeOffset != std::numeric_limits<int>::lowest(), "Size of std::array must be known at compile-time.");
-    typedef typename std::array<NewT, static_cast<std::size_t>(static_cast<int>(N) + SizeOffset)> type;
-};
-template<class T, template<class> class Alloc, class NewT, int SizeOffset> struct same_cont_new_t<std::vector<T, Alloc<T>>, NewT, SizeOffset> { typedef typename std::vector<NewT, Alloc<NewT>> type; };
-template<class T, template<class> class Alloc, class NewT, int SizeOffset> struct same_cont_new_t<std::deque<T, Alloc<T>>, NewT, SizeOffset> { typedef typename std::deque<NewT, Alloc<NewT>> type; };
-template<class T, template<class> class Alloc, class NewT, int SizeOffset> struct same_cont_new_t<std::forward_list<T, Alloc<T>>, NewT, SizeOffset> { typedef typename std::forward_list<NewT, Alloc<NewT>> type; };
-template<class T, template<class> class Alloc, class NewT, int SizeOffset> struct same_cont_new_t<std::list<T, Alloc<T>>, NewT, SizeOffset> { typedef typename std::list<NewT, Alloc<NewT>> type; };
-template<class T, template<class> class Alloc, class NewT, int SizeOffset> struct same_cont_new_t<std::set<T, Alloc<T>>, NewT, SizeOffset> { typedef typename std::set<NewT, Alloc<NewT>> type; };
-template<class T, class Container, class NewT, int SizeOffset> struct same_cont_new_t<std::stack<T, Container>, NewT, SizeOffset> { typedef typename std::stack<NewT, Container> type; };
-template<class T, class Container, class NewT, int SizeOffset> struct same_cont_new_t<std::queue<T, Container>, NewT, SizeOffset> { typedef typename std::queue<NewT, Container> type; };
-template<class T, class Container, class Compare, class NewT, int SizeOffset> struct same_cont_new_t<std::priority_queue<T, Container, Compare>, NewT, SizeOffset> { typedef typename std::priority_queue<NewT, Container, Compare> type; };
-template<class CharT, class Traits, class Alloc, class NewT, int SizeOffset> struct same_cont_new_t<std::basic_string<CharT, Traits, Alloc>, NewT, SizeOffset> { typedef typename std::basic_string<NewT, Traits, Alloc> type; };
+    // http://stackoverflow.com/a/33828321/1866775
+    template <class Cont, class NewT, int SizeOffset = std::numeric_limits<int>::lowest()>
+    struct same_cont_new_t : public std::false_type {
+    };
+    template <class T, std::size_t N, class NewT, int SizeOffset>
+    struct same_cont_new_t<std::array<T, N>, NewT, SizeOffset> {
+        static_assert(SizeOffset != std::numeric_limits<int>::lowest(), "Size of std::array must be known at compile-time.");
+        typedef typename std::array<NewT, static_cast<std::size_t>(static_cast<int>(N) + SizeOffset)> type;
+    };
+    template <class T, template <class> class Alloc, class NewT, int SizeOffset>
+    struct same_cont_new_t<std::vector<T, Alloc<T>>, NewT, SizeOffset> {
+        typedef typename std::vector<NewT, Alloc<NewT>> type;
+    };
+    template <class T, template <class> class Alloc, class NewT, int SizeOffset>
+    struct same_cont_new_t<std::deque<T, Alloc<T>>, NewT, SizeOffset> {
+        typedef typename std::deque<NewT, Alloc<NewT>> type;
+    };
+    template <class T, template <class> class Alloc, class NewT, int SizeOffset>
+    struct same_cont_new_t<std::forward_list<T, Alloc<T>>, NewT, SizeOffset> {
+        typedef typename std::forward_list<NewT, Alloc<NewT>> type;
+    };
+    template <class T, template <class> class Alloc, class NewT, int SizeOffset>
+    struct same_cont_new_t<std::list<T, Alloc<T>>, NewT, SizeOffset> {
+        typedef typename std::list<NewT, Alloc<NewT>> type;
+    };
+    template <class T, template <class> class Alloc, class NewT, int SizeOffset>
+    struct same_cont_new_t<std::set<T, Alloc<T>>, NewT, SizeOffset> {
+        typedef typename std::set<NewT, Alloc<NewT>> type;
+    };
+    template <class T, class Container, class NewT, int SizeOffset>
+    struct same_cont_new_t<std::stack<T, Container>, NewT, SizeOffset> {
+        typedef typename std::stack<NewT, Container> type;
+    };
+    template <class T, class Container, class NewT, int SizeOffset>
+    struct same_cont_new_t<std::queue<T, Container>, NewT, SizeOffset> {
+        typedef typename std::queue<NewT, Container> type;
+    };
+    template <class T, class Container, class Compare, class NewT, int SizeOffset>
+    struct same_cont_new_t<std::priority_queue<T, Container, Compare>, NewT, SizeOffset> {
+        typedef typename std::priority_queue<NewT, Container, Compare> type;
+    };
+    template <class CharT, class Traits, class Alloc, class NewT, int SizeOffset>
+    struct same_cont_new_t<std::basic_string<CharT, Traits, Alloc>, NewT, SizeOffset> {
+        typedef typename std::basic_string<NewT, Traits, Alloc> type;
+    };
 
-// For aligned allocators.
-template<class T, template<class, std::size_t> class Alloc, class NewT, int SizeOffset, std::size_t N> struct same_cont_new_t<std::vector<T, Alloc<T, N>>, NewT, SizeOffset> { typedef typename std::vector<NewT, Alloc<NewT, N>> type; };
-template<class T, template<class, std::size_t> class Alloc, class NewT, int SizeOffset, std::size_t N> struct same_cont_new_t<std::deque<T, Alloc<T, N>>, NewT, SizeOffset> { typedef typename std::deque<NewT, Alloc<NewT, N>> type; };
+    // For aligned allocators.
+    template <class T, template <class, std::size_t> class Alloc, class NewT, int SizeOffset, std::size_t N>
+    struct same_cont_new_t<std::vector<T, Alloc<T, N>>, NewT, SizeOffset> {
+        typedef typename std::vector<NewT, Alloc<NewT, N>> type;
+    };
+    template <class T, template <class, std::size_t> class Alloc, class NewT, int SizeOffset, std::size_t N>
+    struct same_cont_new_t<std::deque<T, Alloc<T, N>>, NewT, SizeOffset> {
+        typedef typename std::deque<NewT, Alloc<NewT, N>> type;
+    };
 
-template<class Cont, class NewKey, class NewVal> struct SameMapTypeNewTypes : public std::false_type {};
-template<class Key, class T, class Compare, class Alloc, class NewKey, class NewVal> struct SameMapTypeNewTypes<std::map<Key, T, Compare, Alloc>, NewKey, NewVal> { typedef typename std::map<NewKey, NewVal> type; };
-template<class Key, class T, class Compare, class Alloc, class NewKey, class NewVal> struct SameMapTypeNewTypes<std::unordered_map<Key, T, Compare, Alloc>, NewKey, NewVal> { typedef typename std::unordered_map<NewKey, NewVal> type; };
+    template <class Cont, class NewKey, class NewVal>
+    struct SameMapTypeNewTypes : public std::false_type {
+    };
+    template <class Key, class T, class Compare, class Alloc, class NewKey, class NewVal>
+    struct SameMapTypeNewTypes<std::map<Key, T, Compare, Alloc>, NewKey, NewVal> {
+        typedef typename std::map<NewKey, NewVal> type;
+    };
+    template <class Key, class T, class Compare, class Alloc, class NewKey, class NewVal>
+    struct SameMapTypeNewTypes<std::unordered_map<Key, T, Compare, Alloc>, NewKey, NewVal> {
+        typedef typename std::unordered_map<NewKey, NewVal> type;
+    };
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
 
-template<
-    typename ContIn,
-    typename F,
-    int SizeOffset = std::numeric_limits<int>::lowest(),
-    typename T = typename ContIn::value_type,
-    typename ContOut = typename same_cont_new_t<ContIn, std::decay_t<internal::invoke_result_t<F, T>>, SizeOffset>::type>
-struct same_cont_new_t_from_unary_f
-{
-    typedef ContOut type;
-};
+    template <
+        typename ContIn,
+        typename F,
+        int SizeOffset = std::numeric_limits<int>::lowest(),
+        typename T = typename ContIn::value_type,
+        typename ContOut = typename same_cont_new_t<ContIn, std::decay_t<internal::invoke_result_t<F, T>>, SizeOffset>::type>
+    struct same_cont_new_t_from_unary_f {
+        typedef ContOut type;
+    };
 
-template<
-    typename ContIn,
-    typename F,
-    typename T1,
-    typename T2,
-    int SizeOffset = std::numeric_limits<int>::lowest(),
-    typename ContOut = typename same_cont_new_t<ContIn, std::decay_t<internal::invoke_result_t<F, T1, T2>>, SizeOffset>::type>
-struct same_cont_new_t_from_binary_f
-{
-    typedef ContOut type;
-};
+    template <
+        typename ContIn,
+        typename F,
+        typename T1,
+        typename T2,
+        int SizeOffset = std::numeric_limits<int>::lowest(),
+        typename ContOut = typename same_cont_new_t<ContIn, std::decay_t<internal::invoke_result_t<F, T1, T2>>, SizeOffset>::type>
+    struct same_cont_new_t_from_binary_f {
+        typedef ContOut type;
+    };
 
+    // https://stackoverflow.com/a/44549820/1866775
 
+    template <class T>
+    struct can_self_assign {
+        using type = std::is_assignable<T&, T>;
+    };
 
-// https://stackoverflow.com/a/44549820/1866775
+    template <typename T>
+    using can_self_assign_t = typename can_self_assign<T>::type;
 
-template<class T>
-struct can_self_assign {
-    using type = std::is_assignable<T&, T>;
-};
+    template <typename T0, typename T1>
+    struct can_self_assign<std::pair<T0, T1>> {
+        enum { t0 = can_self_assign_t<T0>::value,
+            t1 = can_self_assign_t<T1>::value,
+            x = t0 && t1 };
+        using type = std::integral_constant<bool, x>;
+    };
 
-template<typename T>
-using can_self_assign_t = typename can_self_assign<T>::type;
+    template <>
+    struct can_self_assign<std::tuple<>> {
+        using type = std::integral_constant<bool, true>;
+    };
+    template <typename T0, typename... Ts>
+    struct can_self_assign<std::tuple<T0, Ts...>> {
+        using type = std::integral_constant<bool, can_self_assign_t<T0>::value && can_self_assign_t<std::tuple<Ts...>>::value>;
+    };
 
-template<typename T0, typename T1>
-struct can_self_assign<std::pair<T0, T1>>
-{
-    enum { t0 = can_self_assign_t<T0>::value, t1 = can_self_assign_t<T1>::value, x = t0&&t1 };
-    using type = std::integral_constant<bool, x>;
-};
+    template <class T, T v>
+    struct reuse_container_bool_t {
+    };
+    using create_new_container_t = reuse_container_bool_t<bool, false>;
+    using reuse_container_t = reuse_container_bool_t<bool, true>;
 
-template<>
-struct can_self_assign<std::tuple<>>
-{
-    using type = std::integral_constant<bool, true>;
-};
-template<typename T0, typename...Ts>
-struct can_self_assign<std::tuple<T0, Ts...>>
-{
-    using type = std::integral_constant<bool, can_self_assign_t<T0>::value && can_self_assign_t<std::tuple<Ts...>>::value >;
-};
+    template <typename Container>
+    struct can_reuse {
+        using dContainer = typename std::decay<Container>::type;
+        using can_assign = can_self_assign_t<typename dContainer::value_type>;
+        using cannot_reuse = std::is_lvalue_reference<Container>;
+        using value = reuse_container_bool_t<bool, can_assign::value && !cannot_reuse::value>;
+    };
 
-template<class T, T v>
-struct reuse_container_bool_t {
-};
-using create_new_container_t = reuse_container_bool_t<bool, false>;
-using reuse_container_t = reuse_container_bool_t<bool, true>;
+    template <typename Container>
+    using can_reuse_v = typename can_reuse<Container>::value;
 
-template <typename Container>
-struct can_reuse
-{
-    using dContainer = typename std::decay<Container>::type;
-    using can_assign = can_self_assign_t<typename dContainer::value_type>;
-    using cannot_reuse = std::is_lvalue_reference<Container>;
-    using value = reuse_container_bool_t<bool, can_assign::value && !cannot_reuse::value>;
-};
+    template <typename T>
+    struct remove_const_and_ref {
+        using type = typename std::remove_const<typename std::remove_reference<T>::type>::type;
+    };
 
-template<typename Container>
-using can_reuse_v = typename can_reuse<Container>::value;
-
-template <typename T>
-struct remove_const_and_ref
-{
-    using type = typename std::remove_const<typename std::remove_reference<T>::type>::type;
-};
-
-template<typename T>
-using remove_const_and_ref_t = typename remove_const_and_ref<T>::type;
-
+    template <typename T>
+    using remove_const_and_ref_t = typename remove_const_and_ref<T>::type;
 
 } // namespace internal
 
@@ -2495,29 +2439,24 @@ using remove_const_and_ref_t = typename remove_const_and_ref<T>::type;
 #include <functional>
 #include <memory>
 
-namespace fplus
-{
+namespace fplus {
 
 // Can hold a value of type T or nothing.
 template <typename T>
 class maybe;
 
-namespace internal
-{
-template <typename>
-struct is_maybe : std::false_type
-{
-};
+namespace internal {
+    template <typename>
+    struct is_maybe : std::false_type {
+    };
 
-template <typename T>
-struct is_maybe<maybe<T>> : std::true_type
-{
-};
+    template <typename T>
+    struct is_maybe<maybe<T>> : std::true_type {
+    };
 }
 
 template <typename T>
-class maybe
-{
+class maybe {
 public:
     using value_type = T;
     bool is_just() const { return is_present_; }
@@ -2533,60 +2472,69 @@ public:
         return *reinterpret_cast<T*>(&value_);
     }
     typedef T type;
-    maybe() : is_present_(false), value_() {};
+    maybe()
+        : is_present_(false)
+        , value_() {};
     ~maybe()
     {
         destruct_content();
     }
-    maybe(const T& val_just) : is_present_(true), value_()
+    maybe(const T& val_just)
+        : is_present_(true)
+        , value_()
     {
         new (&value_) T(val_just);
     }
-    maybe(T&& val_just) : is_present_(true), value_() {
+    maybe(T&& val_just)
+        : is_present_(true)
+        , value_()
+    {
         new (&value_) T(std::move(val_just));
     }
-    maybe(const maybe<T>& other) : is_present_(other.is_just()), value_()
+    maybe(const maybe<T>& other)
+        : is_present_(other.is_just())
+        , value_()
     {
-        if (is_present_)
-        {
+        if (is_present_) {
             new (&value_) T(other.unsafe_get_just());
         }
     }
-    maybe(maybe<T>&& other) : is_present_(std::move(other.is_present_)), value_()
+    maybe(maybe<T>&& other)
+        : is_present_(std::move(other.is_present_))
+        , value_()
     {
-        if (is_present_)
-        {
+        if (is_present_) {
             new (&value_) T(std::move(other.unsafe_get_just()));
         }
     }
-    maybe<T>& operator = (const T& other)
+    maybe<T>& operator=(const T& other)
     {
         destruct_content();
         is_present_ = true;
         new (&value_) T(other);
         return *this;
     }
-    maybe& operator = (T&& other) {
+    maybe& operator=(T&& other)
+    {
         destruct_content();
         is_present_ = true;
         new (&value_) T(std::move(other));
         return *this;
     }
-    maybe<T>& operator = (const maybe<T>& other)
+    maybe<T>& operator=(const maybe<T>& other)
     {
         destruct_content();
-        if (other.is_just())
-        {
+        if (other.is_just()) {
             is_present_ = true;
             new (&value_) T(other.unsafe_get_just());
         }
         return *this;
     }
-    maybe& operator = (maybe<T>&& other) {
+    maybe& operator=(maybe<T>&& other)
+    {
         destruct_content();
         is_present_ = std::move(other.is_present_);
-        if (is_present_)
-        {
+        if (is_present_) {
             new (&value_) T(std::move(other.unsafe_get_just()));
         }
         return *this;
@@ -2612,7 +2560,7 @@ public:
     {
         if (is_just() && pred(unsafe_get_just()))
             return *this;
-        return maybe<T>{};
+        return maybe<T> {};
     }
 
     template <typename ContainerOut = std::vector<T>>
@@ -2631,7 +2579,7 @@ public:
         using B = std::decay_t<internal::invoke_result_t<F, T>>;
         if (is_just())
             return maybe<B>(internal::invoke(f, unsafe_get_just()));
-        return maybe<B>{};
+        return maybe<B> {};
     }
 
     template <typename Default, typename F>
@@ -2649,23 +2597,22 @@ public:
     }
 
     template <typename F, typename B>
-    auto lift_2(F f,  const maybe<B>& m_b) const
+    auto lift_2(F f, const maybe<B>& m_b) const
     {
         internal::trigger_static_asserts<internal::check_arity_tag, F, T, B>();
 
         using FOut = std::decay_t<internal::invoke_result_t<F, T, B>>;
-        if (is_just() && m_b.is_just())
-        {
+        if (is_just() && m_b.is_just()) {
             return maybe<FOut>(
                 internal::invoke(f, unsafe_get_just(), m_b.unsafe_get_just()));
         }
-        return maybe<FOut>{};
+        return maybe<FOut> {};
     }
 
     template <typename F, typename B, typename Default>
     auto lift_2_def(const Default& def,
-                      F f,
-                      const maybe<B>& m_b) const
+        F f,
+        const maybe<B>& m_b) const
     {
         internal::trigger_static_asserts<internal::check_arity_tag, F, T, B>();
 
@@ -2682,12 +2629,11 @@ public:
     {
         static_assert(
             internal::is_maybe<T>::value,
-            "Cannot join when value type is not also a maybe"
-            );
+            "Cannot join when value type is not also a maybe");
         if (is_just())
             return unsafe_get_just();
         else
-            return maybe<typename T::value_type>{};
+            return maybe<typename T::value_type> {};
     }
 
     auto flatten() const
@@ -2701,19 +2647,17 @@ public:
         internal::trigger_static_asserts<internal::check_arity_tag, F, T>();
         using FOut = std::decay_t<internal::invoke_result_t<F, T>>;
         static_assert(internal::is_maybe<FOut>::value,
-                      "Function must return a maybe<> type");
+            "Function must return a maybe<> type");
         if (is_just())
             return internal::invoke(f, unsafe_get_just());
         else
-            return maybe<typename FOut::type>{};
+            return maybe<typename FOut::type> {};
     }
-
 
 private:
     void destruct_content()
     {
-        if (is_present_)
-        {
+        if (is_present_) {
             is_present_ = false;
             (*reinterpret_cast<const T*>(&value_)).~T();
         }
@@ -2797,7 +2741,7 @@ maybe<T> as_just_if(Pred pred, const T& val)
 template <typename Pred, typename T>
 maybe<T> just_if(Pred pred, const maybe<T>& maybe)
 {
-     return maybe.just_if(pred);
+    return maybe.just_if(pred);
 }
 
 // API search type: maybe_to_seq : Maybe a -> [a]
@@ -2836,7 +2780,7 @@ maybe<T> nothing()
 
 // True if just values are the same or if both are nothing.
 template <typename T>
-bool operator == (const maybe<T>& x, const maybe<T>& y)
+bool operator==(const maybe<T>& x, const maybe<T>& y)
 {
     if (is_just(x) && is_just(y))
         return unsafe_get_just(x) == unsafe_get_just(y);
@@ -2845,7 +2789,7 @@ bool operator == (const maybe<T>& x, const maybe<T>& y)
 
 // False if just values are the same or if both are nothing.
 template <typename T>
-bool operator != (const maybe<T>& x, const maybe<T>& y)
+bool operator!=(const maybe<T>& x, const maybe<T>& y)
 {
     return !(x == y);
 }
@@ -2896,9 +2840,9 @@ auto lift_maybe_2(F f, const maybe<A>& m_a, const maybe<B>& m_b)
 // and returns the result of this application.
 template <typename F, typename A, typename B, typename Default>
 auto lift_maybe_2_def(const Default& def,
-                      F f,
-                      const maybe<A>& m_a,
-                      const maybe<B>& m_b)
+    F f,
+    const maybe<A>& m_a,
+    const maybe<B>& m_b)
 {
     return m_a.lift_2_def(def, f, m_b);
 }
@@ -2939,27 +2883,25 @@ auto compose_maybe(Callables&&... callables)
     auto bind_maybe = [](auto f, auto g) {
         // next step would be to perfectly forward callables, as shown here:
         // https://vittorioromeo.info/index/blog/capturing_perfectly_forwarded_objects_in_lambdas.html
-        return [f = std::move(f), g = std::move(g)](auto&&... args)
-        {
+        return [f = std::move(f), g = std::move(g)](auto&&... args) {
             using FOut = std::decay_t<
                 internal::invoke_result_t<decltype(f), decltype(args)...>>;
             static_assert(internal::is_maybe<FOut>::value,
-                          "Functions must return a maybe<> type");
+                "Functions must return a maybe<> type");
             using GOut = std::decay_t<
                 internal::invoke_result_t<decltype(g), typename FOut::type>>;
             static_assert(internal::is_maybe<GOut>::value,
-                          "Functions must return a maybe<> type");
+                "Functions must return a maybe<> type");
 
-            auto maybeB =
-                internal::invoke(f, std::forward<decltype(args)>(args)...);
+            auto maybeB = internal::invoke(f, std::forward<decltype(args)>(args)...);
             if (is_just(maybeB))
                 return internal::invoke(g, unsafe_get_just(maybeB));
-            return GOut{};
+            return GOut {};
         };
     };
 
     return internal::compose_binary_lift(bind_maybe,
-                                       std::forward<Callables>(callables)...);
+        std::forward<Callables>(callables)...);
 }
 
 // API search type: flatten_maybe : (Maybe (Maybe a)) -> Maybe a
@@ -2989,51 +2931,48 @@ maybe<T> flatten_maybe(const maybe<maybe<T>>& maybe_maybe)
 #include <type_traits>
 
 
-namespace fplus
-{
-namespace internal
-{
+namespace fplus {
+namespace internal {
 
-template<class InputIt, class T>
-T accumulate(InputIt first, InputIt last, T init)
-{
-    for (; first != last; ++first) {
-        init = std::move(init) + *first;
-    }
-    return init;
-}
-
-template<class InputIt, class T, class BinaryOperation>
-T accumulate(InputIt first, InputIt last, T init,
-             BinaryOperation op)
-{
-    for (; first != last; ++first) {
-        init = op(std::move(init), *first);
-    }
-    return init;
-}
-
-template <typename F,
-          typename Acc,
-          typename InputIterator,
-          typename OutputIterator>
-void scan_impl(F f,
-               const Acc& init,
-               OutputIterator itOut,
-               InputIterator begin,
-               InputIterator end)
-{
-    *itOut = init;
-
-    auto g = [itOut, f](auto acc, auto x) mutable
+    template <class InputIt, class T>
+    T accumulate(InputIt first, InputIt last, T init)
     {
-        acc = internal::invoke(f, acc, x);
-        *itOut = acc;
-        return acc;
-    };
+        for (; first != last; ++first) {
+            init = std::move(init) + *first;
+        }
+        return init;
+    }
 
-    internal::accumulate(begin, end, init, g);
-}
+    template <class InputIt, class T, class BinaryOperation>
+    T accumulate(InputIt first, InputIt last, T init,
+        BinaryOperation op)
+    {
+        for (; first != last; ++first) {
+            init = op(std::move(init), *first);
+        }
+        return init;
+    }
+
+    template <typename F,
+        typename Acc,
+        typename InputIterator,
+        typename OutputIterator>
+    void scan_impl(F f,
+        const Acc& init,
+        OutputIterator itOut,
+        InputIterator begin,
+        InputIterator end)
+    {
+        *itOut = init;
+
+        auto g = [itOut, f](auto acc, auto x) mutable {
+            acc = internal::invoke(f, acc, x);
+            *itOut = acc;
+            return acc;
+        };
+
+        internal::accumulate(begin, end, init, g);
+    }
 }
 }
 
@@ -3044,11 +2983,9 @@ void scan_impl(F f,
 #include <iterator>
 #include <numeric>
 
-namespace fplus
-{
+namespace fplus {
 
-namespace internal
-{
+namespace internal {
     template <typename UnaryPredicate, typename Container>
     void check_unary_predicate_for_container()
     {
@@ -3062,7 +2999,7 @@ namespace internal
         typedef typename Container::value_type T;
         internal::trigger_static_asserts<internal::binary_function_tag, F, std::size_t, T>();
         static_assert(std::is_convertible<
-            internal::invoke_result_t<F, std::size_t, T>, bool>::value,
+                          internal::invoke_result_t<F, std::size_t, T>, bool>::value,
             "Function must return bool.");
     }
 
@@ -3089,7 +3026,8 @@ namespace internal
     // for transform.
     template <typename C>
     void prepare_container(const std::basic_string<C, std::char_traits<C>,
-        std::allocator<C>>& ys, std::size_t size)
+                               std::allocator<C>>& ys,
+        std::size_t size)
     {
         ys.reserve(size);
     }
@@ -3162,19 +3100,27 @@ namespace internal
 
     // Avoid self-assignment.
     template <typename T>
-    void assign(T& x, T&& y) {
+    void assign(T& x, T&& y)
+    {
         if (&x != &y)
             x = std::move(y);
     }
 
     template <typename T, std::size_t N>
-    struct array_back_insert_iterator : public std::back_insert_iterator<std::array<T, N>>
-    {
+    struct array_back_insert_iterator : public std::back_insert_iterator<std::array<T, N>> {
         typedef std::back_insert_iterator<std::array<T, N>> base_type;
-        explicit array_back_insert_iterator(std::array<T, N>& arr) :
-            base_type(arr), arr_ptr_(&arr), pos_(0) {}
-        array_back_insert_iterator(const array_back_insert_iterator<T, N>& other) :
-            base_type(*other.arr_ptr_), arr_ptr_(other.arr_ptr_), pos_(other.pos_) {}
+        explicit array_back_insert_iterator(std::array<T, N>& arr)
+            : base_type(arr)
+            , arr_ptr_(&arr)
+            , pos_(0)
+        {
+        }
+        array_back_insert_iterator(const array_back_insert_iterator<T, N>& other)
+            : base_type(*other.arr_ptr_)
+            , arr_ptr_(other.arr_ptr_)
+            , pos_(other.pos_)
+        {
+        }
         array_back_insert_iterator<T, N>& operator=(const array_back_insert_iterator<T, N>& other)
         {
             arr_ptr_ = other.arr_ptr_;
@@ -3202,6 +3148,7 @@ namespace internal
         array_back_insert_iterator<T, N>& operator*() { return *this; }
         array_back_insert_iterator<T, N>& operator++() { return *this; }
         array_back_insert_iterator<T, N> operator++(int) { return *this; }
+
     private:
         std::array<T, N>* arr_ptr_;
         std::size_t pos_;
@@ -3210,8 +3157,7 @@ namespace internal
 #if defined(_MSC_VER) && _MSC_VER >= 1900
     template <typename T, std::size_t N>
     struct std::_Is_checked_helper<array_back_insert_iterator<T, N>>
-        : public true_type
-    { // mark array_back_insert_iterator as checked
+        : public true_type { // mark array_back_insert_iterator as checked
     };
 #endif
 
@@ -3324,7 +3270,7 @@ template <typename NewT, typename ContainerIn,
 ContainerOut convert_elems(const ContainerIn& xs)
 {
     static_assert(std::is_constructible<NewT,
-        typename ContainerIn::value_type>::value,
+                      typename ContainerIn::value_type>::value,
         "Elements not convertible.");
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
@@ -3332,8 +3278,7 @@ ContainerOut convert_elems(const ContainerIn& xs)
     // using 'for (const auto& x ...)' is even for ints as fast as
     // using 'for (int x ...)' (GCC, O3), so there is no need to
     // check if the type is fundamental and then dispatch accordingly.
-    for (const auto& x : xs)
-    {
+    for (const auto& x : xs) {
         *it = convert<NewT>(x);
     }
     return ys;
@@ -3368,57 +3313,53 @@ template <typename ContainerOut, typename ContainerIn>
 ContainerOut convert_container_and_elems(const ContainerIn& xs)
 {
     static_assert(std::is_convertible<typename ContainerIn::value_type,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Elements not convertible.");
     typedef typename ContainerOut::value_type DestElem;
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
     auto it = internal::get_back_inserter<ContainerOut>(ys);
-    for (const auto& x : xs)
-    {
+    for (const auto& x : xs) {
         *it = convert<DestElem>(x);
     }
     return ys;
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename Container>
-Container get_segment(internal::reuse_container_t,
-    std::size_t idx_begin, std::size_t idx_end, Container&& xs)
-{
-    idx_end = std::min(idx_end, size_of_cont(xs));
-    if (idx_end <= idx_begin)
+    template <typename Container>
+    Container get_segment(internal::reuse_container_t,
+        std::size_t idx_begin, std::size_t idx_end, Container&& xs)
     {
-        xs.clear();
+        idx_end = std::min(idx_end, size_of_cont(xs));
+        if (idx_end <= idx_begin) {
+            xs.clear();
+            return std::forward<Container>(xs);
+        }
+        auto itBegin = std::begin(xs);
+        internal::advance_iterator(itBegin, idx_begin);
+        auto itEnd = itBegin;
+        internal::advance_iterator(itEnd, idx_end - idx_begin);
+        xs.erase(std::copy(itBegin, itEnd, std::begin(xs)), std::end(xs));
         return std::forward<Container>(xs);
     }
-    auto itBegin = std::begin(xs);
-    internal::advance_iterator(itBegin, idx_begin);
-    auto itEnd = itBegin;
-    internal::advance_iterator(itEnd, idx_end - idx_begin);
-    xs.erase(std::copy(itBegin, itEnd, std::begin(xs)), std::end(xs));
-    return std::forward<Container>(xs);
-}
 
-template <typename Container>
-Container get_segment(internal::create_new_container_t,
-    std::size_t idx_begin, std::size_t idx_end, const Container& xs)
-{
-    idx_end = std::min(idx_end, size_of_cont(xs));
-    if (idx_end <= idx_begin)
+    template <typename Container>
+    Container get_segment(internal::create_new_container_t,
+        std::size_t idx_begin, std::size_t idx_end, const Container& xs)
     {
-        return {};
+        idx_end = std::min(idx_end, size_of_cont(xs));
+        if (idx_end <= idx_begin) {
+            return {};
+        }
+        Container result;
+        auto itBegin = std::begin(xs);
+        internal::advance_iterator(itBegin, idx_begin);
+        auto itEnd = itBegin;
+        internal::advance_iterator(itEnd, idx_end - idx_begin);
+        std::copy(itBegin, itEnd, internal::get_back_inserter(result));
+        return result;
     }
-    Container result;
-    auto itBegin = std::begin(xs);
-    internal::advance_iterator(itBegin, idx_begin);
-    auto itEnd = itBegin;
-    internal::advance_iterator(itEnd, idx_end - idx_begin);
-    std::copy(itBegin, itEnd, internal::get_back_inserter(result));
-    return result;
-}
 
 } // namespace internal
 
@@ -3431,35 +3372,33 @@ Container get_segment(internal::create_new_container_t,
 // Also known as slice.
 template <typename Container,
     typename ContainerOut = internal::remove_const_and_ref_t<Container>>
-ContainerOut get_segment
-        (std::size_t idx_begin, std::size_t idx_end, Container&& xs)
+ContainerOut get_segment(std::size_t idx_begin, std::size_t idx_end, Container&& xs)
 {
-    return internal::get_segment(internal::can_reuse_v<Container>{},
+    return internal::get_segment(internal::can_reuse_v<Container> {},
         idx_begin, idx_end, std::forward<Container>(xs));
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename ContainerToken, typename Container>
-Container set_segment(internal::reuse_container_t,
-    std::size_t idx_begin, const ContainerToken& token, Container&& xs)
-{
-    assert(idx_begin + size_of_cont(token) < size_of_cont(xs));
-    auto itBegin = std::begin(xs);
-    internal::advance_iterator(itBegin, idx_begin);
-    std::copy(std::begin(token), std::end(token), itBegin);
-    return std::forward<Container>(xs);
-}
+    template <typename ContainerToken, typename Container>
+    Container set_segment(internal::reuse_container_t,
+        std::size_t idx_begin, const ContainerToken& token, Container&& xs)
+    {
+        assert(idx_begin + size_of_cont(token) < size_of_cont(xs));
+        auto itBegin = std::begin(xs);
+        internal::advance_iterator(itBegin, idx_begin);
+        std::copy(std::begin(token), std::end(token), itBegin);
+        return std::forward<Container>(xs);
+    }
 
-template <typename ContainerToken, typename Container>
-Container set_segment(internal::create_new_container_t,
-    std::size_t idx_begin, const ContainerToken& token, const Container& xs)
-{
-    Container result = xs;
-    return set_segment(internal::reuse_container_t(),
-        idx_begin, token, std::move(result));
-}
+    template <typename ContainerToken, typename Container>
+    Container set_segment(internal::create_new_container_t,
+        std::size_t idx_begin, const ContainerToken& token, const Container& xs)
+    {
+        Container result = xs;
+        return set_segment(internal::reuse_container_t(),
+            idx_begin, token, std::move(result));
+    }
 
 } // namespace internal
 
@@ -3471,55 +3410,53 @@ Container set_segment(internal::create_new_container_t,
 // Also known as replace_segment.
 template <typename ContainerToken, typename Container,
     typename ContainerOut = internal::remove_const_and_ref_t<Container>>
-ContainerOut set_segment
-        (std::size_t idx_begin, const ContainerToken& token, Container&& xs)
+ContainerOut set_segment(std::size_t idx_begin, const ContainerToken& token, Container&& xs)
 {
-    return internal::set_segment(internal::can_reuse_v<Container>{},
+    return internal::set_segment(internal::can_reuse_v<Container> {},
         idx_begin, token, std::forward<Container>(xs));
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename Container>
-Container remove_segment(internal::reuse_container_t,
-    std::size_t idx_begin, std::size_t idx_end, Container&& xs)
-{
-    assert(idx_begin <= idx_end);
-    assert(idx_end <= size_of_cont(xs));
+    template <typename Container>
+    Container remove_segment(internal::reuse_container_t,
+        std::size_t idx_begin, std::size_t idx_end, Container&& xs)
+    {
+        assert(idx_begin <= idx_end);
+        assert(idx_end <= size_of_cont(xs));
 
-    auto firstBreakIt = std::begin(xs);
-    internal::advance_iterator(firstBreakIt, idx_begin);
+        auto firstBreakIt = std::begin(xs);
+        internal::advance_iterator(firstBreakIt, idx_begin);
 
-    auto secondBreakIt = std::begin(xs);
-    internal::advance_iterator(secondBreakIt, idx_end);
+        auto secondBreakIt = std::begin(xs);
+        internal::advance_iterator(secondBreakIt, idx_end);
 
-    xs.erase(
-        std::copy(secondBreakIt, std::end(xs), firstBreakIt), std::end(xs));
-    return std::forward<Container>(xs);
-}
+        xs.erase(
+            std::copy(secondBreakIt, std::end(xs), firstBreakIt), std::end(xs));
+        return std::forward<Container>(xs);
+    }
 
-template <typename Container>
-Container remove_segment(internal::create_new_container_t,
-    std::size_t idx_begin, std::size_t idx_end, const Container& xs)
-{
-    assert(idx_begin <= idx_end);
-    assert(idx_end <= size_of_cont(xs));
+    template <typename Container>
+    Container remove_segment(internal::create_new_container_t,
+        std::size_t idx_begin, std::size_t idx_end, const Container& xs)
+    {
+        assert(idx_begin <= idx_end);
+        assert(idx_end <= size_of_cont(xs));
 
-    Container result;
-    std::size_t length = idx_end - idx_begin;
-    internal::prepare_container(result, size_of_cont(xs) - length);
+        Container result;
+        std::size_t length = idx_end - idx_begin;
+        internal::prepare_container(result, size_of_cont(xs) - length);
 
-    auto firstBreakIt = std::begin(xs);
-    internal::advance_iterator(firstBreakIt, idx_begin);
-    std::copy(std::begin(xs), firstBreakIt, internal::get_back_inserter(result));
+        auto firstBreakIt = std::begin(xs);
+        internal::advance_iterator(firstBreakIt, idx_begin);
+        std::copy(std::begin(xs), firstBreakIt, internal::get_back_inserter(result));
 
-    auto secondBreakIt = std::begin(xs);
-    internal::advance_iterator(secondBreakIt, idx_end);
-    std::copy(secondBreakIt, std::end(xs), internal::get_back_inserter(result));
+        auto secondBreakIt = std::begin(xs);
+        internal::advance_iterator(secondBreakIt, idx_end);
+        std::copy(secondBreakIt, std::end(xs), internal::get_back_inserter(result));
 
-    return result;
-}
+        return result;
+    }
 
 } // namespace internal
 
@@ -3531,9 +3468,9 @@ Container remove_segment(internal::create_new_container_t,
 template <typename Container,
     typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut remove_segment(
-        std::size_t idx_begin, std::size_t idx_end, Container&& xs)
+    std::size_t idx_begin, std::size_t idx_end, Container&& xs)
 {
-    return internal::remove_segment(internal::can_reuse_v<Container>{},
+    return internal::remove_segment(internal::can_reuse_v<Container> {},
         idx_begin, idx_end, std::forward<Container>(xs));
 }
 
@@ -3544,7 +3481,7 @@ ContainerOut remove_segment(
 // Unsafe! Crashes on invalid index.
 template <typename Container>
 Container insert_at(std::size_t idx_begin,
-        const Container& token, const Container& xs)
+    const Container& token, const Container& xs)
 {
     assert(idx_begin <= size_of_cont(xs));
 
@@ -3584,8 +3521,7 @@ template <typename Container,
     typename T = typename Container::value_type>
 maybe<T> elem_at_idx_maybe(std::size_t idx, const Container& xs)
 {
-    if (size_of_cont(xs) < idx)
-    {
+    if (size_of_cont(xs) < idx) {
         return {};
     }
     auto it = std::begin(xs);
@@ -3608,39 +3544,37 @@ std::vector<T> elems_at_idxs(const ContainerIdxs& idxs, const Container& xs)
     ContainerOut result;
     internal::prepare_container(result, size_of_cont(idxs));
     auto itOut = internal::get_back_inserter(result);
-    for (std::size_t idx : idxs)
-    {
+    for (std::size_t idx : idxs) {
         *itOut = elem_at_idx(idx, xs);
     }
     return result;
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename Container, typename F>
-Container transform(internal::reuse_container_t, F f, Container&& xs)
-{
-    internal::trigger_static_asserts<internal::unary_function_tag,
-                                         F,
-                                         decltype(*std::begin(xs))>();
-    std::transform(std::begin(xs), std::end(xs), std::begin(xs), f);
-    return std::forward<Container>(xs);
-}
+    template <typename Container, typename F>
+    Container transform(internal::reuse_container_t, F f, Container&& xs)
+    {
+        internal::trigger_static_asserts<internal::unary_function_tag,
+            F,
+            decltype(*std::begin(xs))>();
+        std::transform(std::begin(xs), std::end(xs), std::begin(xs), f);
+        return std::forward<Container>(xs);
+    }
 
-template <typename ContainerOut, typename F, typename ContainerIn>
-ContainerOut transform(internal::create_new_container_t, F f,
-    const ContainerIn& xs)
-{
-    internal::trigger_static_asserts<internal::unary_function_tag,
-                                         F,
-                                         decltype(*std::begin(xs))>();
-    ContainerOut ys;
-    internal::prepare_container(ys, size_of_cont(xs));
-    auto it = internal::get_back_inserter<ContainerOut>(ys);
-    std::transform(std::begin(xs), std::end(xs), it, f);
-    return ys;
-}
+    template <typename ContainerOut, typename F, typename ContainerIn>
+    ContainerOut transform(internal::create_new_container_t, F f,
+        const ContainerIn& xs)
+    {
+        internal::trigger_static_asserts<internal::unary_function_tag,
+            F,
+            decltype(*std::begin(xs))>();
+        ContainerOut ys;
+        internal::prepare_container(ys, size_of_cont(xs));
+        auto it = internal::get_back_inserter<ContainerOut>(ys);
+        std::transform(std::begin(xs), std::end(xs), it, f);
+        return ys;
+    }
 
 } // namespace internal
 
@@ -3657,17 +3591,17 @@ ContainerOut transform(F f, ContainerIn&& xs)
     using reuse_t = typename std::conditional<
         std::is_same<
             internal::can_reuse_v<ContainerIn>,
-            internal::reuse_container_t>::value &&
-        std::is_base_of<
-            std::true_type,
-            internal::has_order<ContainerIn>>::value &&
-        std::is_same<
-            internal::remove_const_and_ref_t<ContainerIn>,
-            ContainerOut>::value,
+            internal::reuse_container_t>::value
+            && std::is_base_of<
+                std::true_type,
+                internal::has_order<ContainerIn>>::value
+            && std::is_same<
+                internal::remove_const_and_ref_t<ContainerIn>,
+                ContainerOut>::value,
         internal::reuse_container_t,
         internal::create_new_container_t>::type;
     return internal::transform<ContainerOut>(
-        reuse_t{}, f, std::forward<ContainerIn>(xs));
+        reuse_t {}, f, std::forward<ContainerIn>(xs));
 }
 
 // API search type: transform_convert : ((a -> b), [a]) -> [b]
@@ -3697,9 +3631,8 @@ template <typename F, typename ContainerIn,
         typename internal::same_cont_new_t<
             ContainerIn,
             typename internal::same_cont_new_t_from_unary_f<
-                typename ContainerIn::value_type, F, 0
-            >::type, 0
-        >::type>
+                typename ContainerIn::value_type, F, 0>::type,
+            0>::type>
 ContainerOut transform_inner(F f, const ContainerIn& xs)
 {
     internal::trigger_static_asserts<internal::unary_function_tag, F, typename ContainerIn::value_type::value_type>();
@@ -3709,27 +3642,26 @@ ContainerOut transform_inner(F f, const ContainerIn& xs)
         xs);
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename Container>
-Container reverse(internal::reuse_container_t, Container&& xs)
-{
-    static_assert(internal::has_order<Container>::value,
-        "Reverse: Container has no order.");
-    std::reverse(std::begin(xs), std::end(xs));
-    return std::forward<Container>(xs);
-}
+    template <typename Container>
+    Container reverse(internal::reuse_container_t, Container&& xs)
+    {
+        static_assert(internal::has_order<Container>::value,
+            "Reverse: Container has no order.");
+        std::reverse(std::begin(xs), std::end(xs));
+        return std::forward<Container>(xs);
+    }
 
-template <typename Container>
-Container reverse(internal::create_new_container_t, const Container& xs)
-{
-    static_assert(internal::has_order<Container>::value,
-        "Reverse: Container has no order.");
-    Container ys = xs;
-    std::reverse(std::begin(ys), std::end(ys));
-    return ys;
-}
+    template <typename Container>
+    Container reverse(internal::create_new_container_t, const Container& xs)
+    {
+        static_assert(internal::has_order<Container>::value,
+            "Reverse: Container has no order.");
+        Container ys = xs;
+        std::reverse(std::begin(ys), std::end(ys));
+        return ys;
+    }
 
 } // namespace internal
 
@@ -3741,7 +3673,7 @@ template <typename Container,
     typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut reverse(Container&& xs)
 {
-    return internal::reverse(internal::can_reuse_v<Container>{},
+    return internal::reverse(internal::can_reuse_v<Container> {},
         std::forward<Container>(xs));
 }
 
@@ -3794,13 +3726,11 @@ Container take_cyclic(std::size_t amount, const Container& xs)
     auto it_out = internal::get_back_inserter(ys);
     auto it_in = std::begin(xs);
 
-    while (amount != 0)
-    {
+    while (amount != 0) {
         *it_out = *it_in;
         --amount;
         ++it_in;
-        if (it_in == std::end(xs))
-        {
+        if (it_in == std::end(xs)) {
             it_in = std::begin(xs);
         }
     }
@@ -4066,10 +3996,10 @@ auto scan_left_1(F f, const ContainerIn& xs)
     ContainerOut result;
     internal::prepare_container(result, size_of_cont(xs));
     internal::scan_impl(f,
-                      *beginIt,
-                      internal::get_back_inserter(result),
-                      std::next(beginIt),
-                      end(xs));
+        *beginIt,
+        internal::get_back_inserter(result),
+        std::next(beginIt),
+        end(xs));
     return result;
 }
 
@@ -4112,8 +4042,7 @@ template <typename Container,
 T sum(const Container& xs)
 {
     T result = T();
-    for (const auto& x : xs)
-    {
+    for (const auto& x : xs) {
         result = result + x;
     }
     return result;
@@ -4128,35 +4057,33 @@ template <typename Container,
     typename T = typename Container::value_type>
 T product(const Container& xs)
 {
-    T result{1};
-    for (const auto& x : xs)
-    {
+    T result { 1 };
+    for (const auto& x : xs) {
         result = result * x;
     }
     return result;
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename T, typename Container>
-Container append_elem(internal::reuse_container_t, const T& y, Container&& xs)
-{
-    *internal::get_back_inserter(xs) = y;
-    return std::forward<Container>(xs);
-}
+    template <typename T, typename Container>
+    Container append_elem(internal::reuse_container_t, const T& y, Container&& xs)
+    {
+        *internal::get_back_inserter(xs) = y;
+        return std::forward<Container>(xs);
+    }
 
-template <typename T, typename Container>
-Container append_elem(internal::create_new_container_t, const T& y,
-    const Container& xs)
-{
-    Container result;
-    internal::prepare_container(result, size_of_cont(xs) + 1);
-    std::copy(std::begin(xs), std::end(xs),
-        internal::get_back_inserter(result));
-    *internal::get_back_inserter(result) = y;
-    return result;
-}
+    template <typename T, typename Container>
+    Container append_elem(internal::create_new_container_t, const T& y,
+        const Container& xs)
+    {
+        Container result;
+        internal::prepare_container(result, size_of_cont(xs) + 1);
+        std::copy(std::begin(xs), std::end(xs),
+            internal::get_back_inserter(result));
+        *internal::get_back_inserter(result) = y;
+        return result;
+    }
 
 } // namespace internal
 
@@ -4169,42 +4096,41 @@ template <typename Container,
     typename T = typename ContainerOut::value_type>
 ContainerOut append_elem(const T& y, Container&& xs)
 {
-    return internal::append_elem(internal::can_reuse_v<Container>{},
+    return internal::append_elem(internal::can_reuse_v<Container> {},
         y, std::forward<Container>(xs));
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename T>
-std::list<T> prepend_elem(internal::reuse_container_t,
-    const T& y, std::list<T>&& xs)
-{
-    xs.push_front(y);
-    return std::forward<std::list<T>>(xs);
-}
+    template <typename T>
+    std::list<T> prepend_elem(internal::reuse_container_t,
+        const T& y, std::list<T>&& xs)
+    {
+        xs.push_front(y);
+        return std::forward<std::list<T>>(xs);
+    }
 
-template <typename T, typename Container>
-Container prepend_elem(internal::reuse_container_t,
-    const T& y, Container&& xs)
-{
-    xs.resize(size_of_cont(xs) + 1);
-    std::copy(++xs.rbegin(), xs.rend(), xs.rbegin());
-    *std::begin(xs) = y;
-    return std::forward<Container>(xs);
-}
+    template <typename T, typename Container>
+    Container prepend_elem(internal::reuse_container_t,
+        const T& y, Container&& xs)
+    {
+        xs.resize(size_of_cont(xs) + 1);
+        std::copy(++xs.rbegin(), xs.rend(), xs.rbegin());
+        *std::begin(xs) = y;
+        return std::forward<Container>(xs);
+    }
 
-template <typename T, typename Container>
-Container prepend_elem(internal::create_new_container_t, const T& y,
-    const Container& xs)
-{
-    Container result;
-    internal::prepare_container(result, size_of_cont(xs) + 1);
-    *internal::get_back_inserter(result) = y;
-    std::copy(std::begin(xs), std::end(xs),
-        internal::get_back_inserter(result));
-    return result;
-}
+    template <typename T, typename Container>
+    Container prepend_elem(internal::create_new_container_t, const T& y,
+        const Container& xs)
+    {
+        Container result;
+        internal::prepare_container(result, size_of_cont(xs) + 1);
+        *internal::get_back_inserter(result) = y;
+        std::copy(std::begin(xs), std::end(xs),
+            internal::get_back_inserter(result));
+        return result;
+    }
 
 } // namespace internal
 
@@ -4217,7 +4143,7 @@ template <typename Container,
     typename T = typename ContainerOut::value_type>
 ContainerOut prepend_elem(const T& y, Container&& xs)
 {
-    return internal::prepend_elem(internal::can_reuse_v<Container>{},
+    return internal::prepend_elem(internal::can_reuse_v<Container> {},
         y, std::forward<Container>(xs));
 }
 
@@ -4236,7 +4162,6 @@ ContainerOut append(const ContainerIn1& xs, const ContainerIn2& ys)
         internal::get_back_inserter(result));
     return result;
 }
-
 
 // API search type: append_convert : ([a], [a]) -> [a]
 // fwd bind count: 1
@@ -4263,8 +4188,7 @@ ContainerOut concat(const ContainerIn& xss)
     internal::prepare_container(result, length);
     using std::begin;
     using std::end;
-    for(const auto& xs : xss)
-    {
+    for (const auto& xs : xss) {
         result.insert(end(result), begin(xs), end(xs));
     }
     return result;
@@ -4286,8 +4210,7 @@ Container interweave(const Container& xs, const Container& ys)
     auto it = internal::get_back_inserter<Container>(result);
     auto it_xs = std::begin(xs);
     auto it_ys = std::begin(ys);
-    while (it_xs != std::end(xs) || it_ys != std::end(ys))
-    {
+    while (it_xs != std::end(xs) || it_ys != std::end(ys)) {
         if (it_xs != std::end(xs))
             *it = *(it_xs++);
         if (it_ys != std::end(ys))
@@ -4315,8 +4238,7 @@ std::pair<Container, Container> unweave(const Container& xs)
     auto it_even = internal::get_back_inserter<Container>(result.first);
     auto it_odd = internal::get_back_inserter<Container>(result.second);
     std::size_t counter = 0;
-    for (const auto& x : xs)
-    {
+    for (const auto& x : xs) {
         if (counter++ % 2 == 0)
             *it_even = x;
         else
@@ -4325,41 +4247,40 @@ std::pair<Container, Container> unweave(const Container& xs)
     return result;
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename Compare, typename T>
-std::list<T> sort_by(internal::reuse_container_t, Compare comp,
-    std::list<T>&& xs)
-{
-    xs.sort(comp);
-    return std::forward<std::list<T>>(xs);
-}
+    template <typename Compare, typename T>
+    std::list<T> sort_by(internal::reuse_container_t, Compare comp,
+        std::list<T>&& xs)
+    {
+        xs.sort(comp);
+        return std::forward<std::list<T>>(xs);
+    }
 
-template <typename Compare, typename T>
-std::list<T> sort_by(internal::create_new_container_t, Compare comp,
-    const std::list<T>& xs)
-{
-    auto result = xs;
-    result.sort(comp);
-    return result;
-}
+    template <typename Compare, typename T>
+    std::list<T> sort_by(internal::create_new_container_t, Compare comp,
+        const std::list<T>& xs)
+    {
+        auto result = xs;
+        result.sort(comp);
+        return result;
+    }
 
-template <typename Compare, typename Container>
-Container sort_by(internal::reuse_container_t, Compare comp, Container&& xs)
-{
-    std::sort(std::begin(xs), std::end(xs), comp);
-    return std::forward<Container>(xs);
-}
+    template <typename Compare, typename Container>
+    Container sort_by(internal::reuse_container_t, Compare comp, Container&& xs)
+    {
+        std::sort(std::begin(xs), std::end(xs), comp);
+        return std::forward<Container>(xs);
+    }
 
-template <typename Compare, typename Container>
-Container sort_by(internal::create_new_container_t, Compare comp,
-    const Container& xs)
-{
-    auto result = xs;
-    std::sort(std::begin(result), std::end(result), comp);
-    return result;
-}
+    template <typename Compare, typename Container>
+    Container sort_by(internal::create_new_container_t, Compare comp,
+        const Container& xs)
+    {
+        auto result = xs;
+        std::sort(std::begin(result), std::end(result), comp);
+        return result;
+    }
 
 } // namespace internal
 
@@ -4370,36 +4291,37 @@ template <typename Compare, typename Container,
     typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut sort_by(Compare comp, Container&& xs)
 {
-    return internal::sort_by(internal::can_reuse_v<Container>{},
+    return internal::sort_by(internal::can_reuse_v<Container> {},
         comp, std::forward<Container>(xs));
 }
 
-namespace internal
-{
+namespace internal {
     // workarounds for clang bug 24115
     // (std::sort and std::unique with std::function as comp)
     // https://llvm.org/bugs/show_bug.cgi?id=24115
     template <typename F>
-    struct is_less_by_struct
-    {
-        is_less_by_struct(F f) : f_(f) {};
+    struct is_less_by_struct {
+        is_less_by_struct(F f)
+            : f_(f) {};
         template <typename T>
         bool operator()(const T& x, const T& y)
         {
             return f_(x) < f_(y);
         }
+
     private:
         F f_;
     };
     template <typename F>
-    struct is_equal_by_struct
-    {
-        is_equal_by_struct(F f) : f_(f) {};
+    struct is_equal_by_struct {
+        is_equal_by_struct(F f)
+            : f_(f) {};
         template <typename T>
         bool operator()(const T& x, const T& y)
         {
             return f_(x) == f_(y);
         }
+
     private:
         F f_;
     };
@@ -4427,45 +4349,43 @@ ContainerOut sort(Container&& xs)
     return sort_by(std::less<T>(), std::forward<Container>(xs));
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename Compare, typename T>
-std::list<T> stable_sort_by(internal::reuse_container_t, Compare comp,
-    std::list<T>&& xs)
-{
-    xs.sort(comp); // std::list<T>::sort ist already stable.
-    return std::forward<std::list<T>>(xs);
-}
+    template <typename Compare, typename T>
+    std::list<T> stable_sort_by(internal::reuse_container_t, Compare comp,
+        std::list<T>&& xs)
+    {
+        xs.sort(comp); // std::list<T>::sort ist already stable.
+        return std::forward<std::list<T>>(xs);
+    }
 
-template <typename Compare, typename T>
-std::list<T> stable_sort_by(internal::create_new_container_t, Compare comp,
-    const std::list<T>& xs)
-{
-    auto result = xs;
-    result.sort(comp); // std::list<T>::sort ist already stable.
-    return result;
-}
+    template <typename Compare, typename T>
+    std::list<T> stable_sort_by(internal::create_new_container_t, Compare comp,
+        const std::list<T>& xs)
+    {
+        auto result = xs;
+        result.sort(comp); // std::list<T>::sort ist already stable.
+        return result;
+    }
 
-template <typename Compare, typename Container>
-Container stable_sort_by(internal::reuse_container_t, Compare comp,
-    Container&& xs)
-{
-    std::sort(std::begin(xs), std::end(xs), comp);
-    return std::forward<Container>(xs);
-}
+    template <typename Compare, typename Container>
+    Container stable_sort_by(internal::reuse_container_t, Compare comp,
+        Container&& xs)
+    {
+        std::sort(std::begin(xs), std::end(xs), comp);
+        return std::forward<Container>(xs);
+    }
 
-template <typename Compare, typename Container>
-Container stable_sort_by(internal::create_new_container_t, Compare comp,
-    const Container& xs)
-{
-    auto result = xs;
-    std::sort(std::begin(result), std::end(result), comp);
-    return result;
-}
+    template <typename Compare, typename Container>
+    Container stable_sort_by(internal::create_new_container_t, Compare comp,
+        const Container& xs)
+    {
+        auto result = xs;
+        std::sort(std::begin(result), std::end(result), comp);
+        return result;
+    }
 
 } // namespace internal
-
 
 // API search type: stable_sort_by : (((a, a) -> Bool), [a]) -> [a]
 // fwd bind count: 1
@@ -4474,7 +4394,7 @@ template <typename Compare, typename Container,
     typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut stable_sort_by(Compare comp, Container&& xs)
 {
-    return internal::stable_sort_by(internal::can_reuse_v<Container>{},
+    return internal::stable_sort_by(internal::can_reuse_v<Container> {},
         comp, std::forward<Container>(xs));
 }
 
@@ -4500,32 +4420,30 @@ ContainerOut stable_sort(Container&& xs)
     return stable_sort_by(std::less<T>(), std::forward<Container>(xs));
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename Compare, typename Container>
-Container partial_sort_by(internal::reuse_container_t, Compare comp,
-    std::size_t count, Container&& xs)
-{
-    if (count > xs.size())
+    template <typename Compare, typename Container>
+    Container partial_sort_by(internal::reuse_container_t, Compare comp,
+        std::size_t count, Container&& xs)
     {
-        count = xs.size();
+        if (count > xs.size()) {
+            count = xs.size();
+        }
+        auto middle = std::begin(xs);
+        internal::advance_iterator(middle, count);
+        std::partial_sort(std::begin(xs), middle, std::end(xs), comp);
+        return std::forward<Container>(get_segment(internal::reuse_container_t(),
+            0, count, xs));
     }
-    auto middle = std::begin(xs);
-    internal::advance_iterator(middle, count);
-    std::partial_sort(std::begin(xs), middle, std::end(xs), comp);
-    return std::forward<Container>(get_segment(internal::reuse_container_t(),
-        0, count, xs));
-}
 
-template <typename Compare, typename Container>
-Container partial_sort_by(internal::create_new_container_t, Compare comp,
-    std::size_t count, const Container& xs)
-{
-    auto result = xs;
-    return partial_sort_by(
-        internal::reuse_container_t(), comp, count, std::move(result));
-}
+    template <typename Compare, typename Container>
+    Container partial_sort_by(internal::create_new_container_t, Compare comp,
+        std::size_t count, const Container& xs)
+    {
+        auto result = xs;
+        return partial_sort_by(
+            internal::reuse_container_t(), comp, count, std::move(result));
+    }
 
 } // namespace internal
 
@@ -4537,7 +4455,7 @@ template <typename Compare, typename Container,
     typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut partial_sort_by(Compare comp, std::size_t count, Container&& xs)
 {
-    return internal::partial_sort_by(internal::can_reuse_v<Container>{},
+    return internal::partial_sort_by(internal::can_reuse_v<Container> {},
         comp, count, std::forward<Container>(xs));
 }
 
@@ -4601,26 +4519,25 @@ T nth_element(std::size_t n, const Container& xs)
     return nth_element_by(std::less<T>(), n, xs);
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename BinaryPredicate, typename Container>
-Container unique_by(internal::reuse_container_t,
-    BinaryPredicate pred, Container&& xs)
-{
-    internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
-    const auto it_end = std::unique(std::begin(xs), std::end(xs), pred);
-    xs.erase(it_end, std::end(xs));
-    return std::forward<Container>(xs);
-}
+    template <typename BinaryPredicate, typename Container>
+    Container unique_by(internal::reuse_container_t,
+        BinaryPredicate pred, Container&& xs)
+    {
+        internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
+        const auto it_end = std::unique(std::begin(xs), std::end(xs), pred);
+        xs.erase(it_end, std::end(xs));
+        return std::forward<Container>(xs);
+    }
 
-template <typename BinaryPredicate, typename Container>
-Container unique_by(internal::create_new_container_t,
-    BinaryPredicate pred, const Container& xs)
-{
-    auto result = xs;
-    return unique_by(internal::reuse_container_t(), pred, std::move(result));
-}
+    template <typename BinaryPredicate, typename Container>
+    Container unique_by(internal::create_new_container_t,
+        BinaryPredicate pred, const Container& xs)
+    {
+        auto result = xs;
+        return unique_by(internal::reuse_container_t(), pred, std::move(result));
+    }
 
 } // namespace internal
 
@@ -4635,7 +4552,7 @@ template <typename BinaryPredicate, typename Container,
     typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut unique_by(BinaryPredicate pred, Container&& xs)
 {
-    return internal::unique_by(internal::can_reuse_v<Container>{},
+    return internal::unique_by(internal::can_reuse_v<Container> {},
         pred, std::forward<Container>(xs));
 }
 
@@ -4684,10 +4601,9 @@ Container intersperse(const X& value, const Container& xs)
     if (size_of_cont(xs) == 1)
         return xs;
     Container result;
-    internal::prepare_container(result, std::max<std::size_t>(0, size_of_cont(xs)*2-1));
+    internal::prepare_container(result, std::max<std::size_t>(0, size_of_cont(xs) * 2 - 1));
     auto it = internal::get_back_inserter(result);
-    for_each(std::begin(xs), --std::end(xs), [&value, &it](const X& x)
-    {
+    for_each(std::begin(xs), --std::end(xs), [&value, &it](const X& x) {
         *it = x;
         *it = value;
     });
@@ -4755,11 +4671,9 @@ Container nub_by(BinaryPredicate p, const Container& xs)
 {
     Container result;
     auto itOut = internal::get_back_inserter(result);
-    for (const auto &x : xs)
-    {
+    for (const auto& x : xs) {
         auto eqToX = bind_1st_of_2(p, x);
-        if (!is_elem_of_by(eqToX, result))
-        {
+        if (!is_elem_of_by(eqToX, result)) {
             *itOut = x;
         }
     }
@@ -4933,7 +4847,8 @@ bool is_suffix_of(const Container& token, const Container& xs)
     if (size_of_cont(token) > size_of_cont(xs))
         return false;
     return get_segment(size_of_cont(xs) - size_of_cont(token),
-        size_of_cont(xs), xs) == token;
+               size_of_cont(xs), xs)
+        == token;
 }
 
 // API search type: all_by : ((a -> Bool), [a]) -> Bool
@@ -5004,15 +4919,11 @@ bool all_the_same(const Container& xs)
 // Return a sequence of numbers using a specific step.
 // numbers_step(2, 9, 2) == [2, 4, 6, 8]
 template <typename T,
-        typename ContainerOut = std::vector<T>>
-ContainerOut numbers_step
-        (const T start, const T end, const T step)
+    typename ContainerOut = std::vector<T>>
+ContainerOut numbers_step(const T start, const T end, const T step)
 {
     ContainerOut result;
-    if ((step > 0 && start >= end) ||
-        (step < 0 && start <= end) ||
-        step == 0)
-    {
+    if ((step > 0 && start >= end) || (step < 0 && start <= end) || step == 0) {
         return result;
     }
     std::size_t size = static_cast<std::size_t>((end - start) / step);
@@ -5029,7 +4940,7 @@ ContainerOut numbers_step
 // Also known as range.
 // numbers(2, 9) == [2, 3, 4, 5, 6, 7, 8]
 template <typename T,
-        typename ContainerOut = std::vector<T>>
+    typename ContainerOut = std::vector<T>>
 ContainerOut numbers(const T start, const T end)
 {
     return numbers_step<T, ContainerOut>(start, end, 1);
@@ -5123,8 +5034,7 @@ std::pair<Result, Result> mean_stddev(const Container& xs)
 
     std::vector<Result> diff(xs.size());
     std::transform(xs.begin(), xs.end(), diff.begin(),
-        [mean](Result x)
-        {
+        [mean](Result x) {
             return x - mean;
         });
     Result sq_sum = std::inner_product(
@@ -5143,13 +5053,11 @@ template <typename F, typename ContainerIn>
 auto count_occurrences_by(F f, const ContainerIn& xs)
 {
     using In = typename ContainerIn::value_type;
-    using MapOut =
-        std::map<std::decay_t<internal::invoke_result_t<F, In>>, std::size_t>;
+    using MapOut = std::map<std::decay_t<internal::invoke_result_t<F, In>>, std::size_t>;
 
     internal::trigger_static_asserts<internal::unary_function_tag, F, typename ContainerIn::value_type>();
     MapOut result;
-    for (const auto& x : xs)
-    {
+    for (const auto& x : xs) {
         ++result[internal::invoke(f, x)];
     }
     return result;
@@ -5163,8 +5071,8 @@ auto count_occurrences_by(F f, const ContainerIn& xs)
 // count_occurrences([1,2,2,3,2]) == [(1, 1), (2, 3), (3, 1)]
 // O(n)
 template <typename ContainerIn,
-        typename MapOut = typename std::map<
-            typename ContainerIn::value_type, std::size_t>>
+    typename MapOut = typename std::map<
+        typename ContainerIn::value_type, std::size_t>>
 MapOut count_occurrences(const ContainerIn& xs)
 {
     return count_occurrences_by(identity<typename ContainerIn::value_type>, xs);
@@ -5180,26 +5088,22 @@ MapOut count_occurrences(const ContainerIn& xs)
 // lexicographical_less_by((<), "012345", "012345") == false
 template <typename Container, typename BinaryPredicate>
 bool lexicographical_less_by(BinaryPredicate p,
-        const Container& xs, const Container& ys)
+    const Container& xs, const Container& ys)
 {
     internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
     auto itXs = std::begin(xs);
     auto itYs = std::begin(ys);
-    while (itXs != std::end(xs) && itYs != std::end(ys))
-    {
-        if (internal::invoke(p, *itXs, *itYs))
-        {
+    while (itXs != std::end(xs) && itYs != std::end(ys)) {
+        if (internal::invoke(p, *itXs, *itYs)) {
             return true;
         }
-        if (internal::invoke(p, *itYs, *itXs))
-        {
+        if (internal::invoke(p, *itYs, *itXs)) {
             return false;
         }
         ++itXs;
         ++itYs;
     }
-    if (size_of_cont(xs) < size_of_cont(ys))
-    {
+    if (size_of_cont(xs) < size_of_cont(ys)) {
         return true;
     }
     return false;
@@ -5236,34 +5140,33 @@ ContainerOut lexicographical_sort(Container&& xs)
 // Create a sequence containing x n times.
 // replicate(3, 1) == [1, 1, 1]
 template <typename T,
-        typename ContainerOut = std::vector<T>>
+    typename ContainerOut = std::vector<T>>
 ContainerOut replicate(std::size_t n, const T& x)
 {
     return ContainerOut(n, x);
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename UnaryPredicate, typename T>
-T instead_of_if(internal::reuse_container_t, UnaryPredicate pred,
-    const T& alt, T&& x)
-{
-    if (internal::invoke(pred, x))
-        return alt;
-    else
-        return std::forward<T>(x);
-}
+    template <typename UnaryPredicate, typename T>
+    T instead_of_if(internal::reuse_container_t, UnaryPredicate pred,
+        const T& alt, T&& x)
+    {
+        if (internal::invoke(pred, x))
+            return alt;
+        else
+            return std::forward<T>(x);
+    }
 
-template <typename UnaryPredicate, typename T>
-T instead_of_if(internal::create_new_container_t, UnaryPredicate pred,
-    const T& alt, const T& x)
-{
-    if (internal::invoke(pred, x))
-        return alt;
-    else
-        return x;
-}
+    template <typename UnaryPredicate, typename T>
+    T instead_of_if(internal::create_new_container_t, UnaryPredicate pred,
+        const T& alt, const T& x)
+    {
+        if (internal::invoke(pred, x))
+            return alt;
+        else
+            return x;
+    }
 
 } // namespace internal
 
@@ -5273,7 +5176,7 @@ T instead_of_if(internal::create_new_container_t, UnaryPredicate pred,
 template <typename UnaryPredicate, typename T, typename TAlt>
 auto instead_of_if(UnaryPredicate pred, const TAlt& alt, T&& x)
 {
-    return internal::instead_of_if(internal::can_reuse_v<T>{},
+    return internal::instead_of_if(internal::can_reuse_v<T> {},
         pred, alt, std::forward<T>(x));
 }
 
@@ -5292,7 +5195,7 @@ ContainerOut instead_of_if_empty(const ContainerAlt& alt, Container&& xs)
 } // namespace fplus
 
 //
-// container_properties.hpp
+// show.hpp
 //
 
 // Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
@@ -5344,8 +5247,7 @@ ContainerOut instead_of_if_empty(const ContainerAlt& alt, Container&& xs)
 #include <functional>
 #include <memory>
 
-namespace fplus
-{
+namespace fplus {
 
 template <typename Ok, typename Error>
 class result;
@@ -5358,38 +5260,48 @@ result<Ok, Error> error(const Error& error);
 
 // Can hold a value of type Ok or an error of type Error.
 template <typename Ok, typename Error>
-class result
-{
+class result {
 public:
     bool is_ok() const { return static_cast<bool>(ptr_ok_); }
     bool is_error() const { return static_cast<bool>(ptr_error_); }
-    const Ok& unsafe_get_ok() const {
-        check_either_or_invariant(); assert(is_ok()); return *ptr_ok_;
+    const Ok& unsafe_get_ok() const
+    {
+        check_either_or_invariant();
+        assert(is_ok());
+        return *ptr_ok_;
     }
-    const Error& unsafe_get_error() const {
-        check_either_or_invariant(); assert(is_error()); return *ptr_error_;
+    const Error& unsafe_get_error() const
+    {
+        check_either_or_invariant();
+        assert(is_error());
+        return *ptr_error_;
     }
     typedef Ok ok_t;
     typedef Error error_t;
 
-    result(const result<Ok, Error>& other) :
-        ptr_ok_(other.is_ok() ? ptr_ok(new Ok(other.unsafe_get_ok())) : ptr_ok()),
-        ptr_error_(other.is_error() ? ptr_error(new Error(other.unsafe_get_error())) : ptr_error())
+    result(const result<Ok, Error>& other)
+        : ptr_ok_(other.is_ok() ? ptr_ok(new Ok(other.unsafe_get_ok())) : ptr_ok())
+        , ptr_error_(other.is_error() ? ptr_error(new Error(other.unsafe_get_error())) : ptr_error())
     {
         check_either_or_invariant();
     }
-    result<Ok, Error>& operator = (const result<Ok, Error>& other)
+    result<Ok, Error>& operator=(const result<Ok, Error>& other)
     {
         ptr_ok_ = other.is_ok() ? ptr_ok(new Ok(other.unsafe_get_ok())) : ptr_ok();
         ptr_error_ = other.is_error() ? ptr_error(new Error(other.unsafe_get_error())) : ptr_error();
         return *this;
     }
+
 private:
     void check_either_or_invariant() const
     {
         assert(is_ok() != is_error());
     }
-    result() : ptr_ok_(ptr_ok()), ptr_error_(ptr_error()) {}
+    result()
+        : ptr_ok_(ptr_ok())
+        , ptr_error_(ptr_error())
+    {
+    }
     typedef std::unique_ptr<Ok> ptr_ok;
     typedef std::unique_ptr<Error> ptr_error;
     friend result<Ok, Error> ok<Ok, Error>(const Ok& ok);
@@ -5516,7 +5428,7 @@ Ok throw_type_on_error(const result<Ok, Error>& result)
 
 // True if ok values are the same or if errors are the same.
 template <typename Ok, typename Error>
-bool operator == (const result<Ok, Error>& x, const result<Ok, Error>& y)
+bool operator==(const result<Ok, Error>& x, const result<Ok, Error>& y)
 {
     if (is_ok(x) && is_ok(y))
         return unsafe_get_ok(x) == unsafe_get_ok(y);
@@ -5527,7 +5439,7 @@ bool operator == (const result<Ok, Error>& x, const result<Ok, Error>& y)
 
 // False if ok values are the same or if both errors are the same.
 template <typename Ok, typename Error>
-bool operator != (const result<Ok, Error>& x, const result<Ok, Error>& y)
+bool operator!=(const result<Ok, Error>& x, const result<Ok, Error>& y)
 {
     return !(x == y);
 }
@@ -5577,8 +5489,8 @@ auto unify_result(F f, G g, const result<A, B>& r)
     internal::trigger_static_asserts<internal::unary_function_tag, F, A>();
     internal::trigger_static_asserts<internal::unary_function_tag, G, B>();
     static_assert(std::is_same<internal::invoke_result_t<F, A>,
-                               internal::invoke_result_t<G, B>>::value,
-                  "Both functions must return the same type.");
+                      internal::invoke_result_t<G, B>>::value,
+        "Both functions must return the same type.");
     if (is_ok(r))
         return internal::invoke(f, unsafe_get_ok(r));
     return internal::invoke(g, unsafe_get_error(r));
@@ -5611,7 +5523,7 @@ auto and_then_result(F f, const result<Ok, Error>& r)
 
     using FOut = std::decay_t<internal::invoke_result_t<F, Ok>>;
     static_assert(std::is_same<Error, typename FOut::error_t>::value,
-                  "Error type must stay the same.");
+        "Error type must stay the same.");
     if (is_ok(r))
         return internal::invoke(f, unsafe_get_ok(r));
     else
@@ -5626,35 +5538,35 @@ template <typename... Callables>
 auto compose_result(Callables&&... callables)
 {
     auto bind_result = [](auto f, auto g) {
-        return [f = std::move(f), g = std::move(g)](auto&&... args)
-        {
+        return [f = std::move(f), g = std::move(g)](auto&&... args) {
             internal::trigger_static_asserts<internal::check_arity_tag,
-                                                 decltype(f),
-                                                 decltype(args)...>();
+                decltype(f),
+                decltype(args)...>();
 #if defined(_MSC_VER) && _MSC_VER >= 1920 // in VS2019, compilation with /permissive- breaks with 'using' syntax below
             struct FOut : std::decay_t<
-                internal::invoke_result_t<decltype(f), decltype(args)...>> {};
+                              internal::invoke_result_t<decltype(f), decltype(args)...>> {
+            };
 #else
             using FOut = std::decay_t<
                 internal::invoke_result_t<decltype(f), decltype(args)...>>;
 #endif
 
             internal::trigger_static_asserts<internal::unary_function_tag,
-                                                 decltype(g),
-                                                 typename FOut::ok_t>();
+                decltype(g),
+                typename FOut::ok_t>();
 #if defined(_MSC_VER) && _MSC_VER >= 1920 // in VS2019, compilation with /permissive- breaks with 'using' syntax below
             struct GOut : std::decay_t<
-                internal::invoke_result_t<decltype(g), typename FOut::ok_t>> {};
+                              internal::invoke_result_t<decltype(g), typename FOut::ok_t>> {
+            };
 #else
             using GOut = std::decay_t<
                 internal::invoke_result_t<decltype(g), typename FOut::ok_t>>;
 #endif
             static_assert(std::is_same<typename FOut::error_t,
-                                       typename GOut::error_t>::value,
-                          "Error type must stay the same.");
+                              typename GOut::error_t>::value,
+                "Error type must stay the same.");
 
-            auto resultB =
-                internal::invoke(f, std::forward<decltype(args)>(args)...);
+            auto resultB = internal::invoke(f, std::forward<decltype(args)>(args)...);
             if (is_ok(resultB))
                 return internal::invoke(g, unsafe_get_ok(resultB));
             return error<typename GOut::ok_t, typename GOut::error_t>(
@@ -5662,37 +5574,36 @@ auto compose_result(Callables&&... callables)
         };
     };
     return internal::compose_binary_lift(bind_result,
-                                       std::forward<Callables>(callables)...);
+        std::forward<Callables>(callables)...);
 }
 } // namespace fplus
 
 #include <algorithm>
 
-namespace fplus
-{
+namespace fplus {
 
-namespace internal
-{
+namespace internal {
 
-template <typename Pred, typename Container>
-Container keep_if(internal::reuse_container_t, Pred pred, Container&& xs)
-{
-    internal::check_unary_predicate_for_container<Pred, Container>();
-    xs.erase(std::remove_if(
-        std::begin(xs), std::end(xs), logical_not(pred)), std::end(xs));
-    return std::forward<Container>(xs);
-}
+    template <typename Pred, typename Container>
+    Container keep_if(internal::reuse_container_t, Pred pred, Container&& xs)
+    {
+        internal::check_unary_predicate_for_container<Pred, Container>();
+        xs.erase(std::remove_if(
+                     std::begin(xs), std::end(xs), logical_not(pred)),
+            std::end(xs));
+        return std::forward<Container>(xs);
+    }
 
-template <typename Pred, typename Container>
-Container keep_if(internal::create_new_container_t, Pred pred,
-    const Container& xs)
-{
-    internal::check_unary_predicate_for_container<Pred, Container>();
-    Container result;
-    auto it = internal::get_back_inserter<Container>(result);
-    std::copy_if(std::begin(xs), std::end(xs), it, pred);
-    return result;
-}
+    template <typename Pred, typename Container>
+    Container keep_if(internal::create_new_container_t, Pred pred,
+        const Container& xs)
+    {
+        internal::check_unary_predicate_for_container<Pred, Container>();
+        Container result;
+        auto it = internal::get_back_inserter<Container>(result);
+        std::copy_if(std::begin(xs), std::end(xs), it, pred);
+        return result;
+    }
 
 } // namespace internal
 
@@ -5705,7 +5616,7 @@ template <typename Pred, typename Container,
     typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut keep_if(Pred pred, Container&& xs)
 {
-    return internal::keep_if(internal::can_reuse_v<Container>{},
+    return internal::keep_if(internal::can_reuse_v<Container> {},
         pred, std::forward<Container>(xs));
 }
 
@@ -5742,8 +5653,8 @@ template <typename Container, typename ContainerElems,
 ContainerOut without_any(const ContainerElems& elems, Container&& xs)
 {
     static_assert(std::is_same<
-        typename ContainerElems::value_type,
-        typename std::remove_reference<Container>::type::value_type>::value,
+                      typename ContainerElems::value_type,
+                      typename std::remove_reference<Container>::type::value_type>::value,
         "Container values must be of the same type.");
     const auto pred = bind_2nd_of_2(is_elem_of<ContainerElems>, elems);
     return drop_if(pred, std::forward<Container>(xs));
@@ -5761,8 +5672,7 @@ Container keep_if_with_idx(Pred pred, const Container& xs)
     Container ys;
     auto it = internal::get_back_inserter<Container>(ys);
     std::size_t idx = 0;
-    for (const auto& x : xs)
-    {
+    for (const auto& x : xs) {
         if (internal::invoke(pred, idx++, x))
             *it = x;
     }
@@ -5778,39 +5688,36 @@ template <typename Pred, typename Container>
 Container drop_if_with_idx(Pred pred, const Container& xs)
 {
     internal::check_index_with_type_predicate_for_container<Pred, Container>();
-    const auto inverse_pred = [pred](auto idx, const auto& x)
-    {
+    const auto inverse_pred = [pred](auto idx, const auto& x) {
         return !internal::invoke(pred, idx, x);
     };
     return keep_if_with_idx(inverse_pred, xs);
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename UnaryPredicate, typename Container>
-Container keep_by_idx(internal::reuse_container_t,
-    UnaryPredicate pred, Container&& xs)
-{
-    auto itOut = std::begin(xs);
-    std::size_t i = 0;
-    for (auto it = std::begin(xs); it != std::end(xs); ++it)
+    template <typename UnaryPredicate, typename Container>
+    Container keep_by_idx(internal::reuse_container_t,
+        UnaryPredicate pred, Container&& xs)
     {
-        if (internal::invoke(pred, i++))
-            assign(*itOut++, std::move(*it));
+        auto itOut = std::begin(xs);
+        std::size_t i = 0;
+        for (auto it = std::begin(xs); it != std::end(xs); ++it) {
+            if (internal::invoke(pred, i++))
+                assign(*itOut++, std::move(*it));
+        }
+        xs.erase(itOut, std::end(xs));
+        return std::forward<Container>(xs);
     }
-    xs.erase(itOut, std::end(xs));
-    return std::forward<Container>(xs);
-}
 
-template <typename UnaryPredicate, typename Container>
-Container keep_by_idx(internal::create_new_container_t,
-    UnaryPredicate pred, const Container& xs)
-{
-    Container ys = xs;
-    return internal::keep_by_idx(internal::reuse_container_t(),
-        pred, std::move(ys));
-}
+    template <typename UnaryPredicate, typename Container>
+    Container keep_by_idx(internal::create_new_container_t,
+        UnaryPredicate pred, const Container& xs)
+    {
+        Container ys = xs;
+        return internal::keep_by_idx(internal::reuse_container_t(),
+            pred, std::move(ys));
+    }
 
 } // namespace internal
 
@@ -5823,7 +5730,7 @@ template <typename UnaryPredicate, typename Container,
 ContainerOut keep_by_idx(UnaryPredicate pred, Container&& xs)
 {
     internal::check_unary_predicate_for_type<UnaryPredicate, std::size_t>();
-    return internal::keep_by_idx(internal::can_reuse_v<Container>{},
+    return internal::keep_by_idx(internal::can_reuse_v<Container> {},
         pred, std::forward<Container>(xs));
 }
 
@@ -5853,10 +5760,8 @@ Container keep_idxs(const ContainerIdxs& idxs_to_keep, const Container& xs)
     Container ys;
     auto it = internal::get_back_inserter<Container>(ys);
     std::size_t idx = 0;
-    for (const auto& x : xs)
-    {
-        if (!idxs_left.empty() && idxs_left.front() == idx)
-        {
+    for (const auto& x : xs) {
+        if (!idxs_left.empty() && idxs_left.front() == idx) {
             idxs_left.pop_front();
             *it = x;
         }
@@ -5879,16 +5784,11 @@ Container drop_idxs(const ContainerIdxs& idxs_to_drop, const Container& xs)
     Container ys;
     auto it = internal::get_back_inserter<Container>(ys);
     std::size_t idx = 0;
-    for (const auto& x : xs)
-    {
-        if (idxs_left.empty() || idxs_left.front() != idx)
-        {
+    for (const auto& x : xs) {
+        if (idxs_left.empty() || idxs_left.front() != idx) {
             *it = x;
-        }
-        else
-        {
-            if (!idxs_left.empty())
-            {
+        } else {
+            if (!idxs_left.empty()) {
                 idxs_left.pop_front();
             }
         }
@@ -5975,7 +5875,7 @@ ContainerOut errors(const ContainerIn& xs)
 // trim_left('_', "___abc__") == "abc__"
 // trim_left(0, [0,0,0,5,6,7,8,6,4]) == [5,6,7,8,6,4]
 template <typename Container,
-        typename T = typename Container::value_type>
+    typename T = typename Container::value_type>
 Container trim_left(const T& x, const Container& xs)
 {
     return drop_while(is_equal_to(x), xs);
@@ -5989,8 +5889,7 @@ template <typename Container>
 Container trim_token_left(const Container& token, const Container& xs)
 {
     auto result = xs;
-    while (is_prefix_of(token, result))
-    {
+    while (is_prefix_of(token, result)) {
         result = get_segment(size_of_cont(token), size_of_cont(result), result);
     }
     return result;
@@ -6013,7 +5912,7 @@ Container trim_right_by(UnaryPredicate p, const Container& xs)
 // trim_right('_', "___abc__") == "___abc"
 // trim_right(4, [0,2,4,5,6,7,8,4,4]) == [0,2,4,5,6,7,8]
 template <typename Container,
-        typename T = typename Container::value_type>
+    typename T = typename Container::value_type>
 Container trim_right(const T& x, const Container& xs)
 {
     return trim_right_by(is_equal_to(x), xs);
@@ -6046,7 +5945,7 @@ Container trim_by(UnaryPredicate p, const Container& xs)
 // trim('_', "___abc__") == "abc"
 // trim(0, [0,2,4,5,6,7,8,0,0]) == [2,4,5,6,7,8]
 template <typename Container,
-        typename T = typename Container::value_type>
+    typename T = typename Container::value_type>
 Container trim(const T& x, const Container& xs)
 {
     return trim_right(x, trim_left(x, xs));
@@ -6074,8 +5973,7 @@ Container trim_token(const Container& token, const Container& xs)
 template <typename BinaryPredicate, typename Container>
 Container adjacent_keep_snd_if(BinaryPredicate p, const Container& xs)
 {
-    if (is_empty(xs))
-    {
+    if (is_empty(xs)) {
         return {};
     }
     internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
@@ -6083,10 +5981,8 @@ Container adjacent_keep_snd_if(BinaryPredicate p, const Container& xs)
     auto it = internal::get_back_inserter<Container>(result);
     auto it_in = std::begin(xs);
     *it = *it_in;
-    while (internal::add_to_iterator(it_in) != std::end(xs))
-    {
-        if (p(*it_in, *internal::add_to_iterator(it_in)))
-        {
+    while (internal::add_to_iterator(it_in) != std::end(xs)) {
+        if (p(*it_in, *internal::add_to_iterator(it_in))) {
             *it = *internal::add_to_iterator(it_in);
         }
         internal::advance_iterator(it_in, 1);
@@ -6106,18 +6002,15 @@ Container adjacent_keep_snd_if(BinaryPredicate p, const Container& xs)
 template <typename BinaryPredicate, typename Container>
 Container adjacent_drop_fst_if(BinaryPredicate p, const Container& xs)
 {
-    if (is_empty(xs))
-    {
+    if (is_empty(xs)) {
         return {};
     }
     internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
     Container result;
     auto it = internal::get_back_inserter<Container>(result);
     auto it_in = std::begin(xs);
-    while (internal::add_to_iterator(it_in) != std::end(xs))
-    {
-        if (!internal::invoke(p, *it_in, *internal::add_to_iterator(it_in)))
-        {
+    while (internal::add_to_iterator(it_in) != std::end(xs)) {
+        if (!internal::invoke(p, *it_in, *internal::add_to_iterator(it_in))) {
             *it = *it_in;
         }
         internal::advance_iterator(it_in, 1);
@@ -6138,8 +6031,7 @@ template <typename BinaryPredicate, typename Container>
 Container adjacent_drop_snd_if(BinaryPredicate p, const Container& xs)
 {
     typedef typename Container::value_type T;
-    const auto not_p = [&p](const T& x, const T& y) -> bool
-    {
+    const auto not_p = [&p](const T& x, const T& y) -> bool {
         return !internal::invoke(p, x, y);
     };
     return adjacent_keep_snd_if(not_p, xs);
@@ -6157,8 +6049,7 @@ template <typename BinaryPredicate, typename Container>
 Container adjacent_keep_fst_if(BinaryPredicate p, const Container& xs)
 {
     typedef typename Container::value_type T;
-    const auto not_p = [&p](const T& x, const T& y) -> bool
-    {
+    const auto not_p = [&p](const T& x, const T& y) -> bool {
         return !internal::invoke(p, x, y);
     };
     return adjacent_drop_fst_if(not_p, xs);
@@ -6167,8 +6058,7 @@ Container adjacent_keep_fst_if(BinaryPredicate p, const Container& xs)
 } // namespace fplus
 
 
-namespace fplus
-{
+namespace fplus {
 
 // API search type: generate : ((() -> a), Int) -> [a]
 // Grab values from executing a nullary function
@@ -6182,8 +6072,7 @@ ContainerOut generate(F f, std::size_t amount)
     ContainerOut ys;
     internal::prepare_container(ys, amount);
     auto it = internal::get_back_inserter<ContainerOut>(ys);
-    for (std::size_t i = 0; i < amount; ++i)
-    {
+    for (std::size_t i = 0; i < amount; ++i) {
         *it = internal::invoke(f);
     }
     return ys;
@@ -6203,8 +6092,7 @@ ContainerOut generate_by_idx(F f, std::size_t amount)
     ContainerOut ys;
     internal::prepare_container(ys, amount);
     auto it = internal::get_back_inserter<ContainerOut>(ys);
-    for (std::size_t i = 0; i < amount; ++i)
-    {
+    for (std::size_t i = 0; i < amount; ++i) {
         *it = internal::invoke(f, i);
     }
     return ys;
@@ -6232,15 +6120,14 @@ ContainerOut infixes(std::size_t length, const ContainerIn& xs)
 {
     assert(length > 0);
     static_assert(std::is_convertible<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "ContainerOut can not take values of type ContainerIn as elements.");
     ContainerOut result;
     if (size_of_cont(xs) < length)
         return result;
     internal::prepare_container(result, size_of_cont(xs) - length);
     auto itOut = internal::get_back_inserter(result);
-    for (std::size_t idx = 0; idx <= size_of_cont(xs) - length; ++idx)
-    {
+    for (std::size_t idx = 0; idx <= size_of_cont(xs) - length; ++idx) {
         *itOut = get_segment(idx, idx + length, xs);
     }
     return result;
@@ -6258,9 +6145,9 @@ ContainerOut infixes(std::size_t length, const ContainerIn& xs)
 //   WHERE pred(xs.x, ys.y);
 template <typename F, typename Pred, typename Container1, typename Container2>
 auto carthesian_product_with_where(F f,
-                                   Pred pred,
-                                   const Container1& xs,
-                                   const Container2& ys)
+    Pred pred,
+    const Container1& xs,
+    const Container2& ys)
 {
     using X = typename Container1::value_type;
     using Y = typename Container2::value_type;
@@ -6269,12 +6156,9 @@ auto carthesian_product_with_where(F f,
 
     ContainerOut result;
     auto itOut = internal::get_back_inserter(result);
-    for (const auto& x : xs)
-    {
-        for (const auto& y : ys)
-        {
-            if (internal::invoke(pred, x, y))
-            {
+    for (const auto& x : xs) {
+        for (const auto& y : ys) {
+            if (internal::invoke(pred, x, y)) {
                 itOut = f(x, y);
             }
         }
@@ -6312,8 +6196,7 @@ template <typename Pred, typename Container1, typename Container2>
 auto carthesian_product_where(Pred pred,
     const Container1& xs, const Container2& ys)
 {
-    auto make_res_pair = [](const auto& x, const auto& y)
-    {
+    auto make_res_pair = [](const auto& x, const auto& y) {
         return std::make_pair(x, y);
     };
     return carthesian_product_with_where(make_res_pair, pred, xs, ys);
@@ -6331,8 +6214,7 @@ auto carthesian_product_where(Pred pred,
 template <typename Container1, typename Container2>
 auto carthesian_product(const Container1& xs, const Container2& ys)
 {
-    auto make_res_pair = [](const auto& x, const auto& y)
-    {
+    auto make_res_pair = [](const auto& x, const auto& y) {
         return std::make_pair(x, y);
     };
     auto always_true_x_y = [](const auto&, const auto&) { return true; };
@@ -6340,15 +6222,12 @@ auto carthesian_product(const Container1& xs, const Container2& ys)
         make_res_pair, always_true_x_y, xs, ys);
 }
 
-
-namespace internal
-{
+namespace internal {
     // productN :: Int -> [a] -> [[a]]
     // productN n = foldr go [[]] . replicate n
     //     where go elems acc = [x:xs | x <- elems, xs <- acc]
     template <typename T>
-    std::vector<std::vector<T>> helper_carthesian_product_n_idxs
-            (std::size_t power, const std::vector<T>& xs)
+    std::vector<std::vector<T>> helper_carthesian_product_n_idxs(std::size_t power, const std::vector<T>& xs)
     {
         static_assert(std::is_same<T, std::size_t>::value,
             "T must be std::size_t");
@@ -6356,13 +6235,10 @@ namespace internal
         typedef std::vector<Vec> VecVec;
         if (power == 0)
             return VecVec();
-        auto go = [](const Vec& elems, const VecVec& acc)
-        {
+        auto go = [](const Vec& elems, const VecVec& acc) {
             VecVec result;
-            for (const T& x : elems)
-            {
-                for (const Vec& tail : acc)
-                {
+            for (const T& x : elems) {
+                for (const Vec& tail : acc) {
                     result.push_back(append(Vec(1, x), tail));
                 }
             }
@@ -6388,8 +6264,7 @@ ContainerOut carthesian_product_n(std::size_t power, const ContainerIn& xs_in)
     auto idxs = all_idxs(xs);
     auto result_idxss = internal::helper_carthesian_product_n_idxs(power, idxs);
     typedef typename ContainerOut::value_type ContainerOutInner;
-    auto to_result_cont = [&](const std::vector<std::size_t>& indices)
-    {
+    auto to_result_cont = [&](const std::vector<std::size_t>& indices) {
         return convert_container_and_elems<ContainerOutInner>(
             elems_at_idxs(indices, xs));
     };
@@ -6413,8 +6288,7 @@ ContainerOut permutations(std::size_t power, const ContainerIn& xs_in)
     auto result_idxss = keep_if(all_unique<idx_vec>,
         internal::helper_carthesian_product_n_idxs(power, idxs));
     typedef typename ContainerOut::value_type ContainerOutInner;
-    auto to_result_cont = [&](const std::vector<std::size_t>& indices)
-    {
+    auto to_result_cont = [&](const std::vector<std::size_t>& indices) {
         return convert_container_and_elems<ContainerOutInner>(
             elems_at_idxs(indices, xs));
     };
@@ -6438,8 +6312,7 @@ ContainerOut combinations(std::size_t power, const ContainerIn& xs_in)
     auto result_idxss = keep_if(is_strictly_sorted<idx_vec>,
         internal::helper_carthesian_product_n_idxs(power, idxs));
     typedef typename ContainerOut::value_type ContainerOutInner;
-    auto to_result_cont = [&](const std::vector<std::size_t>& indices)
-    {
+    auto to_result_cont = [&](const std::vector<std::size_t>& indices) {
         return convert_container_and_elems<ContainerOutInner>(
             elems_at_idxs(indices, xs));
     };
@@ -6454,7 +6327,7 @@ template <typename ContainerIn,
     typename T = typename ContainerIn::value_type,
     typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut combinations_with_replacement(std::size_t power,
-        const ContainerIn& xs_in)
+    const ContainerIn& xs_in)
 {
     if (power == 0)
         return ContainerOut(1);
@@ -6464,8 +6337,7 @@ ContainerOut combinations_with_replacement(std::size_t power,
     auto result_idxss = keep_if(is_sorted<idx_vec>,
         internal::helper_carthesian_product_n_idxs(power, idxs));
     typedef typename ContainerOut::value_type ContainerOutInner;
-    auto to_result_cont = [&](const std::vector<std::size_t>& indices)
-    {
+    auto to_result_cont = [&](const std::vector<std::size_t>& indices) {
         return convert_container_and_elems<ContainerOutInner>(
             elems_at_idxs(indices, xs));
     };
@@ -6509,8 +6381,7 @@ ContainerOut iterate(F f, std::size_t size, const T& x)
     auto it_out = internal::get_back_inserter(result);
     T current = x;
     *it_out = current;
-    for (std::size_t i = 1; i < size; ++i)
-    {
+    for (std::size_t i = 1; i < size; ++i) {
         current = internal::invoke(f, current);
         *it_out = current;
     }
@@ -6531,8 +6402,7 @@ ContainerOut iterate_maybe(F f, const T& x)
     ContainerOut result;
     auto it_out = internal::get_back_inserter(result);
     maybe<T> current(x);
-    while (current.is_just())
-    {
+    while (current.is_just()) {
         *it_out = current.unsafe_get_just();
         current = internal::invoke(f, current.unsafe_get_just());
     }
@@ -6588,8 +6458,7 @@ Container rotate_left(const Container& xs)
     auto it = std::begin(xs);
     auto it_out = internal::get_back_inserter(ys);
     ++it;
-    while (it != std::end(xs))
-    {
+    while (it != std::end(xs)) {
         *it_out = *it;
         ++it;
     }
@@ -6637,7 +6506,7 @@ ContainerOut rotations_right(const ContainerIn& xs_in)
 // fill_left(0, 6, [1,2,3,4]) == [0,0,1,2,3,4]
 // Also known as pad_left.
 template <typename Container,
-        typename T = typename Container::value_type>
+    typename T = typename Container::value_type>
 Container fill_left(const T& x, std::size_t min_size, const Container& xs)
 {
     if (min_size <= size_of_cont(xs))
@@ -6650,7 +6519,7 @@ Container fill_left(const T& x, std::size_t min_size, const Container& xs)
 // Left-align a sequence.
 // fill_right(0, 6, [1,2,3,4]) == [1,2,3,4,0,0]
 template <typename Container,
-        typename T = typename Container::value_type>
+    typename T = typename Container::value_type>
 Container fill_right(const T& x, std::size_t min_size, const Container& xs)
 {
     if (min_size <= size_of_cont(xs))
@@ -6697,6 +6566,42 @@ ContainerOut tails(const ContainerIn& xs)
 } // namespace fplus
 
 //
+// transform.hpp
+//
+
+// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
+// https://github.com/Dobiasd/FunctionalPlus
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+
+
+
+//
+// maps.hpp
+//
+
+// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
+// https://github.com/Dobiasd/FunctionalPlus
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+
+
+
+//
+// container_properties.hpp
+//
+
+// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
+// https://github.com/Dobiasd/FunctionalPlus
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+
+
+
+//
 // numeric.hpp
 //
 
@@ -6732,115 +6637,100 @@ ContainerOut tails(const ContainerIn& xs)
 
 
 
-namespace fplus
-{
-namespace internal
-{
-struct apply_to_pair_tag
-{
-};
+namespace fplus {
+namespace internal {
+    struct apply_to_pair_tag {
+    };
 
-struct zip_with_tag
-{
-};
+    struct zip_with_tag {
+    };
 
-struct zip_with_3_tag
-{
-};
+    struct zip_with_3_tag {
+    };
 
-struct transform_fst_tag
-{
-};
+    struct transform_fst_tag {
+    };
 
-struct transform_snd_tag
-{
-};
+    struct transform_snd_tag {
+    };
 
-struct inner_product_with_tag
-{
-};
+    struct inner_product_with_tag {
+    };
 
-template <typename F, typename X, typename Y>
-struct function_traits_asserts<apply_to_pair_tag, F, X, Y>
-{
-    static_assert(utils::function_traits<F>::arity == 2,
-        "Function must take two parameters.");
-    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
-    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
-    static_assert(std::is_convertible<X, FIn0>::value,
-        "Function does not take pair.first type as first Parameter.");
-    static_assert(std::is_convertible<Y, FIn1>::value,
-        "Function does not take pair.second type as second Parameter.");
-};
+    template <typename F, typename X, typename Y>
+    struct function_traits_asserts<apply_to_pair_tag, F, X, Y> {
+        static_assert(utils::function_traits<F>::arity == 2,
+            "Function must take two parameters.");
+        typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+        typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
+        static_assert(std::is_convertible<X, FIn0>::value,
+            "Function does not take pair.first type as first Parameter.");
+        static_assert(std::is_convertible<Y, FIn1>::value,
+            "Function does not take pair.second type as second Parameter.");
+    };
 
-template <typename F, typename X, typename Y>
-struct function_traits_asserts<zip_with_tag, F, X, Y>
-{
-    static_assert(utils::function_traits<F>::arity == 2,
-        "Function must take two parameters.");
-    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
-    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
-    static_assert(std::is_convertible<X, FIn0>::value,
-        "Function does not take elements from first Container as first Parameter.");
-    static_assert(std::is_convertible<Y, FIn1>::value,
-        "Function does not take elements from second Container as second Parameter.");
-};
+    template <typename F, typename X, typename Y>
+    struct function_traits_asserts<zip_with_tag, F, X, Y> {
+        static_assert(utils::function_traits<F>::arity == 2,
+            "Function must take two parameters.");
+        typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+        typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
+        static_assert(std::is_convertible<X, FIn0>::value,
+            "Function does not take elements from first Container as first Parameter.");
+        static_assert(std::is_convertible<Y, FIn1>::value,
+            "Function does not take elements from second Container as second Parameter.");
+    };
 
-template <typename F, typename X, typename Y, typename Z>
-struct function_traits_asserts<zip_with_3_tag, F, X, Y, Z>
-{
-    static_assert(utils::function_traits<F>::arity == 3,
-        "Function must take two parameters.");
-    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
-    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
-    typedef typename utils::function_traits<F>::template arg<2>::type FIn2;
-    static_assert(std::is_convertible<X, FIn0>::value,
-        "Function does not take elements from first Container as first Parameter.");
-    static_assert(std::is_convertible<Y, FIn1>::value,
-        "Function does not take elements from second Container as second Parameter.");
-    static_assert(std::is_convertible<Z, FIn2>::value,
-        "Function does not take elements from third Container as third Parameter.");
-};
+    template <typename F, typename X, typename Y, typename Z>
+    struct function_traits_asserts<zip_with_3_tag, F, X, Y, Z> {
+        static_assert(utils::function_traits<F>::arity == 3,
+            "Function must take two parameters.");
+        typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+        typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
+        typedef typename utils::function_traits<F>::template arg<2>::type FIn2;
+        static_assert(std::is_convertible<X, FIn0>::value,
+            "Function does not take elements from first Container as first Parameter.");
+        static_assert(std::is_convertible<Y, FIn1>::value,
+            "Function does not take elements from second Container as second Parameter.");
+        static_assert(std::is_convertible<Z, FIn2>::value,
+            "Function does not take elements from third Container as third Parameter.");
+    };
 
-template <typename F, typename X>
-struct function_traits_asserts<transform_fst_tag, F, X>
-{
-    static_assert(utils::function_traits<F>::arity == 1,
-        "Function must take one parameter.");
-    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
-    static_assert(std::is_convertible<X, FIn0>::value,
-        "Function does not take pair.first type as first Parameter.");
-};
+    template <typename F, typename X>
+    struct function_traits_asserts<transform_fst_tag, F, X> {
+        static_assert(utils::function_traits<F>::arity == 1,
+            "Function must take one parameter.");
+        typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+        static_assert(std::is_convertible<X, FIn0>::value,
+            "Function does not take pair.first type as first Parameter.");
+    };
 
-template <typename F, typename X>
-struct function_traits_asserts<transform_snd_tag, F, X>
-{
-    static_assert(utils::function_traits<F>::arity == 1,
-        "Function must take one parameter.");
-    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
-    static_assert(std::is_convertible<X, FIn0>::value,
-        "Function does not take pair.second type as first Parameter.");
-};
+    template <typename F, typename X>
+    struct function_traits_asserts<transform_snd_tag, F, X> {
+        static_assert(utils::function_traits<F>::arity == 1,
+            "Function must take one parameter.");
+        typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+        static_assert(std::is_convertible<X, FIn0>::value,
+            "Function does not take pair.second type as first Parameter.");
+    };
 
-template <typename F, typename X, typename Y>
-struct function_traits_asserts<inner_product_with_tag, F, X, Y>
-{
-    static_assert(utils::function_traits<F>::arity == 2,
-        "Function must take two parameters.");
-    typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
-    typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
-    static_assert(std::is_convertible<X, FIn0>::value,
-        "Function does not take elements from first Container as first Parameter.");
-    static_assert(std::is_convertible<Y, FIn1>::value,
-        "Function does not take elements from second Container as second Parameter.");
-};
+    template <typename F, typename X, typename Y>
+    struct function_traits_asserts<inner_product_with_tag, F, X, Y> {
+        static_assert(utils::function_traits<F>::arity == 2,
+            "Function must take two parameters.");
+        typedef typename utils::function_traits<F>::template arg<0>::type FIn0;
+        typedef typename utils::function_traits<F>::template arg<1>::type FIn1;
+        static_assert(std::is_convertible<X, FIn0>::value,
+            "Function does not take elements from first Container as first Parameter.");
+        static_assert(std::is_convertible<Y, FIn1>::value,
+            "Function does not take elements from second Container as second Parameter.");
+    };
 }
 }
 
 #include <utility>
 
-namespace fplus
-{
+namespace fplus {
 // API search type: apply_to_pair : (((a, b) -> c), (a, b)) -> c
 // fwd bind count: 1
 // Apply binary function to parts of a pair.
@@ -6856,12 +6746,12 @@ auto apply_to_pair(F f, const std::pair<FIn0, FIn1>& p)
 // Zip two sequences using a binary function.
 // zip_with((+), [1, 2, 3], [5, 6]) == [1+5, 2+6] == [6, 8]
 template <typename ContainerIn1,
-          typename ContainerIn2,
-          typename F,
-          typename X = typename ContainerIn1::value_type,
-          typename Y = typename ContainerIn2::value_type,
-          typename TOut = std::decay_t<internal::invoke_result_t<F, X, Y>>,
-          typename ContainerOut = std::vector<TOut>>
+    typename ContainerIn2,
+    typename F,
+    typename X = typename ContainerIn1::value_type,
+    typename Y = typename ContainerIn2::value_type,
+    typename TOut = std::decay_t<internal::invoke_result_t<F, X, Y>>,
+    typename ContainerOut = std::vector<TOut>>
 ContainerOut zip_with(F f, const ContainerIn1& xs, const ContainerIn2& ys)
 {
     internal::trigger_static_asserts<internal::zip_with_tag, F, X, Y>();
@@ -6871,13 +6761,12 @@ ContainerOut zip_with(F f, const ContainerIn1& xs, const ContainerIn2& ys)
     auto itResult = internal::get_back_inserter(result);
     auto itXs = std::begin(xs);
     auto itYs = std::begin(ys);
-    for (std::size_t i = 0; i < resultSize; ++i)
-    {
+    for (std::size_t i = 0; i < resultSize; ++i) {
         *itResult = internal::invoke(f, *itXs, *itYs);
         ++itXs;
         ++itYs;
     }
-  return result;
+    return result;
 }
 
 // API search type: zip_with_3 : (((a, b, c) -> d), [a], [b], [c]) -> [c]
@@ -6895,18 +6784,18 @@ template <
     typename TOut = std::decay_t<internal::invoke_result_t<F, X, Y, Z>>,
     typename ContainerOut = typename std::vector<TOut>>
 ContainerOut zip_with_3(F f,
-                        const ContainerIn1& xs,
-                        const ContainerIn2& ys,
-                        const ContainerIn3& zs)
+    const ContainerIn1& xs,
+    const ContainerIn2& ys,
+    const ContainerIn3& zs)
 {
     internal::trigger_static_asserts<internal::zip_with_3_tag, F, X, Y, Z>();
     static_assert(std::is_same<
-        typename internal::same_cont_new_t<ContainerIn1, void>::type,
-        typename internal::same_cont_new_t<ContainerIn2, void>::type>::value,
+                      typename internal::same_cont_new_t<ContainerIn1, void>::type,
+                      typename internal::same_cont_new_t<ContainerIn2, void>::type>::value,
         "All three Containers must be of same outer type.");
     static_assert(std::is_same<
-        typename internal::same_cont_new_t<ContainerIn2, void>::type,
-        typename internal::same_cont_new_t<ContainerIn3, void>::type>::value,
+                      typename internal::same_cont_new_t<ContainerIn2, void>::type,
+                      typename internal::same_cont_new_t<ContainerIn3, void>::type>::value,
         "All three Containers must be of same outer type.");
     ContainerOut result;
     std::size_t resultSize = std::min(size_of_cont(xs), size_of_cont(ys));
@@ -6915,8 +6804,7 @@ ContainerOut zip_with_3(F f,
     auto itXs = std::begin(xs);
     auto itYs = std::begin(ys);
     auto itZs = std::begin(zs);
-    for (std::size_t i = 0; i < resultSize; ++i)
-    {
+    for (std::size_t i = 0; i < resultSize; ++i) {
         *itResult = internal::invoke(f, *itXs, *itYs, *itZs);
         ++itXs;
         ++itYs;
@@ -6946,15 +6834,12 @@ auto zip_with_defaults(F f,
     internal::trigger_static_asserts<internal::zip_with_tag, F, X, Y>();
     const auto size_xs = size_of_cont(xs);
     const auto size_ys = size_of_cont(ys);
-    if (size_xs < size_ys)
-    {
+    if (size_xs < size_ys) {
         const auto extended_xs = append(
             xs,
             replicate<X, ContainerIn1>(size_ys - size_xs, default_x));
         return zip_with(f, extended_xs, ys);
-    }
-    else if (size_xs > size_ys)
-    {
+    } else if (size_xs > size_ys) {
         const auto extended_ys = append(
             ys,
             replicate<Y, ContainerIn2>(size_xs - size_ys, default_y));
@@ -6972,8 +6857,7 @@ template <typename ContainerIn1, typename ContainerIn2,
     typename Y = typename ContainerIn2::value_type>
 auto zip(const ContainerIn1& xs, const ContainerIn2& ys)
 {
-    auto MakePair = [](const X& x, const Y& y)
-        { return std::make_pair(x, y); };
+    auto MakePair = [](const X& x, const Y& y) { return std::make_pair(x, y); };
     return zip_with(MakePair, xs, ys);
 }
 
@@ -6987,10 +6871,10 @@ auto zip_repeat(const ContainerIn1& xs, const ContainerIn2& ys)
 {
     auto nx = xs.size();
     auto ny = ys.size();
-    auto qx = ny/nx + (ny % nx ?  1 : 0);
-    auto qy = nx/ny + (nx % ny ?  1 : 0);
+    auto qx = ny / nx + (ny % nx ? 1 : 0);
+    auto qy = nx / ny + (nx % ny ? 1 : 0);
     return zip(qx > 1 ? repeat(qx, xs) : xs,
-               qy > 1 ? repeat(qy, ys) : ys);
+        qy > 1 ? repeat(qy, ys) : ys);
 }
 
 // API search type: unzip : [(a, b)] -> ([a], [b])
@@ -7011,8 +6895,7 @@ std::pair<ContainerOutX, ContainerOutY> unzip(const ContainerIn& pairs)
     internal::prepare_container(seconds, size_of_cont(pairs));
     auto itFirsts = internal::get_back_inserter(firsts);
     auto itSeconds = internal::get_back_inserter(seconds);
-    for (const auto& pair : pairs)
-    {
+    for (const auto& pair : pairs) {
         *itFirsts = pair.first;
         *itSeconds = pair.second;
     }
@@ -7075,13 +6958,13 @@ template <
     typename ResultFirst = std::decay_t<internal::invoke_result_t<F, X>>,
     typename ResultSecond = std::decay_t<internal::invoke_result_t<G, Y>>>
 std::pair<ResultFirst, ResultSecond> transform_pair(F f,
-                                                    G g,
-                                                    const std::pair<X, Y>& pair)
+    G g,
+    const std::pair<X, Y>& pair)
 {
     internal::trigger_static_asserts<internal::transform_fst_tag, F, X>();
     internal::trigger_static_asserts<internal::transform_snd_tag, G, Y>();
     return std::make_pair(internal::invoke(f, pair.first),
-                          internal::invoke(g, pair.second));
+        internal::invoke(g, pair.second));
 }
 
 // API search type: swap_pair_elems : (a, b) -> (b, a)
@@ -7116,13 +6999,13 @@ template <typename Container,
         typename internal::same_cont_new_t<Container,
             std::pair<
                 typename Container::value_type,
-                    typename Container::value_type>>::type>
+                typename Container::value_type>>::type>
 ContainerOut adjacent_pairs(const Container& xs)
 {
     typedef typename Container::value_type T;
     static_assert(std::is_convertible<
-            std::pair<T, T>,
-            typename ContainerOut::value_type>::value,
+                      std::pair<T, T>,
+                      typename ContainerOut::value_type>::value,
         "ContainerOut can not store pairs of elements from ContainerIn.");
     ContainerOut result;
     if (size_of_cont(xs) < 2)
@@ -7133,10 +7016,8 @@ ContainerOut adjacent_pairs(const Container& xs)
     auto it1 = std::begin(xs);
     auto it2 = it1;
     internal::advance_iterator(it2, 1);
-    const auto it_source_end =
-        internal::add_to_iterator(std::begin(xs), out_size + out_size);
-    for (;;)
-    {
+    const auto it_source_end = internal::add_to_iterator(std::begin(xs), out_size + out_size);
+    for (;;) {
         *itOut = std::make_pair(*it1, *it2);
         internal::advance_iterator(it1, 2);
         if (it1 == it_source_end)
@@ -7155,13 +7036,14 @@ template <typename Container,
         typename internal::same_cont_new_t<Container,
             std::pair<
                 typename Container::value_type,
-                    typename Container::value_type>, -1>::type>
+                typename Container::value_type>,
+            -1>::type>
 ContainerOut overlapping_pairs(const Container& xs)
 {
     typedef typename Container::value_type T;
     static_assert(std::is_convertible<
-            std::pair<T, T>,
-            typename ContainerOut::value_type>::value,
+                      std::pair<T, T>,
+                      typename ContainerOut::value_type>::value,
         "ContainerOut can not store pairs of elements from ContainerIn.");
     ContainerOut result;
     if (size_of_cont(xs) < 2)
@@ -7171,8 +7053,7 @@ ContainerOut overlapping_pairs(const Container& xs)
     auto it1 = std::begin(xs);
     auto it2 = it1;
     internal::advance_iterator(it2, 1);
-    for (; it2 != std::end(xs); ++it1, ++it2)
-    {
+    for (; it2 != std::end(xs); ++it1, ++it2) {
         *itOut = std::make_pair(*it1, *it2);
     }
     return result;
@@ -7188,13 +7069,14 @@ template <typename Container,
         typename internal::same_cont_new_t<Container,
             std::pair<
                 typename Container::value_type,
-                    typename Container::value_type>, 0>::type>
+                typename Container::value_type>,
+            0>::type>
 ContainerOut overlapping_pairs_cyclic(const Container& xs)
 {
     typedef typename Container::value_type T;
     static_assert(std::is_convertible<
-            std::pair<T, T>,
-            typename ContainerOut::value_type>::value,
+                      std::pair<T, T>,
+                      typename ContainerOut::value_type>::value,
         "ContainerOut can not store pairs of elements from ContainerIn.");
     ContainerOut result;
     if (size_of_cont(xs) < 2)
@@ -7204,8 +7086,7 @@ ContainerOut overlapping_pairs_cyclic(const Container& xs)
     auto it1 = std::begin(xs);
     auto it2 = it1;
     internal::advance_iterator(it2, 1);
-    for (; it2 != std::end(xs); ++it1, ++it2)
-    {
+    for (; it2 != std::end(xs); ++it1, ++it2) {
         *itOut = std::make_pair(*it1, *it2);
     }
     *itOut = std::make_pair(*it1, xs.front());
@@ -7236,10 +7117,10 @@ template <
     typename Y = typename ContainerIn2::value_type,
     typename OP2Out = internal::invoke_result_t<OP2, X, Y>>
 auto inner_product_with(OP1 op1,
-                        OP2 op2,
-                        const Acc& value,
-                        const ContainerIn1& xs,
-                        const ContainerIn2& ys)
+    OP2 op2,
+    const Acc& value,
+    const ContainerIn1& xs,
+    const ContainerIn2& ys)
 {
     internal::trigger_static_asserts<internal::inner_product_with_tag, OP2, X, Y>();
     internal::trigger_static_asserts<internal::inner_product_with_tag, OP1, Acc, OP2Out>();
@@ -7255,7 +7136,7 @@ auto inner_product_with(OP1 op1,
 template <typename ContainerIn1, typename ContainerIn2,
     typename Z>
 Z inner_product(const Z& value,
-        const ContainerIn1& xs, const ContainerIn2& ys)
+    const ContainerIn1& xs, const ContainerIn2& ys)
 {
     assert(size_of_cont(xs) == size_of_cont(ys));
 
@@ -7279,10 +7160,8 @@ maybe<std::size_t> first_mismatch_idx_by(BinaryPredicate p,
     auto itXs = std::begin(xs);
     auto itYs = std::begin(ys);
     std::size_t minSize = std::min(size_of_cont(xs), size_of_cont(ys));
-    for (std::size_t i = 0; i < minSize; ++i)
-    {
-        if (!internal::invoke(p, *itXs, *itYs))
-        {
+    for (std::size_t i = 0; i < minSize; ++i) {
+        if (!internal::invoke(p, *itXs, *itYs)) {
             return just(i);
         }
         ++itXs;
@@ -7308,12 +7187,9 @@ maybe<TOut> first_mismatch_by(BinaryPredicate p,
     const ContainerIn1& xs, const ContainerIn2& ys)
 {
     const auto maybe_idx = first_mismatch_idx_by(p, xs, ys);
-    if (is_nothing(maybe_idx))
-    {
+    if (is_nothing(maybe_idx)) {
         return nothing<TOut>();
-    }
-    else
-    {
+    } else {
         const auto idx = maybe_idx.unsafe_get_just();
         return just(std::make_pair(
             elem_at_idx(idx, xs),
@@ -7415,10 +7291,8 @@ maybe<std::size_t> first_match_idx_by(F f,
     auto itXs = std::begin(xs);
     auto itYs = std::begin(ys);
     std::size_t minSize = std::min(size_of_cont(xs), size_of_cont(ys));
-    for (std::size_t i = 0; i < minSize; ++i)
-    {
-        if (internal::invoke(f, *itXs, *itYs))
-        {
+    for (std::size_t i = 0; i < minSize; ++i) {
+        if (internal::invoke(f, *itXs, *itYs)) {
             return just(i);
         }
         ++itXs;
@@ -7441,12 +7315,9 @@ template <typename ContainerIn1, typename ContainerIn2,
 maybe<TOut> first_match_by(F f, const ContainerIn1& xs, const ContainerIn2& ys)
 {
     const auto maybe_idx = first_match_idx_by(f, xs, ys);
-    if (is_nothing(maybe_idx))
-    {
+    if (is_nothing(maybe_idx)) {
         return nothing<TOut>();
-    }
-    else
-    {
+    } else {
         const auto idx = maybe_idx.unsafe_get_just();
         return just(std::make_pair(
             elem_at_idx(idx, xs),
@@ -7532,8 +7403,7 @@ maybe<TOut> first_match(const ContainerIn1& xs, const ContainerIn2& ys)
 #include <stdexcept>
 #include <type_traits>
 
-namespace fplus
-{
+namespace fplus {
 
 // API search type: is_in_interval : (a, a, a) -> Bool
 // fwd bind count: 2
@@ -7635,8 +7505,7 @@ bool is_positive(X x)
     return !is_negative(x);
 }
 
-namespace internal
-{
+namespace internal {
     template <typename X>
     typename std::enable_if<std::is_unsigned<X>::value, X>::type
     abs_helper(X x)
@@ -7721,66 +7590,45 @@ template <typename Out, typename X>
 Out integral_cast_throw(X x)
 {
 #ifdef _MSC_VER
-__pragma(warning(push))
-__pragma(warning(disable:4127))
+    __pragma(warning(push))
+        __pragma(warning(disable : 4127))
 #endif
-    static_assert(std::is_integral<X>::value, "type must be integral");
+            static_assert(std::is_integral<X>::value, "type must be integral");
     static_assert(std::is_integral<Out>::value, "type must be integral");
-    if (std::is_signed<X>::value && std::is_signed<Out>::value)
-    {
-        if (static_cast<std::int64_t>(x) <
-            static_cast<std::int64_t>(std::numeric_limits<Out>::lowest()))
-        {
+    if (std::is_signed<X>::value && std::is_signed<Out>::value) {
+        if (static_cast<std::int64_t>(x) < static_cast<std::int64_t>(std::numeric_limits<Out>::lowest())) {
             throw std::underflow_error("");
         }
-        if (static_cast<std::int64_t>(x) >
-            static_cast<std::int64_t>(std::numeric_limits<Out>::max()))
-        {
+        if (static_cast<std::int64_t>(x) > static_cast<std::int64_t>(std::numeric_limits<Out>::max())) {
             throw std::overflow_error("");
         }
         return static_cast<Out>(x);
-    }
-    else if (!std::is_signed<X>::value && !std::is_signed<Out>::value)
-    {
-        if (static_cast<std::uint64_t>(x) <
-            static_cast<std::uint64_t>(std::numeric_limits<Out>::lowest()))
-        {
+    } else if (!std::is_signed<X>::value && !std::is_signed<Out>::value) {
+        if (static_cast<std::uint64_t>(x) < static_cast<std::uint64_t>(std::numeric_limits<Out>::lowest())) {
             throw std::underflow_error("");
         }
-        if (static_cast<std::uint64_t>(x) >
-            static_cast<std::uint64_t>(std::numeric_limits<Out>::max()))
-        {
+        if (static_cast<std::uint64_t>(x) > static_cast<std::uint64_t>(std::numeric_limits<Out>::max())) {
             throw std::overflow_error("");
         }
         return static_cast<Out>(x);
-    }
-    else if (std::is_signed<X>::value && !std::is_signed<Out>::value)
-    {
+    } else if (std::is_signed<X>::value && !std::is_signed<Out>::value) {
         if (x < 0)
             return 0;
-        if (static_cast<std::uint64_t>(x) >
-            static_cast<std::uint64_t>(std::numeric_limits<Out>::max()))
-        {
+        if (static_cast<std::uint64_t>(x) > static_cast<std::uint64_t>(std::numeric_limits<Out>::max())) {
             throw std::overflow_error("");
         }
         return static_cast<Out>(x);
-    }
-    else if (!std::is_signed<X>::value && std::is_signed<Out>::value)
-    {
-        if (static_cast<std::uint64_t>(x) >
-            static_cast<std::uint64_t>(std::numeric_limits<Out>::max()))
-        {
+    } else if (!std::is_signed<X>::value && std::is_signed<Out>::value) {
+        if (static_cast<std::uint64_t>(x) > static_cast<std::uint64_t>(std::numeric_limits<Out>::max())) {
             throw std::overflow_error("");
         }
         return static_cast<Out>(x);
-    }
-    else
-    {
+    } else {
         assert(false);
         return static_cast<Out>(x);
     }
 #ifdef _MSC_VER
-__pragma(warning(pop))
+    __pragma(warning(pop))
 #endif
 }
 
@@ -7795,56 +7643,35 @@ Out integral_cast_clamp(X x)
 {
     static_assert(std::is_integral<X>::value, "type must be integral");
     static_assert(std::is_integral<Out>::value, "type must be integral");
-    if (std::is_signed<X>::value && std::is_signed<Out>::value)
-    {
-        if (static_cast<std::int64_t>(x) <
-            static_cast<std::int64_t>(std::numeric_limits<Out>::lowest()))
-        {
+    if (std::is_signed<X>::value && std::is_signed<Out>::value) {
+        if (static_cast<std::int64_t>(x) < static_cast<std::int64_t>(std::numeric_limits<Out>::lowest())) {
             return std::numeric_limits<Out>::lowest();
         }
-        if (static_cast<std::int64_t>(x) >
-            static_cast<std::int64_t>(std::numeric_limits<Out>::max()))
-        {
+        if (static_cast<std::int64_t>(x) > static_cast<std::int64_t>(std::numeric_limits<Out>::max())) {
             return std::numeric_limits<Out>::max();
         }
         return static_cast<Out>(x);
-    }
-    else if (!std::is_signed<X>::value && !std::is_signed<Out>::value)
-    {
-        if (static_cast<std::uint64_t>(x) <
-            static_cast<std::uint64_t>(std::numeric_limits<Out>::lowest()))
-        {
+    } else if (!std::is_signed<X>::value && !std::is_signed<Out>::value) {
+        if (static_cast<std::uint64_t>(x) < static_cast<std::uint64_t>(std::numeric_limits<Out>::lowest())) {
             return std::numeric_limits<Out>::lowest();
         }
-        if (static_cast<std::uint64_t>(x) >
-            static_cast<std::uint64_t>(std::numeric_limits<Out>::max()))
-        {
+        if (static_cast<std::uint64_t>(x) > static_cast<std::uint64_t>(std::numeric_limits<Out>::max())) {
             return std::numeric_limits<Out>::max();
         }
         return static_cast<Out>(x);
-    }
-    else if (std::is_signed<X>::value && !std::is_signed<Out>::value)
-    {
+    } else if (std::is_signed<X>::value && !std::is_signed<Out>::value) {
         if (x < 0)
             return 0;
-        if (static_cast<std::uint64_t>(x) >
-            static_cast<std::uint64_t>(std::numeric_limits<Out>::max()))
-        {
+        if (static_cast<std::uint64_t>(x) > static_cast<std::uint64_t>(std::numeric_limits<Out>::max())) {
             return std::numeric_limits<Out>::max();
         }
         return static_cast<Out>(x);
-    }
-    else if (!std::is_signed<X>::value && std::is_signed<Out>::value)
-    {
-        if (static_cast<std::uint64_t>(x) >
-            static_cast<std::uint64_t>(std::numeric_limits<Out>::max()))
-        {
+    } else if (!std::is_signed<X>::value && std::is_signed<Out>::value) {
+        if (static_cast<std::uint64_t>(x) > static_cast<std::uint64_t>(std::numeric_limits<Out>::max())) {
             return std::numeric_limits<Out>::max();
         }
         return static_cast<Out>(x);
-    }
-    else
-    {
+    } else {
         assert(false);
         return static_cast<Out>(x);
     }
@@ -7933,8 +7760,7 @@ X int_power(X base, X exp)
     return base * int_power(base, exp - 1);
 }
 
-namespace internal
-{
+namespace internal {
     // minimum of x values after transformation
     // (has an overload for non-POD types)
     // min_on(mod2, 4, 3) == 4
@@ -7943,31 +7769,35 @@ namespace internal
     auto helper_min_on(F f, const FirstT& first, const FIn&... v) ->
         typename std::common_type<FirstT, FIn...>::type
     {
-      using rettype = typename std::common_type<FirstT, FIn...>::type;
-      using f_rettype = std::decay_t<internal::invoke_result_t<F, decltype(first)>>;
+        using rettype = typename std::common_type<FirstT, FIn...>::type;
+        using f_rettype = std::decay_t<internal::invoke_result_t<F, decltype(first)>>;
 
-      rettype result = first;
-      f_rettype result_trans = internal::invoke(f, first);
-      f_rettype v_trans;
-      unused(result_trans);
-      unused(v_trans);
+        rettype result = first;
+        f_rettype result_trans = internal::invoke(f, first);
+        f_rettype v_trans;
+        unused(result_trans);
+        unused(v_trans);
 
-      (void)std::initializer_list<int>{
-          ((v_trans = internal::invoke(f, v), v_trans < result_trans)
-               ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
-               : 0)...};
-      return result;
+        (void)std::initializer_list<int> {
+            ((v_trans = internal::invoke(f, v), v_trans < result_trans)
+                    ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
+                    : 0)...
+        };
+        return result;
     }
 
     template <typename F>
-    struct helper_min_on_t
-    {
-        helper_min_on_t(F _f) : f(_f) {}
+    struct helper_min_on_t {
+        helper_min_on_t(F _f)
+            : f(_f)
+        {
+        }
         template <typename T, typename... Ts>
         auto operator()(T&& x, Ts&&... xs) -> typename std::common_type<T, Ts...>::type
         {
             return helper_min_on(std::forward<F>(f), std::forward<T>(x), std::forward<Ts>(xs)...);
         }
+
     private:
         F f;
     };
@@ -7980,7 +7810,7 @@ namespace internal
 template <typename F>
 auto min_on(F f) -> internal::helper_min_on_t<F>
 {
-    return internal::helper_min_on_t<F>{f};
+    return internal::helper_min_on_t<F> { f };
 }
 
 // API search type: min_2_on : ((a -> b), a, a) -> a
@@ -7993,8 +7823,7 @@ T min_2_on(F f, const T& x, const T& y)
     return internal::invoke(f, y) < internal::invoke(f, x) ? y : x;
 }
 
-namespace internal
-{
+namespace internal {
     // maximum of x values after transformation
     // (has an overload for non-POD types)
     // max_on(mod2, 4, 3) == 3
@@ -8003,31 +7832,35 @@ namespace internal
     auto helper_max_on(F f, const FirstT& first, const FIn&... v) ->
         typename std::common_type<FirstT, FIn...>::type
     {
-      using rettype = typename std::common_type<FirstT, FIn...>::type;
-      using f_rettype = decltype(f(first));
+        using rettype = typename std::common_type<FirstT, FIn...>::type;
+        using f_rettype = decltype(f(first));
 
-      rettype result = first;
-      f_rettype result_trans = internal::invoke(f, first);
-      f_rettype v_trans;
-      unused(result_trans);
-      unused(v_trans);
+        rettype result = first;
+        f_rettype result_trans = internal::invoke(f, first);
+        f_rettype v_trans;
+        unused(result_trans);
+        unused(v_trans);
 
-      (void)std::initializer_list<int>{
-          ((v_trans = internal::invoke(f, v), v_trans > result_trans)
-               ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
-               : 0)...};
-      return result;
+        (void)std::initializer_list<int> {
+            ((v_trans = internal::invoke(f, v), v_trans > result_trans)
+                    ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
+                    : 0)...
+        };
+        return result;
     }
 
     template <typename F>
-    struct helper_max_on_t
-    {
-        helper_max_on_t(F _f) : f(_f) {}
+    struct helper_max_on_t {
+        helper_max_on_t(F _f)
+            : f(_f)
+        {
+        }
         template <typename T, typename... Ts>
         auto operator()(T&& x, Ts&&... xs) -> typename std::common_type<T, Ts...>::type
         {
             return helper_max_on(std::forward<F>(f), std::forward<T>(x), std::forward<Ts>(xs)...);
         }
+
     private:
         F f;
     };
@@ -8041,7 +7874,7 @@ namespace internal
 template <typename F>
 auto max_on(F f) -> internal::helper_max_on_t<F>
 {
-    return internal::helper_max_on_t<F>{f};
+    return internal::helper_max_on_t<F> { f };
 }
 
 // API search type: max_2_on : ((a -> b), a, a) -> a
@@ -8061,10 +7894,10 @@ T max_2_on(F f, const T& x, const T& y)
 template <typename U, typename... V>
 auto min(const U& u, const V&... v) -> typename std::common_type<U, V...>::type
 {
-  using rettype = typename std::common_type<U, V...>::type;
-  rettype result = static_cast<rettype>(u);
-  (void)std::initializer_list<int>{((v < result) ? (result = static_cast<rettype>(v), 0) : 0)...};
-  return result;
+    using rettype = typename std::common_type<U, V...>::type;
+    rettype result = static_cast<rettype>(u);
+    (void)std::initializer_list<int> { ((v < result) ? (result = static_cast<rettype>(v), 0) : 0)... };
+    return result;
 }
 
 // API search type: min_2 : (a, a) -> a
@@ -8084,10 +7917,10 @@ T min_2(const T& x, const T& y)
 template <typename U, typename... V>
 auto max(const U& u, const V&... v) -> typename std::common_type<U, V...>::type
 {
-  using rettype = typename std::common_type<U, V...>::type;
-  rettype result = static_cast<rettype>(u);
-  (void)std::initializer_list<int>{((v > result) ? (result = static_cast<rettype>(v), 0) : 0)...};
-  return result;
+    using rettype = typename std::common_type<U, V...>::type;
+    rettype result = static_cast<rettype>(u);
+    (void)std::initializer_list<int> { ((v > result) ? (result = static_cast<rettype>(v), 0) : 0)... };
+    return result;
 }
 
 // API search type: max_2 : (a, a) -> a
@@ -8100,8 +7933,7 @@ T max_2(const T& x, const T& y)
     return y > x ? y : x;
 }
 
-namespace internal
-{
+namespace internal {
     template <typename X>
     typename std::enable_if<std::is_floating_point<X>::value, X>::type
     cyclic_value_helper_mod(X x, X y)
@@ -8132,11 +7964,9 @@ template <typename X>
 std::function<X(X)> cyclic_value(X circumfence)
 {
     assert(circumfence > 0);
-    return [circumfence](X x) -> X
-    {
+    return [circumfence](X x) -> X {
         if (sign(x) < 0)
-            return circumfence - internal::cyclic_value_helper_mod(
-                abs(x), abs(circumfence));
+            return circumfence - internal::cyclic_value_helper_mod(abs(x), abs(circumfence));
         else
             return internal::cyclic_value_helper_mod(
                 abs(x), abs(circumfence));
@@ -8157,14 +7987,11 @@ template <typename X>
 std::function<X(X, X)> cyclic_difference(X circumfence)
 {
     assert(circumfence > 0);
-    return [circumfence](X a, X b) -> X
-    {
+    return [circumfence](X a, X b) -> X {
         auto cyclic_value_f = cyclic_value(circumfence);
         const auto c_v_a = cyclic_value_f(a);
         const auto c_v_b = cyclic_value_f(b);
-        return c_v_a > c_v_b ?
-            c_v_a - c_v_b :
-            circumfence + c_v_a - c_v_b;
+        return c_v_a > c_v_b ? c_v_a - c_v_b : circumfence + c_v_a - c_v_b;
     };
 }
 
@@ -8182,8 +8009,7 @@ template <typename X>
 std::function<X(X, X)> cyclic_shortest_difference(X circumfence)
 {
     assert(circumfence > 0);
-    return [circumfence](X a, X b) -> X
-    {
+    return [circumfence](X a, X b) -> X {
         auto diff_func = cyclic_difference(circumfence);
         auto a_minus_b = diff_func(a, b);
         auto b_minus_a = diff_func(b, a);
@@ -8206,8 +8032,7 @@ template <typename X>
 std::function<X(X, X)> cyclic_distance(X circumfence)
 {
     assert(circumfence > 0);
-    return [circumfence](X a, X b) -> X
-    {
+    return [circumfence](X a, X b) -> X {
         auto diff_func = cyclic_difference(circumfence);
         auto a_minus_b = diff_func(a, b);
         auto b_minus_a = diff_func(b, a);
@@ -8242,34 +8067,32 @@ T rad_to_deg(T x)
     return static_cast<T>(x * 180.0 / pi());
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename Container, typename T>
-Container normalize_min_max(internal::reuse_container_t,
-    const T& lower, const T& upper, Container&& xs)
-{
-    assert(size_of_cont(xs) != 0);
-    assert(lower <= upper);
-    const auto minmax_it_p = std::minmax_element(std::begin(xs), std::end(xs));
-    const T x_min = *minmax_it_p.first;
-    const T x_max = *minmax_it_p.second;
-    const auto f = [&](const T& x) -> T
+    template <typename Container, typename T>
+    Container normalize_min_max(internal::reuse_container_t,
+        const T& lower, const T& upper, Container&& xs)
     {
-        return lower + (upper - lower) * (x - x_min) / (x_max - x_min);
-    };
-    std::transform(std::begin(xs), std::end(xs), std::begin(xs), f);
-    return std::forward<Container>(xs);
-}
+        assert(size_of_cont(xs) != 0);
+        assert(lower <= upper);
+        const auto minmax_it_p = std::minmax_element(std::begin(xs), std::end(xs));
+        const T x_min = *minmax_it_p.first;
+        const T x_max = *minmax_it_p.second;
+        const auto f = [&](const T& x) -> T {
+            return lower + (upper - lower) * (x - x_min) / (x_max - x_min);
+        };
+        std::transform(std::begin(xs), std::end(xs), std::begin(xs), f);
+        return std::forward<Container>(xs);
+    }
 
-template <typename Container, typename T>
-Container normalize_min_max(internal::create_new_container_t,
-    const T& lower, const T& upper, const Container& xs)
-{
-    auto ys = xs;
-    return normalize_min_max(internal::reuse_container_t(),
-        lower, upper, std::move(ys));
-}
+    template <typename Container, typename T>
+    Container normalize_min_max(internal::create_new_container_t,
+        const T& lower, const T& upper, const Container& xs)
+    {
+        auto ys = xs;
+        return normalize_min_max(internal::reuse_container_t(),
+            lower, upper, std::move(ys));
+    }
 
 } // namespace internal
 
@@ -8282,36 +8105,33 @@ template <typename Container,
     typename T = typename internal::remove_const_and_ref_t<Container>::value_type>
 auto normalize_min_max(const T& lower, const T& upper, Container&& xs)
 {
-    return internal::normalize_min_max(internal::can_reuse_v<Container>{},
+    return internal::normalize_min_max(internal::can_reuse_v<Container> {},
         lower, upper, std::forward<Container>(xs));
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename Container, typename T>
-Container normalize_mean_stddev(internal::reuse_container_t,
-    const T& mean, const T& stddev, Container&& xs)
-{
-    assert(size_of_cont(xs) != 0);
-    const auto mean_and_stddev = fplus::mean_stddev<T>(xs);
-    const auto f = [&](const T& x) -> T
+    template <typename Container, typename T>
+    Container normalize_mean_stddev(internal::reuse_container_t,
+        const T& mean, const T& stddev, Container&& xs)
     {
-        return mean +
-            stddev * (x - mean_and_stddev.first) / mean_and_stddev.second;
-    };
-    std::transform(std::begin(xs), std::end(xs), std::begin(xs), f);
-    return std::forward<Container>(xs);
-}
+        assert(size_of_cont(xs) != 0);
+        const auto mean_and_stddev = fplus::mean_stddev<T>(xs);
+        const auto f = [&](const T& x) -> T {
+            return mean + stddev * (x - mean_and_stddev.first) / mean_and_stddev.second;
+        };
+        std::transform(std::begin(xs), std::end(xs), std::begin(xs), f);
+        return std::forward<Container>(xs);
+    }
 
-template <typename Container, typename T>
-Container normalize_mean_stddev(internal::create_new_container_t,
-    const T& mean, const T& stddev, const Container& xs)
-{
-    auto ys = xs;
-    return normalize_mean_stddev(internal::reuse_container_t(),
-        mean, stddev, std::move(ys));
-}
+    template <typename Container, typename T>
+    Container normalize_mean_stddev(internal::create_new_container_t,
+        const T& mean, const T& stddev, const Container& xs)
+    {
+        auto ys = xs;
+        return normalize_mean_stddev(internal::reuse_container_t(),
+            mean, stddev, std::move(ys));
+    }
 
 } // namespace internal
 
@@ -8325,7 +8145,7 @@ template <typename Container,
 auto normalize_mean_stddev(
     const T& mean, const T& stddev, Container&& xs)
 {
-    return internal::normalize_mean_stddev(internal::can_reuse_v<Container>{},
+    return internal::normalize_mean_stddev(internal::can_reuse_v<Container> {},
         mean, stddev, std::forward<Container>(xs));
 }
 
@@ -8348,8 +8168,7 @@ auto standardize(Container&& xs)
 template <typename X>
 std::function<X(X)> add_to(const X& x)
 {
-    return [x](X y) -> X
-    {
+    return [x](X y) -> X {
         return x + y;
     };
 }
@@ -8360,8 +8179,7 @@ std::function<X(X)> add_to(const X& x)
 template <typename X>
 std::function<X(X)> subtract_from(const X& x)
 {
-    return [x](X y) -> X
-    {
+    return [x](X y) -> X {
         return x - y;
     };
 }
@@ -8372,8 +8190,7 @@ std::function<X(X)> subtract_from(const X& x)
 template <typename X>
 std::function<X(X)> subtract(const X& x)
 {
-    return [x](X y) -> X
-    {
+    return [x](X y) -> X {
         return y - x;
     };
 }
@@ -8384,8 +8201,7 @@ std::function<X(X)> subtract(const X& x)
 template <typename X>
 std::function<X(X)> multiply_with(const X& x)
 {
-    return [x](X y) -> X
-    {
+    return [x](X y) -> X {
         return y * x;
     };
 }
@@ -8396,8 +8212,7 @@ std::function<X(X)> multiply_with(const X& x)
 template <typename X>
 std::function<X(X)> divide_by(const X& x)
 {
-    return [x](X y) -> X
-    {
+    return [x](X y) -> X {
         return y / x;
     };
 }
@@ -8408,29 +8223,24 @@ std::function<X(X)> divide_by(const X& x)
 // histogram_using_intervals([(0,4), (4,5), (6,8)], [0,1,4,5,6,7,8,9]) ==
 //     [((0, 4), 2), ((4, 5), 1), ((6, 8), 2)]
 template <typename ContainerIn,
-        typename ContainerIntervals,
-        typename ContainerOut =
-            std::vector<
-                std::pair<
-                    typename ContainerIntervals::value_type,
-                    std::size_t>>,
-        typename T = typename ContainerIn::value_type>
+    typename ContainerIntervals,
+    typename ContainerOut = std::vector<
+        std::pair<
+            typename ContainerIntervals::value_type,
+            std::size_t>>,
+    typename T = typename ContainerIn::value_type>
 ContainerOut histogram_using_intervals(
-        const ContainerIntervals& intervals, const ContainerIn& xs)
+    const ContainerIntervals& intervals, const ContainerIn& xs)
 {
     ContainerOut bins;
     internal::prepare_container(bins, size_of_cont(intervals));
     auto itOut = internal::get_back_inserter(bins);
-    for (const auto& interval : intervals)
-    {
+    for (const auto& interval : intervals) {
         *itOut = std::make_pair(interval, 0);
     }
-    for (const auto& x : xs)
-    {
-        for (auto& bin : bins)
-        {
-            if (x >= bin.first.first && x < bin.first.second)
-            {
+    for (const auto& x : xs) {
+        for (auto& bin : bins) {
+            if (x >= bin.first.first && x < bin.first.second) {
                 ++bin.second;
             }
         }
@@ -8444,7 +8254,7 @@ ContainerOut histogram_using_intervals(
 // generate_consecutive_intervals(0, 2, 4) == [(0,2), (2,4), (4,6), (6,8)]
 template <typename T>
 std::vector<std::pair<T, T>> generate_consecutive_intervals(
-        const T& first_lower_bound, const T& step, std::size_t count)
+    const T& first_lower_bound, const T& step, std::size_t count)
 {
     const auto count_as_T = static_cast<T>(count);
     return zip(
@@ -8463,15 +8273,14 @@ std::vector<std::pair<T, T>> generate_consecutive_intervals(
 // Calculate the histogram of a sequence using a given bin width.
 // histogram(1, 2, 4, [0,1,4,5,7,8,9]) == [(1, 2), (3, 0), (5, 2), (7, 1)]
 template <typename ContainerIn,
-        typename ContainerOut =
-            std::vector<
-                std::pair<
-                    typename ContainerIn::value_type,
-                    std::size_t>>,
-        typename T = typename ContainerIn::value_type>
+    typename ContainerOut = std::vector<
+        std::pair<
+            typename ContainerIn::value_type,
+            std::size_t>>,
+    typename T = typename ContainerIn::value_type>
 ContainerOut histogram(
-        const T& first_center, const T& bin_width, std::size_t count,
-        const ContainerIn& xs)
+    const T& first_center, const T& bin_width, std::size_t count,
+    const ContainerIn& xs)
 {
     const auto interval_histogram = histogram_using_intervals(
         generate_consecutive_intervals(
@@ -8485,8 +8294,7 @@ ContainerOut histogram(
     ContainerOut histo;
     internal::prepare_container(histo, count);
     auto itOut = internal::get_back_inserter(histo);
-    for (const auto& bin : interval_histogram)
-    {
+    for (const auto& bin : interval_histogram) {
         const auto current_center = (bin.first.first + bin.first.second) / 2;
         *itOut = std::make_pair(current_center, bin.second);
     }
@@ -8506,8 +8314,7 @@ std::vector<T> modulo_chain(const std::vector<T>& factors, T val)
     std::vector<T> result;
     result.reserve(factors.size());
     const auto factors_reversed = reverse(factors);
-    for (const auto& factor : factors_reversed)
-    {
+    for (const auto& factor : factors_reversed) {
         result.push_back(val % factor);
         val /= factor;
     }
@@ -8546,8 +8353,7 @@ T line_equation(const std::pair<T, T>& a, const std::pair<T, T>& b, T x)
 
 #include <algorithm>
 
-namespace fplus
-{
+namespace fplus {
 
 // API search type: find_first_by : ((a -> Bool), [a]) -> Maybe a
 // fwd bind count: 1
@@ -8584,8 +8390,7 @@ maybe<T> find_last_by(UnaryPredicate pred, const Container& xs)
 // find_first_idx_by(is_even, [1, 3, 4, 6, 9]) == Just(2)
 // find_first_idx_by(is_even, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container, typename UnaryPredicate>
-maybe<std::size_t> find_first_idx_by
-        (UnaryPredicate pred, const Container& xs)
+maybe<std::size_t> find_first_idx_by(UnaryPredicate pred, const Container& xs)
 {
     internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
     auto it = std::find_if(std::begin(xs), std::end(xs), pred);
@@ -8600,12 +8405,10 @@ maybe<std::size_t> find_first_idx_by
 // find_last_idx_by(is_even, [1, 3, 4, 6, 9]) == Just(3)
 // find_last_idx_by(is_even, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container, typename UnaryPredicate>
-maybe<std::size_t> find_last_idx_by
-        (UnaryPredicate pred, const Container& xs)
+maybe<std::size_t> find_last_idx_by(UnaryPredicate pred, const Container& xs)
 {
     internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
-    auto calcRevIdx = [&](std::size_t idx)
-    {
+    auto calcRevIdx = [&](std::size_t idx) {
         return size_of_cont(xs) - (idx + 1);
     };
     return lift_maybe(calcRevIdx, find_first_idx_by(pred, reverse(xs)));
@@ -8617,8 +8420,7 @@ maybe<std::size_t> find_last_idx_by
 // find_first_idx(4, [1, 3, 4, 4, 9]) == Just(2)
 // find_first_idx(4, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container>
-maybe<std::size_t> find_first_idx
-        (const typename Container::value_type& x, const Container& xs)
+maybe<std::size_t> find_first_idx(const typename Container::value_type& x, const Container& xs)
 {
     return find_first_idx_by(is_equal_to(x), xs);
 }
@@ -8629,8 +8431,7 @@ maybe<std::size_t> find_first_idx
 // find_last_idx(4, [1, 3, 4, 4, 9]) == Just(3)
 // find_last_idx(4, [1, 3, 5, 7, 9]) == Nothing
 template <typename Container>
-maybe<std::size_t> find_last_idx
-        (const typename Container::value_type& x, const Container& xs)
+maybe<std::size_t> find_last_idx(const typename Container::value_type& x, const Container& xs)
 {
     return find_last_idx_by(is_equal_to(x), xs);
 }
@@ -8640,15 +8441,14 @@ maybe<std::size_t> find_last_idx
 // Returns the indices off all elements fulfilling the predicate.
 // find_all_idxs_by(is_even, [1, 3, 4, 6, 9]) == [2, 3]
 template <typename ContainerOut = std::vector<std::size_t>,
-        typename UnaryPredicate, typename Container>
+    typename UnaryPredicate, typename Container>
 ContainerOut find_all_idxs_by(UnaryPredicate p, const Container& xs)
 {
     internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
     std::size_t idx = 0;
     ContainerOut result;
     auto itOut = internal::get_back_inserter(result);
-    for (const auto& x : xs)
-    {
+    for (const auto& x : xs) {
         if (internal::invoke(p, x))
             *itOut = idx;
         ++idx;
@@ -8661,10 +8461,9 @@ ContainerOut find_all_idxs_by(UnaryPredicate p, const Container& xs)
 // Returns the indices off all elements equal to x.
 // find_all_idxs_of(4, [1, 3, 4, 4, 9]) == [2, 3]
 template <typename ContainerOut = std::vector<std::size_t>,
-        typename Container,
-        typename T = typename Container::value_type>
-ContainerOut find_all_idxs_of
-        (const T& x, const Container& xs)
+    typename Container,
+    typename T = typename Container::value_type>
+ContainerOut find_all_idxs_of(const T& x, const Container& xs)
 {
     return find_all_idxs_by(is_equal_to(x), xs);
 }
@@ -8673,10 +8472,9 @@ ContainerOut find_all_idxs_of
 // fwd bind count: 1
 // Returns the starting indices of all segments matching token.
 // find_all_instances_of_token("haha", "oh, hahaha!") == [4, 6]
-template <typename ContainerOut =
-    std::vector<std::size_t>, typename Container>
+template <typename ContainerOut = std::vector<std::size_t>, typename Container>
 ContainerOut find_all_instances_of_token(const Container& token,
-        const Container& xs)
+    const Container& xs)
 {
     if (size_of_cont(token) > size_of_cont(xs))
         return ContainerOut();
@@ -8688,15 +8486,12 @@ ContainerOut find_all_instances_of_token(const Container& token,
     ContainerOut result;
     auto outIt = internal::get_back_inserter(result);
     std::size_t last_possible_idx = size_of_cont(xs) - size_of_cont(token);
-    auto check_and_push = [&]()
-    {
-        if (std::equal(itInBegin, itInEnd, std::begin(token)))
-        {
+    auto check_and_push = [&]() {
+        if (std::equal(itInBegin, itInEnd, std::begin(token))) {
             *outIt = idx;
         }
     };
-    while (idx != last_possible_idx)
-    {
+    while (idx != last_possible_idx) {
         check_and_push();
         ++itInBegin;
         ++itInEnd;
@@ -8712,18 +8507,15 @@ ContainerOut find_all_instances_of_token(const Container& token,
 // of all non-overlapping segments matching token.
 // find_all_instances_of_token_non_overlapping("haha", "oh, hahaha!") == [4]
 template <typename ContainerOut = std::vector<std::size_t>, typename Container>
-ContainerOut find_all_instances_of_token_non_overlapping
-        (const Container& token, const Container& xs)
+ContainerOut find_all_instances_of_token_non_overlapping(const Container& token, const Container& xs)
 {
     auto overlapping_instances = find_all_instances_of_token<ContainerOut>(
-            token, xs);
+        token, xs);
     ContainerOut result;
     auto outIt = internal::get_back_inserter(result);
     std::size_t token_size = size_of_cont(token);
-    for (const auto idx : overlapping_instances)
-    {
-        if (result.empty() || result.back() + token_size <= idx)
-        {
+    for (const auto idx : overlapping_instances) {
+        if (result.empty() || result.back() + token_size <= idx) {
             *outIt = idx;
         }
     }
@@ -8735,8 +8527,7 @@ ContainerOut find_all_instances_of_token_non_overlapping
 // Returns the index of the first segment matching token.
 // find_first_instance_of_token("haha", "oh, hahaha!") == just 4
 template <typename Container>
-maybe<std::size_t> find_first_instance_of_token
-        (const Container& token, const Container& xs)
+maybe<std::size_t> find_first_instance_of_token(const Container& token, const Container& xs)
 {
     if (size_of_cont(token) > size_of_cont(xs))
         return nothing<std::size_t>();
@@ -8746,18 +8537,15 @@ maybe<std::size_t> find_first_instance_of_token
     internal::advance_iterator(itInEnd, size_of_cont(token));
     std::size_t idx = 0;
     std::size_t last_possible_idx = size_of_cont(xs) - size_of_cont(token);
-    while (idx != last_possible_idx)
-    {
-        if (std::equal(itInBegin, itInEnd, std::begin(token)))
-        {
+    while (idx != last_possible_idx) {
+        if (std::equal(itInBegin, itInEnd, std::begin(token))) {
             return just(idx);
         }
         ++itInBegin;
         ++itInEnd;
         ++idx;
     }
-    if (std::equal(itInBegin, itInEnd, std::begin(token)))
-    {
+    if (std::equal(itInBegin, itInEnd, std::begin(token))) {
         return just(idx);
     }
     return nothing<std::size_t>();
@@ -8781,8 +8569,7 @@ maybe<std::size_t> find_first_instance_of_token
 #include <set>
 #include <unordered_set>
 
-namespace fplus
-{
+namespace fplus {
 
 // API search type: set_includes : (Set a, Set a) -> Bool
 // fwd bind count: 1
@@ -8802,11 +8589,11 @@ bool set_includes(const SetType& set1, const SetType& set2)
 // Also known as is_subset_of.
 template <typename UnorderSetType>
 bool unordered_set_includes(const UnorderSetType& set1,
-                            const UnorderSetType& set2)
+    const UnorderSetType& set2)
 {
     auto first_not_included = std::find_if(set2.begin(), set2.end(),
         [&](const typename UnorderSetType::value_type& x)
-        -> bool { return set1.find(x) == set1.end();});
+            -> bool { return set1.find(x) == set1.end(); });
     return first_not_included == set2.end();
 }
 
@@ -8861,8 +8648,7 @@ UnorderSetType unordered_set_intersection(
     UnorderSetType result;
     auto itOut = internal::get_back_inserter(result);
     std::copy_if(std::begin(set2), std::end(set2),
-        itOut, [&](const typename UnorderSetType::value_type &x)
-        -> bool {return set1.find(x) != set1.end();});
+        itOut, [&](const typename UnorderSetType::value_type& x) -> bool { return set1.find(x) != set1.end(); });
     return result;
 }
 
@@ -8905,13 +8691,12 @@ SetType set_difference(const SetType& set1, const SetType& set2)
 // that are not present in unordered_set2.
 template <typename UnorderSetType>
 UnorderSetType unordered_set_difference(const UnorderSetType& set1,
-const UnorderSetType& set2)
+    const UnorderSetType& set2)
 {
     UnorderSetType result;
     auto itOut = internal::get_back_inserter(result);
     std::copy_if(std::begin(set1), std::end(set1),
-        itOut, [&](const typename UnorderSetType::value_type &x)
-        -> bool {return set2.find(x) == set2.end();});
+        itOut, [&](const typename UnorderSetType::value_type& x) -> bool { return set2.find(x) == set2.end(); });
     return result;
 }
 
@@ -8939,11 +8724,9 @@ UnorderSetType unordered_set_symmetric_difference(
     UnorderSetType result;
     auto itOut = internal::get_back_inserter(result);
     std::copy_if(std::begin(set1), std::end(set1),
-        itOut, [&](const typename UnorderSetType::value_type &x)
-        -> bool {return set2.find(x) == set2.end();});
+        itOut, [&](const typename UnorderSetType::value_type& x) -> bool { return set2.find(x) == set2.end(); });
     std::copy_if(std::begin(set2), std::end(set2),
-        itOut, [&](const typename UnorderSetType::value_type &x)
-        -> bool {return set1.find(x) == set1.end();});
+        itOut, [&](const typename UnorderSetType::value_type& x) -> bool { return set1.find(x) == set1.end(); });
     return result;
 }
 
@@ -8978,8 +8761,7 @@ UnordSetType unordered_sets_intersection(const ContainerIn& sets)
 #include <numeric>
 #include <type_traits>
 
-namespace fplus
-{
+namespace fplus {
 
 // API search type: any_by : ((a -> Bool), [a]) -> Bool
 // fwd bind count: 1
@@ -9025,7 +8807,6 @@ bool none(const Container& xs)
     return none_by(identity<T>, xs);
 }
 
-
 // API search type: minimum_idx_by : (((a, a) -> Bool), [a]) -> Int
 // fwd bind count: 1
 // Return the index of the first minimum element using a less comparator.
@@ -9033,7 +8814,7 @@ bool none(const Container& xs)
 // Unsafe! Crashes on an empty sequence.
 template <typename Compare, typename Container>
 typename std::size_t minimum_idx_by(Compare comp,
-        const Container& xs)
+    const Container& xs)
 {
     internal::check_compare_for_container<Compare, Container>();
     assert(is_not_empty(xs));
@@ -9049,7 +8830,7 @@ typename std::size_t minimum_idx_by(Compare comp,
 // minimum_idx_by_maybe(lessLength, []) -> Nothing
 template <typename Compare, typename Container>
 maybe<typename std::size_t> minimum_idx_by_maybe(Compare comp,
-        const Container& xs)
+    const Container& xs)
 {
     if (is_empty(xs))
         return {};
@@ -9064,7 +8845,7 @@ maybe<typename std::size_t> minimum_idx_by_maybe(Compare comp,
 // Unsafe! Crashes on an empty sequence.
 template <typename Compare, typename Container>
 typename std::size_t maximum_idx_by(Compare comp,
-        const Container& xs)
+    const Container& xs)
 {
     internal::check_compare_for_container<Compare, Container>();
     assert(is_not_empty(xs));
@@ -9080,14 +8861,13 @@ typename std::size_t maximum_idx_by(Compare comp,
 // maximum_idx_by_maybe(lessLength, []) == Nothing
 template <typename Compare, typename Container>
 maybe<typename std::size_t> maximum_idx_by_maybe(Compare comp,
-        const Container& xs)
+    const Container& xs)
 {
     if (is_empty(xs))
         return {};
     else
         return maximum_idx_by(comp, xs);
 }
-
 
 // API search type: minimum_idx : [a] -> Int
 // fwd bind count: 0
@@ -9138,7 +8918,6 @@ maybe<typename std::size_t> maximum_idx_maybe(const Container& xs)
     else
         return maximum_idx(xs);
 }
-
 
 // API search type: minimum_idx_on : ((a -> b), [a]) -> Int
 // fwd bind count: 1
@@ -9203,7 +8982,7 @@ maybe<typename std::size_t> maximum_idx_on_maybe(F f, const Container& xs)
 // Unsafe! Crashes on an empty sequence.
 template <typename Compare, typename Container>
 typename Container::value_type minimum_by(Compare comp,
-        const Container& xs)
+    const Container& xs)
 {
     internal::check_compare_for_container<Compare, Container>();
     assert(is_not_empty(xs));
@@ -9218,7 +8997,7 @@ typename Container::value_type minimum_by(Compare comp,
 // minimum_by_maybe(lessLength, []) -> Nothing
 template <typename Compare, typename Container>
 maybe<typename Container::value_type> minimum_by_maybe(Compare comp,
-        const Container& xs)
+    const Container& xs)
 {
     if (is_empty(xs))
         return {};
@@ -9233,7 +9012,7 @@ maybe<typename Container::value_type> minimum_by_maybe(Compare comp,
 // Unsafe! Crashes on an empty sequence.
 template <typename Compare, typename Container>
 typename Container::value_type maximum_by(Compare comp,
-        const Container& xs)
+    const Container& xs)
 {
     internal::check_compare_for_container<Compare, Container>();
     assert(is_not_empty(xs));
@@ -9248,14 +9027,13 @@ typename Container::value_type maximum_by(Compare comp,
 // maximum_by_maybe(lessLength, []) == Nothing
 template <typename Compare, typename Container>
 maybe<typename Container::value_type> maximum_by_maybe(Compare comp,
-        const Container& xs)
+    const Container& xs)
 {
     if (is_empty(xs))
         return {};
     else
         return maximum_by(comp, xs);
 }
-
 
 // API search type: minimum : [a] -> a
 // fwd bind count: 0
@@ -9308,7 +9086,6 @@ maybe<typename Container::value_type> maximum_maybe(const Container& xs)
     else
         return maximum(xs);
 }
-
 
 // API search type: minimum_on : ((a -> b), [a]) -> a
 // fwd bind count: 1
@@ -9432,7 +9209,7 @@ Result mean_using_doubles(const Container& xs)
 // median([5, 6, 4, 3, 2, 6, 7, 9, 3]) == 5
 // Unsafe! Crashes on an empty sequence.
 template <typename Container,
-        typename Result = typename Container::value_type>
+    typename Result = typename Container::value_type>
 Result median(const Container& xs)
 {
     assert(is_not_empty(xs));
@@ -9444,14 +9221,11 @@ Result median(const Container& xs)
     // would be faster for random-access containers
     // but not work at all on other containers like std::list.
     auto xsSorted = sort(xs);
-    if (is_odd(size_of_cont(xsSorted)))
-    {
+    if (is_odd(size_of_cont(xsSorted))) {
         auto it = std::begin(xsSorted);
         internal::advance_iterator(it, size_of_cont(xsSorted) / 2);
         return static_cast<Result>(*it);
-    }
-    else
-    {
+    } else {
         auto it1 = std::begin(xsSorted);
         internal::advance_iterator(it1, size_of_cont(xsSorted) / 2 - 1);
         auto it2 = it1;
@@ -9506,10 +9280,8 @@ bool is_subsequence_of(const Container& seq, const Container& xs)
         return false;
     typedef typename Container::value_type T;
     auto remaining = convert_container_and_elems<std::list<T>>(seq);
-    for (const auto& x : xs)
-    {
-        if (x == remaining.front())
-        {
+    for (const auto& x : xs) {
+        if (x == remaining.front()) {
             remaining.pop_front();
             if (is_empty(remaining))
                 return true;
@@ -9532,8 +9304,7 @@ std::size_t count_if(UnaryPredicate p, const Container& xs)
 // fwd bind count: 1
 // count(2, [1, 2, 3, 5, 7, 2, 2]) == 3
 template <typename Container>
-std::size_t count
-        (const typename Container::value_type& x, const Container& xs)
+std::size_t count(const typename Container::value_type& x, const Container& xs)
 {
     return size_of_cont(find_all_idxs_of(x, xs));
 }
@@ -9543,17 +9314,13 @@ std::size_t count
 // is_unique_in_by((==2), [1, 2, 3, 5, 7, 2, 2]) == false
 // is_unique_in_by((==5), [1, 2, 3, 5, 7, 2, 2]) == true
 template <typename UnaryPredicate, typename Container>
-bool is_unique_in_by
-        (UnaryPredicate pred, const Container& xs)
+bool is_unique_in_by(UnaryPredicate pred, const Container& xs)
 {
     std::size_t count = 0;
-    for (const auto& x : xs)
-    {
-        if (internal::invoke(pred, x))
-        {
+    for (const auto& x : xs) {
+        if (internal::invoke(pred, x)) {
             ++count;
-            if (count > 1)
-            {
+            if (count > 1) {
                 return false;
             }
         }
@@ -9566,8 +9333,7 @@ bool is_unique_in_by
 // is_unique_in(2, [1, 2, 3, 5, 7, 2, 2]) == false
 // is_unique_in(5, [1, 2, 3, 5, 7, 2, 2]) == true
 template <typename Container>
-bool is_unique_in
-        (const typename Container::value_type& x, const Container& xs)
+bool is_unique_in(const typename Container::value_type& x, const Container& xs)
 {
     return is_unique_in_by(is_equal_to(x), xs);
 }
@@ -9580,8 +9346,7 @@ bool is_unique_in
 template <typename Container>
 bool is_permutation_of(const Container& xs, const Container& ys)
 {
-    return size_of_cont(xs) == size_of_cont(ys) &&
-        sort(xs) == sort(ys);
+    return size_of_cont(xs) == size_of_cont(ys) && sort(xs) == sort(ys);
 }
 
 // API search type: fill_pigeonholes_to : (Int, [Int]) -> [Int]
@@ -9602,13 +9367,10 @@ ContainerOut fill_pigeonholes_to(std::size_t idx_end, const ContainerIn& xs)
         return {};
 
     ContainerOut result(idx_end, 0);
-    for (const auto& x : xs)
-    {
-        if (x >= 0)
-        {
+    for (const auto& x : xs) {
+        if (x >= 0) {
             const auto idx = static_cast<std::size_t>(x);
-            if (idx < result.size())
-            {
+            if (idx < result.size()) {
                 ++result[idx];
             }
         }
@@ -9632,7 +9394,7 @@ ContainerOut fill_pigeonholes(const ContainerIn& xs)
     if (is_empty(xs))
         return {};
 
-    return(fill_pigeonholes_to<ContainerIn, ContainerOut>(
+    return (fill_pigeonholes_to<ContainerIn, ContainerOut>(
         maximum(xs) + 1, xs));
 }
 
@@ -9654,13 +9416,10 @@ ContainerOut fill_pigeonholes_bool_to(std::size_t idx_end, const ContainerIn& xs
         return {};
 
     ContainerOut result(idx_end, 0);
-    for (const auto& x : xs)
-    {
-        if (x >= 0)
-        {
+    for (const auto& x : xs) {
+        if (x >= 0) {
             const auto idx = static_cast<std::size_t>(x);
-            if (idx < result.size())
-            {
+            if (idx < result.size()) {
                 result[idx] = 1;
             }
         }
@@ -9684,7 +9443,7 @@ ContainerOut fill_pigeonholes_bool(const ContainerIn& xs)
     if (is_empty(xs))
         return {};
 
-    return(fill_pigeonholes_bool_to<ContainerIn, ContainerOut>(
+    return (fill_pigeonholes_bool_to<ContainerIn, ContainerOut>(
         maximum(xs) + 1, xs));
 }
 
@@ -9708,221 +9467,11 @@ ContainerOut present_in_all(const ContainerIn& xs)
 
 } // namespace fplus
 
-//
-// extrapolate.hpp
-//
-
-// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
-// https://github.com/Dobiasd/FunctionalPlus
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
-
-
-
-namespace fplus
-{
-
-// API search type: elem_at_idx_or_nothing : (Int, [a]) -> Maybe a
-// fwd bind count: 1
-// Return nth element of a sequence.
-// Returns nothing if index is outside of xs.
-template <typename Container,
-    typename T = typename Container::value_type>
-maybe<T> elem_at_idx_or_nothing(signed int idx, const Container& xs)
-{
-    if (idx < 0 || idx >= static_cast<signed int>(size_of_cont(xs)))
-    {
-        return {};
-    }
-    auto it = std::begin(xs);
-    internal::advance_iterator(it, static_cast<std::size_t>(idx));
-    return *it;
-}
-
-// API search type: elem_at_idx_or_constant : (a, Int, [a]) -> a
-// fwd bind count: 2
-// Return nth element of a sequence.
-// Interpolate outside of sequence with a constant value.
-// iiiiii|abcdefgh|iiiiiii
-template <typename Container,
-    typename T = typename Container::value_type>
-T elem_at_idx_or_constant(const T& c, signed int idx, const Container& xs)
-{
-    if (idx < 0 || idx >= static_cast<signed int>(size_of_cont(xs)))
-    {
-        return c;
-    }
-    auto it = std::begin(xs);
-    internal::advance_iterator(it, static_cast<std::size_t>(idx));
-    return *it;
-}
-
-// API search type: elem_at_idx_or_replicate : (Int, [a]) -> a
-// fwd bind count: 1
-// Return nth element of a sequence.
-// Interpolate outside of sequence by replicating the nearest inside value.
-// aaaaaa|abcdefgh|hhhhhhh
-// xs must be non-empty.
-template <typename Container,
-    typename T = typename Container::value_type>
-T elem_at_idx_or_replicate(signed int idx, const Container& xs)
-{
-    assert(is_not_empty(xs));
-    if (idx < 0)
-    {
-        return xs.front();
-    }
-    if (idx >= static_cast<signed int>(size_of_cont(xs)))
-    {
-        return xs.back();
-    }
-    auto it = std::begin(xs);
-    internal::advance_iterator(it, static_cast<std::size_t>(idx));
-    return *it;
-}
-
-// API search type: elem_at_idx_or_wrap : (Int, [a]) -> a
-// fwd bind count: 1
-// Return nth element of a sequence.
-// Interpolate outside of sequence by replicating the sequence.
-// For cyclic element access.
-// cdefgh|abcdefgh|abcdefg
-// xs must be non-empty.
-template <typename Container,
-    typename T = typename Container::value_type>
-T elem_at_idx_or_wrap(signed int idx, const Container& xs)
-{
-    assert(is_not_empty(xs));
-    const signed int cont_size = static_cast<signed int>(size_of_cont(xs));
-    if (idx < 0)
-        idx = cont_size - (std::abs(idx) % cont_size);
-    else
-        idx = idx % cont_size;
-    auto it = std::begin(xs);
-    internal::advance_iterator(it, static_cast<std::size_t>(idx));
-    return *it;
-}
-
-// API search type: extrapolate_replicate : (Int, Int, [a]) -> [a]
-// fwd bind count: 2
-// Extrapolate a sequence by replicating the border values.
-// count_begin determines the number of elements to be prepended.
-// count_end determines the number of elements to be appended.
-// aaaaaa|abcdefgh|hhhhhhh
-// xs must be non-empty.
-template <typename Container,
-    typename T = typename Container::value_type>
-Container extrapolate_replicate(std::size_t count_begin, std::size_t count_end,
-        const Container& xs)
-{
-    assert(is_not_empty(xs));
-    Container ys;
-    const auto xs_size = size_of_cont(xs);
-    internal::prepare_container(ys, xs_size + count_begin + count_end);
-    auto it = internal::get_back_inserter<Container>(ys);
-    const signed int idx_end = static_cast<signed int>(xs_size + count_end);
-    const signed int idx_start = -static_cast<signed int>(count_begin);
-    for (signed int idx = idx_start; idx < idx_end; ++idx)
-    {
-        *it = elem_at_idx_or_replicate(idx, xs);
-    }
-    return ys;
-}
-
-// API search type: extrapolate_wrap : (Int, Int, [a]) -> [a]
-// fwd bind count: 2
-// Extrapolate a sequence by accessing the elements in cyclic fashion.
-// count_begin determines the number of elements to be prepended.
-// count_end determines the number of elements to be appended.
-// cdefgh|abcdefgh|abcdefg
-// xs must be non-empty.
-template <typename Container,
-    typename T = typename Container::value_type>
-Container extrapolate_wrap(std::size_t count_begin, std::size_t count_end,
-        const Container& xs)
-{
-    assert(is_not_empty(xs));
-    Container ys;
-    const auto xs_size = size_of_cont(xs);
-    internal::prepare_container(ys, xs_size + count_begin + count_end);
-    auto it = internal::get_back_inserter<Container>(ys);
-    const signed int idx_end = static_cast<signed int>(xs_size + count_end);
-    const signed int idx_start = -static_cast<signed int>(count_begin);
-    for (signed int idx = idx_start; idx < idx_end; ++idx)
-    {
-        *it = elem_at_idx_or_wrap(idx, xs);
-    }
-    return ys;
-}
-
-} // namespace fplus
-
-//
-// interpolate.hpp
-//
-
-// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
-// https://github.com/Dobiasd/FunctionalPlus
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
-
-
-
-#include <cmath>
-
-namespace fplus
-{
-
-// API search type: elem_at_float_idx : (Float, [a]) -> a
-// fwd bind count: 1
-// Interpolates linearly between elements.
-// xs must be non-empty.
-template <typename Container,
-    typename T = typename Container::value_type>
-T elem_at_float_idx(double idx, const Container& xs)
-{
-    assert(is_not_empty(xs));
-    if (idx <= 0.0)
-    {
-        return xs.front();
-    }
-    std::size_t idx_floor = static_cast<std::size_t>(floor(idx));
-    std::size_t idx_ceil = static_cast<std::size_t>(ceil(idx));
-    if (idx_ceil >= size_of_cont(xs))
-    {
-        return xs.back();
-    }
-    double idx_floor_float = static_cast<double>(idx_floor);
-    double idx_ceil_float = static_cast<double>(idx_ceil);
-    double weight_floor = idx_ceil_float - idx;
-    double weight_ceil = idx - idx_floor_float;
-    return
-        (weight_floor * elem_at_idx(idx_floor, xs) +
-            weight_ceil * elem_at_idx(idx_ceil, xs));
-}
-
-} // namespace fplus
-
-//
-// maps.hpp
-//
-
-// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
-// https://github.com/Dobiasd/FunctionalPlus
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
-
-
-
 
 #include <map>
 #include <unordered_map>
 
-namespace fplus
-{
+namespace fplus {
 
 // API search type: pairs_to_map : [(key, val)] -> Map key val
 // fwd bind count: 0
@@ -9946,8 +9495,7 @@ template <typename ContainerIn,
 MapOut pairs_to_map_grouped(const ContainerIn& pairs)
 {
     MapOut result;
-    for (const auto& p : pairs)
-    {
+    for (const auto& p : pairs) {
         result[p.first].push_back(p.second);
     }
     return result;
@@ -9966,8 +9514,7 @@ template <typename ContainerIn,
 MapOut pairs_to_unordered_map_grouped(const ContainerIn& pairs)
 {
     MapOut result;
-    for (const auto& p : pairs)
-    {
+    for (const auto& p : pairs) {
         result[p.first].push_back(p.second);
     }
     return result;
@@ -10017,9 +9564,8 @@ auto map_union_with(F f, const MapIn& dict1, const MapIn& dict2)
     using Key = typename decltype(both)::value_type::first_type;
     using SingleValue = typename decltype(both)::value_type::second_type;
     auto full_map = pairs_to_map_grouped<decltype(both), Key, SingleValue,
-            typename internal::SameMapTypeNewTypes<MapIn, Key, std::vector<SingleValue>>::type>(both);
-    const auto group_f = [f](const auto& vals)
-    {
+        typename internal::SameMapTypeNewTypes<MapIn, Key, std::vector<SingleValue>>::type>(both);
+    const auto group_f = [f](const auto& vals) {
         return fold_left_1(f, vals);
     };
     return transform_map_values(group_f, full_map);
@@ -10035,8 +9581,7 @@ MapType map_union(const MapType& dict1, const MapType& dict2)
 {
     using Value = typename MapType::value_type::second_type;
 
-    const auto get_first = [](const Value& a, const Value&) -> Value
-    {
+    const auto get_first = [](const Value& a, const Value&) -> Value {
         return a;
     };
     return map_union_with(get_first, dict1, dict2);
@@ -10048,16 +9593,15 @@ MapType map_union(const MapType& dict1, const MapType& dict2)
 // Inverse operation of pairs_to_map_grouped.
 // map_grouped_to_pairs({"a": [1, 2, 4], "b": [6]})
 //     -> [("a", 1), ("a", 2), ("a", 4), ("b", 6)]
-template<typename MapType>
-auto map_grouped_to_pairs(const MapType &dict)
+template <typename MapType>
+auto map_grouped_to_pairs(const MapType& dict)
 {
     using Key = typename MapType::key_type;
     using Group = typename MapType::mapped_type;
 
-    auto fn = [](const auto &pair)
-    {
+    auto fn = [](const auto& pair) {
         const auto f = zip_repeat<std::vector<Key>, Group>;
-        return apply_to_pair(f, transform_fst(singleton_seq < Key > , pair));
+        return apply_to_pair(f, transform_fst(singleton_seq<Key>, pair));
     };
     return concat(transform(fn, map_to_pairs(dict)));
 }
@@ -10066,8 +9610,7 @@ auto map_grouped_to_pairs(const MapType &dict)
 // fwd bind count: 0
 // Returns all keys used in a map.
 template <typename MapType,
-    typename ContainerOut =
-        std::vector<typename std::remove_const<typename MapType::key_type>::type>>
+    typename ContainerOut = std::vector<typename std::remove_const<typename MapType::key_type>::type>>
 ContainerOut get_map_keys(const MapType& dict)
 {
     auto pairs = map_to_pairs(dict);
@@ -10081,8 +9624,7 @@ ContainerOut get_map_keys(const MapType& dict)
 // fwd bind count: 0
 // Returns all values present in a map.
 template <typename MapType,
-    typename ContainerOut =
-        std::vector<typename std::remove_const<typename MapType::mapped_type>::type>>
+    typename ContainerOut = std::vector<typename std::remove_const<typename MapType::mapped_type>::type>>
 ContainerOut get_map_values(const MapType& dict)
 {
     auto pairs = map_to_pairs(dict);
@@ -10154,7 +9696,7 @@ auto create_map_grouped(F f, const ContainerIn& values)
 template <typename ContainerIn1, typename ContainerIn2,
     typename Key = typename std::remove_const<typename ContainerIn1::value_type>::type,
     typename Val = typename std::remove_const<typename ContainerIn2::value_type>::type,
-    typename MapOut = std::unordered_map<Key, Val >>
+    typename MapOut = std::unordered_map<Key, Val>>
 MapOut create_unordered_map(
     const ContainerIn1& keys,
     const ContainerIn2& values)
@@ -10239,8 +9781,7 @@ maybe<Val> get_first_from_map(const MapType& map, const KeysContainer& keys)
 {
     static_assert(std::is_same<typename KeysContainer::value_type, Key>::value,
         "Key type does not match.");
-    for (const auto& key: keys)
-    {
+    for (const auto& key : keys) {
         auto it = map.find(key);
         if (it != std::end(map))
             return just(it->second);
@@ -10294,10 +9835,8 @@ template <typename MapType, typename Pred>
 MapType map_keep_if(Pred pred, const MapType& map)
 {
     MapType result;
-    for (const auto& key_and_value : map)
-    {
-        if (internal::invoke(pred, key_and_value.first))
-        {
+    for (const auto& key_and_value : map) {
+        if (internal::invoke(pred, key_and_value.first)) {
             result.insert(key_and_value);
         }
     }
@@ -10325,8 +9864,8 @@ template <typename MapType, typename KeyContainer>
 MapType map_keep(const KeyContainer& keys, const MapType& map)
 {
     static_assert(std::is_same<
-        typename KeyContainer::value_type,
-        typename MapType::key_type>::value,
+                      typename KeyContainer::value_type,
+                      typename MapType::key_type>::value,
         "Key types do not match.");
     return map_keep_if(bind_2nd_of_2(is_elem_of<KeyContainer>, keys), map);
 }
@@ -10340,8 +9879,8 @@ template <typename MapType, typename KeyContainer>
 MapType map_drop(const KeyContainer& keys, const MapType& map)
 {
     static_assert(std::is_same<
-        typename KeyContainer::value_type,
-        typename MapType::key_type>::value,
+                      typename KeyContainer::value_type,
+                      typename MapType::key_type>::value,
         "Key types do not match.");
     return map_drop_if(bind_2nd_of_2(is_elem_of<KeyContainer>, keys), map);
 }
@@ -10355,10 +9894,8 @@ template <typename MapType, typename Pred>
 MapType map_keep_if_value(Pred pred, const MapType& map)
 {
     MapType result;
-    for (const auto& key_and_value : map)
-    {
-        if (internal::invoke(pred, key_and_value.second))
-        {
+    for (const auto& key_and_value : map) {
+        if (internal::invoke(pred, key_and_value.second)) {
             result.insert(key_and_value);
         }
     }
@@ -10385,8 +9922,8 @@ template <typename MapType, typename ValueContainer>
 MapType map_keep_values(const ValueContainer& values, const MapType& map)
 {
     static_assert(std::is_same<
-        typename ValueContainer::value_type,
-        typename MapType::mapped_type>::value,
+                      typename ValueContainer::value_type,
+                      typename MapType::mapped_type>::value,
         "Value types do not match.");
     return map_keep_if_value(
         bind_2nd_of_2(is_elem_of<ValueContainer>, values), map);
@@ -10401,8 +9938,8 @@ template <typename MapType, typename ValueContainer>
 MapType map_drop_values(const ValueContainer& values, const MapType& map)
 {
     static_assert(std::is_same<
-        typename ValueContainer::value_type,
-        typename MapType::mapped_type>::value,
+                      typename ValueContainer::value_type,
+                      typename MapType::mapped_type>::value,
         "Value types do not match.");
     return map_drop_if_value(
         bind_2nd_of_2(is_elem_of<ValueContainer>, values), map);
@@ -10413,8 +9950,7 @@ MapType map_drop_values(const ValueContainer& values, const MapType& map)
 // Extracts values to a specific key from a list of maps.
 // map_pluck('a', [{a: 1, b: 2}, {a: 3}, {c: 4}]) == [Just 1, Just 3, Nothing]
 template <typename MapContainer,
-    typename ContainerOut =
-        std::vector<maybe<typename MapContainer::value_type::mapped_type>>,
+    typename ContainerOut = std::vector<maybe<typename MapContainer::value_type::mapped_type>>,
     typename MapType = typename MapContainer::value_type,
     typename Key = typename MapType::key_type,
     typename Val = typename MapType::mapped_type>
@@ -10430,7 +9966,7 @@ ContainerOut map_pluck(const Key& key, const MapContainer& maps)
 // choose([(1,a), (2,b)], 2) == Just b;
 // choose([(1,a), (1,b)], 2) == Nothing;
 // choose([(1,a), (2,b)], 3) == Nothing;
-template<typename Key, typename Val>
+template <typename Key, typename Val>
 maybe<Val> choose(const std::vector<std::pair<Key, Val>>& pairs, const Key& x)
 {
     if (count(x, transform(fst<Key, Val>, pairs)) != 1)
@@ -10446,18 +9982,15 @@ maybe<Val> choose(const std::vector<std::pair<Key, Val>>& pairs, const Key& x)
 // choose_by([(is_even,a), (is_bigger_than_3,b)], 5) == Just b;
 // choose_by([(is_even,a), (is_bigger_than_3,b)], 1) == Nothing;
 // choose_by([(is_even,a), (is_bigger_than_3,b)], 4) == Nothing;
-template<typename Key, typename Val>
+template <typename Key, typename Val>
 maybe<Val> choose_by(
     const std::vector<std::pair<std::function<bool(const Key&)>, Val>>& pairs,
     const Key& x)
 {
     maybe<Val> result;
-    for (const auto& p : pairs)
-    {
-        if (internal::invoke(p.first, x))
-        {
-            if (is_just(result))
-            {
+    for (const auto& p : pairs) {
+        if (internal::invoke(p.first, x)) {
+            if (is_just(result)) {
                 return nothing<Val>();
             }
             result = p.second;
@@ -10474,14 +10007,14 @@ maybe<Val> choose_by(
 // choose_lazy([(1,a), (2,b)], 3) == Nothing;
 template <typename Key, typename ValStub>
 auto choose_lazy(const std::vector<std::pair<Key, ValStub>>& pairs,
-                 const Key& x)
+    const Key& x)
 {
     using Ret = maybe<std::decay_t<internal::invoke_result_t<ValStub>>>;
     const auto res = choose(pairs, x);
     if (res.is_nothing())
-        return Ret{};
+        return Ret {};
     else
-        return Ret{res.unsafe_get_just()()};
+        return Ret { res.unsafe_get_just()() };
 }
 
 // API search type: choose_by_lazy : ([((a -> Bool), (() -> b))], a) -> Maybe b
@@ -10501,9 +10034,9 @@ auto choose_by_lazy(
 
     const auto res = choose_by(pairs, x);
     if (res.is_nothing())
-        return Ret{};
+        return Ret {};
     else
-        return Ret{res.unsafe_get_just()()};
+        return Ret { res.unsafe_get_just()() };
 }
 
 // API search type: choose_def : (b, [(a, b)], a) -> b
@@ -10513,7 +10046,7 @@ auto choose_by_lazy(
 // choose_def(c, [(1,a), (2,b)], 2) == b;
 // choose_def(c, [(1,a), (1,b)], 2) == c;
 // choose_def(c, [(1,a), (2,b)], 3) == c;
-template<typename Key, typename Val>
+template <typename Key, typename Val>
 Val choose_def(const Val& def,
     const std::vector<std::pair<Key, Val>>& pairs, const Key& x)
 {
@@ -10532,7 +10065,7 @@ Val choose_def(const Val& def,
 // choose_by_def(c, [(is_even,a), (is_bigger_than_3,b)], 5) == Just b;
 // choose_by_def(c, [(is_even,a), (is_bigger_than_3,b)], 1) == c;
 // choose_by_def(c, [(is_even,a), (is_bigger_than_3,b)], 4) == c;
-template<typename Key, typename Val>
+template <typename Key, typename Val>
 Val choose_by_def(const Val& def,
     const std::vector<std::pair<std::function<bool(const Key&)>, Val>>& pairs,
     const Key& x)
@@ -10549,8 +10082,8 @@ Val choose_by_def(const Val& def,
 // choose_def_lazy(c, [(1,a), (2,b)], 3) == c();
 template <typename Key, typename ValStub>
 auto choose_def_lazy(const ValStub& def,
-                     const std::vector<std::pair<Key, ValStub>>& pairs,
-                     const Key& x)
+    const std::vector<std::pair<Key, ValStub>>& pairs,
+    const Key& x)
 {
     return choose_def(def, pairs, x)();
 }
@@ -10574,30 +10107,6 @@ auto choose_by_def_lazy(
 }
 
 } // namespace fplus
-
-//
-// optimize.hpp
-//
-
-// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
-// https://github.com/Dobiasd/FunctionalPlus
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
-
-
-
-//
-// transform.hpp
-//
-
-// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
-// https://github.com/Dobiasd/FunctionalPlus
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
-
-
 
 //
 // split.hpp
@@ -10628,26 +10137,22 @@ auto choose_by_def_lazy(
 
 
 
-namespace fplus
-{
-namespace internal
-{
-template <typename GroupByCallable, typename F, typename ContainerIn>
-auto group_on_labeled_impl(GroupByCallable group, F f, const ContainerIn& xs)
-{
-    const auto grouped = group(is_equal_by(f), xs);
-    const auto attach_label = [f](const auto& g)
+namespace fplus {
+namespace internal {
+    template <typename GroupByCallable, typename F, typename ContainerIn>
+    auto group_on_labeled_impl(GroupByCallable group, F f, const ContainerIn& xs)
     {
-        using std::begin;
-        return std::make_pair(internal::invoke(f, *begin(g)), g);
-    };
-    return fplus::transform(attach_label, grouped);
-}
+        const auto grouped = group(is_equal_by(f), xs);
+        const auto attach_label = [f](const auto& g) {
+            using std::begin;
+            return std::make_pair(internal::invoke(f, *begin(g)), g);
+        };
+        return fplus::transform(attach_label, grouped);
+    }
 }
 }
 
-namespace fplus
-{
+namespace fplus {
 
 // API search type: group_by : (((a, a) -> Bool), [a]) -> [[a]]
 // fwd bind count: 1
@@ -10658,7 +10163,7 @@ namespace fplus
 // BinaryPredicate p is a (not neccessarily transitive) connectivity check.
 // O(n)
 template <typename BinaryPredicate, typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
+    typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
 {
     // ContainerOut is not deduced to
@@ -10666,15 +10171,14 @@ ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
     // here, since ContainerIn could be a std::string.
     internal::check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
     ContainerOut result;
     if (is_empty(xs))
         return result;
     typedef typename ContainerOut::value_type InnerContainerOut;
     *internal::get_back_inserter(result) = InnerContainerOut(1, xs.front());
-    for (auto it = ++std::begin(xs); it != std::end(xs); ++it)
-    {
+    for (auto it = ++std::begin(xs); it != std::end(xs); ++it) {
         if (internal::invoke(p, result.back().back(), *it))
             *internal::get_back_inserter(result.back()) = *it;
         else
@@ -10707,8 +10211,7 @@ auto group_on(F f, const ContainerIn& xs)
 template <typename F, typename ContainerIn>
 auto group_on_labeled(F f, const ContainerIn& xs)
 {
-    const auto group = [](auto f1, const auto& xs1)
-    {
+    const auto group = [](auto f1, const auto& xs1) {
         return group_by(f1, xs1);
     };
 
@@ -10723,11 +10226,11 @@ auto group_on_labeled(F f, const ContainerIn& xs)
 // group([1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2],[3],[2,2],[4],[5,5]]
 // O(n)
 template <typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
+    typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group(const ContainerIn& xs)
 {
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
     typedef typename ContainerIn::value_type T;
     auto pred = [](const T& x, const T& y) { return x == y; };
@@ -10744,29 +10247,25 @@ ContainerOut group(const ContainerIn& xs)
 // O(n^2)
 // If you need O(n*log(n)), sort and then use group_by
 template <typename BinaryPredicate, typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
+    typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group_globally_by(BinaryPredicate p, const ContainerIn& xs)
 {
     internal::check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
     typedef typename ContainerOut::value_type InnerContainerOut;
     ContainerOut result;
-    for (const auto& x : xs)
-    {
+    for (const auto& x : xs) {
         bool found = false;
-        for (auto& ys : result)
-        {
-            if (internal::invoke(p, x, ys.back()))
-            {
+        for (auto& ys : result) {
+            if (internal::invoke(p, x, ys.back())) {
                 *internal::get_back_inserter(ys) = x;
                 found = true;
                 break;
             }
         }
-        if (!found)
-        {
+        if (!found) {
             *internal::get_back_inserter(result) = InnerContainerOut(1, x);
         }
     }
@@ -10795,8 +10294,7 @@ auto group_globally_on(F f, const ContainerIn& xs)
 template <typename F, typename ContainerIn>
 auto group_globally_on_labeled(F f, const ContainerIn& xs)
 {
-    const auto group = [](auto f1, const auto& xs1)
-    {
+    const auto group = [](auto f1, const auto& xs1) {
         return group_globally_by(f1, xs1);
     };
 
@@ -10810,11 +10308,11 @@ auto group_globally_on_labeled(F f, const ContainerIn& xs)
 // O(n^2)
 // If you need O(n*log(n)), sort and then use group
 template <typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
+    typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group_globally(const ContainerIn& xs)
 {
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
     typedef typename ContainerIn::value_type T;
     auto pred = [](const T& x, const T& y) { return x == y; };
@@ -10832,12 +10330,12 @@ ContainerOut group_globally(const ContainerIn& xs)
 //  c) not neccessarily transitive, but can be
 // O(n^2), memory complexity also O(n^2)
 template <typename BinaryPredicate, typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
+    typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
 {
     internal::check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
 
     typedef std::vector<unsigned char> bools;
@@ -10847,65 +10345,53 @@ ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
     typedef std::vector<bools> boolss;
     boolss adj_mat(size_of_cont(xs), zero_filled_row);
 
-    for (const auto& idx_and_val_y : enumerate(xs))
-    {
+    for (const auto& idx_and_val_y : enumerate(xs)) {
         auto idx_y = idx_and_val_y.first;
         auto val_y = idx_and_val_y.second;
-        for (const auto& idx_and_val_x : enumerate(xs))
-        {
+        for (const auto& idx_and_val_x : enumerate(xs)) {
             auto idx_x = idx_and_val_x.first;
             auto val_x = idx_and_val_x.second;
-            if (internal::invoke(p, val_y, val_x))
-            {
+            if (internal::invoke(p, val_y, val_x)) {
                 adj_mat[idx_y][idx_x] = 1;
             }
         }
     }
 
     bools already_used = zero_filled_row;
-    auto is_already_used = [&](std::size_t i) -> bool
-    {
+    auto is_already_used = [&](std::size_t i) -> bool {
         return already_used[i] != 0;
     };
 
     typedef std::vector<std::size_t> idxs;
     typedef std::vector<idxs> idxss;
 
-    auto bools_to_idxs = [](const bools& activations) -> idxs
-    {
-        auto unsigned_char_to_bool = [](unsigned char x)
-        {
+    auto bools_to_idxs = [](const bools& activations) -> idxs {
+        auto unsigned_char_to_bool = [](unsigned char x) {
             return x != 0;
         };
         return find_all_idxs_by(unsigned_char_to_bool, activations);
     };
 
     idxss idx_clusters;
-    std::function<void(std::size_t)> process_idx = [&](std::size_t idx) -> void
-    {
+    std::function<void(std::size_t)> process_idx = [&](std::size_t idx) -> void {
         auto connected_idxs = bools_to_idxs(adj_mat[idx]);
         auto new_connected_idxs = drop_if(is_already_used, connected_idxs);
-        if (is_empty(new_connected_idxs))
-        {
+        if (is_empty(new_connected_idxs)) {
             return;
         }
         idx_clusters.back() = append(idx_clusters.back(), new_connected_idxs);
-        for (const auto& new_idx : new_connected_idxs)
-        {
+        for (const auto& new_idx : new_connected_idxs) {
             already_used[new_idx] = 1;
         }
-        for (const auto& new_idx : new_connected_idxs)
-        {
+        for (const auto& new_idx : new_connected_idxs) {
             process_idx(new_idx);
         }
     };
 
     typedef typename ContainerOut::value_type InnerContainerOut;
 
-    for (const auto& idx : all_idxs(xs))
-    {
-        if (is_already_used(idx))
-        {
+    for (const auto& idx : all_idxs(xs)) {
+        if (is_already_used(idx)) {
             continue;
         }
         *internal::get_back_inserter(idx_clusters) = idxs();
@@ -10916,13 +10402,11 @@ ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
 
     typedef typename ContainerIn::value_type T;
 
-    auto idx_to_val = [&](std::size_t idx) -> T
-    {
+    auto idx_to_val = [&](std::size_t idx) -> T {
         return elem_at_idx(idx, xs);
     };
 
-    auto idxs_to_vals = [&](const idxs& val_idxs) -> InnerContainerOut
-    {
+    auto idxs_to_vals = [&](const idxs& val_idxs) -> InnerContainerOut {
         return transform_convert<InnerContainerOut>(idx_to_val, sort(val_idxs));
     };
 
@@ -10937,38 +10421,32 @@ ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
 // also known as split_when
 // O(n)
 template <typename UnaryPredicate, typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
-ContainerOut split_by
-        (UnaryPredicate pred, bool allow_empty, const ContainerIn& xs)
+    typename ContainerOut = typename std::vector<ContainerIn>>
+ContainerOut split_by(UnaryPredicate pred, bool allow_empty, const ContainerIn& xs)
 {
     internal::check_unary_predicate_for_container<UnaryPredicate, ContainerIn>();
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
 
-    if (allow_empty && is_empty(xs))
-    {
-        return {{}};
+    if (allow_empty && is_empty(xs)) {
+        return { {} };
     }
 
     ContainerOut result;
     auto itOut = internal::get_back_inserter(result);
     auto start = std::begin(xs);
 
-    while (start != std::end(xs))
-    {
+    while (start != std::end(xs)) {
         const auto stop = std::find_if(start, std::end(xs), pred);
-        if (start != stop || allow_empty)
-        {
+        if (start != stop || allow_empty) {
             *itOut = { start, stop };
         }
-        if (stop == std::end(xs))
-        {
+        if (stop == std::end(xs)) {
             break;
         }
         start = internal::add_to_iterator(stop);
-        if (allow_empty && start == std::end(xs))
-        {
+        if (allow_empty && start == std::end(xs)) {
             *itOut = typename ContainerOut::value_type();
         }
     }
@@ -10983,26 +10461,23 @@ ContainerOut split_by
 // == [[1,3],[2],[2,5,5,3],[6,7,9]]
 // O(n)
 template <typename UnaryPredicate, typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
-ContainerOut split_by_keep_separators
-        (UnaryPredicate pred, const ContainerIn& xs)
+    typename ContainerOut = typename std::vector<ContainerIn>>
+ContainerOut split_by_keep_separators(UnaryPredicate pred, const ContainerIn& xs)
 {
     internal::check_unary_predicate_for_container<UnaryPredicate, ContainerIn>();
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
     ContainerOut result;
     if (is_empty(xs))
         return result;
     auto itOut = internal::get_back_inserter(result);
     auto start = std::begin(xs);
-    while (start != std::end(xs))
-    {
+    while (start != std::end(xs)) {
         const auto stop = std::find_if(
             internal::add_to_iterator(start), std::end(xs), pred);
         *itOut = { start, stop };
-        if (stop == std::end(xs))
-        {
+        if (stop == std::end(xs)) {
             break;
         }
         start = stop;
@@ -11017,7 +10492,7 @@ ContainerOut split_by_keep_separators
 // split(0, true, [1,3,2,0,0,6,0,7,5]) == [[1,3,2],[],[6],[7,5]]
 // O(n)
 template <typename ContainerIn,
-        typename T = typename ContainerIn::value_type>
+    typename T = typename ContainerIn::value_type>
 auto split(const T& x, bool allow_empty, const ContainerIn& xs)
 {
     return split_by(is_equal_to(x), allow_empty, xs);
@@ -11032,12 +10507,11 @@ auto split(const T& x, bool allow_empty, const ContainerIn& xs)
 // split_one_of(" o", false, "How are u?") == ["H","w","are","u?"]
 // O(n)
 template <typename ContainerIn,
-        typename ContainerDelims>
+    typename ContainerDelims>
 auto split_one_of(
     const ContainerDelims delimiters, bool allow_empty, const ContainerIn& xs)
 {
-    const auto pred = [&](const typename ContainerIn::value_type& x) -> bool
-    {
+    const auto pred = [&](const typename ContainerIn::value_type& x) -> bool {
         return is_elem_of(x, delimiters);
     };
     return split_by(pred, allow_empty, xs);
@@ -11051,7 +10525,7 @@ auto split_one_of(
 // == [[1,3],[2],[2,5,5,3],[6,7,9]]
 // O(n)
 template <typename ContainerIn,
-        typename T = typename ContainerIn::value_type>
+    typename T = typename ContainerIn::value_type>
 auto split_keep_separators(const T& x, const ContainerIn& xs)
 {
     return split_by_keep_separators(is_equal_to(x), xs);
@@ -11062,8 +10536,7 @@ auto split_keep_separators(const T& x, const ContainerIn& xs)
 // Split a sequence at a specific position.
 // split_at_idx(2, [0,1,2,3,4]) == ([0,1],[2,3,4])
 template <typename Container>
-std::pair<Container, Container> split_at_idx
-        (std::size_t idx, const Container& xs)
+std::pair<Container, Container> split_at_idx(std::size_t idx, const Container& xs)
 {
     assert(idx <= size_of_cont(xs));
     return make_pair(get_segment(0, idx, xs),
@@ -11075,16 +10548,14 @@ std::pair<Container, Container> split_at_idx
 // Insert an element into a sequence at a specific position.
 // insert_at_idx(2, 0, [1,2,3,4]) == [1,2,0,3,4].
 template <typename Container,
-        typename T = typename Container::value_type>
+    typename T = typename Container::value_type>
 Container insert_at_idx(std::size_t idx, const T& x, const Container& xs)
 {
     const auto splitted = split_at_idx(idx, xs);
     return concat(std::vector<Container>(
-        {
-            splitted.first,
+        { splitted.first,
             singleton_seq<T, Container>(x),
-            splitted.second
-        }));
+            splitted.second }));
 }
 
 // API search type: partition : ((a -> Bool), [a]) -> ([a], [a])
@@ -11094,16 +10565,14 @@ Container insert_at_idx(std::size_t idx, const T& x, const Container& xs)
 // The second group contains the remaining elements.
 // partition(is_even, [0,1,1,3,7,2,3,4]) == ([0,2,4],[1,1,3,7,3])
 template <typename UnaryPredicate, typename Container>
-std::pair<Container, Container> partition
-        (UnaryPredicate pred, const Container& xs)
+std::pair<Container, Container> partition(UnaryPredicate pred, const Container& xs)
 {
     internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
     Container matching;
     Container notMatching;
     auto itOutMatching = internal::get_back_inserter(matching);
     auto itOutNotMatching = internal::get_back_inserter(notMatching);
-    for (const auto& x : xs)
-    {
+    for (const auto& x : xs) {
         if (internal::invoke(pred, x))
             *itOutMatching = x;
         else
@@ -11118,25 +10587,24 @@ std::pair<Container, Container> partition
 // split_at_idxs([2,5], [0,1,2,3,4,5,6,7]) == [[0,1],[2,3,4],[5,6,7]]
 // split_at_idxs([2,5,5], [0,1,2,3,4,5,6,7]) == [[0,1],[2,3,4],[],[5,6,7]]
 template <typename ContainerIdxs, typename ContainerIn,
-        typename ContainerOut = std::vector<ContainerIn>>
+    typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut split_at_idxs(const ContainerIdxs& idxsIn, const ContainerIn& xs)
 {
     static_assert(std::is_same<typename ContainerIdxs::value_type, std::size_t>::value,
         "Indices must be std::size_t");
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
-    ContainerIdxs idxStartC = {0};
-    ContainerIdxs idxEndC = {size_of_cont(xs)};
-    std::vector<ContainerIdxs> containerIdxss = {idxStartC, idxsIn, idxEndC};
+    ContainerIdxs idxStartC = { 0 };
+    ContainerIdxs idxEndC = { size_of_cont(xs) };
+    std::vector<ContainerIdxs> containerIdxss = { idxStartC, idxsIn, idxEndC };
     auto idxs = concat(containerIdxss);
     auto idxsClean = sort(idxs);
     ContainerOut result;
     internal::prepare_container(result, size_of_cont(idxsClean) - 1);
     auto itOut = internal::get_back_inserter(result);
     auto idxPairs = overlapping_pairs(idxsClean);
-    for (const auto& idxPair : idxPairs)
-    {
+    for (const auto& idxPair : idxPairs) {
         *itOut = get_segment(idxPair.first, idxPair.second, xs);
     }
     return result;
@@ -11148,16 +10616,16 @@ ContainerOut split_at_idxs(const ContainerIdxs& idxsIn, const ContainerIn& xs)
 // split_every(3, [0,1,2,3,4,5,6,7]) == [[0,1,2],[3,4,5],[6,7]]
 // Also known as chunk or chunks.
 template <typename ContainerIn,
-        typename ContainerOut = std::vector<ContainerIn>>
+    typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut split_every(std::size_t n, const ContainerIn& xs)
 {
     return split_at_idxs<
         std::vector<std::size_t>,
         ContainerIn,
         ContainerOut>(
-            numbers_step<std::size_t>(
-                n, size_of_cont(xs), n),
-            xs);
+        numbers_step<std::size_t>(
+            n, size_of_cont(xs), n),
+        xs);
 }
 
 // API search type: split_by_token : ([a], Bool, [a]) -> [[a]]
@@ -11165,17 +10633,15 @@ ContainerOut split_every(std::size_t n, const ContainerIn& xs)
 // Split a sequence at every segment matching a token.
 // split_by_token(", ", true, "foo, bar, baz") == ["foo", "bar", "baz"]
 template <typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
+    typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut split_by_token(const ContainerIn& token,
-        bool allow_empty, const ContainerIn& xs)
+    bool allow_empty, const ContainerIn& xs)
 {
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
-    const auto token_begins =
-        find_all_instances_of_token_non_overlapping(token, xs);
-    const auto token_ends =
-        transform(add_to<std::size_t>(size_of_cont(token)), token_begins);
+    const auto token_begins = find_all_instances_of_token_non_overlapping(token, xs);
+    const auto token_ends = transform(add_to<std::size_t>(size_of_cont(token)), token_begins);
     assert(is_sorted(interweave(token_begins, token_ends)));
 
     typedef std::vector<std::size_t> idx_vec;
@@ -11185,10 +10651,9 @@ ContainerOut split_by_token(const ContainerIn& token,
 
     ContainerOut result;
     auto itOut = internal::get_back_inserter(result);
-    for (const auto& segment : segments)
-    {
+    for (const auto& segment : segments) {
         if (segment.first != segment.second || allow_empty)
-        *itOut = get_segment(segment.first, segment.second, xs);
+            *itOut = get_segment(segment.first, segment.second, xs);
     }
     return result;
 }
@@ -11198,17 +10663,16 @@ ContainerOut split_by_token(const ContainerIn& token,
 // RLE using a specific binary predicate as equality check.
 // run_length_encode_by((==),[1,2,2,2,2,3,3,2)) == [(1,1),(4,2),(2,3),(1,2)]
 template <typename BinaryPredicate,
-        typename ContainerIn,
-        typename T = typename ContainerIn::value_type,
-        typename ContainerOut =
-            typename std::vector<std::pair<std::size_t, T>>>
+    typename ContainerIn,
+    typename T = typename ContainerIn::value_type,
+    typename ContainerOut =
+        typename std::vector<std::pair<std::size_t, T>>>
 ContainerOut run_length_encode_by(BinaryPredicate pred, const ContainerIn& xs)
 {
     internal::check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
     ContainerOut result;
     auto groups = group_by(pred, xs);
-    auto group_to_pair = [](const ContainerIn& group) -> std::pair<std::size_t, T>
-    {
+    auto group_to_pair = [](const ContainerIn& group) -> std::pair<std::size_t, T> {
         return std::make_pair(size_of_cont(group), group.front());
     };
     return transform(group_to_pair, groups);
@@ -11219,7 +10683,7 @@ ContainerOut run_length_encode_by(BinaryPredicate pred, const ContainerIn& xs)
 // RLE.
 // run_length_encode([1,2,2,2,2,3,3,2)) == [(1,1),(4,2),(2,3),(1,2)]
 template <typename ContainerIn,
-        typename T = typename ContainerIn::value_type>
+    typename T = typename ContainerIn::value_type>
 auto run_length_encode(const ContainerIn& xs)
 {
     return run_length_encode_by(is_equal<T>, xs);
@@ -11230,17 +10694,16 @@ auto run_length_encode(const ContainerIn& xs)
 // Inverse operation to run_length_encode.
 // run_length_decode([(1,1),(4,2),(2,3),(1,2)]) == [1,2,2,2,2,3,3,2)
 template <typename ContainerIn,
-        typename Pair = typename ContainerIn::value_type,
-        typename Cnt = typename Pair::first_type>
+    typename Pair = typename ContainerIn::value_type,
+    typename Cnt = typename Pair::first_type>
 auto run_length_decode(const ContainerIn& pairs)
 {
     static_assert(std::is_convertible<Cnt, std::size_t>::value,
         "Count type must be convertible to std::size_t.");
     const auto pair_to_vec =
-        [](const Pair& p)
-    {
-        return replicate(p.first, p.second);
-    };
+        [](const Pair& p) {
+            return replicate(p.first, p.second);
+        };
     return concat(transform(pair_to_vec, pairs));
 }
 
@@ -11269,21 +10732,19 @@ std::pair<Container, Container> span(UnaryPredicate pred, const Container& xs)
 // divvy(1, step, xs) is also known as stride
 //     (but withouts the nested lists in the result)
 template <typename ContainerIn,
-        typename ContainerOut = std::vector<ContainerIn>>
+    typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut divvy(std::size_t length, std::size_t step, const ContainerIn& xs)
 {
     assert(length > 0);
     assert(step > 0);
-    const auto start_idxs =
-        numbers_step<std::size_t>(
-            0, size_of_cont(xs) - (length - 1), step);
+    const auto start_idxs = numbers_step<std::size_t>(
+        0, size_of_cont(xs) - (length - 1), step);
 
     ContainerOut result;
     internal::prepare_container(result, size_of_cont(start_idxs));
     auto itOut = internal::get_back_inserter(result);
 
-    for (const auto start_idx : start_idxs)
-    {
+    for (const auto start_idx : start_idxs) {
         *itOut = get_segment(start_idx, start_idx + length, xs);
     }
     return result;
@@ -11294,20 +10755,18 @@ ContainerOut divvy(std::size_t length, std::size_t step, const ContainerIn& xs)
 // Generates overlapping subsequences.
 // aperture(5, [0,1,2,3,4,5,6]) == [[0,1,2,3,4],[1,2,3,4,5],[2,3,4,5,6]]
 template <typename ContainerIn,
-        typename ContainerOut = std::vector<ContainerIn>>
+    typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut aperture(std::size_t length, const ContainerIn& xs)
 {
     assert(length > 0);
-    const auto start_idxs =
-        numbers<std::size_t>(
-            0, size_of_cont(xs) - (length - 1));
+    const auto start_idxs = numbers<std::size_t>(
+        0, size_of_cont(xs) - (length - 1));
 
     ContainerOut result;
     internal::prepare_container(result, size_of_cont(start_idxs));
     auto itOut = internal::get_back_inserter(result);
 
-    for (const auto start_idx : start_idxs)
-    {
+    for (const auto start_idx : start_idxs) {
         *itOut = get_segment(start_idx, start_idx + length, xs);
     }
     return result;
@@ -11326,8 +10785,7 @@ Container stride(std::size_t step, const Container& xs)
     auto it_in = std::begin(xs);
     std::size_t i = 0;
     const auto xs_size = size_of_cont(xs);
-    while(it_in != std::end(xs))
-    {
+    while (it_in != std::end(xs)) {
         *it = *it_in;
         std::size_t increment = std::min(step, xs_size - i);
         internal::advance_iterator(it_in, increment);
@@ -11343,33 +10801,27 @@ Container stride(std::size_t step, const Container& xs)
 template <typename Container>
 Container winsorize(double trim_ratio, const Container& xs)
 {
-    if (size_of_cont(xs) == 1 || size_of_cont(xs) == 0)
-    {
+    if (size_of_cont(xs) == 1 || size_of_cont(xs) == 0) {
         return xs;
     }
     trim_ratio = std::max(trim_ratio, 0.0);
     const auto xs_sorted = sort(xs);
-    std::size_t amount =
-        floor<double, std::size_t>(
-            trim_ratio * static_cast<double>(size_of_cont(xs_sorted)));
+    std::size_t amount = floor<double, std::size_t>(
+        trim_ratio * static_cast<double>(size_of_cont(xs_sorted)));
     amount = std::min(size_of_cont(xs_sorted) / 2, amount);
     const auto parts = split_at_idxs(
-        std::vector<std::size_t>({amount, size_of_cont(xs_sorted) - amount}),
+        std::vector<std::size_t>({ amount, size_of_cont(xs_sorted) - amount }),
         xs_sorted);
     assert(size_of_cont(parts) == 3);
     typedef typename Container::value_type T;
-    if (is_empty(parts[1]))
-    {
+    if (is_empty(parts[1])) {
         return Container(size_of_cont(xs_sorted), median(xs_sorted));
-    }
-    else
-    {
+    } else {
         const T lower = parts[1].front();
         const T upper = parts[1].back();
-        const auto result = concat(std::vector<Container>({
-            Container(amount, lower),
+        const auto result = concat(std::vector<Container>({ Container(amount, lower),
             parts[1],
-            Container(amount, upper)}));
+            Container(amount, upper) }));
         assert(size_of_cont(result) == size_of_cont(xs_sorted));
         return result;
     }
@@ -11380,11 +10832,11 @@ Container winsorize(double trim_ratio, const Container& xs)
 // Separate elements equal after applying a transformer into groups.
 // separate_on((mod 10), [12,22,34]) == [[12,34],[22]]
 template <typename F, typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
+    typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut separate_on(F f, const ContainerIn& xs)
 {
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
 
     ContainerOut result;
@@ -11400,9 +10852,8 @@ ContainerOut separate_on(F f, const ContainerIn& xs)
         typename ContainerOut::value_type sub_result;
         found = false;
         auto itOutInner = internal::get_back_inserter(sub_result);
-        for (auto& group: groups) {
-            if (size_of_cont(group) > index)
-            {
+        for (auto& group : groups) {
+            if (size_of_cont(group) > index) {
                 *itOutInner = group[index];
                 found = true;
             }
@@ -11420,11 +10871,11 @@ ContainerOut separate_on(F f, const ContainerIn& xs)
 // Separate equal elements into groups.
 // separate([1, 2, 2, 3, 3, 4, 4, 4]) == [[1, 2, 3, 4], [2, 3, 4], [4]]
 template <typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
+    typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut separate(const ContainerIn& xs)
 {
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
     typedef typename ContainerIn::value_type T;
     return separate_on(identity<T>, xs);
@@ -11440,8 +10891,7 @@ ContainerOut separate(const ContainerIn& xs)
 #include <mutex>
 #include <random>
 
-namespace fplus
-{
+namespace fplus {
 
 // API search type: transform_with_idx : (((Int, a) -> b), [a]) -> [b]
 // fwd bind count: 1
@@ -11457,8 +10907,7 @@ ContainerOut transform_with_idx(F f, const ContainerIn& xs)
     internal::prepare_container(ys, size_of_cont(xs));
     auto it = internal::get_back_inserter<ContainerOut>(ys);
     std::size_t idx = 0;
-    for (const auto& x : xs)
-    {
+    for (const auto& x : xs) {
         *it = internal::invoke(f, idx++, x);
     }
     return ys;
@@ -11545,13 +10994,10 @@ ContainerOut interleave(const ContainerIn& xss)
     internal::prepare_container(result, length);
     auto it_out = internal::get_back_inserter<ContainerOut>(result);
     bool still_appending = true;
-    while (still_appending)
-    {
+    while (still_appending) {
         still_appending = false;
-        for (auto& it_pair : it_pairs)
-        {
-            if (it_pair.first != it_pair.second)
-            {
+        for (auto& it_pair : it_pairs) {
+            if (it_pair.first != it_pair.second) {
                 *it_out = *it_pair.first;
                 still_appending = true;
                 ++it_pair.first;
@@ -11569,33 +11015,31 @@ ContainerOut interleave(const ContainerIn& xss)
 template <typename Container>
 Container transpose(const Container& rows)
 {
-    if (is_empty(rows))
-    {
+    if (is_empty(rows)) {
         return {};
     }
     return split_every<typename Container::value_type, Container>(
         size_of_cont(rows), interleave(rows));
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename Container>
-Container shuffle(internal::reuse_container_t,
-    std::uint_fast32_t seed, Container&& xs)
-{
-    std::mt19937 g(seed);
-    std::shuffle(std::begin(xs), std::end(xs), g);
-    return std::forward<Container>(xs);
-}
+    template <typename Container>
+    Container shuffle(internal::reuse_container_t,
+        std::uint_fast32_t seed, Container&& xs)
+    {
+        std::mt19937 g(seed);
+        std::shuffle(std::begin(xs), std::end(xs), g);
+        return std::forward<Container>(xs);
+    }
 
-template <typename Container>
-Container shuffle(internal::create_new_container_t,
-    std::uint_fast32_t seed, const Container& xs)
-{
-    Container ys = xs;
-    return internal::shuffle(internal::reuse_container_t(), seed, std::move(ys));
-}
+    template <typename Container>
+    Container shuffle(internal::create_new_container_t,
+        std::uint_fast32_t seed, const Container& xs)
+    {
+        Container ys = xs;
+        return internal::shuffle(internal::reuse_container_t(), seed, std::move(ys));
+    }
 
 } // namespace internal
 
@@ -11607,7 +11051,7 @@ Container shuffle(internal::create_new_container_t,
 template <typename Container>
 auto shuffle(std::uint_fast32_t seed, Container&& xs)
 {
-    return(internal::shuffle(internal::can_reuse_v<Container>{},
+    return (internal::shuffle(internal::can_reuse_v<Container> {},
         seed, std::forward<Container>(xs)));
 }
 
@@ -11655,8 +11099,7 @@ Container random_elements(
     assert(is_not_empty(xs));
     std::mt19937 gen(seed);
     std::uniform_int_distribution<std::size_t> dis(0, size_of_cont(xs) - 1);
-    const auto draw = [&]() -> typename Container::value_type
-    {
+    const auto draw = [&]() -> typename Container::value_type {
         return elem_at_idx(dis(gen), xs);
     };
     return generate<Container>(draw, n);
@@ -11666,8 +11109,8 @@ Container random_elements(
 // fwd bind count: 1
 // Applies a list of functions to a value.
 template <typename FunctionContainer,
-          typename F = typename FunctionContainer::value_type,
-          typename FIn>
+    typename F = typename FunctionContainer::value_type,
+    typename FIn>
 auto apply_functions(const FunctionContainer& functions, const FIn& x)
 {
     internal::trigger_static_asserts<internal::unary_function_tag, F, FIn>();
@@ -11679,8 +11122,7 @@ auto apply_functions(const FunctionContainer& functions, const FIn& x)
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(functions));
     auto it = internal::get_back_inserter<ContainerOut>(ys);
-    for (const auto& f : functions)
-    {
+    for (const auto& f : functions) {
         *it = internal::invoke(f, x);
     }
     return ys;
@@ -11695,14 +11137,12 @@ auto apply_function_n_times(F f, std::size_t n, const FIn& x)
     internal::trigger_static_asserts<internal::unary_function_tag, F, FIn>();
     using FOut = std::decay_t<internal::invoke_result_t<F, FIn>>;
     static_assert(std::is_same<FOut, FIn>::value,
-                  "Input and output of F must be the same type.");
-    if (n == 0)
-    {
+        "Input and output of F must be the same type.");
+    if (n == 0) {
         return x;
     }
     FOut y = internal::invoke(f, x);
-    for (std::size_t i = 1; i < n; ++i)
-    {
+    for (std::size_t i = 1; i < n; ++i) {
         y = internal::invoke(f, y);
     }
     return y;
@@ -11723,19 +11163,17 @@ auto transform_parallelly(F f, const ContainerIn& xs)
         same_cont_new_t_from_unary_f<ContainerIn, F, 0>::type;
     using X = typename ContainerIn::value_type;
     internal::trigger_static_asserts<internal::unary_function_tag, F, X>();
-    auto handles = transform([&f](const X& x)
-    {
-        return std::async(std::launch::async, [&x, &f]()
-        {
+    auto handles = transform([&f](const X& x) {
+        return std::async(std::launch::async, [&x, &f]() {
             return internal::invoke(f, x);
         });
-    }, xs);
+    },
+        xs);
 
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
     auto it = internal::get_back_inserter<ContainerOut>(ys);
-    for (auto& handle : handles)
-    {
+    for (auto& handle : handles) {
         *it = handle.get();
     }
     return ys;
@@ -11755,28 +11193,25 @@ auto transform_parallelly_n_threads(std::size_t n, F f, const ContainerIn& xs)
         same_cont_new_t_from_unary_f<ContainerIn, F, 0>::type;
     using X = typename ContainerIn::value_type;
     using Y = internal::invoke_result_t<F, X>;
-    using x_ptr_t =  const X*;
+    using x_ptr_t = const X*;
     auto queue = transform_convert<std::vector<x_ptr_t>>(
-        [](const X& x) -> x_ptr_t
-        {
+        [](const X& x) -> x_ptr_t {
             return &x;
-        }, xs);
+        },
+        xs);
 
     std::mutex queue_mutex;
     std::mutex thread_results_mutex;
     std::map<std::size_t, std::decay_t<Y>> thread_results;
     std::size_t queue_idx = 0;
 
-    const auto worker_func = [&]()
-    {
-        for (;;)
-        {
+    const auto worker_func = [&]() {
+        for (;;) {
             std::size_t idx = std::numeric_limits<std::size_t>::max();
             x_ptr_t x_ptr = nullptr;
             {
                 std::lock_guard<std::mutex> queue_lock(queue_mutex);
-                if (queue_idx == queue.size())
-                {
+                if (queue_idx == queue.size()) {
                     return;
                 }
                 idx = queue_idx;
@@ -11794,14 +11229,12 @@ auto transform_parallelly_n_threads(std::size_t n, F f, const ContainerIn& xs)
         }
     };
 
-    const auto create_thread = [&]() -> std::thread
-    {
+    const auto create_thread = [&]() -> std::thread {
         return std::thread(worker_func);
     };
     auto threads = generate<std::vector<std::thread>>(create_thread, n);
 
-    for (auto& thread : threads)
-    {
+    for (auto& thread : threads) {
         thread.join();
     }
 
@@ -11822,25 +11255,17 @@ template <typename F, typename Container>
 typename Container::value_type reduce_parallelly(
     F f, const typename Container::value_type& init, const Container& xs)
 {
-    if (is_empty(xs))
-    {
+    if (is_empty(xs)) {
         return init;
-    }
-    else if (size_of_cont(xs) == 1)
-    {
+    } else if (size_of_cont(xs) == 1) {
         return internal::invoke(f, init, xs.front());
-    }
-    else
-    {
+    } else {
         typedef typename Container::value_type T;
-        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T
-        {
+        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T {
             return internal::invoke(f, p.first, p.second);
         };
-        auto transform_result =
-            transform_parallelly(f_on_pair, adjacent_pairs(xs));
-        if (is_odd(size_of_cont(xs)))
-        {
+        auto transform_result = transform_parallelly(f_on_pair, adjacent_pairs(xs));
+        if (is_odd(size_of_cont(xs))) {
             transform_result.push_back(last(xs));
         }
         return reduce_parallelly(f, init, transform_result);
@@ -11859,25 +11284,17 @@ typename Container::value_type reduce_parallelly_n_threads(
     std::size_t n,
     F f, const typename Container::value_type& init, const Container& xs)
 {
-    if (is_empty(xs))
-    {
+    if (is_empty(xs)) {
         return init;
-    }
-    else if (size_of_cont(xs) == 1)
-    {
+    } else if (size_of_cont(xs) == 1) {
         return internal::invoke(f, init, xs.front());
-    }
-    else
-    {
+    } else {
         typedef typename Container::value_type T;
-        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T
-        {
+        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T {
             return internal::invoke(f, p.first, p.second);
         };
-        auto transform_result =
-            transform_parallelly_n_threads(n, f_on_pair, adjacent_pairs(xs));
-        if (is_odd(size_of_cont(xs)))
-        {
+        auto transform_result = transform_parallelly_n_threads(n, f_on_pair, adjacent_pairs(xs));
+        if (is_odd(size_of_cont(xs))) {
             transform_result.push_back(last(xs));
         }
         return reduce_parallelly_n_threads(n, f, init, transform_result);
@@ -11897,21 +11314,15 @@ template <typename F, typename Container>
 typename Container::value_type reduce_1_parallelly(F f, const Container& xs)
 {
     assert(is_not_empty(xs));
-    if (size_of_cont(xs) == 1)
-    {
+    if (size_of_cont(xs) == 1) {
         return xs.front();
-    }
-    else
-    {
+    } else {
         typedef typename Container::value_type T;
-        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T
-        {
+        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T {
             return internal::invoke(f, p.first, p.second);
         };
-        auto transform_result =
-            transform_parallelly(f_on_pair, adjacent_pairs(xs));
-        if (is_odd(size_of_cont(xs)))
-        {
+        auto transform_result = transform_parallelly(f_on_pair, adjacent_pairs(xs));
+        if (is_odd(size_of_cont(xs))) {
             transform_result.push_back(last(xs));
         }
         return reduce_1_parallelly(f, transform_result);
@@ -11930,21 +11341,15 @@ typename Container::value_type reduce_1_parallelly_n_threads(
     std::size_t n, F f, const Container& xs)
 {
     assert(is_not_empty(xs));
-    if (size_of_cont(xs) == 1)
-    {
+    if (size_of_cont(xs) == 1) {
         return xs.front();
-    }
-    else
-    {
+    } else {
         typedef typename Container::value_type T;
-        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T
-        {
+        const auto f_on_pair = [f](const std::pair<T, T>& p) -> T {
             return internal::invoke(f, p.first, p.second);
         };
-        auto transform_result =
-            transform_parallelly_n_threads(n, f_on_pair, adjacent_pairs(xs));
-        if (is_odd(size_of_cont(xs)))
-        {
+        auto transform_result = transform_parallelly_n_threads(n, f_on_pair, adjacent_pairs(xs));
+        if (is_odd(size_of_cont(xs))) {
             transform_result.push_back(last(xs));
         }
         return reduce_1_parallelly_n_threads(n, f, transform_result);
@@ -11964,9 +11369,10 @@ Container keep_if_parallelly(Pred pred, const Container& xs)
     // Avoid a temporary std::vector<bool>.
     const auto idxs = find_all_idxs_by(
         is_equal_to<std::uint8_t>(1),
-        transform_parallelly([pred](const auto & x) -> std::uint8_t {
+        transform_parallelly([pred](const auto& x) -> std::uint8_t {
             return pred(x) ? 1 : 0;
-        }, xs));
+        },
+            xs));
     return elems_at_idxs(idxs, xs);
 }
 
@@ -11982,9 +11388,11 @@ Container keep_if_parallelly_n_threads(
     // Avoid a temporary std::vector<bool>.
     const auto idxs = find_all_idxs_by(
         is_equal_to<std::uint8_t>(1),
-        transform_parallelly_n_threads(n, [pred](const auto & x) -> std::uint8_t {
-            return pred(x) ? 1 : 0;
-        }, xs));
+        transform_parallelly_n_threads(
+            n, [pred](const auto& x) -> std::uint8_t {
+                return pred(x) ? 1 : 0;
+            },
+            xs));
     return elems_at_idxs(idxs, xs);
 }
 
@@ -11995,9 +11403,9 @@ Container keep_if_parallelly_n_threads(
 // commutative monoid.
 template <typename UnaryF, typename BinaryF, typename Container, typename Acc>
 auto transform_reduce(UnaryF unary_f,
-                      BinaryF binary_f,
-                      const Acc& init,
-                      const Container& xs)
+    BinaryF binary_f,
+    const Acc& init,
+    const Container& xs)
 {
     return reduce(binary_f, init, transform(unary_f, xs));
 }
@@ -12023,9 +11431,9 @@ auto transform_reduce_1(UnaryF unary_f, BinaryF binary_f, const Container& xs)
 // Check out transform_reduce_parallelly_n_threads to limit the number of threads.
 template <typename UnaryF, typename BinaryF, typename Container, typename Acc>
 auto transform_reduce_parallelly(UnaryF unary_f,
-                                 BinaryF binary_f,
-                                 const Acc& init,
-                                 const Container& xs)
+    BinaryF binary_f,
+    const Acc& init,
+    const Container& xs)
 {
     return reduce_parallelly(binary_f, init, transform_parallelly(unary_f, xs));
 }
@@ -12038,10 +11446,10 @@ auto transform_reduce_parallelly(UnaryF unary_f,
 // should form a commutative monoid.
 template <typename UnaryF, typename BinaryF, typename Container, typename Acc>
 auto transform_reduce_parallelly_n_threads(std::size_t n,
-                                           UnaryF unary_f,
-                                           BinaryF binary_f,
-                                           const Acc& init,
-                                           const Container& xs)
+    UnaryF unary_f,
+    BinaryF binary_f,
+    const Acc& init,
+    const Container& xs)
 {
     return reduce_parallelly_n_threads(
         n, binary_f, init, transform_parallelly_n_threads(n, unary_f, xs));
@@ -12057,8 +11465,8 @@ auto transform_reduce_parallelly_n_threads(std::size_t n,
 // Check out transform_reduce_1_parallelly_n_threads to limit the number of threads.
 template <typename UnaryF, typename BinaryF, typename Container>
 auto transform_reduce_1_parallelly(UnaryF unary_f,
-                                   BinaryF binary_f,
-                                   const Container& xs)
+    BinaryF binary_f,
+    const Container& xs)
 {
     return reduce_1_parallelly(binary_f, transform_parallelly(unary_f, xs));
 }
@@ -12071,702 +11479,15 @@ auto transform_reduce_1_parallelly(UnaryF unary_f,
 // should form a commutative semigroup.
 template <typename UnaryF, typename BinaryF, typename Container>
 auto transform_reduce_1_parallelly_n_threads(std::size_t n,
-                                             UnaryF unary_f,
-                                             BinaryF binary_f,
-                                             const Container& xs)
+    UnaryF unary_f,
+    BinaryF binary_f,
+    const Container& xs)
 {
     return reduce_1_parallelly_n_threads(
         n, binary_f, transform_parallelly_n_threads(n, unary_f, xs));
 }
 
 } // namespace fplus
-#include <array>
-#include <chrono>
-#include <functional>
-
-namespace fplus
-{
-
-// Optimizes the initial position to the nearest local minimum
-// in regards to the objective_function
-// using numerical gradient descent based on the epsilon neighborhood.
-// momentum_conservation should be in [0, 1). A low value means much decay.
-// If no fixed step size is provided, each step advances by the length
-// of the gradient.
-// In both cases the step is scaled with a step factor, starting at 1.0.
-// If one iteration results in no further improvement,
-// the step factor is reduced by a factor of 0.5.
-// The callback is executed with
-// iteration, step factor, momentum and current position
-// after every iteration.
-// A initial step factor other than 1.0 in all dimensions
-// can be emulated by scaling ones objective function accordingly.
-// Optimization stops if one of the provided criteria is met.
-// minimize_downhill<1>(\x -> square(x[0] + 2), 0.0001, 0.01, {123})[0] == -2;
-template <std::size_t N, typename F, typename pos_t = std::array<double, N>>
-pos_t minimize_downhill(
-        F objective_function,
-        double epsilon,
-        const pos_t& init_pos,
-        maybe<double> fixed_step_size = nothing<double>(),
-        double momentum_conservation = 0.5,
-        double sufficing_value = std::numeric_limits<double>::lowest(),
-        double min_step_factor = std::numeric_limits<double>::min(),
-        std::size_t max_iterations = std::numeric_limits<std::size_t>::max(),
-        long int max_milliseconds = std::numeric_limits<long int>::max(),
-        const std::function<
-                void (std::size_t, double, const pos_t&, const pos_t&)>&
-            callback =
-            std::function<
-                void (std::size_t, double, const pos_t&, const pos_t&)>())
-{
-    std::size_t iteration = 0;
-    double step_factor = 1.0;
-    pos_t position = init_pos;
-    double value = internal::invoke(objective_function, position);
-
-    const auto start_time = std::chrono::steady_clock::now();
-    const auto is_done = [&]() -> bool
-    {
-        if (max_milliseconds != std::numeric_limits<long int>::max())
-        {
-            const auto current_time = std::chrono::steady_clock::now();
-            const auto elapsed = current_time - start_time;
-            const auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
-            if (elapsed_ms >= max_milliseconds)
-            {
-                return true;
-            }
-        }
-        return
-            iteration >= max_iterations ||
-            step_factor <= min_step_factor ||
-            value <= sufficing_value;
-    };
-
-    const auto calc_gradient =
-        [&](const pos_t& pos) -> pos_t
-    {
-        pos_t result;
-        for (std::size_t dim = 0; dim < N; ++dim)
-        {
-            auto test_pos_1 = pos;
-            auto test_pos_2 = pos;
-            test_pos_1[dim] -= epsilon / 2.0;
-            test_pos_2[dim] += epsilon / 2.0;
-            const auto val_1 = internal::invoke(objective_function, test_pos_1);
-            const auto val_2 = internal::invoke(objective_function, test_pos_2);
-            result[dim] = (val_2 - val_1) / epsilon;
-        }
-        return result;
-    };
-
-    const auto add = [](const pos_t& p1, const pos_t& p2) -> pos_t
-    {
-        pos_t result;
-        for (std::size_t dim = 0; dim < N; ++dim)
-        {
-            result[dim] = p1[dim] + p2[dim];
-        }
-        return result;
-    };
-
-    const auto multiply = [](const pos_t& p, double f) -> pos_t
-    {
-        pos_t result;
-        for (std::size_t dim = 0; dim < N; ++dim)
-        {
-            result[dim] = p[dim] * f;
-        }
-        return result;
-    };
-
-    const auto dist_to_origin = [](const pos_t& p) -> double
-    {
-        double acc = 0;
-        for (std::size_t dim = 0; dim < N; ++dim)
-        {
-            acc += square(p[dim]);
-        }
-        return sqrt(acc);
-    };
-
-    const auto normalize = [&](const pos_t& p) -> pos_t
-    {
-        return multiply(p, 1.0 / dist_to_origin(p));
-    };
-
-    const auto null_vector = []() -> pos_t
-    {
-        pos_t result;
-        for (std::size_t dim = 0; dim < N; ++dim)
-        {
-            result[dim] = 0;
-        }
-        return result;
-    };
-
-    pos_t momentum = null_vector();
-    while (!is_done())
-    {
-        auto new_momentum = multiply(momentum, momentum_conservation);
-        pos_t gradient = calc_gradient(add(position, new_momentum));
-        const auto inverse_gradient = multiply(gradient, -1.0);
-
-        auto new_momentum_add =
-            is_nothing(fixed_step_size) ?
-                inverse_gradient :
-                multiply(
-                    normalize(inverse_gradient),
-                    fixed_step_size.unsafe_get_just());
-
-        new_momentum =
-            multiply(
-                add(new_momentum, new_momentum_add),
-                step_factor);
-        if (dist_to_origin(momentum) <= std::numeric_limits<double>::min() &&
-            dist_to_origin(new_momentum) <= std::numeric_limits<double>::min())
-        {
-            break;
-        }
-        const auto new_position = add(position, new_momentum);
-        const auto new_value = internal::invoke(objective_function, new_position);
-        if (new_value >= value)
-        {
-            step_factor /= 2.0;
-        }
-        else
-        {
-            value = new_value;
-            position = new_position;
-            momentum = new_momentum;
-        }
-        ++iteration;
-        if (callback)
-        {
-            callback(iteration, step_factor, momentum, position);
-        }
-    }
-    return position;
-}
-
-} // namespace fplus
-
-//
-// queue.hpp
-//
-
-// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
-// https://github.com/Dobiasd/FunctionalPlus
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
-
-
-
-#include <condition_variable>
-#include <cstdint>
-#include <deque>
-#include <mutex>
-
-namespace fplus
-{
-
-// A thread-safe queue.
-template <typename T>
-class queue
-{
-public:
-    queue() :
-        queue_(),
-        mutex_(),
-        cond_()
-        {}
-    fplus::maybe<T> pop()
-    {
-        std::unique_lock<std::mutex> lock(mutex_);
-        if (queue_.empty())
-        {
-            return {};
-        }
-        auto item = queue_.front();
-        queue_.pop_front();
-        return item;
-    }
-
-    void push(const T& item)
-    {
-        {
-            std::unique_lock<std::mutex> lock(mutex_);
-            queue_.push_back(item);
-        }
-        cond_.notify_one();
-    }
-
-    std::vector<T> pop_all()
-    {
-        std::unique_lock<std::mutex> mlock(mutex_);
-        const auto result = fplus::convert_container<std::vector<T>>(queue_);
-        queue_.clear();
-        return result;
-    }
-
-    std::vector<T> wait_and_pop_all()
-    {
-        std::unique_lock<std::mutex> mlock(mutex_);
-        cond_.wait(mlock, [&]() -> bool { return !queue_.empty(); });
-        const auto result = fplus::convert_container<std::vector<T>>(queue_);
-        queue_.clear();
-        return result;
-    }
-
-    std::vector<T> wait_for_and_pop_all(std::int64_t max_wait_time_us)
-    {
-        std::unique_lock<std::mutex> mlock(mutex_);
-        const auto t = std::chrono::microseconds{ max_wait_time_us };
-        cond_.wait_for(mlock, t, [&]() -> bool { return !queue_.empty(); });
-        const auto result = fplus::convert_container<std::vector<T>>(queue_);
-        queue_.clear();
-        return result;
-    }
-
-private:
-    std::deque<T> queue_;
-    std::mutex mutex_;
-    std::condition_variable cond_;
-};
-
-} // namespace fplus
-
-//
-// raii.hpp
-//
-
-// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
-// https://github.com/Dobiasd/FunctionalPlus
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
-
-
-
-//
-// shared_ref.hpp
-//
-
-// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
-// https://github.com/Dobiasd/FunctionalPlus
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
-
-
-#include <memory>
-
-namespace fplus
-{
-
-// A std::shared_ptr expresses
-// optionality of the contained value (can be nullptr)
-// and shared ownership that can be transferred.
-// A std::optional expresses optionality only.
-// The standard does not provide a class to
-// express only shared ownership without optionality.
-// shared_ref fills this gap.
-// It is recommended to use make_shared_ref for constructing an instance.
-template <typename T>
-class shared_ref
-{
-public:
-    shared_ref(const shared_ref&) = default;
-    shared_ref(shared_ref&&) = default;
-    shared_ref& operator=(const shared_ref&) = default;
-    shared_ref& operator=(shared_ref&&) = default;
-    ~shared_ref() = default;
-
-    T* operator->() { return m_ptr.get(); }
-    const T* operator->() const { return m_ptr.get(); }
-
-    T& operator*() { return *m_ptr.get(); }
-    const T& operator*() const { return *m_ptr.get(); }
-
-    template <typename XT, typename...XTypes>
-    friend shared_ref<XT> make_shared_ref(XTypes&&...args);
-
-private:
-    std::shared_ptr<T> m_ptr;
-    shared_ref(T* value) :m_ptr(value) { assert(value != nullptr);  }
-};
-
-// http://stackoverflow.com/a/41976419/1866775
-template <typename T, typename...Types>
-shared_ref<T> make_shared_ref(Types&&...args)
-{
-    return shared_ref<T>(new T(std::forward<Types>(args)...));
-}
-
-} // namespace fplus
-
-namespace fplus
-{
-
-// A generic RAII class.
-// It is recommended to use make_raii for constructing an instance.
-template <typename INIT, typename QUIT>
-class raii
-{
-public:
-    raii(INIT init, QUIT quit) :
-        quit_(quit)
-    {
-        init();
-    }
-    ~raii()
-    {
-        quit_();
-    }
-    raii(const raii&) = delete;
-    raii(raii&&) = default;
-    raii& operator=(const raii&) = delete;
-    raii& operator=(raii&&) = default;
-private:
-    QUIT quit_;
-};
-
-template <typename INIT, typename QUIT>
-shared_ref<raii<INIT, QUIT>> make_raii(INIT init, QUIT quit)
-{
-    return make_shared_ref<raii<INIT, QUIT>>(init, quit);
-}
-
-
-} // namespace fplus
-
-//
-// read.hpp
-//
-
-// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
-// https://github.com/Dobiasd/FunctionalPlus
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
-
-
-
-#include <string>
-#include <type_traits>
-
-namespace fplus
-{
-
-namespace internal
-{
-    template <typename T>
-    struct helper_read_value_struct {};
-
-    template <>
-    struct helper_read_value_struct <int>
-    {
-        static void read(const std::string& str,
-            int& result, std::size_t& num_chars_used)
-        {
-            result = std::stoi(str, &num_chars_used);
-        }
-    };
-
-    template <>
-    struct helper_read_value_struct <long>
-    {
-        static void read(const std::string& str,
-            long& result, std::size_t& num_chars_used)
-        {
-            result = std::stol(str, &num_chars_used);
-        }
-    };
-
-    template <>
-    struct helper_read_value_struct <long long>
-    {
-        static void read(const std::string& str,
-            long long& result, std::size_t& num_chars_used)
-        {
-            result = std::stoll(str, &num_chars_used);
-        }
-    };
-
-    template <>
-    struct helper_read_value_struct <unsigned int>
-    {
-        static void read(const std::string& str,
-            unsigned int& result, std::size_t& num_chars_used)
-        {
-            unsigned long result_u_l = std::stoul(str, &num_chars_used);
-            result = static_cast<unsigned int>(result_u_l);
-        }
-    };
-
-    template <>
-    struct helper_read_value_struct <unsigned long>
-    {
-        static void read(const std::string& str,
-            unsigned long& result, std::size_t& num_chars_used)
-        {
-            result = std::stoul(str, &num_chars_used);
-        }
-    };
-
-    template <>
-    struct helper_read_value_struct <unsigned long long>
-    {
-        static void read(const std::string& str,
-            unsigned long long& result, std::size_t& num_chars_used)
-        {
-            result = std::stoull(str, &num_chars_used);
-        }
-    };
-
-    template <>
-    struct helper_read_value_struct <float>
-    {
-        static void read(const std::string& str,
-            float& result, std::size_t& num_chars_used)
-        {
-            result = std::stof(str, &num_chars_used);
-        }
-    };
-
-    template <>
-    struct helper_read_value_struct <double>
-    {
-        static void read(const std::string& str,
-            double& result, std::size_t& num_chars_used)
-        {
-            result = std::stod(str, &num_chars_used);
-        }
-    };
-
-    template <>
-    struct helper_read_value_struct <long double>
-    {
-        static void read(const std::string& str,
-            long double& result, std::size_t& num_chars_used)
-        {
-            result = std::stold(str, &num_chars_used);
-        }
-    };
-
-    template <>
-    struct helper_read_value_struct <std::string>
-    {
-        static void read(const std::string& str,
-            std::string& result, std::size_t& num_chars_used)
-        {
-            num_chars_used = str.size();
-            result = str;
-        }
-    };
-}
-
-// API search type: read_value_result : String -> Result a
-// Try to deserialize a value.
-template <typename T>
-result<T, std::string> read_value_result(const std::string& str)
-{
-    try
-    {
-        T result;
-        std::size_t num_chars_used = 0;
-        internal::helper_read_value_struct<T>::read(str,
-            result, num_chars_used);
-        if (num_chars_used != str.size())
-        {
-            return error<T>(std::string("String not fully parsable."));
-        }
-        return ok<T, std::string>(result);
-    } catch(const std::invalid_argument& e) {
-        return error<T, std::string>(e.what());
-    } catch(const std::out_of_range& e) {
-        return error<T, std::string>(e.what());
-    }
-}
-
-// API search type: read_value : String -> Maybe a
-// Try to deserialize/parse a value, e.g.:
-// String to Int
-// String to Float
-// String to Double
-// read_value<unsigned int>("42") == 42
-// etc.
-template <typename T>
-maybe<T> read_value(const std::string& str)
-{
-    return to_maybe(read_value_result<T>(str));
-}
-
-// API search type: read_value_with_default : (a, String) -> a
-// fwd bind count: 1
-// Try to deserialize a value, return given default on failure, e.g.:
-// String to Int
-// String to Float
-// String to Double
-// read_value_with_default<unsigned int>(3, "42") == 42
-// read_value_with_default<unsigned int>(3, "") == 3
-// read_value_with_default<unsigned int>(3, "foo") == 3
-// etc.
-template <typename T>
-T read_value_with_default(const T& def, const std::string& str)
-{
-    return just_with_default(def, to_maybe(read_value_result<T>(str)));
-}
-
-// API search type: read_value_unsafe : String -> a
-// Try to deserialize a value, crash on failure, e.g.:
-// String to Int
-// String to Float
-// String to Double
-// read_value_unsafe<unsigned int>("42") == 42
-// read_value_unsafe<unsigned int>("") == crash
-// read_value_unsafe<unsigned int>("foo") == crash
-// See read_value and read_value_with_default for safe versions.
-// etc.
-template <typename T>
-T read_value_unsafe(const std::string& str)
-{
-    return unsafe_get_just(to_maybe(read_value_result<T>(str)));
-}
-
-} // namespace fplus
-
-//
-// replace.hpp
-//
-
-// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
-// https://github.com/Dobiasd/FunctionalPlus
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
-
-
-
-namespace fplus
-{
-
-namespace internal
-{
-
-template <typename UnaryPredicate, typename T, typename Container>
-Container replace_if(internal::reuse_container_t,
-    UnaryPredicate p, const T& dest, Container&& xs)
-{
-    std::replace_if(std::begin(xs), std::end(xs), p, dest);
-    return std::forward<Container>(xs);
-}
-
-template <typename UnaryPredicate, typename T, typename Container>
-Container replace_if(internal::create_new_container_t,
-    UnaryPredicate p, const T& dest, const Container& xs)
-{
-    Container ys = xs;
-    return replace_if(internal::reuse_container_t(),
-        p, dest, std::move(ys));
-}
-
-} // namespace internal
-
-// API search type: replace_if : ((a -> Bool), a, [a]) -> [a]
-// fwd bind count: 2
-// Replace every element fulfilling a predicate with a specific value.
-// replace_if(is_even, 0, [1, 3, 4, 6, 7]) == [1, 3, 0, 0, 7]
-template <typename UnaryPredicate, typename Container,
-    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
-ContainerOut replace_if(UnaryPredicate p,
-    const typename ContainerOut::value_type& dest, Container&& xs)
-{
-    return internal::replace_if(internal::can_reuse_v<Container>{},
-        p, dest, std::forward<Container>(xs));
-}
-
-namespace internal
-{
-
-template <typename Container,
-        typename T = typename Container::value_type>
-Container replace_elem_at_idx(internal::reuse_container_t,
-    std::size_t idx, const T& dest, Container&& xs)
-{
-    assert(idx < xs.size());
-    auto it = std::begin(xs);
-    advance_iterator(it, idx);
-    *it = dest;
-    return std::forward<Container>(xs);
-}
-
-template <typename Container,
-        typename T = typename Container::value_type>
-Container replace_elem_at_idx(internal::create_new_container_t,
-    std::size_t idx, const T& dest, const Container& xs)
-{
-    Container ys = xs;
-    return replace_elem_at_idx(internal::reuse_container_t(),
-        idx, dest, std::move(ys));
-}
-
-} // namespace internal
-
-// API search type: replace_elem_at_idx : (Int, a, [a]) -> [a]
-// fwd bind count: 2
-// Replace the element at a specific index.
-// replace_elem_at_idx(2, 0, [1, 3, 4, 4, 7]) == [1, 3, 0, 4, 7]
-template <typename Container,
-        typename ContainerOut = internal::remove_const_and_ref_t<Container>,
-        typename T = typename ContainerOut::value_type>
-ContainerOut replace_elem_at_idx(std::size_t idx, const T& dest,
-    Container&& xs)
-{
-    return internal::replace_elem_at_idx(internal::can_reuse_v<Container>{},
-        idx, dest, std::forward<Container>(xs));
-}
-
-// API search type: replace_elems : (a, a, [a]) -> [a]
-// fwd bind count: 2
-// Replace all elements matching source with dest.
-// replace_elems(4, 0, [1, 3, 4, 4, 7]) == [1, 3, 0, 0, 7]
-template <typename Container,
-        typename ContainerOut = internal::remove_const_and_ref_t<Container>,
-        typename T = typename ContainerOut::value_type>
-ContainerOut replace_elems(const T& source, const T& dest, Container&& xs)
-{
-    return replace_if(bind_1st_of_2(is_equal<T>, source), dest, xs);
-}
-
-// API search type: replace_tokens : ([a], [a], [a]) -> [a]
-// fwd bind count: 2
-// Replace all segments matching source with dest.
-// replace_tokens("haha", "hihi", "oh, hahaha!") == "oh, hihiha!"
-// replace_tokens("haha", "o", "oh, hahaha!") == "oh, oha!"
-template <typename Container>
-Container replace_tokens
-        (const Container& source, const Container& dest, const Container& xs)
-{
-    auto splitted = split_by_token(source, true, xs);
-    return join(dest, splitted);
-}
-
-} // namespace fplus
-
-//
-// show.hpp
-//
-
-// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
-// https://github.com/Dobiasd/FunctionalPlus
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
-
-
 
 #include <iomanip>
 #include <ios>
@@ -12775,8 +11496,7 @@ Container replace_tokens
 #include <string>
 #include <tuple>
 
-namespace fplus
-{
+namespace fplus {
 
 // API search type: show : a -> String
 // fwd bind count: 0
@@ -12798,8 +11518,7 @@ std::string show(const T& x)
 
 // string identity
 // "foo" -> "foo"
-inline
-std::string show(const std::string& str)
+inline std::string show(const std::string& str)
 {
     return str;
 }
@@ -12817,7 +11536,8 @@ std::string show(const std::pair<X, Y>& p)
     return std::string("(") + show(p.first) + ", " + show(p.second) + ")";
 }
 
-template <typename Container> std::string show_cont(const Container& xs);
+template <typename Container>
+std::string show_cont(const Container& xs);
 
 template <typename T, typename A>
 std::string show(const std::vector<T, A>& xs)
@@ -12854,25 +11574,19 @@ std::string show_cont_with_frame_and_newlines(
     const std::string& separator,
     const std::string& prefix, const std::string& suffix,
     const Container& xs,
-    std::size_t new_line_every_nth_elem )
+    std::size_t new_line_every_nth_elem)
 {
     std::vector<std::string> elemStrs;
     elemStrs.reserve(xs.size());
-    if (new_line_every_nth_elem == 0)
-    {
-        for (const auto& x : xs)
-        {
+    if (new_line_every_nth_elem == 0) {
+        for (const auto& x : xs) {
             elemStrs.push_back(show(x));
         }
-    }
-    else
-    {
+    } else {
         std::size_t i = 0;
-        std::string newline =
-            std::string("\n") + std::string(prefix.size(), ' ');
-        for (const auto& x : xs)
-        {
-            if ( i && i % new_line_every_nth_elem == 0)
+        std::string newline = std::string("\n") + std::string(prefix.size(), ' ');
+        for (const auto& x : xs) {
+            if (i && i % new_line_every_nth_elem == 0)
                 elemStrs.push_back(newline + show(x));
             else
                 elemStrs.push_back(show(x));
@@ -12891,8 +11605,7 @@ std::string show_cont_with_frame(
     const std::string& prefix, const std::string& suffix,
     const Container& xs)
 {
-    return
-        show_cont_with_frame_and_newlines( separator, prefix, suffix, xs, 0);
+    return show_cont_with_frame_and_newlines(separator, prefix, suffix, xs, 0);
 }
 
 // API search type: show_cont_with : (String, [a]) -> String
@@ -12966,8 +11679,7 @@ std::string show_float(
     std::size_t min_left_chars, std::size_t right_char_count, const T& x)
 {
     bool is_negative = x < 0;
-    std::size_t min_left_chars_final =
-        is_negative && min_left_chars > 0
+    std::size_t min_left_chars_final = is_negative && min_left_chars > 0
         ? min_left_chars - 1
         : min_left_chars;
     std::stringstream stream;
@@ -12978,8 +11690,7 @@ std::string show_float(
     std::string s = stream.str();
     std::size_t min_dest_length = min_left_chars_final + 1 + right_char_count;
     std::string result = fill_left('0', min_dest_length, s);
-    if (is_negative)
-    {
+    if (is_negative) {
         result = std::string("-") + result;
     }
     return result;
@@ -12998,7 +11709,7 @@ std::string show_float(
 // show_float_fill_left<double>(' ', 2, 3, -pi) == "-3.142"
 template <typename T>
 std::string show_float_fill_left(const std::string::value_type& filler,
-        std::size_t min_size, std::size_t right_char_count, const T& x)
+    std::size_t min_size, std::size_t right_char_count, const T& x)
 {
     return fill_left(filler, min_size, show_float<T>(0, right_char_count, x));
 }
@@ -13034,22 +11745,22 @@ std::string show_fill_right(const std::string::value_type& filler,
 
 // Based on https://en.cppreference.com/w/cpp/utility/tuple/tuple_cat
 // Case N, recursive
-template<class Tuple, std::size_t N>
+template <class Tuple, std::size_t N>
 struct TupleStreamer {
-    static void stream(const Tuple& t, std::list<std::string>& sl) 
+    static void stream(const Tuple& t, std::list<std::string>& sl)
     {
-        TupleStreamer<Tuple, N-1>::stream(t,sl);
+        TupleStreamer<Tuple, N - 1>::stream(t, sl);
         std::stringstream ss;
-        ss << std::get<N-1>(t);
+        ss << std::get<N - 1>(t);
         sl.emplace_back(ss.str());
     }
 };
 
 // Based on https://en.cppreference.com/w/cpp/utility/tuple/tuple_cat
 // Case N=1
-template<class Tuple>
+template <class Tuple>
 struct TupleStreamer<Tuple, 1> {
-    static void stream(const Tuple& t, std::list<std::string>& sl) 
+    static void stream(const Tuple& t, std::list<std::string>& sl)
     {
         std::stringstream ss;
         ss << std::get<0>(t);
@@ -13059,8 +11770,8 @@ struct TupleStreamer<Tuple, 1> {
 
 // Based on https://en.cppreference.com/w/cpp/utility/tuple/tuple_cat
 // Case N=0
-template<typename... Args, std::enable_if_t<sizeof...(Args) == 0, int> = 0>
-void stream(const std::tuple<Args...>& , std::list<std::string>& )
+template <typename... Args, std::enable_if_t<sizeof...(Args) == 0, int> = 0>
+void stream(const std::tuple<Args...>&, std::list<std::string>&)
 {
     return;
 }
@@ -13070,15 +11781,1347 @@ void stream(const std::tuple<Args...>& , std::list<std::string>& )
 // std::tuple<int, std::string, float> t1(10, "Test", 3.14);
 // std::list<std::string> lt1 = stream(t1);
 // std::cout << fplus::show_cont(lt1);
-template<typename... Args, std::enable_if_t<sizeof...(Args) != 0, int> = 0>
+template <typename... Args, std::enable_if_t<sizeof...(Args) != 0, int> = 0>
 std::list<std::string> stream(const std::tuple<Args...>& t)
 {
     std::list<std::string> sl;
-    TupleStreamer<decltype(t), sizeof...(Args)>::stream(t,sl);
+    TupleStreamer<decltype(t), sizeof...(Args)>::stream(t, sl);
     return sl;
 }
 
 } // namespace fplus
+
+//
+// timed.hpp
+//
+
+
+#include <chrono>
+
+//
+// stopwatch.hpp
+//
+
+// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
+// https://github.com/Dobiasd/FunctionalPlus
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+
+
+#include <chrono>
+
+namespace fplus {
+
+class stopwatch {
+public:
+    stopwatch()
+        : beg_(clock::now())
+    {
+    }
+    void reset() { beg_ = clock::now(); }
+
+    // time since creation or last reset in seconds
+    double elapsed() const
+    {
+        return std::chrono::duration_cast<second>(clock::now() - beg_).count();
+    }
+
+private:
+    typedef std::chrono::high_resolution_clock clock;
+    typedef std::chrono::duration<double, std::ratio<1>> second;
+    std::chrono::time_point<clock> beg_;
+};
+
+} // namespace fplus
+#include <type_traits>
+
+#include <cassert>
+#include <exception>
+#include <functional>
+#include <memory>
+
+namespace fplus {
+using ExecutionTime = double; // in seconds
+
+// Holds a value of type T plus an execution time
+template <typename T>
+class timed : public std::pair<T, ExecutionTime> {
+    using base_pair = std::pair<T, ExecutionTime>;
+
+public:
+    timed()
+        : base_pair()
+    {
+    }
+    timed(const T& val, ExecutionTime t = 0.)
+        : base_pair(val, t)
+    {
+    }
+
+    // Execution time in seconds (returns a double)
+    ExecutionTime time_in_s() const { return base_pair::second; }
+
+    // Execution time as a std::chrono::duration<double>
+    std::chrono::duration<double, std::ratio<1>> duration_in_s() const
+    {
+        return std::chrono::duration<double, std::ratio<1>>(time_in_s());
+    }
+
+    // Inner value
+    const T& get() const { return base_pair::first; }
+    T& get() { return base_pair::first; }
+};
+
+// API search type: show_timed : Timed a -> String
+// fwd bind count: 0
+// show_timed((42,1)) -> "42 (1000ms)"
+template <typename T>
+std::string show_timed(const fplus::timed<T>& v)
+{
+    std::string result = fplus::show(v.get()) + " (" + fplus::show(v.time_in_s() * 1000.) + "ms)";
+    return result;
+}
+
+namespace internal {
+    template <typename Fn>
+    class timed_function_impl {
+    public:
+        explicit timed_function_impl(Fn fn)
+            : _fn(fn) {};
+        template <typename... Args>
+        auto operator()(Args&&... args)
+        {
+            return _timed_result(std::forward<Args>(args)...);
+        }
+
+    private:
+        template <typename... Args>
+        auto _timed_result(Args&&... args)
+        {
+            fplus::stopwatch timer;
+            auto r = _fn(std::forward<Args>(args)...);
+            auto r_t = fplus::timed<decltype(r)>(r, timer.elapsed());
+            return r_t;
+        }
+
+        Fn _fn;
+    };
+}
+
+// API search type: make_timed_function : ((a -> b)) -> (a -> Timed b)
+// fwd bind count: 0
+// Transforms a function into a timed / benchmarked version of the same function.
+// -
+// Example:
+// -
+// using Ints = std::vector<int>;
+// Ints ascending_numbers = fplus::numbers(0, 1000);
+// Ints shuffled_numbers = fplus::shuffle(std::mt19937::default_seed, ascending_numbers);
+// auto sort_func = [](const Ints& values) { return fplus::sort(values); };
+// auto sort_bench = fplus::make_timed_function(sort_func);
+// auto sorted_numbers = sort_bench(shuffled_numbers);
+// assert(sorted_numbers.get() == ascending_numbers); // sorted_numbers.get() <=> actual output
+// assert(sorted_numbers.time_in_s() < 0.1); // // sorted_numbers.time_in_s() <=> execution time
+template <class Fn>
+auto make_timed_function(Fn f)
+{
+    return internal::timed_function_impl<decltype(f)>(f);
+}
+
+namespace internal {
+    template <typename Fn>
+    class timed_void_function_impl {
+    public:
+        explicit timed_void_function_impl(Fn fn)
+            : _fn(fn) {};
+        template <typename... Args>
+        auto operator()(Args&&... args)
+        {
+            return _timed_result(std::forward<Args>(args)...);
+        }
+
+    private:
+        template <typename... Args>
+        auto _timed_result(Args&&... args)
+        {
+            fplus::stopwatch timer;
+            _fn(std::forward<Args>(args)...);
+            return timer.elapsed();
+        }
+
+        Fn _fn;
+    };
+
+}
+
+// API search type: make_timed_void_function : ((a -> Void)) -> (a -> Double)
+// fwd bind count: 0
+// Transforms a void function into a timed / benchmarked version of the same function.
+// -
+// Example:
+// -
+// void foo() { std::this_thread::sleep_for(std::chrono::milliseconds(1000)); }
+// ...
+// auto foo_bench = make_timed_void_function(foo);
+// auto r = foo_bench();
+// double run_time = foo_bench(); // in seconds
+template <class Fn>
+auto make_timed_void_function(Fn f)
+{
+    return internal::timed_void_function_impl<decltype(f)>(f);
+}
+
+}
+#include <mutex>
+#include <vector>
+
+
+namespace fplus {
+using FunctionName = std::string;
+struct benchmark_function_report {
+    std::size_t nb_calls;
+    ExecutionTime total_time;
+    ExecutionTime average_time;
+    ExecutionTime deviation;
+};
+
+namespace internal {
+    std::string show_benchmark_function_report(
+        const std::map<FunctionName, benchmark_function_report>& reports);
+}
+
+// benchmark_session stores timings during a benchmark session
+// and is able to emit a report at the end
+class benchmark_session {
+public:
+    benchmark_session()
+        : functions_times_mutex_()
+        , functions_times_() {};
+
+    // report() shall return a string with a summary of the session
+    // Example below:
+    // Function              |Nb calls|Total time|Av. time|Deviation|
+    // ----------------------+--------+----------+--------+---------+
+    // convert_charset_string|    4000|   4.942ms| 1.236us|  1.390us|
+    // split_lines           |    1000|   4.528ms| 4.528us|  1.896us|
+    inline std::string report() const
+    {
+        const auto reports = report_list();
+        return fplus::internal::show_benchmark_function_report(reports);
+    }
+
+    std::map<FunctionName, benchmark_function_report> report_list() const
+    {
+        std::lock_guard<std::mutex> lock(functions_times_mutex_);
+        std::map<FunctionName, benchmark_function_report> report;
+        for (const auto& one_function_time : functions_times_) {
+            report[one_function_time.first] = make_bench_report(one_function_time.second);
+        }
+        return report;
+    }
+
+    inline void store_one_time(const FunctionName& function_name, ExecutionTime time)
+    {
+        std::lock_guard<std::mutex> lock(functions_times_mutex_);
+        functions_times_[function_name].push_back(time);
+    }
+
+private:
+    benchmark_function_report make_bench_report(
+        const std::vector<ExecutionTime>& times) const
+    {
+        benchmark_function_report result;
+        result.nb_calls = times.size();
+        auto mean_and_dev = fplus::mean_stddev<double>(times);
+        result.average_time = mean_and_dev.first;
+        result.deviation = mean_and_dev.second;
+        result.total_time = fplus::sum(times);
+        return result;
+    }
+
+    mutable std::mutex functions_times_mutex_;
+    std::map<FunctionName, std::vector<ExecutionTime>> functions_times_;
+};
+
+namespace internal {
+    template <typename Fn>
+    class bench_function_impl {
+    public:
+        explicit bench_function_impl(
+            benchmark_session& benchmark_sess,
+            FunctionName function_name,
+            Fn fn)
+            : benchmark_session_(benchmark_sess)
+            , function_name_(function_name)
+            , fn_(fn) {};
+
+        template <typename... Args>
+        auto operator()(Args&&... args)
+        {
+            return _bench_result(std::forward<Args>(args)...);
+        }
+
+    private:
+        template <typename... Args>
+        auto _bench_result(Args&&... args)
+        {
+            fplus::stopwatch timer;
+            auto r = fn_(std::forward<Args>(args)...);
+            benchmark_session_.store_one_time(function_name_, timer.elapsed());
+            return r;
+        }
+
+        benchmark_session& benchmark_session_;
+        FunctionName function_name_;
+        Fn fn_;
+    };
+
+    template <typename Fn>
+    class bench_void_function_impl {
+    public:
+        explicit bench_void_function_impl(
+            benchmark_session& benchmark_sess,
+            FunctionName function_name,
+            Fn fn)
+            : benchmark_session_(benchmark_sess)
+            , function_name_(function_name)
+            , fn_(fn) {};
+
+        template <typename... Args>
+        auto operator()(Args&&... args)
+        {
+            _bench_result(std::forward<Args>(args)...);
+        }
+
+    private:
+        template <typename... Args>
+        auto _bench_result(Args&&... args)
+        {
+            fplus::stopwatch timer;
+            fn_(std::forward<Args>(args)...);
+            benchmark_session_.store_one_time(function_name_, timer.elapsed());
+        }
+
+        benchmark_session& benchmark_session_;
+        FunctionName function_name_;
+        Fn fn_;
+    };
+
+} // namespace internal
+
+// API search type: make_benchmark_function : (benchmark_session, string, (a... -> b)) -> (a... -> b)
+// Transforms a function into a function with the *same* signature
+// and behavior, except that it also stores stats into the benchmark session (first parameter),
+// under the name given by the second parameter.
+// -
+// Notes:
+// Side effects: make_benchmark_function *will add side effects* to the function, since it stores data
+// into the benchmark session at each call.
+// If you intend to benchmark only one function, prefer to use the simpler "make_timed_function"
+// Use "make_benchmark_void_function" if your function returns void
+// -
+// Example of a minimal benchmark session (read benchmark_session_test.cpp for a full example)
+//     fplus::benchmark_session benchmark_sess;
+//     void foo() {
+//         auto add_bench = fplus::make_benchmark_function(benchmark_sess, "add", add);
+//         auto printf_bench = fplus::make_benchmark_void_function(benchmark_sess, "printf", printf);
+//         int forty_five = add_bench(20, add_bench(19, 6));
+//         int forty_two = benchmark_expression(benchmark_sess, "sub", forty_five - 3);
+//         printf_bench("forty_two is %i\n", forty_two);
+//     }
+//     int main() {
+//         foo();
+//         std::cout << benchmark_sess.report();
+//     }
+// This will output a report like this
+// Function|Nb calls|Total time|Av. time|Deviation|
+// --------+--------+----------+--------+---------+
+// printf  |       1|   0.010ms| 9.952us|  0.000us|
+// add     |       2|   0.000ms| 0.050us|  0.009us|
+// sub     |       1|   0.000ms| 0.039us|  0.000us|
+// -
+// As an alternative to make_benchmark_function, you can also benchmark an expression.
+// For example, in order to benchmark the following line:
+//     auto sorted = fplus::sort(my_vector);
+// Just copy/paste this expression into "bench_expression" like shown below: this expression
+// will then be benchmarked with the name "sort_my_vector"
+//     auto sorted = benchmark_expression(
+//         my_benchmark_session,
+//         "sort_my_vector",
+//         fplus::sort(my_vector);
+//     );
+// Notes :
+// benchmark_expression is a preprocessor macro that uses an immediately invoked lambda (IIL).
+// The expression can be copy-pasted with no modification, and it is possible to not remove the ";"
+// (although it also works if it is not present)
+// You can also benchmark an expression that returns void using benchmark_void_expression
+template <class Fn>
+auto make_benchmark_function(benchmark_session& session, const FunctionName& name, Fn f)
+{
+    // transforms f into a function with the same
+    // signature, that will store timings into the benchmark session
+    return internal::bench_function_impl<Fn>(session, name, f);
+}
+
+// API search type: make_benchmark_void_function : (benchmark_session, string, (a... -> Void)) -> (a... -> Void)
+// Transforms a function that returns a void into a function with the *same* signature
+// and behavior, except that it also stores stats into the benchmark session (first parameter),
+// under the name given by the second parameter
+// Note that make_benchmark_void_function *will add side effects* to the function
+// (since it stores data into the benchmark session at each call)
+// -
+// Example:
+//     benchmark_session bench_session;
+//     ...
+//     void foo() {
+//         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+//     }
+//     ...
+//     auto foo_bench = make_benchmark_void_function(bench_session, "foo", foo);
+//     foo_bench();
+//     ...
+//     std::cout << benchmark_session.report();
+template <class Fn>
+auto make_benchmark_void_function(benchmark_session& session, const FunctionName& name, Fn f)
+{
+    // transforms a void returning function into a function with the same
+    // signature, that will store timings into the benchmark session
+    return internal::bench_void_function_impl<Fn>(session, name, f);
+}
+
+#define benchmark_expression(bench_session, name, expression) \
+    make_benchmark_function(                                  \
+        bench_session,                                        \
+        name,                                                 \
+        [&]() { return expression; })();
+
+#define benchmark_void_expression(bench_session, name, expression) \
+    make_benchmark_void_function(                                  \
+        bench_session,                                             \
+        name,                                                      \
+        [&]() { expression; })();
+
+namespace internal {
+    inline std::string show_table(const std::vector<std::vector<std::string>>& rows)
+    {
+        if (rows.empty() || rows[0].empty())
+            return "";
+
+        const std::vector<std::size_t> columns_width = [&]() {
+            auto string_size = [](const std::string& s) -> std::size_t { return s.size(); };
+            auto largest_string_size = [&](const std::vector<std::string>& strings) -> std::size_t {
+                return string_size(fplus::maximum_on(string_size, strings));
+            };
+            return fplus::transform(largest_string_size, fplus::transpose(rows));
+        }();
+
+        auto show_one_element = [](const std::pair<std::string, std::size_t>& elem_and_width) {
+            const std::string& element = elem_and_width.first;
+            const auto col_width = elem_and_width.second;
+            bool is_number = element.size() > 0 && isdigit(element[0]);
+            if (is_number)
+                return fplus::show_fill_left(' ', col_width, element) + "|";
+            else
+                return fplus::show_fill_right(' ', col_width, element) + "|";
+        };
+
+        auto show_one_separator = [](std::size_t col_width) {
+            return fplus::show_fill_left('-', col_width, "") + "+";
+        };
+
+        auto show_one_row = [&](const std::vector<std::string>& row) {
+            return fplus::sum(fplus::transform(
+                show_one_element,
+                fplus::zip(row, columns_width)));
+        };
+
+        auto firstrow_separator = fplus::sum(fplus::transform(show_one_separator, columns_width));
+        auto rows_formatted = fplus::transform(show_one_row, rows);
+        auto rows_separated = fplus::insert_at_idx(1, firstrow_separator, rows_formatted);
+        return fplus::join(std::string("\n"), rows_separated) + "\n";
+    }
+
+    inline std::vector<std::pair<FunctionName, benchmark_function_report>> make_ordered_reports(
+        const std::map<FunctionName, benchmark_function_report>& report_map)
+    {
+        auto report_pairs = fplus::map_to_pairs(report_map);
+        auto report_pairs_sorted = fplus::sort_by([](const auto& a, const auto& b) {
+            return a.second.total_time > b.second.total_time;
+        },
+            report_pairs);
+        return report_pairs_sorted;
+    }
+
+    inline std::string show_benchmark_function_report(const std::map<FunctionName, benchmark_function_report>& reports)
+    {
+        auto ordered_reports = make_ordered_reports(reports);
+        auto my_show_time_ms = [](double time) -> std::string {
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(3);
+            ss << (time * 1000.);
+            return ss.str() + "ms";
+        };
+        auto my_show_time_us = [](double time) -> std::string {
+            std::stringstream ss;
+            ss << std::fixed << std::setprecision(3);
+            ss << (time * 1000000.);
+            return ss.str() + "us";
+        };
+
+        std::vector<std::string> header_row { { "Function", "Nb calls", "Total time", "Av. time", "Deviation" } };
+        auto value_rows = fplus::transform([&](const auto& kv) {
+            const auto& report = kv.second;
+            const auto& function_name = kv.first;
+            std::vector<std::string> row;
+            row.push_back(function_name);
+            row.push_back(fplus::show(report.nb_calls));
+            row.push_back(my_show_time_ms(report.total_time));
+            row.push_back(my_show_time_us(report.average_time));
+            row.push_back(my_show_time_us(report.deviation));
+            return row;
+        },
+            ordered_reports);
+
+        return fplus::internal::show_table(fplus::insert_at_idx(0, header_row, value_rows));
+    }
+} // namespace internal
+
+}
+
+//
+// extrapolate.hpp
+//
+
+// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
+// https://github.com/Dobiasd/FunctionalPlus
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+
+
+
+namespace fplus {
+
+// API search type: elem_at_idx_or_nothing : (Int, [a]) -> Maybe a
+// fwd bind count: 1
+// Return nth element of a sequence.
+// Returns nothing if index is outside of xs.
+template <typename Container,
+    typename T = typename Container::value_type>
+maybe<T> elem_at_idx_or_nothing(signed int idx, const Container& xs)
+{
+    if (idx < 0 || idx >= static_cast<signed int>(size_of_cont(xs))) {
+        return {};
+    }
+    auto it = std::begin(xs);
+    internal::advance_iterator(it, static_cast<std::size_t>(idx));
+    return *it;
+}
+
+// API search type: elem_at_idx_or_constant : (a, Int, [a]) -> a
+// fwd bind count: 2
+// Return nth element of a sequence.
+// Interpolate outside of sequence with a constant value.
+// iiiiii|abcdefgh|iiiiiii
+template <typename Container,
+    typename T = typename Container::value_type>
+T elem_at_idx_or_constant(const T& c, signed int idx, const Container& xs)
+{
+    if (idx < 0 || idx >= static_cast<signed int>(size_of_cont(xs))) {
+        return c;
+    }
+    auto it = std::begin(xs);
+    internal::advance_iterator(it, static_cast<std::size_t>(idx));
+    return *it;
+}
+
+// API search type: elem_at_idx_or_replicate : (Int, [a]) -> a
+// fwd bind count: 1
+// Return nth element of a sequence.
+// Interpolate outside of sequence by replicating the nearest inside value.
+// aaaaaa|abcdefgh|hhhhhhh
+// xs must be non-empty.
+template <typename Container,
+    typename T = typename Container::value_type>
+T elem_at_idx_or_replicate(signed int idx, const Container& xs)
+{
+    assert(is_not_empty(xs));
+    if (idx < 0) {
+        return xs.front();
+    }
+    if (idx >= static_cast<signed int>(size_of_cont(xs))) {
+        return xs.back();
+    }
+    auto it = std::begin(xs);
+    internal::advance_iterator(it, static_cast<std::size_t>(idx));
+    return *it;
+}
+
+// API search type: elem_at_idx_or_wrap : (Int, [a]) -> a
+// fwd bind count: 1
+// Return nth element of a sequence.
+// Interpolate outside of sequence by replicating the sequence.
+// For cyclic element access.
+// cdefgh|abcdefgh|abcdefg
+// xs must be non-empty.
+template <typename Container,
+    typename T = typename Container::value_type>
+T elem_at_idx_or_wrap(signed int idx, const Container& xs)
+{
+    assert(is_not_empty(xs));
+    const signed int cont_size = static_cast<signed int>(size_of_cont(xs));
+    if (idx < 0)
+        idx = cont_size - (std::abs(idx) % cont_size);
+    else
+        idx = idx % cont_size;
+    auto it = std::begin(xs);
+    internal::advance_iterator(it, static_cast<std::size_t>(idx));
+    return *it;
+}
+
+// API search type: extrapolate_replicate : (Int, Int, [a]) -> [a]
+// fwd bind count: 2
+// Extrapolate a sequence by replicating the border values.
+// count_begin determines the number of elements to be prepended.
+// count_end determines the number of elements to be appended.
+// aaaaaa|abcdefgh|hhhhhhh
+// xs must be non-empty.
+template <typename Container,
+    typename T = typename Container::value_type>
+Container extrapolate_replicate(std::size_t count_begin, std::size_t count_end,
+    const Container& xs)
+{
+    assert(is_not_empty(xs));
+    Container ys;
+    const auto xs_size = size_of_cont(xs);
+    internal::prepare_container(ys, xs_size + count_begin + count_end);
+    auto it = internal::get_back_inserter<Container>(ys);
+    const signed int idx_end = static_cast<signed int>(xs_size + count_end);
+    const signed int idx_start = -static_cast<signed int>(count_begin);
+    for (signed int idx = idx_start; idx < idx_end; ++idx) {
+        *it = elem_at_idx_or_replicate(idx, xs);
+    }
+    return ys;
+}
+
+// API search type: extrapolate_wrap : (Int, Int, [a]) -> [a]
+// fwd bind count: 2
+// Extrapolate a sequence by accessing the elements in cyclic fashion.
+// count_begin determines the number of elements to be prepended.
+// count_end determines the number of elements to be appended.
+// cdefgh|abcdefgh|abcdefg
+// xs must be non-empty.
+template <typename Container,
+    typename T = typename Container::value_type>
+Container extrapolate_wrap(std::size_t count_begin, std::size_t count_end,
+    const Container& xs)
+{
+    assert(is_not_empty(xs));
+    Container ys;
+    const auto xs_size = size_of_cont(xs);
+    internal::prepare_container(ys, xs_size + count_begin + count_end);
+    auto it = internal::get_back_inserter<Container>(ys);
+    const signed int idx_end = static_cast<signed int>(xs_size + count_end);
+    const signed int idx_start = -static_cast<signed int>(count_begin);
+    for (signed int idx = idx_start; idx < idx_end; ++idx) {
+        *it = elem_at_idx_or_wrap(idx, xs);
+    }
+    return ys;
+}
+
+} // namespace fplus
+
+//
+// interpolate.hpp
+//
+
+// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
+// https://github.com/Dobiasd/FunctionalPlus
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+
+
+
+#include <cmath>
+
+namespace fplus {
+
+// API search type: elem_at_float_idx : (Float, [a]) -> a
+// fwd bind count: 1
+// Interpolates linearly between elements.
+// xs must be non-empty.
+template <typename Container,
+    typename T = typename Container::value_type>
+T elem_at_float_idx(double idx, const Container& xs)
+{
+    assert(is_not_empty(xs));
+    if (idx <= 0.0) {
+        return xs.front();
+    }
+    std::size_t idx_floor = static_cast<std::size_t>(floor(idx));
+    std::size_t idx_ceil = static_cast<std::size_t>(ceil(idx));
+    if (idx_ceil >= size_of_cont(xs)) {
+        return xs.back();
+    }
+    double idx_floor_float = static_cast<double>(idx_floor);
+    double idx_ceil_float = static_cast<double>(idx_ceil);
+    double weight_floor = idx_ceil_float - idx;
+    double weight_ceil = idx - idx_floor_float;
+    return (weight_floor * elem_at_idx(idx_floor, xs) + weight_ceil * elem_at_idx(idx_ceil, xs));
+}
+
+} // namespace fplus
+
+//
+// optimize.hpp
+//
+
+// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
+// https://github.com/Dobiasd/FunctionalPlus
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+
+
+#include <array>
+#include <chrono>
+#include <functional>
+
+namespace fplus {
+
+// Optimizes the initial position to the nearest local minimum
+// in regards to the objective_function
+// using numerical gradient descent based on the epsilon neighborhood.
+// momentum_conservation should be in [0, 1). A low value means much decay.
+// If no fixed step size is provided, each step advances by the length
+// of the gradient.
+// In both cases the step is scaled with a step factor, starting at 1.0.
+// If one iteration results in no further improvement,
+// the step factor is reduced by a factor of 0.5.
+// The callback is executed with
+// iteration, step factor, momentum and current position
+// after every iteration.
+// A initial step factor other than 1.0 in all dimensions
+// can be emulated by scaling ones objective function accordingly.
+// Optimization stops if one of the provided criteria is met.
+// minimize_downhill<1>(\x -> square(x[0] + 2), 0.0001, 0.01, {123})[0] == -2;
+template <std::size_t N, typename F, typename pos_t = std::array<double, N>>
+pos_t minimize_downhill(
+    F objective_function,
+    double epsilon,
+    const pos_t& init_pos,
+    maybe<double> fixed_step_size = nothing<double>(),
+    double momentum_conservation = 0.5,
+    double sufficing_value = std::numeric_limits<double>::lowest(),
+    double min_step_factor = std::numeric_limits<double>::min(),
+    std::size_t max_iterations = std::numeric_limits<std::size_t>::max(),
+    long int max_milliseconds = std::numeric_limits<long int>::max(),
+    const std::function<
+        void(std::size_t, double, const pos_t&, const pos_t&)>&
+        callback
+    = std::function<
+        void(std::size_t, double, const pos_t&, const pos_t&)>())
+{
+    std::size_t iteration = 0;
+    double step_factor = 1.0;
+    pos_t position = init_pos;
+    double value = internal::invoke(objective_function, position);
+
+    const auto start_time = std::chrono::steady_clock::now();
+    const auto is_done = [&]() -> bool {
+        if (max_milliseconds != std::numeric_limits<long int>::max()) {
+            const auto current_time = std::chrono::steady_clock::now();
+            const auto elapsed = current_time - start_time;
+            const auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
+            if (elapsed_ms >= max_milliseconds) {
+                return true;
+            }
+        }
+        return iteration >= max_iterations || step_factor <= min_step_factor || value <= sufficing_value;
+    };
+
+    const auto calc_gradient =
+        [&](const pos_t& pos) -> pos_t {
+        pos_t result;
+        for (std::size_t dim = 0; dim < N; ++dim) {
+            auto test_pos_1 = pos;
+            auto test_pos_2 = pos;
+            test_pos_1[dim] -= epsilon / 2.0;
+            test_pos_2[dim] += epsilon / 2.0;
+            const auto val_1 = internal::invoke(objective_function, test_pos_1);
+            const auto val_2 = internal::invoke(objective_function, test_pos_2);
+            result[dim] = (val_2 - val_1) / epsilon;
+        }
+        return result;
+    };
+
+    const auto add = [](const pos_t& p1, const pos_t& p2) -> pos_t {
+        pos_t result;
+        for (std::size_t dim = 0; dim < N; ++dim) {
+            result[dim] = p1[dim] + p2[dim];
+        }
+        return result;
+    };
+
+    const auto multiply = [](const pos_t& p, double f) -> pos_t {
+        pos_t result;
+        for (std::size_t dim = 0; dim < N; ++dim) {
+            result[dim] = p[dim] * f;
+        }
+        return result;
+    };
+
+    const auto dist_to_origin = [](const pos_t& p) -> double {
+        double acc = 0;
+        for (std::size_t dim = 0; dim < N; ++dim) {
+            acc += square(p[dim]);
+        }
+        return sqrt(acc);
+    };
+
+    const auto normalize = [&](const pos_t& p) -> pos_t {
+        return multiply(p, 1.0 / dist_to_origin(p));
+    };
+
+    const auto null_vector = []() -> pos_t {
+        pos_t result;
+        for (std::size_t dim = 0; dim < N; ++dim) {
+            result[dim] = 0;
+        }
+        return result;
+    };
+
+    pos_t momentum = null_vector();
+    while (!is_done()) {
+        auto new_momentum = multiply(momentum, momentum_conservation);
+        pos_t gradient = calc_gradient(add(position, new_momentum));
+        const auto inverse_gradient = multiply(gradient, -1.0);
+
+        auto new_momentum_add = is_nothing(fixed_step_size) ? inverse_gradient : multiply(normalize(inverse_gradient), fixed_step_size.unsafe_get_just());
+
+        new_momentum = multiply(
+            add(new_momentum, new_momentum_add),
+            step_factor);
+        if (dist_to_origin(momentum) <= std::numeric_limits<double>::min() && dist_to_origin(new_momentum) <= std::numeric_limits<double>::min()) {
+            break;
+        }
+        const auto new_position = add(position, new_momentum);
+        const auto new_value = internal::invoke(objective_function, new_position);
+        if (new_value >= value) {
+            step_factor /= 2.0;
+        } else {
+            value = new_value;
+            position = new_position;
+            momentum = new_momentum;
+        }
+        ++iteration;
+        if (callback) {
+            callback(iteration, step_factor, momentum, position);
+        }
+    }
+    return position;
+}
+
+} // namespace fplus
+
+//
+// queue.hpp
+//
+
+// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
+// https://github.com/Dobiasd/FunctionalPlus
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+
+
+
+#include <condition_variable>
+#include <cstdint>
+#include <deque>
+#include <mutex>
+
+namespace fplus {
+
+// A thread-safe queue.
+template <typename T>
+class queue {
+public:
+    queue()
+        : queue_()
+        , mutex_()
+        , cond_()
+    {
+    }
+    fplus::maybe<T> pop()
+    {
+        std::unique_lock<std::mutex> lock(mutex_);
+        if (queue_.empty()) {
+            return {};
+        }
+        auto item = queue_.front();
+        queue_.pop_front();
+        return item;
+    }
+
+    void push(const T& item)
+    {
+        {
+            std::unique_lock<std::mutex> lock(mutex_);
+            queue_.push_back(item);
+        }
+        cond_.notify_one();
+    }
+
+    std::vector<T> pop_all()
+    {
+        std::unique_lock<std::mutex> mlock(mutex_);
+        const auto result = fplus::convert_container<std::vector<T>>(queue_);
+        queue_.clear();
+        return result;
+    }
+
+    std::vector<T> wait_and_pop_all()
+    {
+        std::unique_lock<std::mutex> mlock(mutex_);
+        cond_.wait(mlock, [&]() -> bool { return !queue_.empty(); });
+        const auto result = fplus::convert_container<std::vector<T>>(queue_);
+        queue_.clear();
+        return result;
+    }
+
+    std::vector<T> wait_for_and_pop_all(std::int64_t max_wait_time_us)
+    {
+        std::unique_lock<std::mutex> mlock(mutex_);
+        const auto t = std::chrono::microseconds { max_wait_time_us };
+        cond_.wait_for(mlock, t, [&]() -> bool { return !queue_.empty(); });
+        const auto result = fplus::convert_container<std::vector<T>>(queue_);
+        queue_.clear();
+        return result;
+    }
+
+private:
+    std::deque<T> queue_;
+    std::mutex mutex_;
+    std::condition_variable cond_;
+};
+
+} // namespace fplus
+
+//
+// raii.hpp
+//
+
+// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
+// https://github.com/Dobiasd/FunctionalPlus
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+
+
+
+//
+// shared_ref.hpp
+//
+
+// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
+// https://github.com/Dobiasd/FunctionalPlus
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+
+
+#include <memory>
+
+namespace fplus {
+
+// A std::shared_ptr expresses
+// optionality of the contained value (can be nullptr)
+// and shared ownership that can be transferred.
+// A std::optional expresses optionality only.
+// The standard does not provide a class to
+// express only shared ownership without optionality.
+// shared_ref fills this gap.
+// It is recommended to use make_shared_ref for constructing an instance.
+template <typename T>
+class shared_ref {
+public:
+    shared_ref(const shared_ref&) = default;
+    shared_ref(shared_ref&&) = default;
+    shared_ref& operator=(const shared_ref&) = default;
+    shared_ref& operator=(shared_ref&&) = default;
+    ~shared_ref() = default;
+
+    T* operator->() { return m_ptr.get(); }
+    const T* operator->() const { return m_ptr.get(); }
+
+    T& operator*() { return *m_ptr.get(); }
+    const T& operator*() const { return *m_ptr.get(); }
+
+    template <typename XT, typename... XTypes>
+    friend shared_ref<XT> make_shared_ref(XTypes&&... args);
+
+private:
+    std::shared_ptr<T> m_ptr;
+    shared_ref(T* value)
+        : m_ptr(value)
+    {
+        assert(value != nullptr);
+    }
+};
+
+// http://stackoverflow.com/a/41976419/1866775
+template <typename T, typename... Types>
+shared_ref<T> make_shared_ref(Types&&... args)
+{
+    return shared_ref<T>(new T(std::forward<Types>(args)...));
+}
+
+} // namespace fplus
+
+namespace fplus {
+
+// A generic RAII class.
+// It is recommended to use make_raii for constructing an instance.
+template <typename INIT, typename QUIT>
+class raii {
+public:
+    raii(INIT init, QUIT quit)
+        : quit_(quit)
+    {
+        init();
+    }
+    ~raii()
+    {
+        quit_();
+    }
+    raii(const raii&) = delete;
+    raii(raii&&) = default;
+    raii& operator=(const raii&) = delete;
+    raii& operator=(raii&&) = default;
+
+private:
+    QUIT quit_;
+};
+
+template <typename INIT, typename QUIT>
+shared_ref<raii<INIT, QUIT>> make_raii(INIT init, QUIT quit)
+{
+    return make_shared_ref<raii<INIT, QUIT>>(init, quit);
+}
+
+} // namespace fplus
+
+//
+// read.hpp
+//
+
+// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
+// https://github.com/Dobiasd/FunctionalPlus
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+
+
+
+#include <string>
+#include <type_traits>
+
+namespace fplus {
+
+namespace internal {
+    template <typename T>
+    struct helper_read_value_struct {
+    };
+
+    template <>
+    struct helper_read_value_struct<int> {
+        static void read(const std::string& str,
+            int& result, std::size_t& num_chars_used)
+        {
+            result = std::stoi(str, &num_chars_used);
+        }
+    };
+
+    template <>
+    struct helper_read_value_struct<long> {
+        static void read(const std::string& str,
+            long& result, std::size_t& num_chars_used)
+        {
+            result = std::stol(str, &num_chars_used);
+        }
+    };
+
+    template <>
+    struct helper_read_value_struct<long long> {
+        static void read(const std::string& str,
+            long long& result, std::size_t& num_chars_used)
+        {
+            result = std::stoll(str, &num_chars_used);
+        }
+    };
+
+    template <>
+    struct helper_read_value_struct<unsigned int> {
+        static void read(const std::string& str,
+            unsigned int& result, std::size_t& num_chars_used)
+        {
+            unsigned long result_u_l = std::stoul(str, &num_chars_used);
+            result = static_cast<unsigned int>(result_u_l);
+        }
+    };
+
+    template <>
+    struct helper_read_value_struct<unsigned long> {
+        static void read(const std::string& str,
+            unsigned long& result, std::size_t& num_chars_used)
+        {
+            result = std::stoul(str, &num_chars_used);
+        }
+    };
+
+    template <>
+    struct helper_read_value_struct<unsigned long long> {
+        static void read(const std::string& str,
+            unsigned long long& result, std::size_t& num_chars_used)
+        {
+            result = std::stoull(str, &num_chars_used);
+        }
+    };
+
+    template <>
+    struct helper_read_value_struct<float> {
+        static void read(const std::string& str,
+            float& result, std::size_t& num_chars_used)
+        {
+            result = std::stof(str, &num_chars_used);
+        }
+    };
+
+    template <>
+    struct helper_read_value_struct<double> {
+        static void read(const std::string& str,
+            double& result, std::size_t& num_chars_used)
+        {
+            result = std::stod(str, &num_chars_used);
+        }
+    };
+
+    template <>
+    struct helper_read_value_struct<long double> {
+        static void read(const std::string& str,
+            long double& result, std::size_t& num_chars_used)
+        {
+            result = std::stold(str, &num_chars_used);
+        }
+    };
+
+    template <>
+    struct helper_read_value_struct<std::string> {
+        static void read(const std::string& str,
+            std::string& result, std::size_t& num_chars_used)
+        {
+            num_chars_used = str.size();
+            result = str;
+        }
+    };
+}
+
+// API search type: read_value_result : String -> Result a
+// Try to deserialize a value.
+template <typename T>
+result<T, std::string> read_value_result(const std::string& str)
+{
+    try {
+        T result;
+        std::size_t num_chars_used = 0;
+        internal::helper_read_value_struct<T>::read(str,
+            result, num_chars_used);
+        if (num_chars_used != str.size()) {
+            return error<T>(std::string("String not fully parsable."));
+        }
+        return ok<T, std::string>(result);
+    } catch (const std::invalid_argument& e) {
+        return error<T, std::string>(e.what());
+    } catch (const std::out_of_range& e) {
+        return error<T, std::string>(e.what());
+    }
+}
+
+// API search type: read_value : String -> Maybe a
+// Try to deserialize/parse a value, e.g.:
+// String to Int
+// String to Float
+// String to Double
+// read_value<unsigned int>("42") == 42
+// etc.
+template <typename T>
+maybe<T> read_value(const std::string& str)
+{
+    return to_maybe(read_value_result<T>(str));
+}
+
+// API search type: read_value_with_default : (a, String) -> a
+// fwd bind count: 1
+// Try to deserialize a value, return given default on failure, e.g.:
+// String to Int
+// String to Float
+// String to Double
+// read_value_with_default<unsigned int>(3, "42") == 42
+// read_value_with_default<unsigned int>(3, "") == 3
+// read_value_with_default<unsigned int>(3, "foo") == 3
+// etc.
+template <typename T>
+T read_value_with_default(const T& def, const std::string& str)
+{
+    return just_with_default(def, to_maybe(read_value_result<T>(str)));
+}
+
+// API search type: read_value_unsafe : String -> a
+// Try to deserialize a value, crash on failure, e.g.:
+// String to Int
+// String to Float
+// String to Double
+// read_value_unsafe<unsigned int>("42") == 42
+// read_value_unsafe<unsigned int>("") == crash
+// read_value_unsafe<unsigned int>("foo") == crash
+// See read_value and read_value_with_default for safe versions.
+// etc.
+template <typename T>
+T read_value_unsafe(const std::string& str)
+{
+    return unsafe_get_just(to_maybe(read_value_result<T>(str)));
+}
+
+} // namespace fplus
+
+//
+// replace.hpp
+//
+
+// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
+// https://github.com/Dobiasd/FunctionalPlus
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+
+
+
+namespace fplus {
+
+namespace internal {
+
+    template <typename UnaryPredicate, typename T, typename Container>
+    Container replace_if(internal::reuse_container_t,
+        UnaryPredicate p, const T& dest, Container&& xs)
+    {
+        std::replace_if(std::begin(xs), std::end(xs), p, dest);
+        return std::forward<Container>(xs);
+    }
+
+    template <typename UnaryPredicate, typename T, typename Container>
+    Container replace_if(internal::create_new_container_t,
+        UnaryPredicate p, const T& dest, const Container& xs)
+    {
+        Container ys = xs;
+        return replace_if(internal::reuse_container_t(),
+            p, dest, std::move(ys));
+    }
+
+} // namespace internal
+
+// API search type: replace_if : ((a -> Bool), a, [a]) -> [a]
+// fwd bind count: 2
+// Replace every element fulfilling a predicate with a specific value.
+// replace_if(is_even, 0, [1, 3, 4, 6, 7]) == [1, 3, 0, 0, 7]
+template <typename UnaryPredicate, typename Container,
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>>
+ContainerOut replace_if(UnaryPredicate p,
+    const typename ContainerOut::value_type& dest, Container&& xs)
+{
+    return internal::replace_if(internal::can_reuse_v<Container> {},
+        p, dest, std::forward<Container>(xs));
+}
+
+namespace internal {
+
+    template <typename Container,
+        typename T = typename Container::value_type>
+    Container replace_elem_at_idx(internal::reuse_container_t,
+        std::size_t idx, const T& dest, Container&& xs)
+    {
+        assert(idx < xs.size());
+        auto it = std::begin(xs);
+        advance_iterator(it, idx);
+        *it = dest;
+        return std::forward<Container>(xs);
+    }
+
+    template <typename Container,
+        typename T = typename Container::value_type>
+    Container replace_elem_at_idx(internal::create_new_container_t,
+        std::size_t idx, const T& dest, const Container& xs)
+    {
+        Container ys = xs;
+        return replace_elem_at_idx(internal::reuse_container_t(),
+            idx, dest, std::move(ys));
+    }
+
+} // namespace internal
+
+// API search type: replace_elem_at_idx : (Int, a, [a]) -> [a]
+// fwd bind count: 2
+// Replace the element at a specific index.
+// replace_elem_at_idx(2, 0, [1, 3, 4, 4, 7]) == [1, 3, 0, 4, 7]
+template <typename Container,
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>,
+    typename T = typename ContainerOut::value_type>
+ContainerOut replace_elem_at_idx(std::size_t idx, const T& dest,
+    Container&& xs)
+{
+    return internal::replace_elem_at_idx(internal::can_reuse_v<Container> {},
+        idx, dest, std::forward<Container>(xs));
+}
+
+// API search type: replace_elems : (a, a, [a]) -> [a]
+// fwd bind count: 2
+// Replace all elements matching source with dest.
+// replace_elems(4, 0, [1, 3, 4, 4, 7]) == [1, 3, 0, 0, 7]
+template <typename Container,
+    typename ContainerOut = internal::remove_const_and_ref_t<Container>,
+    typename T = typename ContainerOut::value_type>
+ContainerOut replace_elems(const T& source, const T& dest, Container&& xs)
+{
+    return replace_if(bind_1st_of_2(is_equal<T>, source), dest, xs);
+}
+
+// API search type: replace_tokens : ([a], [a], [a]) -> [a]
+// fwd bind count: 2
+// Replace all segments matching source with dest.
+// replace_tokens("haha", "hihi", "oh, hahaha!") == "oh, hihiha!"
+// replace_tokens("haha", "o", "oh, hahaha!") == "oh, oha!"
+template <typename Container>
+Container replace_tokens(const Container& source, const Container& dest, const Container& xs)
+{
+    auto splitted = split_by_token(source, true, xs);
+    return join(dest, splitted);
+}
+
+} // namespace fplus
+
+//
+// side_effects.hpp
+//
+
+// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
+// https://github.com/Dobiasd/FunctionalPlus
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+
+
 
 //
 // string_tools.hpp
@@ -13093,11 +13136,10 @@ std::list<std::string> stream(const std::tuple<Args...>& t)
 
 
 #include <cctype>
-#include <string>
 #include <locale>
+#include <string>
 
-namespace fplus
-{
+namespace fplus {
 
 // API search type: is_letter_or_digit : Char -> Bool
 // fwd bind count: 0
@@ -13105,9 +13147,7 @@ namespace fplus
 template <typename String>
 bool is_letter_or_digit(const typename String::value_type& c)
 {
-    return
-        std::isdigit(static_cast<unsigned char>(c)) ||
-        std::isalpha(static_cast<unsigned char>(c));
+    return std::isdigit(static_cast<unsigned char>(c)) || std::isalpha(static_cast<unsigned char>(c));
 }
 
 // API search type: is_whitespace : Char -> Bool
@@ -13195,11 +13235,11 @@ template <typename String>
 String to_lower_case(const String& str)
 {
     typedef typename String::value_type Char;
-    return transform([](Char c) -> Char
-        {
-            return static_cast<Char>(
-                std::tolower(static_cast<unsigned char>(c)));
-        }, str);
+    return transform([](Char c) -> Char {
+        return static_cast<Char>(
+            std::tolower(static_cast<unsigned char>(c)));
+    },
+        str);
 }
 
 // API search type: to_lower_case_loc : (Locale, String) -> String
@@ -13207,14 +13247,14 @@ String to_lower_case(const String& str)
 // Convert a string to lowercase characters using specified locale.
 // to_upper_case_loc(locale("ru_RU.utf8"), "cYrIlLiC КиРиЛлИцА") == "cyrillic кириллица"
 template <typename String>
-String to_lower_case_loc(const std::locale &lcl, const String &str)
+String to_lower_case_loc(const std::locale& lcl, const String& str)
 {
-  typedef typename String::value_type Char;
-  return transform([&lcl](Char c) -> Char
-      {
+    typedef typename String::value_type Char;
+    return transform([&lcl](Char c) -> Char {
         return static_cast<Char>(
             std::tolower(c, lcl));
-      }, str);
+    },
+        str);
 }
 
 // API search type: to_upper_case : String -> String
@@ -13225,11 +13265,11 @@ template <typename String>
 String to_upper_case(const String& str)
 {
     typedef typename String::value_type Char;
-    return transform([](Char c) -> Char
-        {
-            return static_cast<Char>(
-                std::toupper(static_cast<unsigned char>(c)));
-        }, str);
+    return transform([](Char c) -> Char {
+        return static_cast<Char>(
+            std::toupper(static_cast<unsigned char>(c)));
+    },
+        str);
 }
 
 // API search type: to_upper_case_loc : (Locale, String) -> String
@@ -13237,14 +13277,14 @@ String to_upper_case(const String& str)
 // Convert a string to uppercase characters using specified locale.
 // to_upper_case_loc(locale("ru_RU.utf8"), "cYrIlLiC КиРиЛлИцА") == "CYRILLIC КИРИЛЛИЦА"
 template <typename String>
-String to_upper_case_loc(const std::locale &lcl, const String &str)
+String to_upper_case_loc(const std::locale& lcl, const String& str)
 {
-  typedef typename String::value_type Char;
-  return transform([&lcl](Char c) -> Char
-      {
+    typedef typename String::value_type Char;
+    return transform([&lcl](Char c) -> Char {
         return static_cast<Char>(
             std::toupper(c, lcl));
-      }, str);
+    },
+        str);
 }
 
 // API search type: to_string_fill_left : (Char, Int, a) -> String
@@ -13254,7 +13294,7 @@ String to_upper_case_loc(const std::locale &lcl, const String &str)
 // to_string_fill_left(' ', 5, 42) == "   42"
 template <typename T>
 std::string to_string_fill_left(const std::string::value_type& filler,
-        std::size_t min_size, const T& x)
+    std::size_t min_size, const T& x)
 {
     return fill_left(filler, min_size, std::to_string(x));
 }
@@ -13265,9 +13305,541 @@ std::string to_string_fill_left(const std::string::value_type& filler,
 // to_string_fill_right(' ', 5, 42) == "42   "
 template <typename T>
 std::string to_string_fill_right(const std::string::value_type& filler,
-        std::size_t min_size, const T& x)
+    std::size_t min_size, const T& x)
 {
     return fill_right(filler, min_size, std::to_string(x));
+}
+
+} // namespace fplus
+
+#include <atomic>
+#include <chrono>
+#include <condition_variable>
+#include <cstdint>
+#include <fstream>
+#include <functional>
+#include <future>
+#include <iostream>
+#include <iterator>
+#include <streambuf>
+#include <string>
+#include <thread>
+#include <vector>
+
+namespace fplus {
+
+// Executes a function f in a fixed interval,
+// i.e. an average timespan between two consecutive calls of f,
+// given in microseconds.
+// f is a unary function, taking the time delta (in microseconds)
+// between the last and the current call as its argument.
+// In case of a delay outdated calls are be executed immediately.
+// So the average executation time of f should be way shorter
+// than the requested interval.
+// Call ticker::start() to run.
+// The ticker stops when ticker::stop() is called
+// or the instance runs out of scope.
+//
+// Example usage:
+//
+// void say_hi(std::int64_t)
+// {
+//     std::cout << "hi " << std::endl;
+// }
+// int main()
+// {
+//     ticker hi_ticker(say_hi, 2 * 1000 * 1000);
+//     hi_ticker.start();
+//     std::this_thread::sleep_for(std::chrono::milliseconds(4500));
+// }
+class ticker {
+public:
+    typedef std::function<void(std::int64_t)> function;
+    ticker(const function& f, std::int64_t interval_us)
+        : f_(f)
+        , interval_us_(interval_us)
+        , control_mutex_()
+        , is_running_(false)
+        , thread_()
+        , stop_mutex_()
+    {
+    }
+    bool is_running()
+    {
+        std::lock_guard<std::mutex> lock(control_mutex_);
+        return is_running_;
+    }
+    bool start()
+    {
+        std::lock_guard<std::mutex> lock(control_mutex_);
+        if (is_running_)
+            return false;
+        stop_mutex_.lock();
+        thread_ = std::thread([this]() { thread_function(); });
+        is_running_ = true;
+        return true;
+    }
+    bool stop()
+    {
+        std::lock_guard<std::mutex> lock(control_mutex_);
+        if (!is_running_)
+            return false;
+        stop_mutex_.unlock();
+        if (thread_.joinable()) {
+            thread_.join();
+            thread_ = std::thread();
+        }
+        is_running_ = false;
+        return true;
+    }
+    ~ticker()
+    {
+        stop();
+    }
+
+private:
+    void thread_function()
+    {
+        auto last_wake_up_time = std::chrono::steady_clock::now();
+        auto last_time = last_wake_up_time;
+        bool quit = false;
+        while (!quit) {
+            const auto wake_up_time = last_wake_up_time + std::chrono::microseconds { interval_us_ };
+            const auto sleep_time = wake_up_time - std::chrono::steady_clock::now();
+            if (stop_mutex_.try_lock_for(sleep_time)) {
+                stop_mutex_.unlock();
+                quit = true;
+            }
+            const auto current_time = std::chrono::steady_clock::now();
+            const auto elapsed = current_time - last_time;
+            last_wake_up_time = wake_up_time;
+            last_time = current_time;
+            const auto elapsed_us = std::chrono::duration_cast<std::chrono::microseconds>(
+                elapsed)
+                                        .count();
+            try {
+                f_(elapsed_us);
+            } catch (...) {
+            }
+        }
+    }
+    const function f_;
+    const std::int64_t interval_us_;
+    std::mutex control_mutex_;
+    bool is_running_;
+    std::thread thread_;
+    std::timed_mutex stop_mutex_;
+};
+
+// API search type: sleep_for_n_seconds : Int -> Io ()
+// Returns a function that suspends
+// the calling thread for n seconds when executed.
+inline std::function<void()> sleep_for_n_seconds(std::size_t seconds)
+{
+    return [seconds]() {
+        std::this_thread::sleep_for(std::chrono::seconds(seconds));
+    };
+}
+
+// API search type: sleep_for_n_milliseconds : Int -> Io ()
+// Returns a function that suspends
+// the calling thread for n milliseconds when executed.
+inline std::function<void()> sleep_for_n_milliseconds(std::size_t milliseconds)
+{
+    return [milliseconds]() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
+    };
+}
+
+// API search type: sleep_for_n_microseconds : Int -> Io ()
+// Returns a function that suspends
+// the calling thread for n microseconds when executed.
+inline std::function<void()> sleep_for_n_microseconds(std::size_t microseconds)
+{
+    return [microseconds]() {
+        std::this_thread::sleep_for(std::chrono::microseconds(microseconds));
+    };
+}
+
+// API search type: execute_serially : [Io ()] -> Io ()
+// Returns a function that executes
+// the given side effects one after another when called.
+template <typename Container>
+auto execute_serially(const Container& effs)
+{
+    using Effect = typename Container::value_type;
+    using Result = internal::invoke_result_t<Effect>;
+
+    return [effs] {
+        std::vector<std::decay_t<Result>> results;
+        for (const Effect& e : effs) {
+            results.push_back(internal::invoke(e));
+        }
+        return results;
+    };
+}
+
+// API search type: execute_serially_until_success : [Io Bool] -> Io Bool
+// Returns a function that (when called) executes
+// the given side effects one after another until one of it returns true.
+template <typename Container>
+auto execute_serially_until_success(const Container& effs)
+{
+    using Effect = typename Container::value_type;
+    using Result = internal::invoke_result_t<Effect>;
+    static_assert(std::is_convertible<Result, bool>::value,
+        "Effects must return a boolish type.");
+    return [effs]() -> bool {
+        for (const Effect& e : effs) {
+            if (internal::invoke(e)) {
+                return true;
+            }
+        }
+        return false;
+    };
+}
+
+// API search type: execute_and_return_fixed_value : (a, [Io b]) -> Io a
+// Returns a function that executes the given side effect
+// and returns a fixed value when called.
+template <typename Result, typename Effect>
+std::function<Result()> execute_and_return_fixed_value(
+    Result result,
+    Effect eff)
+{
+    return [eff, result]() -> Result {
+        eff();
+        return result;
+    };
+}
+
+// Converts an arbitrary callable effect to an std::function.
+template <typename Effect>
+std::function<internal::invoke_result_t<Effect>()> effect_to_std_function(Effect eff)
+{
+    return [eff] {
+        return internal::invoke(eff);
+    };
+}
+
+// API search type: execute_max_n_times_until_success : (Int, Io (), Int) -> Io Bool
+// Returns a function that (when called) executes a side effect
+// until it succeds once or the maximum number
+// of attempts with an optional pause in between.
+template <typename Effect>
+auto execute_max_n_times_until_success(std::size_t n,
+    const Effect& eff,
+    std::size_t pause_in_milliseconds = 0)
+{
+    if (pause_in_milliseconds > 0) {
+        auto sleep_and_return_false = execute_and_return_fixed_value(
+            false,
+            sleep_for_n_milliseconds(pause_in_milliseconds));
+        return execute_serially_until_success(
+            intersperse(
+                sleep_and_return_false,
+                replicate(n, effect_to_std_function(eff))));
+    }
+    return execute_serially_until_success(
+        replicate(n, effect_to_std_function(eff)));
+}
+
+// API search type: execute_n_times : (Int, Io a) -> Io ()
+// Returns a function that (when called) executes n times
+// the provided side effect function.
+// The return values (if present) are dropped.
+template <typename Effect>
+auto execute_n_times(std::size_t n, const Effect& eff)
+{
+    for (auto _ : fplus::numbers(static_cast<size_t>(0), n)) {
+        (void)_; // suppress warning / unused variable
+        eff();
+    }
+}
+
+// API search type: for_each : (Io a, [a]) -> Io ()
+// fwd bind count: 1
+// Runs the function `f` on all the container elements.
+// The function will perform its side effects, and nothing is returned.
+template <typename F, typename Container>
+void for_each(F f, const Container& xs)
+{
+    using IdxType = typename Container::value_type;
+    auto f_dummy_return = [&f](const IdxType& v) {
+        f(v);
+        return true;
+    };
+    fplus::transform(f_dummy_return, xs);
+}
+
+// API search type: parallel_for_each : (Io a, [a]) -> Io ()
+// fwd bind count: 1
+// Runs the function `f` in parallel on all the container elements.
+// The function will perform its side effects, and nothing is returned.
+template <typename F, typename Container>
+void parallel_for_each(F f, const Container& xs)
+{
+    using IdxType = typename Container::value_type;
+    auto f_dummy_return = [&f](const IdxType& v) {
+        f(v);
+        return true;
+    };
+    fplus::transform_parallelly(f_dummy_return, xs);
+}
+
+// API search type: parallel_for_each_n_threads : (Int, Io a, [a]) -> Io ()
+// fwd bind count: 2
+// Runs the function `f` in parallel on all the container elements, using `n_threads` threads.
+// The function will perform its side effects, and nothing is returned.
+template <typename F, typename Container>
+void parallel_for_each_n_threads(size_t n_threads, F f, const Container& xs)
+{
+    using IdxType = typename Container::value_type;
+    auto f_dummy_return = [&f](const IdxType& v) {
+        f(v);
+        return true;
+    };
+    fplus::transform_parallelly_n_threads(n_threads, f_dummy_return, xs);
+}
+
+// API search type: execute_serially_until_failure : [Io Bool] -> Io Bool
+// Returns a function that (when called) executes the given side effects
+// one after another until one of them returns false.
+template <typename Container>
+std::function<bool()> execute_serially_until_failure(const Container& effs)
+{
+    using Effect = typename Container::value_type;
+    using Result = internal::invoke_result_t<Effect>;
+    static_assert(std::is_convertible<Result, bool>::value,
+        "Effects must return a boolish type.");
+    return [effs]() -> bool {
+        for (const Effect& e : effs) {
+            if (!internal::invoke(e)) {
+                return false;
+            }
+        }
+        return true;
+    };
+}
+
+// API search type: execute_parallelly : [Io a] -> Io [a]
+// Returns a function that (when called) executes the given side effects
+// in parallel (one thread each) and returns the collected results.
+template <typename Container>
+auto execute_parallelly(const Container& effs)
+{
+    return [effs] {
+        // Bluntly re-using the transform implementation to execute side effects.
+        return transform_parallelly([](const auto& eff) {
+            return internal::invoke(eff);
+        },
+            effs);
+    };
+}
+
+// API search type: execute_parallelly_n_threads : (Int, [Io a]) -> Io [a]
+// Returns a function that (when called) executes the given side effects
+// in parallel (one thread each) and returns the collected results.
+template <typename Container>
+auto execute_parallelly_n_threads(std::size_t n, const Container& effs)
+{
+    return [n, effs] {
+        // Bluntly re-using the transform implementation to execute side effects.
+        return transform_parallelly_n_threads(
+            n, [](const auto& eff) {
+                return internal::invoke(eff);
+            },
+            effs);
+    };
+}
+
+// API search type: execute_fire_and_forget : Io a -> Io a
+// Returns a function that (when called) executes the given side effect
+// in a new thread and returns immediately.
+template <typename Effect>
+std::function<void()> execute_fire_and_forget(Effect eff)
+{
+    return [eff]() {
+        std::thread t(eff);
+        t.detach();
+    };
+}
+
+// API search type: read_text_file_maybe : String -> Io (Maybe String)
+// Returns a function that reads the content of a text file when called.
+inline std::function<maybe<std::string>()> read_text_file_maybe(
+    const std::string& filename)
+{
+    return [filename]() -> maybe<std::string> {
+        std::ifstream input(filename);
+        if (!input.good())
+            return {};
+        return just(std::string(
+            std::istreambuf_iterator<std::string::value_type>(input),
+            std::istreambuf_iterator<std::string::value_type>()));
+    };
+}
+
+// API search type: read_text_file : String -> Io String
+// Returns a function that reads the content of a text file when called.
+// This function then returns an empty string if the file could not be read.
+inline std::function<std::string()> read_text_file(const std::string& filename)
+{
+    return [filename]() -> std::string {
+        return just_with_default(
+            std::string(),
+
+            read_text_file_maybe(filename)());
+    };
+}
+
+// API search type: read_binary_file_maybe : String -> Io (Maybe [Int])
+// Returns a function that reads the content of a binary file when executed.
+inline std::function<maybe<std::vector<std::uint8_t>>()> read_binary_file_maybe(
+    const std::string& filename)
+{
+    return [filename]() -> maybe<std::vector<std::uint8_t>> {
+        std::ifstream file(filename, std::ios::binary);
+        if (!file.good())
+            return {};
+        file.unsetf(std::ios::skipws);
+        std::streampos fileSize;
+        file.seekg(0, std::ios::end);
+        fileSize = file.tellg();
+        if (fileSize == static_cast<std::streamsize>(0))
+            return {};
+        file.seekg(0, std::ios::beg);
+        std::vector<std::uint8_t> vec(static_cast<std::size_t>(fileSize), 0);
+        file.read(reinterpret_cast<char*>(&vec[0]), fileSize);
+        return vec;
+    };
+}
+
+// API search type: read_binary_file : String -> Io [Int]
+// Returns a function that reads the content of a binary file when executed.
+// This function then returns an empty vector if the file could not be read.
+inline std::function<std::vector<std::uint8_t>()> read_binary_file(
+    const std::string& filename)
+{
+    return [filename]() -> std::vector<std::uint8_t> {
+        return just_with_default(
+            std::vector<std::uint8_t>(),
+            read_binary_file_maybe(filename)());
+    };
+}
+
+// API search type: read_text_file_lines_maybe : (String, Bool) -> Io (Maybe [String])
+// Returns a function that (when called) reads the content of a text file
+// and returns it line by line.
+inline std::function<maybe<std::vector<std::string>>()> read_text_file_lines_maybe(
+    bool allow_empty, const std::string& filename)
+{
+    return [filename, allow_empty]() -> maybe<std::vector<std::string>> {
+        const auto maybe_content = read_text_file_maybe(filename)();
+        if (maybe_content.is_nothing())
+            return {};
+        else
+            return split_lines(allow_empty, maybe_content.unsafe_get_just());
+    };
+}
+
+// API search type: read_text_file_lines : (String, Bool) -> Io [String]
+// Returns a function that (when called) reads the content of a text file
+// and returns it line by line.
+// This function then returns an empty vector if the file could not be read.
+inline std::function<std::vector<std::string>()> read_text_file_lines(
+    bool allow_empty, const std::string& filename)
+{
+    return [filename, allow_empty]() -> std::vector<std::string> {
+        return just_with_default(
+            std::vector<std::string>(),
+            read_text_file_lines_maybe(allow_empty, filename)());
+    };
+}
+
+// API search type: write_text_file : (String, String) -> Io Bool
+// Returns a function that (when called) writes content into a text file,
+// replacing it if it already exists.
+inline std::function<bool()> write_text_file(const std::string& filename,
+    const std::string& content)
+{
+    return [filename, content]() -> bool {
+        std::ofstream output(filename);
+        output << content;
+        return output.good();
+    };
+}
+
+// API search type: write_binary_file : (String, [Int]) -> Io Bool
+// Returns a function that (when called) writes content into a binary file,
+// replacing it if it already exists.
+inline std::function<bool()> write_binary_file(const std::string& filename,
+    const std::vector<uint8_t>& content)
+{
+    return [filename, content]() -> bool {
+        std::ofstream file(filename, std::ios::binary);
+        file.write(reinterpret_cast<const char*>(&content[0]),
+            static_cast<std::streamsize>(content.size()));
+        return file.good();
+    };
+}
+
+// API search type: write_text_file_lines : (String, [String], Bool) -> Io Bool
+// Returns a function that (when called) writes lines into a text file,
+// replacing it if it already exists.
+inline std::function<bool()> write_text_file_lines(bool trailing_newline,
+    const std::string& filename,
+    const std::vector<std::string>& lines)
+{
+    std::string content = join(std::string("\n"), lines);
+    if (trailing_newline) {
+        content += "\n";
+    }
+    return write_text_file(filename, content);
+}
+
+// API search type: execute_effect : Io a -> a
+// Simply run a side effect (call a function without parameters)
+// and returns the result.
+// Can be useful for chaining.
+template <typename F>
+auto execute_effect(const F f)
+{
+    return internal::invoke(f);
+}
+
+// API search type: interact : (String -> String) -> Io ()
+// Takes a function F of type (String -> String)
+// and returns a function that
+// reads the entire input from standard input,
+// passes it through the given function,
+// and writes the result to standard output.
+template <typename F>
+std::function<void()> interact(F f)
+{
+    return [f]() -> void {
+        std::cout << f(std::string(
+            std::istreambuf_iterator<char>(std::cin.rdbuf()),
+            std::istreambuf_iterator<char>()));
+    };
+}
+
+// API search type: execute_with_maybe : ((a -> void), Maybe a) -> Io Bool
+// Returns a function that
+// akes a unary side-effect function with
+// a maybe holding a matching type
+// and runs the sideeffect if the Maybe holds a just.
+// The returned function returns false if the maybe was a nothing.
+template <typename Effect, typename X>
+std::function<bool()> execute_with_maybe(Effect eff, const maybe<X>& m)
+{
+    return [eff, m]() -> bool {
+        if (m.is_nothing()) {
+            return false;
+        }
+        eff(m.unsafe_get_just());
+        return true;
+    };
 }
 
 } // namespace fplus
@@ -13284,88 +13856,76 @@ std::string to_string_fill_right(const std::string::value_type& filler,
 
 
 
-#include <vector>
 #include <queue>
+#include <vector>
 
-namespace fplus
-{
+namespace fplus {
 
 template <typename T>
-struct tree
-{
-    tree (const T& value, const std::vector<tree<T>>& children) :
-        value_(value), children_(children) {}
+struct tree {
+    tree(const T& value, const std::vector<tree<T>>& children)
+        : value_(value)
+        , children_(children)
+    {
+    }
     T value_;
     std::vector<tree<T>> children_;
 };
 
-namespace internal
-{
-template <typename T>
-tree<T> make_singleton_tree(const T& x)
-{
-    return {x, {}};
-}
+namespace internal {
+    template <typename T>
+    tree<T> make_singleton_tree(const T& x)
+    {
+        return { x, {} };
+    }
 } // namespace internal
 
-namespace internal
-{
+namespace internal {
 
-template <typename BinaryPredicate, typename T>
-std::vector<tree<T>> presort_trees(BinaryPredicate tree_is_child_of,
-    std::vector<tree<T>> xs_orig)
-{
-    auto xs = fplus::convert_container<std::list<tree<T>>>(xs_orig);
-    std::vector<tree<T>> result;
-    while (!xs.empty())
+    template <typename BinaryPredicate, typename T>
+    std::vector<tree<T>> presort_trees(BinaryPredicate tree_is_child_of,
+        std::vector<tree<T>> xs_orig)
     {
-        for (auto it = std::begin(xs); it != std::end(xs);)
-        {
-            bool has_children = false;
-            for (auto it_rest = std::begin(xs); it_rest != std::end(xs); ++it_rest)
-            {
-                if (it_rest != it && tree_is_child_of(*it_rest, *it))
-                {
-                    has_children = true;
+        auto xs = fplus::convert_container<std::list<tree<T>>>(xs_orig);
+        std::vector<tree<T>> result;
+        while (!xs.empty()) {
+            for (auto it = std::begin(xs); it != std::end(xs);) {
+                bool has_children = false;
+                for (auto it_rest = std::begin(xs); it_rest != std::end(xs); ++it_rest) {
+                    if (it_rest != it && tree_is_child_of(*it_rest, *it)) {
+                        has_children = true;
+                    }
+                }
+                if (!has_children) {
+                    result.push_back(*it);
+                    it = xs.erase(it);
+                } else {
+                    ++it;
                 }
             }
-            if (!has_children)
-            {
-                result.push_back(*it);
-                it = xs.erase(it);
-            }
-            else
-            {
-                ++it;
-            }
         }
+        return result;
     }
-    return result;
-}
 
-template <typename BinaryPredicate, typename TreeCont> // todo: name?
-TreeCont trees_from_sequence_helper(
-    BinaryPredicate tree_is_child_of, TreeCont xs_unsorted)
-{
-    TreeCont result;
-    auto xs = presort_trees(tree_is_child_of, xs_unsorted);
-    for (auto it = std::begin(xs); it != std::end(xs); ++it)
+    template <typename BinaryPredicate, typename TreeCont> // todo: name?
+    TreeCont trees_from_sequence_helper(
+        BinaryPredicate tree_is_child_of, TreeCont xs_unsorted)
     {
-        const auto find_pred = bind_1st_of_2(tree_is_child_of, *it);
-        auto it_find_begin = it;
-        internal::advance_iterator(it_find_begin, 1);
-        auto parent_it = std::find_if(it_find_begin, std::end(xs), find_pred);
-        if (parent_it != std::end(xs))
-        {
-            parent_it->children_.push_back(*it);
+        TreeCont result;
+        auto xs = presort_trees(tree_is_child_of, xs_unsorted);
+        for (auto it = std::begin(xs); it != std::end(xs); ++it) {
+            const auto find_pred = bind_1st_of_2(tree_is_child_of, *it);
+            auto it_find_begin = it;
+            internal::advance_iterator(it_find_begin, 1);
+            auto parent_it = std::find_if(it_find_begin, std::end(xs), find_pred);
+            if (parent_it != std::end(xs)) {
+                parent_it->children_.push_back(*it);
+            } else {
+                result.push_back(*it);
+            }
         }
-        else
-        {
-            result.push_back(*it);
-        }
+        return result;
     }
-    return result;
-}
 
 } // namespace internal
 
@@ -13382,75 +13942,62 @@ std::vector<tree<typename Container::value_type>> trees_from_sequence(
     const auto singletons = transform_convert<std::vector<Tree>>(
         internal::make_singleton_tree<T>, xs);
     const auto tree_is_child_of =
-        [is_child_of](const tree<T>& a, const tree<T>& b) -> bool
-    {
+        [is_child_of](const tree<T>& a, const tree<T>& b) -> bool {
         return is_child_of(a.value_, b.value_);
     };
     return internal::trees_from_sequence_helper(
         tree_is_child_of, std::move(singletons));
 }
 
-namespace internal
-{
+namespace internal {
 
-// -1 = a < b
-//  0 = a == b
-//  1 = b < a
-template <typename T>
-int tree_cmp(const tree<T>& a, const tree<T>& b)
-{
-    if(a.value_ < b.value_)
+    // -1 = a < b
+    //  0 = a == b
+    //  1 = b < a
+    template <typename T>
+    int tree_cmp(const tree<T>& a, const tree<T>& b)
     {
-        return -1;
+        if (a.value_ < b.value_) {
+            return -1;
+        } else if (b.value_ < a.value_) {
+            return 1;
+        } else {
+            const auto results = zip_with(tree_cmp<T>,
+                sort_by(tree_cmp<T>, a.children_),
+                sort_by(tree_cmp<T>, b.children_));
+            return just_with_default(0, find_first_by(bind_1st_of_2(is_not_equal<int>, 0), results));
+        }
     }
-    else if(b.value_ < a.value_)
-    {
-        return 1;
-    }
-    else
-    {
-        const auto results = zip_with(tree_cmp<T>,
-            sort_by(tree_cmp<T>, a.children_),
-            sort_by(tree_cmp<T>, b.children_));
-        return just_with_default(0, find_first_by(
-                bind_1st_of_2(is_not_equal<int>, 0),
-                results));
-    }
-}
 
-template <typename T>
-bool tree_less(const tree<T>& a, const tree<T>& b)
-{
-    return tree_cmp(a, b) < 0;
-}
+    template <typename T>
+    bool tree_less(const tree<T>& a, const tree<T>& b)
+    {
+        return tree_cmp(a, b) < 0;
+    }
 
 } // namespace internal
 
-namespace internal
-{
+namespace internal {
 
-template <typename T>
-bool are_normalized_trees_equal(const tree<T>& a, const tree<T>& b)
-{
-    if (a.value_ != b.value_ || a.children_.size() != b.children_.size())
+    template <typename T>
+    bool are_normalized_trees_equal(const tree<T>& a, const tree<T>& b)
     {
-        return false;
+        if (a.value_ != b.value_ || a.children_.size() != b.children_.size()) {
+            return false;
+        } else {
+            return all(zip_with(are_normalized_trees_equal<T>,
+                a.children_, b.children_));
+        }
     }
-    else
-    {
-        return all(zip_with(are_normalized_trees_equal<T>,
-            a.children_, b.children_));
-    }
-}
 
-template <typename T>
-tree<T> normalize_tree(tree<T> x)
-{
-    x.children_ = sort_by(
-        internal::tree_less<T>,
-        transform(normalize_tree<T>, x.children_));
-    return x;
-}
+    template <typename T>
+    tree<T> normalize_tree(tree<T> x)
+    {
+        x.children_ = sort_by(
+            internal::tree_less<T>,
+            transform(normalize_tree<T>, x.children_));
+        return x;
+    }
 
 } // namespace internal
 
@@ -13478,8 +14025,7 @@ std::size_t tree_size(const tree<T>& x)
 template <typename T>
 std::size_t tree_depth(const tree<T>& x)
 {
-    return 1 + just_with_default<std::size_t>(0,
-        maximum_maybe(transform(tree_depth<T>, x.children_)));
+    return 1 + just_with_default<std::size_t>(0, maximum_maybe(transform(tree_depth<T>, x.children_)));
 }
 
 // API search type: flatten_tree_depth_first : Tree a -> [a]
@@ -13500,644 +14046,16 @@ std::vector<T> flatten_tree_breadth_first(const tree<T>& x)
     result.reserve(tree_size(x));
     std::queue<const tree<T>*> q;
     q.push(&x);
-    while (!q.empty())
-    {
+    while (!q.empty()) {
         const auto current = q.front();
         q.pop();
         result.push_back(current->value_);
-        for (const auto& c : current->children_)
-        {
+        for (const auto& c : current->children_) {
             q.push(&c);
         }
     }
     return result;
 }
-
-} // namespace fplus
-
-//
-// side_effects.hpp
-//
-
-// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
-// https://github.com/Dobiasd/FunctionalPlus
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
-
-
-
-#include <atomic>
-#include <chrono>
-#include <condition_variable>
-#include <cstdint>
-#include <fstream>
-#include <functional>
-#include <future>
-#include <iostream>
-#include <iterator>
-#include <streambuf>
-#include <string>
-#include <thread>
-#include <vector>
-
-namespace fplus
-{
-
-// Executes a function f in a fixed interval,
-// i.e. an average timespan between two consecutive calls of f,
-// given in microseconds.
-// f is a unary function, taking the time delta (in microseconds)
-// between the last and the current call as its argument.
-// In case of a delay outdated calls are be executed immediately.
-// So the average executation time of f should be way shorter
-// than the requested interval.
-// Call ticker::start() to run.
-// The ticker stops when ticker::stop() is called
-// or the instance runs out of scope.
-//
-// Example usage:
-//
-// void say_hi(std::int64_t)
-// {
-//     std::cout << "hi " << std::endl;
-// }
-// int main()
-// {
-//     ticker hi_ticker(say_hi, 2 * 1000 * 1000);
-//     hi_ticker.start();
-//     std::this_thread::sleep_for(std::chrono::milliseconds(4500));
-// }
-class ticker
-{
-public:
-    typedef std::function<void(std::int64_t)> function;
-    ticker(const function& f, std::int64_t interval_us) :
-        f_(f),
-        interval_us_(interval_us),
-        control_mutex_(),
-        is_running_(false),
-        thread_(),
-        stop_mutex_()
-    {
-    }
-    bool is_running()
-    {
-        std::lock_guard<std::mutex> lock(control_mutex_);
-        return is_running_;
-    }
-    bool start()
-    {
-        std::lock_guard<std::mutex> lock(control_mutex_);
-        if (is_running_)
-            return false;
-        stop_mutex_.lock();
-        thread_ = std::thread([this]() { thread_function(); });
-        is_running_ = true;
-        return true;
-    }
-    bool stop()
-    {
-        std::lock_guard<std::mutex> lock(control_mutex_);
-        if (!is_running_)
-            return false;
-        stop_mutex_.unlock();
-        if (thread_.joinable())
-        {
-            thread_.join();
-            thread_ = std::thread();
-        }
-        is_running_ = false;
-        return true;
-    }
-    ~ticker()
-    {
-        stop();
-    }
-private:
-    void thread_function()
-    {
-        auto last_wake_up_time = std::chrono::steady_clock::now();
-        auto last_time = last_wake_up_time;
-        bool quit = false;
-        while (!quit)
-        {
-            const auto wake_up_time =
-                last_wake_up_time + std::chrono::microseconds{ interval_us_ };
-            const auto sleep_time =
-                wake_up_time - std::chrono::steady_clock::now();
-            if (stop_mutex_.try_lock_for(sleep_time))
-            {
-                stop_mutex_.unlock();
-                quit = true;
-            }
-            const auto current_time = std::chrono::steady_clock::now();
-            const auto elapsed = current_time - last_time;
-            last_wake_up_time = wake_up_time;
-            last_time = current_time;
-            const auto elapsed_us =
-                std::chrono::duration_cast<std::chrono::microseconds>(
-                    elapsed).count();
-            try
-            {
-                f_(elapsed_us);
-            }
-            catch (...)
-            {
-            }
-        }
-    }
-    const function f_;
-    const std::int64_t interval_us_;
-    std::mutex control_mutex_;
-    bool is_running_;
-    std::thread thread_;
-    std::timed_mutex stop_mutex_;
-};
-
-
-// API search type: sleep_for_n_seconds : Int -> Io ()
-// Returns a function that suspends
-// the calling thread for n seconds when executed.
-inline
-std::function<void()> sleep_for_n_seconds(std::size_t seconds)
-{
-    return [seconds]()
-    {
-        std::this_thread::sleep_for(std::chrono::seconds(seconds));
-    };
-}
-
-// API search type: sleep_for_n_milliseconds : Int -> Io ()
-// Returns a function that suspends
-// the calling thread for n milliseconds when executed.
-inline
-std::function<void()> sleep_for_n_milliseconds(std::size_t milliseconds)
-{
-    return [milliseconds]()
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
-    };
-}
-
-// API search type: sleep_for_n_microseconds : Int -> Io ()
-// Returns a function that suspends
-// the calling thread for n microseconds when executed.
-inline
-std::function<void()> sleep_for_n_microseconds(std::size_t microseconds)
-{
-    return [microseconds]()
-    {
-        std::this_thread::sleep_for(std::chrono::microseconds(microseconds));
-    };
-}
-
-// API search type: execute_serially : [Io ()] -> Io ()
-// Returns a function that executes
-// the given side effects one after another when called.
-template <typename Container>
-auto execute_serially(const Container& effs)
-{
-    using Effect = typename Container::value_type;
-    using Result = internal::invoke_result_t<Effect>;
-
-    return [effs]
-    {
-        std::vector<std::decay_t<Result>> results;
-        for (const Effect& e : effs)
-        {
-            results.push_back(internal::invoke(e));
-        }
-        return results;
-    };
-}
-
-// API search type: execute_serially_until_success : [Io Bool] -> Io Bool
-// Returns a function that (when called) executes
-// the given side effects one after another until one of it returns true.
-template <typename Container>
-auto execute_serially_until_success(const Container& effs)
-{
-    using Effect = typename Container::value_type;
-    using Result = internal::invoke_result_t<Effect>;
-    static_assert(std::is_convertible<Result, bool>::value,
-                  "Effects must return a boolish type.");
-    return [effs]() -> bool
-    {
-        for (const Effect& e : effs)
-        {
-            if (internal::invoke(e))
-            {
-                return true;
-            }
-        }
-        return false;
-    };
-}
-
-// API search type: execute_and_return_fixed_value : (a, [Io b]) -> Io a
-// Returns a function that executes the given side effect
-// and returns a fixed value when called.
-template <typename Result, typename Effect>
-std::function<Result()> execute_and_return_fixed_value(
-        Result result,
-        Effect eff)
-{
-    return [eff, result]() -> Result
-    {
-        eff();
-        return result;
-    };
-}
-
-// Converts an arbitrary callable effect to an std::function.
-template <typename Effect>
-std::function<internal::invoke_result_t<Effect> ()> effect_to_std_function(Effect eff)
-{
-    return [eff]
-    {
-        return internal::invoke(eff);
-    };
-}
-
-// API search type: execute_max_n_times_until_success : (Int, Io (), Int) -> Io Bool
-// Returns a function that (when called) executes a side effect
-// until it succeds once or the maximum number
-// of attempts with an optional pause in between.
-template <typename Effect>
-auto execute_max_n_times_until_success(std::size_t n,
-                                       const Effect& eff,
-                                       std::size_t pause_in_milliseconds = 0)
-{
-    if (pause_in_milliseconds > 0)
-    {
-        auto sleep_and_return_false =
-            execute_and_return_fixed_value(
-                false,
-                sleep_for_n_milliseconds(pause_in_milliseconds));
-        return execute_serially_until_success(
-            intersperse(
-                sleep_and_return_false,
-                replicate(n, effect_to_std_function(eff))));
-    }
-    return execute_serially_until_success(
-        replicate(n, effect_to_std_function(eff)));
-}
-
-// API search type: execute_n_times : (Int, Io a) -> Io ()
-// Returns a function that (when called) executes n times
-// the provided side effect function. 
-// The return values (if present) are dropped.
-template<typename Effect>
-auto execute_n_times(std::size_t n, const Effect& eff)
-{
-    for (auto _ : fplus::numbers(static_cast<size_t>(0), n))
-    {
-        (void) _; // suppress warning / unused variable
-        eff();
-    }
-}
-
-// API search type: for_each : (Io a, [a]) -> Io ()
-// fwd bind count: 1
-// Runs the function `f` on all the container elements.
-// The function will perform its side effects, and nothing is returned.
-template<typename F, typename Container>
-void for_each(F f, const Container& xs)
-{
-    using IdxType = typename Container::value_type;
-    auto f_dummy_return = [&f](const IdxType& v) {
-        f(v);
-        return true;
-    };
-    fplus::transform(f_dummy_return, xs);
-}
-
-// API search type: parallel_for_each : (Io a, [a]) -> Io ()
-// fwd bind count: 1
-// Runs the function `f` in parallel on all the container elements.
-// The function will perform its side effects, and nothing is returned.
-template<typename F, typename Container>
-void parallel_for_each(F f, const Container& xs)
-{
-    using IdxType = typename Container::value_type;
-    auto f_dummy_return = [&f](const IdxType& v) {
-        f(v);
-        return true;
-    };
-    fplus::transform_parallelly(f_dummy_return, xs);
-}
-
-// API search type: parallel_for_each_n_threads : (Int, Io a, [a]) -> Io ()
-// fwd bind count: 2
-// Runs the function `f` in parallel on all the container elements, using `n_threads` threads.
-// The function will perform its side effects, and nothing is returned.
-template<typename F, typename Container>
-void parallel_for_each_n_threads(size_t n_threads, F f, const Container& xs)
-{
-    using IdxType = typename Container::value_type;
-    auto f_dummy_return = [&f](const IdxType& v) {
-        f(v);
-        return true;
-    };
-    fplus::transform_parallelly_n_threads(n_threads, f_dummy_return, xs);
-}
-
-// API search type: execute_serially_until_failure : [Io Bool] -> Io Bool
-// Returns a function that (when called) executes the given side effects
-// one after another until one of them returns false.
-template <typename Container>
-std::function<bool()> execute_serially_until_failure(const Container& effs)
-{
-    using Effect = typename Container::value_type;
-    using Result = internal::invoke_result_t<Effect>;
-    static_assert(std::is_convertible<Result, bool>::value,
-        "Effects must return a boolish type.");
-    return [effs]() -> bool
-    {
-        for (const Effect& e : effs)
-        {
-            if (!internal::invoke(e))
-            {
-                return false;
-            }
-        }
-        return true;
-    };
-}
-
-// API search type: execute_parallelly : [Io a] -> Io [a]
-// Returns a function that (when called) executes the given side effects
-// in parallel (one thread each) and returns the collected results.
-template <typename Container>
-auto execute_parallelly(const Container& effs)
-{
-    return [effs] {
-        // Bluntly re-using the transform implementation to execute side effects.
-        return transform_parallelly([](const auto& eff) {
-            return internal::invoke(eff);
-        }, effs);
-    };
-}
-
-// API search type: execute_parallelly_n_threads : (Int, [Io a]) -> Io [a]
-// Returns a function that (when called) executes the given side effects
-// in parallel (one thread each) and returns the collected results.
-template <typename Container>
-auto execute_parallelly_n_threads(std::size_t n, const Container& effs)
-{
-    return [n, effs] {
-        // Bluntly re-using the transform implementation to execute side effects.
-        return transform_parallelly_n_threads(n, [](const auto& eff) {
-            return internal::invoke(eff);
-        }, effs);
-    };
-}
-
-// API search type: execute_fire_and_forget : Io a -> Io a
-// Returns a function that (when called) executes the given side effect
-// in a new thread and returns immediately.
-template <typename Effect>
-std::function<void()> execute_fire_and_forget(Effect eff)
-{
-    return [eff]()
-    {
-        std::thread t(eff);
-        t.detach();
-    };
-}
-
-// API search type: read_text_file_maybe : String -> Io (Maybe String)
-// Returns a function that reads the content of a text file when called.
-inline
-std::function<maybe<std::string>()> read_text_file_maybe(
-    const std::string& filename)
-{
-    return [filename]() -> maybe<std::string>
-    {
-        std::ifstream input(filename);
-        if (!input.good())
-            return {};
-        return just(std::string(
-                std::istreambuf_iterator<std::string::value_type>(input),
-                std::istreambuf_iterator<std::string::value_type>()));
-    };
-}
-
-// API search type: read_text_file : String -> Io String
-// Returns a function that reads the content of a text file when called.
-// This function then returns an empty string if the file could not be read.
-inline
-std::function<std::string()> read_text_file(const std::string& filename)
-{
-    return [filename]() -> std::string
-    {
-        return just_with_default(
-            std::string(),
-
-            read_text_file_maybe(filename)());
-    };
-}
-
-// API search type: read_binary_file_maybe : String -> Io (Maybe [Int])
-// Returns a function that reads the content of a binary file when executed.
-inline
-std::function<maybe<std::vector<std::uint8_t>>()> read_binary_file_maybe(
-    const std::string& filename)
-{
-    return [filename]() -> maybe<std::vector<std::uint8_t>>
-    {
-        std::ifstream file(filename, std::ios::binary);
-        if (!file.good())
-            return {};
-        file.unsetf(std::ios::skipws);
-        std::streampos fileSize;
-        file.seekg(0, std::ios::end);
-        fileSize = file.tellg();
-        if (fileSize == static_cast<std::streamsize>(0))
-            return {};
-        file.seekg(0, std::ios::beg);
-        std::vector<std::uint8_t> vec(static_cast<std::size_t>(fileSize), 0);
-        file.read(reinterpret_cast<char*>(&vec[0]), fileSize);
-        return vec;
-    };
-}
-
-// API search type: read_binary_file : String -> Io [Int]
-// Returns a function that reads the content of a binary file when executed.
-// This function then returns an empty vector if the file could not be read.
-inline
-std::function<std::vector<std::uint8_t>()> read_binary_file(
-    const std::string& filename)
-{
-    return [filename]() -> std::vector<std::uint8_t>
-    {
-        return just_with_default(
-            std::vector<std::uint8_t>(),
-            read_binary_file_maybe(filename)());
-    };
-}
-
-// API search type: read_text_file_lines_maybe : (String, Bool) -> Io (Maybe [String])
-// Returns a function that (when called) reads the content of a text file
-// and returns it line by line.
-inline
-std::function<maybe<std::vector<std::string>>()> read_text_file_lines_maybe(
-        bool allow_empty, const std::string& filename)
-{
-    return [filename, allow_empty]() -> maybe<std::vector<std::string>>
-    {
-        const auto maybe_content = read_text_file_maybe(filename)();
-        if (maybe_content.is_nothing())
-            return {};
-        else
-            return split_lines(allow_empty, maybe_content.unsafe_get_just());
-    };
-}
-
-// API search type: read_text_file_lines : (String, Bool) -> Io [String]
-// Returns a function that (when called) reads the content of a text file
-// and returns it line by line.
-// This function then returns an empty vector if the file could not be read.
-inline
-std::function<std::vector<std::string>()> read_text_file_lines(
-        bool allow_empty, const std::string& filename)
-{
-    return [filename, allow_empty]() -> std::vector<std::string>
-    {
-        return just_with_default(
-            std::vector<std::string>(),
-            read_text_file_lines_maybe(allow_empty, filename)());
-    };
-}
-
-// API search type: write_text_file : (String, String) -> Io Bool
-// Returns a function that (when called) writes content into a text file,
-// replacing it if it already exists.
-inline
-std::function<bool()> write_text_file(const std::string& filename,
-        const std::string& content)
-{
-    return [filename, content]() -> bool
-    {
-        std::ofstream output(filename);
-        output << content;
-        return output.good();
-    };
-}
-
-// API search type: write_binary_file : (String, [Int]) -> Io Bool
-// Returns a function that (when called) writes content into a binary file,
-// replacing it if it already exists.
-inline
-std::function<bool()> write_binary_file(const std::string& filename,
-        const std::vector<uint8_t>& content)
-{
-    return [filename, content]() -> bool
-    {
-        std::ofstream file(filename, std::ios::binary);
-        file.write(reinterpret_cast<const char*>(&content[0]),
-            static_cast<std::streamsize>(content.size()));
-        return file.good();
-    };
-}
-
-// API search type: write_text_file_lines : (String, [String], Bool) -> Io Bool
-// Returns a function that (when called) writes lines into a text file,
-// replacing it if it already exists.
-inline
-std::function<bool()> write_text_file_lines(bool trailing_newline,
-        const std::string& filename,
-        const std::vector<std::string>& lines)
-{
-    std::string content = join(std::string("\n"), lines);
-    if (trailing_newline)
-    {
-        content += "\n";
-    }
-    return write_text_file(filename, content);
-}
-
-// API search type: execute_effect : Io a -> a
-// Simply run a side effect (call a function without parameters)
-// and returns the result.
-// Can be useful for chaining.
-template <typename F>
-auto execute_effect(const F f)
-{
-    return internal::invoke(f);
-}
-
-// API search type: interact : (String -> String) -> Io ()
-// Takes a function F of type (String -> String)
-// and returns a function that
-// reads the entire input from standard input,
-// passes it through the given function,
-// and writes the result to standard output.
-template <typename F>
-std::function<void()> interact(F f)
-{
-    return [f]() -> void
-    {
-        std::cout << f(std::string(
-            std::istreambuf_iterator<char>(std::cin.rdbuf()),
-            std::istreambuf_iterator<char>()));
-    };
-}
-
-// API search type: execute_with_maybe : ((a -> void), Maybe a) -> Io Bool
-// Returns a function that
-// akes a unary side-effect function with
-// a maybe holding a matching type
-// and runs the sideeffect if the Maybe holds a just.
-// The returned function returns false if the maybe was a nothing.
-template <typename Effect, typename X>
-std::function<bool()> execute_with_maybe(Effect eff, const maybe<X>& m)
-{
-    return [eff, m]() -> bool
-    {
-        if (m.is_nothing())
-        {
-            return false;
-        }
-        eff(m.unsafe_get_just());
-        return true;
-    };
-}
-
-} // namespace fplus
-
-//
-// stopwatch.hpp
-//
-
-// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
-// https://github.com/Dobiasd/FunctionalPlus
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
-
-
-#include <chrono>
-
-namespace fplus
-{
-
-class stopwatch
-{
-public:
-    stopwatch() : beg_(clock::now()) {}
-    void reset() { beg_ = clock::now(); }
-
-    // time since creation or last reset in seconds
-    double elapsed() const {
-        return std::chrono::duration_cast<second>
-            (clock::now() - beg_).count(); }
-private:
-    typedef std::chrono::high_resolution_clock clock;
-    typedef std::chrono::duration<double, std::ratio<1>> second;
-    std::chrono::time_point<clock> beg_;
-};
 
 } // namespace fplus
 
@@ -14156,11 +14074,9 @@ private:
 #include <memory>
 #include <tuple>
 
-namespace fplus
-{
+namespace fplus {
 
-namespace internal
-{
+namespace internal {
 
     // http://stackoverflow.com/a/18987405/1866775
 
@@ -14168,21 +14084,18 @@ namespace internal
     struct is_one_of;
 
     template <typename F>
-    struct is_one_of<F>
-    {
+    struct is_one_of<F> {
         static constexpr bool value = false;
     };
 
     template <typename F, typename S, typename... T>
-    struct is_one_of<F, S, T...>
-    {
+    struct is_one_of<F, S, T...> {
         static constexpr bool value = std::is_same<F, S>::value
             || is_one_of<F, T...>::value;
     };
 
     template <typename F, typename... T>
-    struct is_one_of<F, std::tuple<T...>>
-    {
+    struct is_one_of<F, std::tuple<T...>> {
         static constexpr bool value = is_one_of<F, T...>::value;
     };
 
@@ -14194,16 +14107,14 @@ namespace internal
         static constexpr bool value = true;
     };
 
-    template<typename F, typename... T>
-    struct is_unique<F, T...>
-    {
+    template <typename F, typename... T>
+    struct is_unique<F, T...> {
         static constexpr bool value = is_unique<T...>::value
             && !is_one_of<F, T...>::value;
     };
 
-    template<typename... T>
-    struct is_unique<std::tuple<T...>>
-    {
+    template <typename... T>
+    struct is_unique<std::tuple<T...>> {
         static constexpr bool value = is_unique<T...>::value;
     };
 
@@ -14215,70 +14126,61 @@ namespace internal
         static constexpr bool value = true;
     };
 
-    template<typename F1, typename F2>
-    struct are_same<F1, F2>
-    {
+    template <typename F1, typename F2>
+    struct are_same<F1, F2> {
         static constexpr bool value = std::is_same<F1, F2>::value;
     };
 
-    template<typename F1, typename F2, typename... T>
-    struct are_same<F1, F2, T...>
-    {
+    template <typename F1, typename F2, typename... T>
+    struct are_same<F1, F2, T...> {
         static constexpr bool value = are_same<F2, T...>::value
             && std::is_same<F1, F2>::value;
     };
 
-    template<typename... T>
-    struct are_same<std::tuple<T...>>
-    {
+    template <typename... T>
+    struct are_same<std::tuple<T...>> {
         static constexpr bool value = are_same<T...>::value;
     };
 
     // http://stackoverflow.com/a/3273571/1866775
-    template<template<typename...> class List,
-        template<typename> class Mod,
-        typename ...Args>
+    template <template <typename...> class List,
+        template <typename> class Mod,
+        typename... Args>
     struct transform_parameter_pack {
         typedef List<typename Mod<Args>::type...> type;
     };
 
-    template<typename T>
-    struct as_shared_pointer
-    {
+    template <typename T>
+    struct as_shared_pointer {
         typedef std::shared_ptr<T> type;
     };
 
-
-
     // http://stackoverflow.com/a/27588263/1866775
 
-    template <typename T, typename... Ts> struct get_index;
+    template <typename T, typename... Ts>
+    struct get_index;
 
     template <typename T, typename... Ts>
-    struct get_index<T, T, Ts...> : std::integral_constant<std::size_t, 0> {};
+    struct get_index<T, T, Ts...> : std::integral_constant<std::size_t, 0> {
+    };
 
     template <typename T, typename Tail, typename... Ts>
-    struct get_index<T, Tail, Ts...> :
-        std::integral_constant<std::size_t, 1 + get_index<T, Ts...>::value> {};
+    struct get_index<T, Tail, Ts...> : std::integral_constant<std::size_t, 1 + get_index<T, Ts...>::value> {
+    };
 
     template <typename T>
-    struct get_index<T>
-    {
+    struct get_index<T> {
         // condition is always false, but should be dependant of T
         static_assert(sizeof(T) == 0, "element not found");
     };
 
-
-    template <typename T, typename ... Ts>
-    struct parameter_pack_head
-    {
+    template <typename T, typename... Ts>
+    struct parameter_pack_head {
         typedef T type;
     };
 
-
     template <typename F>
-    struct function_first_input_type
-    {
+    struct function_first_input_type {
         typedef typename std::remove_const<
             typename std::remove_reference<
                 typename utils::function_traits<
@@ -14287,36 +14189,37 @@ namespace internal
     };
 
     template <typename F>
-    struct unary_function_result_type
-    {
+    struct unary_function_result_type {
         static_assert(utils::function_traits<F>::arity == 1,
-                "Wrong arity.");
+            "Wrong arity.");
         typedef typename function_first_input_type<F>::type T;
         typedef std::decay_t<internal::invoke_result_t<F, T>> type;
     };
 
-
     // http://stackoverflow.com/a/42493805/1866775
 
     template <typename T>
-    struct tag { };
+    struct tag {
+    };
 
     template <typename... Ts>
-    struct type_set_eq_helper: tag<Ts>... { };
+    struct type_set_eq_helper : tag<Ts>... {
+    };
 
     template <typename, typename, typename = void>
-    struct type_set_eq: std::false_type { };
+    struct type_set_eq : std::false_type {
+    };
 
     template <bool...>
-    struct bool_pack { };
+    struct bool_pack {
+    };
 
     template <bool... Bs>
     using my_and = std::is_same<bool_pack<Bs..., true>, bool_pack<true, Bs...>>;
 
     template <typename... Ts1, typename... Ts2>
-    struct type_set_eq<std::tuple<Ts1...>, std::tuple<Ts2...>, typename std::enable_if< (sizeof...(Ts1) == sizeof...(Ts2)) && my_and< std::is_base_of<tag<Ts2>, type_set_eq_helper<Ts1...>>::value...  >::value  >::type  >:
-       std::true_type { };
-
+    struct type_set_eq<std::tuple<Ts1...>, std::tuple<Ts2...>, typename std::enable_if<(sizeof...(Ts1) == sizeof...(Ts2)) && my_and<std::is_base_of<tag<Ts2>, type_set_eq_helper<Ts1...>>::value...>::value>::type> : std::true_type {
+    };
 
     // http://stackoverflow.com/a/42581257/1866775
 
@@ -14324,60 +14227,53 @@ namespace internal
     struct is_superset_of;
 
     template <typename Tuple, typename T, typename... Ts>
-    struct is_superset_of<Tuple, std::tuple<T, Ts...>>
-    {
+    struct is_superset_of<Tuple, std::tuple<T, Ts...>> {
         static const bool value = is_one_of<T, Tuple>::value && is_superset_of<Tuple, std::tuple<Ts...>>::value;
     };
 
     template <typename Tuple>
-    struct is_superset_of<Tuple, std::tuple<>>
-    {
+    struct is_superset_of<Tuple, std::tuple<>> {
         static const bool value = true;
     };
 
-
     // http://stackoverflow.com/a/36934374/1866775
-    template<bool... bs>
+    template <bool... bs>
     using all_true = std::is_same<bool_pack<bs..., true>, bool_pack<true, bs...>>;
 
 } // namespace internal
 
-
-template<typename ... Types>
-struct variant
-{
+template <typename... Types>
+struct variant {
     static_assert(internal::is_unique<Types...>::value, "Types must be unique.");
     static_assert(internal::all_true<(!std::is_reference<Types>::value)...>::value, "No reference types allowed.");
     static_assert(internal::all_true<(!std::is_const<Types>::value)...>::value, "No const types allowed.");
     static_assert(sizeof...(Types) >= 1, "Please provide at least one type.");
 
     template <typename T>
-    variant(const T& val) : shared_ptrs_({})
+    variant(const T& val)
+        : shared_ptrs_({})
     {
-        std::get<internal::get_index<T, Types...>::value>(shared_ptrs_) =
-            std::make_shared<T>(val);
+        std::get<internal::get_index<T, Types...>::value>(shared_ptrs_) = std::make_shared<T>(val);
     }
 
     template <typename T>
     bool is() const
     {
         static_assert(
-            internal::is_one_of<T, Types...>::value
-            , "Type must match one possible variant type.");
+            internal::is_one_of<T, Types...>::value, "Type must match one possible variant type.");
 
-        const auto ptr =
-            std::get<internal::get_index<T, Types...>::value>(shared_ptrs_);
+        const auto ptr = std::get<internal::get_index<T, Types...>::value>(shared_ptrs_);
 
         return static_cast<bool>(ptr);
     }
 
-    friend bool operator== (
+    friend bool operator==(
         const variant<Types...>& a, const variant<Types...>& b)
     {
         return a.shared_ptrs_ == b.shared_ptrs_;
     }
 
-    friend bool operator!= (
+    friend bool operator!=(
         const variant<Types...>& a, const variant<Types...>& b)
     {
         return a.shared_ptrs_ != b.shared_ptrs_;
@@ -14393,17 +14289,15 @@ struct variant
         static_assert(
             internal::is_one_of<
                 typename internal::function_first_input_type<F>::type,
-                Types...>::value
-            , "Function input must match one variant type.");
+                Types...>::value,
+            "Function input must match one variant type.");
 
         static_assert(!std::is_same<std::decay_t<Ret>, void>::value,
-                      "Function must return non-void type.");
+            "Function must return non-void type.");
 
-        const auto ptr =
-            std::get<internal::get_index<T, Types...>::value>(shared_ptrs_);
+        const auto ptr = std::get<internal::get_index<T, Types...>::value>(shared_ptrs_);
 
-        if (ptr)
-        {
+        if (ptr) {
             return just(internal::invoke(f, *ptr));
         }
 
@@ -14420,22 +14314,20 @@ struct variant
         static_assert(
             internal::is_one_of<
                 typename internal::function_first_input_type<F>::type,
-                Types...>::value
-            , "Function input must match one variant type.");
+                Types...>::value,
+            "Function input must match one variant type.");
 
         static_assert(std::is_same<std::decay_t<Ret>, void>::value,
-                     "Function must return void type.");
+            "Function must return void type.");
 
-        const auto ptr =
-            std::get<internal::get_index<T, Types...>::value>(shared_ptrs_);
-        if (ptr)
-        {
+        const auto ptr = std::get<internal::get_index<T, Types...>::value>(shared_ptrs_);
+        if (ptr) {
             internal::invoke(f, *ptr);
         }
     }
 
-    template <typename ...Fs>
-    auto visit(Fs ... fs) const ->
+    template <typename... Fs>
+    auto visit(Fs... fs) const ->
         typename internal::unary_function_result_type<
             typename internal::parameter_pack_head<Fs...>::type>::type
     {
@@ -14454,14 +14346,12 @@ struct variant
         typedef typename internal::transform_parameter_pack<
             std::tuple,
             internal::unary_function_result_type,
-            Fs...
-            >::type return_types_tuple;
+            Fs...>::type return_types_tuple;
 
         typedef typename internal::transform_parameter_pack<
             std::tuple,
             internal::function_first_input_type,
-            Fs...
-            >::type function_first_input_types_tuple;
+            Fs...>::type function_first_input_types_tuple;
 
         static_assert(
             internal::is_unique<function_first_input_types_tuple>::value,
@@ -14476,15 +14366,15 @@ struct variant
             "Functions do not cover all possible types.");
 
         static_assert(!std::is_same<std::decay_t<Res>, void>::value,
-                      "Function must return non-void type.");
+            "Function must return non-void type.");
 
         const auto results = justs(go_visit_one<Res>(fs...));
         assert(size_of_cont(results) == 1);
         return head(results);
     }
 
-    template <typename ...Fs>
-    void effect(Fs ... fs) const
+    template <typename... Fs>
+    void effect(Fs... fs) const
     {
 
         static_assert(
@@ -14495,18 +14385,15 @@ struct variant
             sizeof...(Fs) <= std::tuple_size<shared_ptr_pack>::value,
             "Too many functions provided.");
 
-
         typedef typename internal::transform_parameter_pack<
             std::tuple,
             internal::unary_function_result_type,
-            Fs...
-            >::type return_types_tuple;
+            Fs...>::type return_types_tuple;
 
         typedef typename internal::transform_parameter_pack<
             std::tuple,
             internal::function_first_input_type,
-            Fs...
-            >::type function_first_input_types_tuple;
+            Fs...>::type function_first_input_types_tuple;
 
         static_assert(
             internal::is_unique<function_first_input_types_tuple>::value,
@@ -14523,8 +14410,8 @@ struct variant
         go_effect_one(fs...);
     }
 
-    template <typename ...Fs>
-    variant<Types...> transform(Fs ... fs) const
+    template <typename... Fs>
+    variant<Types...> transform(Fs... fs) const
     {
         static_assert(
             sizeof...(Fs) >= std::tuple_size<shared_ptr_pack>::value,
@@ -14537,14 +14424,12 @@ struct variant
         typedef typename internal::transform_parameter_pack<
             std::tuple,
             internal::unary_function_result_type,
-            Fs...
-            >::type return_types_tuple;
+            Fs...>::type return_types_tuple;
 
         typedef typename internal::transform_parameter_pack<
             std::tuple,
             internal::function_first_input_type,
-            Fs...
-            >::type function_first_input_types_tuple;
+            Fs...>::type function_first_input_types_tuple;
 
         static_assert(
             internal::type_set_eq<function_first_input_types_tuple, std::tuple<Types...>>::value,
@@ -14567,11 +14452,11 @@ private:
     template <typename Res, typename F>
     std::vector<fplus::maybe<Res>> go_visit_one(F f) const
     {
-        return {visit_one(f)};
+        return { visit_one(f) };
     }
 
-    template <typename Res, typename F, typename ...Fs>
-    std::vector<fplus::maybe<Res>> go_visit_one(F f, Fs ... fs) const
+    template <typename Res, typename F, typename... Fs>
+    std::vector<fplus::maybe<Res>> go_visit_one(F f, Fs... fs) const
     {
         return fplus::append(go_visit_one<Res>(f), go_visit_one<Res>(fs...));
     }
@@ -14582,8 +14467,8 @@ private:
         effect_one(f);
     }
 
-    template <typename F, typename ...Fs>
-    void go_effect_one(F f, Fs ... fs) const
+    template <typename F, typename... Fs>
+    void go_effect_one(F f, Fs... fs) const
     {
         go_effect_one(f);
         go_effect_one(fs...);
@@ -14592,495 +14477,11 @@ private:
     typedef typename internal::transform_parameter_pack<
         std::tuple,
         internal::as_shared_pointer,
-        Types...
-    >::type shared_ptr_pack;
+        Types...>::type shared_ptr_pack;
     shared_ptr_pack shared_ptrs_;
 };
 
 } // namespace fplus
-
-//
-// timed.hpp
-//
-
-
-#include <chrono>
-#include <type_traits>
-
-#include <cassert>
-#include <exception>
-#include <functional>
-#include <memory>
-
-namespace fplus
-{
-using ExecutionTime = double; // in seconds
-
-// Holds a value of type T plus an execution time
-template <typename T>
-class timed : public std::pair<T, ExecutionTime>
-{
-    using base_pair = std::pair<T, ExecutionTime>;
-public:
-    timed() : base_pair() {}
-    timed(const T& val, ExecutionTime t = 0.) : base_pair(val, t) {}
-
-    // Execution time in seconds (returns a double)
-    ExecutionTime time_in_s() const { return base_pair::second; }
-
-    // Execution time as a std::chrono::duration<double>
-    std::chrono::duration<double, std::ratio<1>> duration_in_s() const
-    {
-        return std::chrono::duration<double, std::ratio<1>>(time_in_s());
-    }
-
-    // Inner value
-    const T& get() const            { return base_pair::first; }
-    T& get()                        { return base_pair::first; }
-};
-
-// API search type: show_timed : Timed a -> String
-// fwd bind count: 0
-// show_timed((42,1)) -> "42 (1000ms)"
-template <typename T>
-std::string show_timed(const fplus::timed<T>& v)
-{
-    std::string result =
-        fplus::show(v.get()) + " (" + fplus::show(v.time_in_s() * 1000.) + "ms)";
-    return result;
-}
-
-namespace internal
-{
-    template<typename Fn>
-    class timed_function_impl
-    {
-    public:
-        explicit timed_function_impl(Fn fn) : _fn(fn) {};
-        template<typename ...Args> auto operator()(Args&&... args) 
-        { 
-            return _timed_result(std::forward<Args>(args)...); 
-        }
-
-    private:
-        template<typename ...Args>
-        auto _timed_result(Args&&... args)
-        {
-            fplus::stopwatch timer;
-            auto r = _fn(std::forward<Args>(args)...);
-            auto r_t = fplus::timed<decltype(r)>(r, timer.elapsed());
-            return r_t;
-        }
-
-        Fn _fn;
-    };
-}
-
-// API search type: make_timed_function : ((a -> b)) -> (a -> Timed b)
-// fwd bind count: 0
-// Transforms a function into a timed / benchmarked version of the same function.
-// -
-// Example:
-// -
-// using Ints = std::vector<int>;
-// Ints ascending_numbers = fplus::numbers(0, 1000);
-// Ints shuffled_numbers = fplus::shuffle(std::mt19937::default_seed, ascending_numbers);
-// auto sort_func = [](const Ints& values) { return fplus::sort(values); };
-// auto sort_bench = fplus::make_timed_function(sort_func);
-// auto sorted_numbers = sort_bench(shuffled_numbers);
-// assert(sorted_numbers.get() == ascending_numbers); // sorted_numbers.get() <=> actual output
-// assert(sorted_numbers.time_in_s() < 0.1); // // sorted_numbers.time_in_s() <=> execution time
-template<class Fn>
-auto make_timed_function(Fn f)
-{
-    return internal::timed_function_impl<decltype(f)>(f);
-}
-
-namespace internal
-{
-    template<typename Fn>
-    class timed_void_function_impl
-    {
-    public:
-        explicit timed_void_function_impl(Fn fn) : _fn(fn) {};
-        template<typename ...Args> auto operator()(Args&&... args)
-        {
-            return _timed_result(std::forward<Args>(args)...);
-        }
-
-    private:
-        template<typename ...Args>
-        auto _timed_result(Args&&... args)
-        {
-            fplus::stopwatch timer;
-            _fn(std::forward<Args>(args)...);
-            return timer.elapsed();
-        }
-
-        Fn _fn;
-    };
-
-}
-
-// API search type: make_timed_void_function : ((a -> Void)) -> (a -> Double)
-// fwd bind count: 0
-// Transforms a void function into a timed / benchmarked version of the same function.
-// -
-// Example:
-// -
-// void foo() { std::this_thread::sleep_for(std::chrono::milliseconds(1000)); }
-// ...
-// auto foo_bench = make_timed_void_function(foo);
-// auto r = foo_bench();
-// double run_time = foo_bench(); // in seconds
-template<class Fn>
-auto make_timed_void_function(Fn f)
-{
-    return internal::timed_void_function_impl<decltype(f)>(f);
-}
-
-}
-
-//
-// benchmark_session.hpp
-//
-
-// Copyright 2015, Tobias Hermann and the FunctionalPlus contributors.
-// https://github.com/Dobiasd/FunctionalPlus
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-//  http://www.boost.org/LICENSE_1_0.txt)
-
-#include <vector>
-#include <mutex>
-
-
-namespace fplus
-{
-using FunctionName = std::string;
-struct benchmark_function_report
-{
-    std::size_t nb_calls;
-    ExecutionTime total_time;
-    ExecutionTime average_time;
-    ExecutionTime deviation;
-};
-
-
-namespace internal
-{
-    std::string show_benchmark_function_report(
-        const std::map<FunctionName, benchmark_function_report> & reports);
-}
-
-
-// benchmark_session stores timings during a benchmark session
-// and is able to emit a report at the end
-class benchmark_session
-{
-public:
-    benchmark_session() : functions_times_mutex_(), functions_times_() {};
-
-    // report() shall return a string with a summary of the session
-    // Example below:
-    // Function              |Nb calls|Total time|Av. time|Deviation|
-    // ----------------------+--------+----------+--------+---------+
-    // convert_charset_string|    4000|   4.942ms| 1.236us|  1.390us|
-    // split_lines           |    1000|   4.528ms| 4.528us|  1.896us|
-    inline std::string report() const
-    {
-        const auto reports = report_list();
-        return fplus::internal::show_benchmark_function_report(reports);
-    }
-
-    std::map<FunctionName, benchmark_function_report> report_list() const
-    {
-        std::lock_guard<std::mutex> lock(functions_times_mutex_);
-        std::map<FunctionName, benchmark_function_report> report;
-        for (const auto & one_function_time : functions_times_)
-        {
-            report[one_function_time.first] = make_bench_report(one_function_time.second);
-        }
-        return report;
-    }
-
-    inline void store_one_time(const FunctionName & function_name, ExecutionTime time)
-    {
-        std::lock_guard<std::mutex> lock(functions_times_mutex_);
-        functions_times_[function_name].push_back(time);
-    }
-
-private:
-    benchmark_function_report make_bench_report(
-        const std::vector<ExecutionTime> & times) const
-    {
-        benchmark_function_report result;
-        result.nb_calls = times.size();
-        auto mean_and_dev = fplus::mean_stddev<double>(times);
-        result.average_time = mean_and_dev.first;
-        result.deviation = mean_and_dev.second;
-        result.total_time = fplus::sum(times);
-        return result;
-    }
-
-    mutable std::mutex functions_times_mutex_;
-    std::map<FunctionName, std::vector<ExecutionTime>> functions_times_;
-};
-
-namespace internal
-{
-    template<typename Fn>
-    class bench_function_impl
-    {
-    public:
-        explicit bench_function_impl(
-            benchmark_session & benchmark_sess,
-            FunctionName function_name,
-            Fn fn)
-            : benchmark_session_(benchmark_sess)
-            , function_name_(function_name)
-            , fn_(fn)
-        {};
-
-        template<typename ...Args> auto operator()(Args&&... args)
-        {
-            return _bench_result(std::forward<Args>(args)...);
-        }
-
-    private:
-        template<typename ...Args>
-        auto _bench_result(Args&&... args)
-        {
-            fplus::stopwatch timer;
-            auto r = fn_(std::forward<Args>(args)...);
-            benchmark_session_.store_one_time(function_name_, timer.elapsed());
-            return r;
-        }
-
-        benchmark_session & benchmark_session_;
-        FunctionName function_name_;
-        Fn fn_;
-    };
-
-    template<typename Fn>
-    class bench_void_function_impl
-    {
-    public:
-        explicit bench_void_function_impl(
-            benchmark_session & benchmark_sess,
-            FunctionName function_name,
-            Fn fn)
-            : benchmark_session_(benchmark_sess)
-            , function_name_(function_name)
-            , fn_(fn)
-        {};
-
-        template<typename ...Args> auto operator()(Args&&... args)
-        {
-            _bench_result(std::forward<Args>(args)...);
-        }
-
-    private:
-        template<typename ...Args>
-        auto _bench_result(Args&&... args)
-        {
-            fplus::stopwatch timer;
-            fn_(std::forward<Args>(args)...);
-            benchmark_session_.store_one_time(function_name_, timer.elapsed());
-        }
-
-        benchmark_session & benchmark_session_;
-        FunctionName function_name_;
-        Fn fn_;
-    };
-
-} // namespace internal
-
-
-// API search type: make_benchmark_function : (benchmark_session, string, (a... -> b)) -> (a... -> b)
-// Transforms a function into a function with the *same* signature
-// and behavior, except that it also stores stats into the benchmark session (first parameter),
-// under the name given by the second parameter.
-// -
-// Notes:
-// Side effects: make_benchmark_function *will add side effects* to the function, since it stores data
-// into the benchmark session at each call.
-// If you intend to benchmark only one function, prefer to use the simpler "make_timed_function"
-// Use "make_benchmark_void_function" if your function returns void
-// -
-// Example of a minimal benchmark session (read benchmark_session_test.cpp for a full example)
-//     fplus::benchmark_session benchmark_sess;
-//     void foo() {
-//         auto add_bench = fplus::make_benchmark_function(benchmark_sess, "add", add);
-//         auto printf_bench = fplus::make_benchmark_void_function(benchmark_sess, "printf", printf);
-//         int forty_five = add_bench(20, add_bench(19, 6));
-//         int forty_two = benchmark_expression(benchmark_sess, "sub", forty_five - 3);
-//         printf_bench("forty_two is %i\n", forty_two);
-//     }
-//     int main() {
-//         foo();
-//         std::cout << benchmark_sess.report();
-//     }
-// This will output a report like this
-// Function|Nb calls|Total time|Av. time|Deviation|
-// --------+--------+----------+--------+---------+
-// printf  |       1|   0.010ms| 9.952us|  0.000us|
-// add     |       2|   0.000ms| 0.050us|  0.009us|
-// sub     |       1|   0.000ms| 0.039us|  0.000us|
-// -
-// As an alternative to make_benchmark_function, you can also benchmark an expression.
-// For example, in order to benchmark the following line:
-//     auto sorted = fplus::sort(my_vector);
-// Just copy/paste this expression into "bench_expression" like shown below: this expression
-// will then be benchmarked with the name "sort_my_vector"
-//     auto sorted = benchmark_expression(
-//         my_benchmark_session,
-//         "sort_my_vector",
-//         fplus::sort(my_vector);
-//     );
-// Notes :
-// benchmark_expression is a preprocessor macro that uses an immediately invoked lambda (IIL).
-// The expression can be copy-pasted with no modification, and it is possible to not remove the ";"
-// (although it also works if it is not present)
-// You can also benchmark an expression that returns void using benchmark_void_expression
-template<class Fn>
-auto make_benchmark_function(benchmark_session & session, const FunctionName & name, Fn f)
-{
-    // transforms f into a function with the same
-    // signature, that will store timings into the benchmark session
-    return internal::bench_function_impl<Fn>(session, name, f);
-}
-
-
-// API search type: make_benchmark_void_function : (benchmark_session, string, (a... -> Void)) -> (a... -> Void)
-// Transforms a function that returns a void into a function with the *same* signature
-// and behavior, except that it also stores stats into the benchmark session (first parameter),
-// under the name given by the second parameter
-// Note that make_benchmark_void_function *will add side effects* to the function
-// (since it stores data into the benchmark session at each call)
-// -
-// Example:
-//     benchmark_session bench_session;
-//     ...
-//     void foo() {
-//         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-//     }
-//     ...
-//     auto foo_bench = make_benchmark_void_function(bench_session, "foo", foo);
-//     foo_bench();
-//     ...
-//     std::cout << benchmark_session.report();
-template<class Fn>
-auto make_benchmark_void_function(benchmark_session & session, const FunctionName & name, Fn f)
-{
-    // transforms a void returning function into a function with the same
-    // signature, that will store timings into the benchmark session
-    return internal::bench_void_function_impl<Fn>(session, name, f);
-}
-
-#define benchmark_expression(bench_session, name, expression)      \
-make_benchmark_function(                                           \
-    bench_session,                                                 \
-    name,                                                          \
-    [&]() { return expression; }                                   \
-)();
-
-#define benchmark_void_expression(bench_session, name, expression) \
-make_benchmark_void_function(                                      \
-    bench_session,                                                 \
-    name,                                                          \
-    [&]() { expression; }                                          \
-)();
-
-
-namespace internal
-{
-    inline std::string show_table(const std::vector<std::vector<std::string>>& rows)
-    {
-        if (rows.empty() || rows[0].empty())
-            return "";
-
-        const std::vector<std::size_t> columns_width = [&]() {
-            auto string_size = [](const std::string & s) -> std::size_t { return s.size(); };
-            auto largest_string_size = [&](const std::vector<std::string> & strings) -> std::size_t {
-                return string_size(fplus::maximum_on(string_size, strings));
-            };
-            return fplus::transform(largest_string_size, fplus::transpose(rows));
-        }();
-
-        auto show_one_element = [](const std::pair<std::string, std::size_t> & elem_and_width) {
-            const std::string & element = elem_and_width.first;
-            const auto col_width = elem_and_width.second;
-            bool is_number = element.size() > 0 && isdigit(element[0]);
-            if (is_number)
-                return fplus::show_fill_left(' ', col_width, element) + "|";
-            else
-                return fplus::show_fill_right(' ', col_width, element) + "|";
-        };
-
-        auto show_one_separator = [](std::size_t col_width) {
-            return fplus::show_fill_left('-', col_width, "") + "+";
-        };
-
-        auto show_one_row = [&](const std::vector<std::string> & row) {
-            return fplus::sum(fplus::transform(
-                show_one_element,
-                fplus::zip(row, columns_width)));
-        };
-
-        auto firstrow_separator = fplus::sum(fplus::transform(show_one_separator, columns_width));
-        auto rows_formatted = fplus::transform(show_one_row, rows);
-        auto rows_separated = fplus::insert_at_idx(1, firstrow_separator, rows_formatted);
-        return fplus::join( std::string("\n"), rows_separated) + "\n";
-    }
-
-    inline std::vector< std::pair<FunctionName, benchmark_function_report> > make_ordered_reports(
-        const std::map<FunctionName, benchmark_function_report> & report_map)
-    {
-        auto report_pairs = fplus::map_to_pairs(report_map);
-        auto report_pairs_sorted = fplus::sort_by([](const auto &a, const auto &b) {
-            return a.second.total_time > b.second.total_time;
-        }, report_pairs);
-        return report_pairs_sorted;
-    }
-
-    inline std::string show_benchmark_function_report(const std::map<FunctionName, benchmark_function_report> & reports)
-    {
-        auto ordered_reports = make_ordered_reports(reports);
-        auto my_show_time_ms = [](double time) -> std::string {
-            std::stringstream ss;
-            ss << std::fixed << std::setprecision(3);
-            ss << (time * 1000.);
-            return ss.str() + "ms";
-        };
-        auto my_show_time_us = [](double time) -> std::string {
-            std::stringstream ss;
-            ss << std::fixed << std::setprecision(3);
-            ss << (time * 1000000.);
-            return ss.str() + "us";
-        };
-
-        std::vector<std::string> header_row{ {
-                "Function", "Nb calls", "Total time", "Av. time", "Deviation"
-            } };
-        auto value_rows = fplus::transform([&](const auto & kv) {
-                const auto & report = kv.second;
-                const auto & function_name = kv.first;
-                std::vector<std::string> row;
-                row.push_back(function_name);
-                row.push_back(fplus::show(report.nb_calls));
-                row.push_back(my_show_time_ms(report.total_time));
-                row.push_back(my_show_time_us(report.average_time));
-                row.push_back(my_show_time_us(report.deviation));
-                return row;
-            },
-            ordered_reports);
-
-        return fplus::internal::show_table(fplus::insert_at_idx(0, header_row, value_rows));
-    }
-} // namespace internal
-
-}
 
 
 //
@@ -15094,81 +14495,67 @@ namespace internal
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 
-namespace fplus
-{
-namespace curry
-{
+namespace fplus {
+namespace curry {
 
-// Currying.
-// Allow to generically bind parameters one by one.
+    // Currying.
+    // Allow to generically bind parameters one by one.
 
-#define fplus_curry_define_fn_0(fplus_curry_define_fn_0_name) \
-inline auto fplus_curry_define_fn_0_name() \
-{ \
-    return [](auto&& fplus_curry_p1) \
-    { \
-        return fplus::fplus_curry_define_fn_0_name(std::forward<decltype(fplus_curry_p1)>(fplus_curry_p1)); \
-    }; \
-}
+#define fplus_curry_define_fn_0(fplus_curry_define_fn_0_name)                                                   \
+    inline auto fplus_curry_define_fn_0_name()                                                                  \
+    {                                                                                                           \
+        return [](auto&& fplus_curry_p1) {                                                                      \
+            return fplus::fplus_curry_define_fn_0_name(std::forward<decltype(fplus_curry_p1)>(fplus_curry_p1)); \
+        };                                                                                                      \
+    }
 
-#define fplus_curry_define_fn_1(fplus_curry_define_fn_1_name) \
-template <typename P1> \
-auto fplus_curry_define_fn_1_name(P1 p1) \
-{ \
-    return [p1](auto&& fplus_curry_p2) \
-    { \
-        return fplus::fplus_curry_define_fn_1_name(p1, std::forward<decltype(fplus_curry_p2)>(fplus_curry_p2)); \
-    }; \
-}
+#define fplus_curry_define_fn_1(fplus_curry_define_fn_1_name)                                                       \
+    template <typename P1>                                                                                          \
+    auto fplus_curry_define_fn_1_name(P1 p1)                                                                        \
+    {                                                                                                               \
+        return [p1](auto&& fplus_curry_p2) {                                                                        \
+            return fplus::fplus_curry_define_fn_1_name(p1, std::forward<decltype(fplus_curry_p2)>(fplus_curry_p2)); \
+        };                                                                                                          \
+    }
 
-#define fplus_curry_define_fn_2(fplus_curry_define_fn_2_name) \
-template <typename P1> \
-auto fplus_curry_define_fn_2_name(P1 p1) \
-{ \
-    return [p1](const auto& fplus_curry_p2) \
-    { \
-        return [p1, fplus_curry_p2](auto&& fplus_curry_p3) \
-        { \
-            return fplus::fplus_curry_define_fn_2_name(p1, fplus_curry_p2, std::forward<decltype(fplus_curry_p3)>(fplus_curry_p3)); \
-        }; \
-    }; \
-}
+#define fplus_curry_define_fn_2(fplus_curry_define_fn_2_name)                                                                           \
+    template <typename P1>                                                                                                              \
+    auto fplus_curry_define_fn_2_name(P1 p1)                                                                                            \
+    {                                                                                                                                   \
+        return [p1](const auto& fplus_curry_p2) {                                                                                       \
+            return [p1, fplus_curry_p2](auto&& fplus_curry_p3) {                                                                        \
+                return fplus::fplus_curry_define_fn_2_name(p1, fplus_curry_p2, std::forward<decltype(fplus_curry_p3)>(fplus_curry_p3)); \
+            };                                                                                                                          \
+        };                                                                                                                              \
+    }
 
-#define fplus_curry_define_fn_3(fplus_curry_define_fn_3_name) \
-template <typename P1> \
-auto fplus_curry_define_fn_3_name(P1 p1) \
-{ \
-    return [p1](const auto& fplus_curry_p2) \
-    { \
-        return [p1, fplus_curry_p2](const auto& fplus_curry_p3) \
-        { \
-            return [p1, fplus_curry_p2, fplus_curry_p3](auto&& fplus_curry_p4) \
-            { \
-                return fplus::fplus_curry_define_fn_3_name(p1, fplus_curry_p2, fplus_curry_p3, std::forward<decltype(fplus_curry_p4)>(fplus_curry_p4)); \
-            }; \
-        }; \
-    }; \
-}
+#define fplus_curry_define_fn_3(fplus_curry_define_fn_3_name)                                                                                               \
+    template <typename P1>                                                                                                                                  \
+    auto fplus_curry_define_fn_3_name(P1 p1)                                                                                                                \
+    {                                                                                                                                                       \
+        return [p1](const auto& fplus_curry_p2) {                                                                                                           \
+            return [p1, fplus_curry_p2](const auto& fplus_curry_p3) {                                                                                       \
+                return [p1, fplus_curry_p2, fplus_curry_p3](auto&& fplus_curry_p4) {                                                                        \
+                    return fplus::fplus_curry_define_fn_3_name(p1, fplus_curry_p2, fplus_curry_p3, std::forward<decltype(fplus_curry_p4)>(fplus_curry_p4)); \
+                };                                                                                                                                          \
+            };                                                                                                                                              \
+        };                                                                                                                                                  \
+    }
 
-#define fplus_curry_define_fn_4(fplus_curry_define_fn_4_name) \
-template <typename P1> \
-auto fplus_curry_define_fn_4_name(P1 p1) \
-{ \
-return [p1](const auto& fplus_curry_p2) \
-    { \
-        return [p1, fplus_curry_p2](const auto& fplus_curry_p3) \
-        { \
-            return [p1, fplus_curry_p2, fplus_curry_p3](const auto& fplus_curry_p4) \
-            { \
-                return [p1, fplus_curry_p2, fplus_curry_p3, fplus_curry_p4](auto&& fplus_curry_p5) \
-                { \
-                    return fplus::fplus_curry_define_fn_4_name(p1, fplus_curry_p2, fplus_curry_p3, fplus_curry_p4, std::forward<decltype(fplus_curry_p5)>(fplus_curry_p5)); \
-                }; \
-            }; \
-        }; \
-    }; \
-}
-
+#define fplus_curry_define_fn_4(fplus_curry_define_fn_4_name)                                                                                                                   \
+    template <typename P1>                                                                                                                                                      \
+    auto fplus_curry_define_fn_4_name(P1 p1)                                                                                                                                    \
+    {                                                                                                                                                                           \
+        return [p1](const auto& fplus_curry_p2) {                                                                                                                               \
+            return [p1, fplus_curry_p2](const auto& fplus_curry_p3) {                                                                                                           \
+                return [p1, fplus_curry_p2, fplus_curry_p3](const auto& fplus_curry_p4) {                                                                                       \
+                    return [p1, fplus_curry_p2, fplus_curry_p3, fplus_curry_p4](auto&& fplus_curry_p5) {                                                                        \
+                        return fplus::fplus_curry_define_fn_4_name(p1, fplus_curry_p2, fplus_curry_p3, fplus_curry_p4, std::forward<decltype(fplus_curry_p5)>(fplus_curry_p5)); \
+                    };                                                                                                                                                          \
+                };                                                                                                                                                              \
+            };                                                                                                                                                                  \
+        };                                                                                                                                                                      \
+    }
 
 
 //
@@ -15511,13 +14898,6 @@ fplus_curry_define_fn_0(fill_pigeonholes)
 fplus_curry_define_fn_1(fill_pigeonholes_bool_to)
 fplus_curry_define_fn_0(fill_pigeonholes_bool)
 fplus_curry_define_fn_0(present_in_all)
-fplus_curry_define_fn_1(elem_at_idx_or_nothing)
-fplus_curry_define_fn_2(elem_at_idx_or_constant)
-fplus_curry_define_fn_1(elem_at_idx_or_replicate)
-fplus_curry_define_fn_1(elem_at_idx_or_wrap)
-fplus_curry_define_fn_2(extrapolate_replicate)
-fplus_curry_define_fn_2(extrapolate_wrap)
-fplus_curry_define_fn_1(elem_at_float_idx)
 fplus_curry_define_fn_0(pairs_to_map)
 fplus_curry_define_fn_0(pairs_to_map_grouped)
 fplus_curry_define_fn_0(pairs_to_unordered_map_grouped)
@@ -15616,11 +14996,6 @@ fplus_curry_define_fn_3(transform_reduce_parallelly)
 fplus_curry_define_fn_4(transform_reduce_parallelly_n_threads)
 fplus_curry_define_fn_2(transform_reduce_1_parallelly)
 fplus_curry_define_fn_3(transform_reduce_1_parallelly_n_threads)
-fplus_curry_define_fn_1(read_value_with_default)
-fplus_curry_define_fn_2(replace_if)
-fplus_curry_define_fn_2(replace_elem_at_idx)
-fplus_curry_define_fn_2(replace_elems)
-fplus_curry_define_fn_2(replace_tokens)
 fplus_curry_define_fn_0(show)
 fplus_curry_define_fn_3(show_cont_with_frame_and_newlines)
 fplus_curry_define_fn_3(show_cont_with_frame)
@@ -15632,6 +15007,21 @@ fplus_curry_define_fn_2(show_float)
 fplus_curry_define_fn_3(show_float_fill_left)
 fplus_curry_define_fn_2(show_fill_left)
 fplus_curry_define_fn_2(show_fill_right)
+fplus_curry_define_fn_0(show_timed)
+fplus_curry_define_fn_0(make_timed_function)
+fplus_curry_define_fn_0(make_timed_void_function)
+fplus_curry_define_fn_1(elem_at_idx_or_nothing)
+fplus_curry_define_fn_2(elem_at_idx_or_constant)
+fplus_curry_define_fn_1(elem_at_idx_or_replicate)
+fplus_curry_define_fn_1(elem_at_idx_or_wrap)
+fplus_curry_define_fn_2(extrapolate_replicate)
+fplus_curry_define_fn_2(extrapolate_wrap)
+fplus_curry_define_fn_1(elem_at_float_idx)
+fplus_curry_define_fn_1(read_value_with_default)
+fplus_curry_define_fn_2(replace_if)
+fplus_curry_define_fn_2(replace_elem_at_idx)
+fplus_curry_define_fn_2(replace_elems)
+fplus_curry_define_fn_2(replace_tokens)
 fplus_curry_define_fn_0(is_letter_or_digit)
 fplus_curry_define_fn_0(is_whitespace)
 fplus_curry_define_fn_0(is_line_break)
@@ -15647,18 +15037,15 @@ fplus_curry_define_fn_0(to_upper_case)
 fplus_curry_define_fn_1(to_upper_case_loc)
 fplus_curry_define_fn_2(to_string_fill_left)
 fplus_curry_define_fn_2(to_string_fill_right)
+fplus_curry_define_fn_1(for_each)
+fplus_curry_define_fn_1(parallel_for_each)
+fplus_curry_define_fn_2(parallel_for_each_n_threads)
 fplus_curry_define_fn_1(trees_from_sequence)
 fplus_curry_define_fn_1(are_trees_equal)
 fplus_curry_define_fn_0(tree_size)
 fplus_curry_define_fn_0(tree_depth)
 fplus_curry_define_fn_0(flatten_tree_depth_first)
 fplus_curry_define_fn_0(flatten_tree_breadth_first)
-fplus_curry_define_fn_1(for_each)
-fplus_curry_define_fn_1(parallel_for_each)
-fplus_curry_define_fn_2(parallel_for_each_n_threads)
-fplus_curry_define_fn_0(show_timed)
-fplus_curry_define_fn_0(make_timed_function)
-fplus_curry_define_fn_0(make_timed_void_function)
 
 } // namespace curry
 } // namespace fplus
@@ -15674,115 +15061,109 @@ fplus_curry_define_fn_0(make_timed_void_function)
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 
-namespace fplus
-{
-namespace fwd
-{
+namespace fplus {
+namespace fwd {
 
 // Partial currying.
 // Allow to generically bind all but parameters except the last one.
 // The lambda paramter ist named fplus_fwd_x instead of x
 // because gcc can produce unjustified shadow warnings. see:
 // http://stackoverflow.com/questions/41208811/parameter-of-returned-generic-lambda-allegedly-shadows-parameter-of-free-functio
-#define fplus_fwd_define_fn_0(fplus_fwd_define_fn_0_name) \
-inline auto fplus_fwd_define_fn_0_name() \
-{ \
-    return [](auto&& fplus_fwd_x) \
-    { \
-        return fplus::fplus_fwd_define_fn_0_name(std::forward<decltype(fplus_fwd_x)>(fplus_fwd_x)); \
-    }; \
-}
+#define fplus_fwd_define_fn_0(fplus_fwd_define_fn_0_name)                                               \
+    inline auto fplus_fwd_define_fn_0_name()                                                            \
+    {                                                                                                   \
+        return [](auto&& fplus_fwd_x) {                                                                 \
+            return fplus::fplus_fwd_define_fn_0_name(std::forward<decltype(fplus_fwd_x)>(fplus_fwd_x)); \
+        };                                                                                              \
+    }
 
-#define fplus_fwd_define_fn_1(fplus_fwd_define_fn_1_name) \
-template <typename P1> \
-auto fplus_fwd_define_fn_1_name(P1 p1) \
-{ \
-    return [p1](auto&& fplus_fwd_x) \
-    { \
-        return fplus::fplus_fwd_define_fn_1_name(p1, std::forward<decltype(fplus_fwd_x)>(fplus_fwd_x)); \
-    }; \
-}
+#define fplus_fwd_define_fn_1(fplus_fwd_define_fn_1_name)                                                   \
+    template <typename P1>                                                                                  \
+    auto fplus_fwd_define_fn_1_name(P1 p1)                                                                  \
+    {                                                                                                       \
+        return [p1](auto&& fplus_fwd_x) {                                                                   \
+            return fplus::fplus_fwd_define_fn_1_name(p1, std::forward<decltype(fplus_fwd_x)>(fplus_fwd_x)); \
+        };                                                                                                  \
+    }
 
-#define fplus_fwd_define_fn_2(fplus_fwd_define_fn_2_name) \
-template <typename P1, typename P2> \
-auto fplus_fwd_define_fn_2_name(P1 p1, P2 p2) \
-{ \
-    return [p1, p2](auto&& fplus_fwd_x) \
-    { \
-        return fplus::fplus_fwd_define_fn_2_name(p1, p2, std::forward<decltype(fplus_fwd_x)>(fplus_fwd_x)); \
-    }; \
-}
+#define fplus_fwd_define_fn_2(fplus_fwd_define_fn_2_name)                                                       \
+    template <typename P1, typename P2>                                                                         \
+    auto fplus_fwd_define_fn_2_name(P1 p1, P2 p2)                                                               \
+    {                                                                                                           \
+        return [p1, p2](auto&& fplus_fwd_x) {                                                                   \
+            return fplus::fplus_fwd_define_fn_2_name(p1, p2, std::forward<decltype(fplus_fwd_x)>(fplus_fwd_x)); \
+        };                                                                                                      \
+    }
 
-#define fplus_fwd_define_fn_3(fplus_fwd_define_fn_3_name) \
-template <typename P1, typename P2, typename P3> \
-auto fplus_fwd_define_fn_3_name(P1 p1, P2 p2, P3 p3) \
-{ \
-    return [p1, p2, p3](auto&& fplus_fwd_x) \
-    { \
-        return fplus::fplus_fwd_define_fn_3_name(p1, p2, p3, std::forward<decltype(fplus_fwd_x)>(fplus_fwd_x)); \
-    }; \
-}
+#define fplus_fwd_define_fn_3(fplus_fwd_define_fn_3_name)                                                           \
+    template <typename P1, typename P2, typename P3>                                                                \
+    auto fplus_fwd_define_fn_3_name(P1 p1, P2 p2, P3 p3)                                                            \
+    {                                                                                                               \
+        return [p1, p2, p3](auto&& fplus_fwd_x) {                                                                   \
+            return fplus::fplus_fwd_define_fn_3_name(p1, p2, p3, std::forward<decltype(fplus_fwd_x)>(fplus_fwd_x)); \
+        };                                                                                                          \
+    }
 
-#define fplus_fwd_define_fn_4(fplus_fwd_define_fn_4_name) \
-template <typename P1, typename P2, typename P3, typename P4> \
-auto fplus_fwd_define_fn_4_name(P1 p1, P2 p2, P3 p3, P4 p4) \
-{ \
-    return [p1, p2, p3, p4](auto&& fplus_fwd_x) \
-    { \
-        return fplus::fplus_fwd_define_fn_4_name(p1, p2, p3, p4, std::forward<decltype(fplus_fwd_x)>(fplus_fwd_x)); \
-    }; \
-}
+#define fplus_fwd_define_fn_4(fplus_fwd_define_fn_4_name)                                                               \
+    template <typename P1, typename P2, typename P3, typename P4>                                                       \
+    auto fplus_fwd_define_fn_4_name(P1 p1, P2 p2, P3 p3, P4 p4)                                                         \
+    {                                                                                                                   \
+        return [p1, p2, p3, p4](auto&& fplus_fwd_x) {                                                                   \
+            return fplus::fplus_fwd_define_fn_4_name(p1, p2, p3, p4, std::forward<decltype(fplus_fwd_x)>(fplus_fwd_x)); \
+        };                                                                                                              \
+    }
 
+#define fplus_fwd_flip_define_fn_1(fplus_fwd_flip_define_fn_1_name)                                                            \
+    namespace flip {                                                                                                           \
+        template <typename P2>                                                                                                 \
+        auto fplus_fwd_flip_define_fn_1_name(P2 p2)                                                                            \
+        {                                                                                                                      \
+            return [p2](auto&& fplus_fwd_flip_x) {                                                                             \
+                return fplus::fplus_fwd_flip_define_fn_1_name(std::forward<decltype(fplus_fwd_flip_x)>(fplus_fwd_flip_x), p2); \
+            };                                                                                                                 \
+        }                                                                                                                      \
+    } // namespace flip
 
-#define fplus_fwd_flip_define_fn_1(fplus_fwd_flip_define_fn_1_name) \
-namespace flip \
-{ \
-    template <typename P2> \
-    auto fplus_fwd_flip_define_fn_1_name(P2 p2) \
-    { \
-        return [p2](auto&& fplus_fwd_flip_x) \
-        { \
-            return fplus::fplus_fwd_flip_define_fn_1_name(std::forward<decltype(fplus_fwd_flip_x)>(fplus_fwd_flip_x), p2); \
-        }; \
-    } \
-} // namespace flip
+    namespace internal {
+        template <typename F, typename G>
+        struct compose_helper {
+            compose_helper(F f, G g)
+                : f_(f)
+                , g_(g)
+            {
+            }
+            template <typename X>
+            decltype(auto) operator()(X&& x) const
+            {
+                return g_(f_(std::forward<X>(x)));
+            }
 
+        private:
+            F f_;
+            G g_;
+        };
+    } // namespace internal
+    template <typename F, typename G>
+    auto compose(F f, G g)
+    {
+        return internal::compose_helper<F, G> { f, g };
+    }
+    template <typename F1, typename... Fs>
+    auto compose(F1 f, Fs... args)
+    {
+        return compose(f, compose(args...));
+    }
 
-namespace internal
-{
-    template<typename F, typename G>
-    struct compose_helper{
-        compose_helper(F f, G g) : f_(f), g_(g) {}
-        template<typename X>
-        decltype(auto) operator()(X&& x) const
-        {
-            return g_(f_(std::forward<X>(x)));
-        }
-    private:
-        F f_;
-        G g_;
-    };
-} // namespace internal
-template<typename F, typename G>
-auto compose(F f, G g) {
-    return internal::compose_helper<F, G> {f, g};
-}
-template<typename F1, typename... Fs>
-auto compose(F1 f, Fs ... args)
-{
-    return compose(f, compose(args...));
-}
-
-template<typename X, typename... Fs>
-auto apply(X&& x, Fs ... args)
-{
-    return compose(args...)(std::forward<X>(x));
-}
-template<typename X, typename F>
-auto apply(X&& x, F f)
-{
-    return f(std::forward<X>(x));
-}
+    template <typename X, typename... Fs>
+    auto apply(X&& x, Fs... args)
+    {
+        return compose(args...)(std::forward<X>(x));
+    }
+    template <typename X, typename F>
+    auto apply(X&& x, F f)
+    {
+        return f(std::forward<X>(x));
+    }
 
 
 //
@@ -16125,13 +15506,6 @@ fplus_fwd_define_fn_0(fill_pigeonholes)
 fplus_fwd_define_fn_1(fill_pigeonholes_bool_to)
 fplus_fwd_define_fn_0(fill_pigeonholes_bool)
 fplus_fwd_define_fn_0(present_in_all)
-fplus_fwd_define_fn_1(elem_at_idx_or_nothing)
-fplus_fwd_define_fn_2(elem_at_idx_or_constant)
-fplus_fwd_define_fn_1(elem_at_idx_or_replicate)
-fplus_fwd_define_fn_1(elem_at_idx_or_wrap)
-fplus_fwd_define_fn_2(extrapolate_replicate)
-fplus_fwd_define_fn_2(extrapolate_wrap)
-fplus_fwd_define_fn_1(elem_at_float_idx)
 fplus_fwd_define_fn_0(pairs_to_map)
 fplus_fwd_define_fn_0(pairs_to_map_grouped)
 fplus_fwd_define_fn_0(pairs_to_unordered_map_grouped)
@@ -16230,11 +15604,6 @@ fplus_fwd_define_fn_3(transform_reduce_parallelly)
 fplus_fwd_define_fn_4(transform_reduce_parallelly_n_threads)
 fplus_fwd_define_fn_2(transform_reduce_1_parallelly)
 fplus_fwd_define_fn_3(transform_reduce_1_parallelly_n_threads)
-fplus_fwd_define_fn_1(read_value_with_default)
-fplus_fwd_define_fn_2(replace_if)
-fplus_fwd_define_fn_2(replace_elem_at_idx)
-fplus_fwd_define_fn_2(replace_elems)
-fplus_fwd_define_fn_2(replace_tokens)
 fplus_fwd_define_fn_0(show)
 fplus_fwd_define_fn_3(show_cont_with_frame_and_newlines)
 fplus_fwd_define_fn_3(show_cont_with_frame)
@@ -16246,6 +15615,21 @@ fplus_fwd_define_fn_2(show_float)
 fplus_fwd_define_fn_3(show_float_fill_left)
 fplus_fwd_define_fn_2(show_fill_left)
 fplus_fwd_define_fn_2(show_fill_right)
+fplus_fwd_define_fn_0(show_timed)
+fplus_fwd_define_fn_0(make_timed_function)
+fplus_fwd_define_fn_0(make_timed_void_function)
+fplus_fwd_define_fn_1(elem_at_idx_or_nothing)
+fplus_fwd_define_fn_2(elem_at_idx_or_constant)
+fplus_fwd_define_fn_1(elem_at_idx_or_replicate)
+fplus_fwd_define_fn_1(elem_at_idx_or_wrap)
+fplus_fwd_define_fn_2(extrapolate_replicate)
+fplus_fwd_define_fn_2(extrapolate_wrap)
+fplus_fwd_define_fn_1(elem_at_float_idx)
+fplus_fwd_define_fn_1(read_value_with_default)
+fplus_fwd_define_fn_2(replace_if)
+fplus_fwd_define_fn_2(replace_elem_at_idx)
+fplus_fwd_define_fn_2(replace_elems)
+fplus_fwd_define_fn_2(replace_tokens)
 fplus_fwd_define_fn_0(is_letter_or_digit)
 fplus_fwd_define_fn_0(is_whitespace)
 fplus_fwd_define_fn_0(is_line_break)
@@ -16261,18 +15645,15 @@ fplus_fwd_define_fn_0(to_upper_case)
 fplus_fwd_define_fn_1(to_upper_case_loc)
 fplus_fwd_define_fn_2(to_string_fill_left)
 fplus_fwd_define_fn_2(to_string_fill_right)
+fplus_fwd_define_fn_1(for_each)
+fplus_fwd_define_fn_1(parallel_for_each)
+fplus_fwd_define_fn_2(parallel_for_each_n_threads)
 fplus_fwd_define_fn_1(trees_from_sequence)
 fplus_fwd_define_fn_1(are_trees_equal)
 fplus_fwd_define_fn_0(tree_size)
 fplus_fwd_define_fn_0(tree_depth)
 fplus_fwd_define_fn_0(flatten_tree_depth_first)
 fplus_fwd_define_fn_0(flatten_tree_breadth_first)
-fplus_fwd_define_fn_1(for_each)
-fplus_fwd_define_fn_1(parallel_for_each)
-fplus_fwd_define_fn_2(parallel_for_each_n_threads)
-fplus_fwd_define_fn_0(show_timed)
-fplus_fwd_define_fn_0(make_timed_function)
-fplus_fwd_define_fn_0(make_timed_void_function)
 fplus_fwd_flip_define_fn_1(is_equal)
 fplus_fwd_flip_define_fn_1(is_not_equal)
 fplus_fwd_flip_define_fn_1(is_less)
@@ -16445,10 +15826,6 @@ fplus_fwd_flip_define_fn_1(is_unique_in)
 fplus_fwd_flip_define_fn_1(is_permutation_of)
 fplus_fwd_flip_define_fn_1(fill_pigeonholes_to)
 fplus_fwd_flip_define_fn_1(fill_pigeonholes_bool_to)
-fplus_fwd_flip_define_fn_1(elem_at_idx_or_nothing)
-fplus_fwd_flip_define_fn_1(elem_at_idx_or_replicate)
-fplus_fwd_flip_define_fn_1(elem_at_idx_or_wrap)
-fplus_fwd_flip_define_fn_1(elem_at_float_idx)
 fplus_fwd_flip_define_fn_1(transform_map_values)
 fplus_fwd_flip_define_fn_1(map_union)
 fplus_fwd_flip_define_fn_1(create_map)
@@ -16505,16 +15882,20 @@ fplus_fwd_flip_define_fn_1(apply_functions)
 fplus_fwd_flip_define_fn_1(transform_parallelly)
 fplus_fwd_flip_define_fn_1(reduce_1_parallelly)
 fplus_fwd_flip_define_fn_1(keep_if_parallelly)
-fplus_fwd_flip_define_fn_1(read_value_with_default)
 fplus_fwd_flip_define_fn_1(show_cont_with)
+fplus_fwd_flip_define_fn_1(elem_at_idx_or_nothing)
+fplus_fwd_flip_define_fn_1(elem_at_idx_or_replicate)
+fplus_fwd_flip_define_fn_1(elem_at_idx_or_wrap)
+fplus_fwd_flip_define_fn_1(elem_at_float_idx)
+fplus_fwd_flip_define_fn_1(read_value_with_default)
 fplus_fwd_flip_define_fn_1(split_words)
 fplus_fwd_flip_define_fn_1(split_lines)
 fplus_fwd_flip_define_fn_1(to_lower_case_loc)
 fplus_fwd_flip_define_fn_1(to_upper_case_loc)
-fplus_fwd_flip_define_fn_1(trees_from_sequence)
-fplus_fwd_flip_define_fn_1(are_trees_equal)
 fplus_fwd_flip_define_fn_1(for_each)
 fplus_fwd_flip_define_fn_1(parallel_for_each)
+fplus_fwd_flip_define_fn_1(trees_from_sequence)
+fplus_fwd_flip_define_fn_1(are_trees_equal)
 
 } // namespace fwd
 } // namespace fplus

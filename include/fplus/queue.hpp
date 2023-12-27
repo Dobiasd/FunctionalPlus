@@ -14,24 +14,22 @@
 #include <deque>
 #include <mutex>
 
-namespace fplus
-{
+namespace fplus {
 
 // A thread-safe queue.
 template <typename T>
-class queue
-{
+class queue {
 public:
-    queue() :
-        queue_(),
-        mutex_(),
-        cond_()
-        {}
+    queue()
+        : queue_()
+        , mutex_()
+        , cond_()
+    {
+    }
     fplus::maybe<T> pop()
     {
         std::unique_lock<std::mutex> lock(mutex_);
-        if (queue_.empty())
-        {
+        if (queue_.empty()) {
             return {};
         }
         auto item = queue_.front();
@@ -68,7 +66,7 @@ public:
     std::vector<T> wait_for_and_pop_all(std::int64_t max_wait_time_us)
     {
         std::unique_lock<std::mutex> mlock(mutex_);
-        const auto t = std::chrono::microseconds{ max_wait_time_us };
+        const auto t = std::chrono::microseconds { max_wait_time_us };
         cond_.wait_for(mlock, t, [&]() -> bool { return !queue_.empty(); });
         const auto result = fplus::convert_container<std::vector<T>>(queue_);
         queue_.clear();

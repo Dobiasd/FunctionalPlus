@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace {
-    bool is_odd_int(int x) { return x % 2 != 0; }
+bool is_odd_int(int x) { return x % 2 != 0; }
 }
 
 TEST_CASE("readme_examples_test - KeepIf")
@@ -27,7 +27,7 @@ TEST_CASE("readme_examples_test - KeepIf")
     { // Version 2: STL
         Ints odds;
         std::copy_if(std::begin(values), std::end(values),
-                std::back_inserter(odds), is_odd_int);
+            std::back_inserter(odds), is_odd_int);
     }
 
     { // Version : FunctionalPlus
@@ -37,7 +37,7 @@ TEST_CASE("readme_examples_test - KeepIf")
 
 TEST_CASE("readme_examples_test - SameOldSameOld")
 {
-    std::list<std::string> things = {"same old", "same old"};
+    std::list<std::string> things = { "same old", "same old" };
     REQUIRE(fplus::all_the_same(things));
 }
 
@@ -48,12 +48,15 @@ TEST_CASE("readme_examples_test - eIInTeam")
 }
 
 namespace {
-    struct Entity
+struct Entity {
+    Entity()
+        : calm_(true)
+        , bright_(true)
     {
-        Entity() : calm_(true), bright_(true) {}
-        bool calm_;
-        bool bright_;
-    };
+    }
+    bool calm_;
+    bool bright_;
+};
 }
 
 TEST_CASE("readme_examples_test - AllIsCalmAndBright")
@@ -65,48 +68,47 @@ TEST_CASE("readme_examples_test - AllIsCalmAndBright")
 }
 
 namespace {
-    struct cat
+struct cat {
+    double cuteness() const
     {
-        double cuteness() const
-        {
-            return softness_ * temperature_ * roundness_ * fur_amount_ - size_;
-        }
-        std::string name_;
-        double softness_;
-        double temperature_;
-        double size_;
-        double roundness_;
-        double fur_amount_;
-    };
+        return softness_ * temperature_ * roundness_ * fur_amount_ - size_;
+    }
+    std::string name_;
+    double softness_;
+    double temperature_;
+    double size_;
+    double roundness_;
+    double fur_amount_;
+};
 }
 
 TEST_CASE("readme_examples_test - TheCutestCat")
 {
     std::vector<cat> cats = {
-        {"Tigger",   5, 5, 5, 5, 5},
-        {"Simba",    2, 9, 9, 2, 7},
-        {"Muffin",   9, 4, 2, 8, 6},
-        {"Garfield", 6, 5, 7, 9, 5}};
+        { "Tigger", 5, 5, 5, 5, 5 },
+        { "Simba", 2, 9, 9, 2, 7 },
+        { "Muffin", 9, 4, 2, 8, 6 },
+        { "Garfield", 6, 5, 7, 9, 5 }
+    };
 
     auto cutest_cat = fplus::maximum_on(std::mem_fn(&cat::cuteness), cats);
     REQUIRE_EQ(cutest_cat.name_, std::string("Muffin"));
 }
 
 namespace {
-    std::list<int> collatz_seq(int x)
-    {
-        std::list<int> result;
-        while (x > 1)
-        {
-            result.push_back(x);
-            if (x % 2 == 0)
-                x = x / 2;
-            else
-                x = 3 * x + 1;
-        }
+std::list<int> collatz_seq(int x)
+{
+    std::list<int> result;
+    while (x > 1) {
         result.push_back(x);
-        return result;
+        if (x % 2 == 0)
+            x = x / 2;
+        else
+            x = 3 * x + 1;
     }
+    result.push_back(x);
+    return result;
+}
 }
 
 TEST_CASE("readme_examples_test - CollatzSequence")
@@ -131,52 +133,44 @@ TEST_CASE("readme_examples_test - CollatzSequence")
 }
 
 namespace {
-    std::string gemstone_count(const std::string& input)
-    {
-        using namespace fplus;
-
-        typedef std::set<std::string::value_type> characters;
-
-        const auto lines = split_lines(false, input);
-
-        const auto sets = transform(
-            convert_container<characters, std::string>,
-            lines);
-
-        const auto gem_elements = fold_left_1(
-            set_intersection<characters>, sets);
-
-        return show(size_of_cont(gem_elements));
-    }
-
-    std::string gemstone_count_fwd_apply(const std::string& input)
-    {
-        using namespace fplus;
-        typedef std::set<std::string::value_type> characters;
-        return fwd::apply(
-            input
-            , fwd::split_lines(false)
-            , fwd::transform(convert_container<characters, std::string>)
-            , fwd::fold_left_1(set_intersection<characters>)
-            , fwd::size_of_cont()
-            , fwd::show()
-        );
-    }
+std::string gemstone_count(const std::string& input)
+{
+    using namespace fplus;
 
     typedef std::set<std::string::value_type> characters;
-    const auto gemstone_count_fwd_compose = fplus::fwd::compose(
-        fplus::fwd::split_lines(false),
-        fplus::fwd::transform(fplus::convert_container<characters, std::string>),
-        fplus::fwd::fold_left_1(fplus::set_intersection<characters>),
-        fplus::fwd::size_of_cont(),
-        fplus::fwd::show()
-    );
+
+    const auto lines = split_lines(false, input);
+
+    const auto sets = transform(
+        convert_container<characters, std::string>,
+        lines);
+
+    const auto gem_elements = fold_left_1(
+        set_intersection<characters>, sets);
+
+    return show(size_of_cont(gem_elements));
+}
+
+std::string gemstone_count_fwd_apply(const std::string& input)
+{
+    using namespace fplus;
+    typedef std::set<std::string::value_type> characters;
+    return fwd::apply(
+        input, fwd::split_lines(false), fwd::transform(convert_container<characters, std::string>), fwd::fold_left_1(set_intersection<characters>), fwd::size_of_cont(), fwd::show());
+}
+
+typedef std::set<std::string::value_type> characters;
+const auto gemstone_count_fwd_compose = fplus::fwd::compose(
+    fplus::fwd::split_lines(false),
+    fplus::fwd::transform(fplus::convert_container<characters, std::string>),
+    fplus::fwd::fold_left_1(fplus::set_intersection<characters>),
+    fplus::fwd::size_of_cont(),
+    fplus::fwd::show());
 }
 
 TEST_CASE("readme_examples_test - fwd_style")
 {
-    const std::string input =
-        "Lorem ipsum\ndolor sit amet,\nconsectetur,\nadipisci velit";
+    const std::string input = "Lorem ipsum\ndolor sit amet,\nconsectetur,\nadipisci velit";
     const auto result = gemstone_count(input);
     const auto result_fwd_apply = gemstone_count_fwd_apply(input);
     const auto result_fwd_compose = gemstone_count_fwd_compose(input);
@@ -186,42 +180,39 @@ TEST_CASE("readme_examples_test - fwd_style")
 }
 
 namespace {
-    std::string square_is_even(const std::vector<int>& xs)
-    {
-        using namespace fplus;
-        auto ys = fplus::transform(fplus::square<int>, xs);
-        auto zs = fplus::keep_if(fplus::is_even<int>, ys);
-        return show(size_of_cont(zs));
-    }
+std::string square_is_even(const std::vector<int>& xs)
+{
+    using namespace fplus;
+    auto ys = fplus::transform(fplus::square<int>, xs);
+    auto zs = fplus::keep_if(fplus::is_even<int>, ys);
+    return show(size_of_cont(zs));
+}
 
-    std::string square_is_even_chain(const std::vector<int>& xs)
-    {
-        using namespace fplus;
-        auto zs = fplus::keep_if(fplus::is_even<int>, fplus::transform(fplus::square<int>, xs));
-        return show(size_of_cont(zs));
-    }
+std::string square_is_even_chain(const std::vector<int>& xs)
+{
+    using namespace fplus;
+    auto zs = fplus::keep_if(fplus::is_even<int>, fplus::transform(fplus::square<int>, xs));
+    return show(size_of_cont(zs));
+}
 
-    std::string square_is_even_fwd_apply(const std::vector<int>& xs)
-    {
-        using namespace fplus;
-        auto zs = fwd::apply(
-            xs
-            , fplus::fwd::transform(fplus::square<int>)
-            , fplus::fwd::keep_if(fplus::is_even<int>));
-        return show(size_of_cont(zs));
-    }
+std::string square_is_even_fwd_apply(const std::vector<int>& xs)
+{
+    using namespace fplus;
+    auto zs = fwd::apply(
+        xs, fplus::fwd::transform(fplus::square<int>), fplus::fwd::keep_if(fplus::is_even<int>));
+    return show(size_of_cont(zs));
+}
 
-    const auto square_is_even_fwd_compose = fplus::fwd::compose(
-        fplus::fwd::transform(fplus::square<int>),
-        fplus::fwd::keep_if(fplus::is_even<int>),
-        fplus::fwd::size_of_cont(),
-        fplus::fwd::show()
-    );
+const auto square_is_even_fwd_compose = fplus::fwd::compose(
+    fplus::fwd::transform(fplus::square<int>),
+    fplus::fwd::keep_if(fplus::is_even<int>),
+    fplus::fwd::size_of_cont(),
+    fplus::fwd::show());
 }
 
 TEST_CASE("readme_examples_test - square_is_even")
 {
-    const std::vector<int> xs = {0,1,2,3,4,5,6,7};
+    const std::vector<int> xs = { 0, 1, 2, 3, 4, 5, 6, 7 };
     const auto result = square_is_even(xs); // uses l-value keep_if internally
     const auto result_chain = square_is_even_chain(xs); // uses r-value keep_if internally
     const auto result_fwd_apply = square_is_even_fwd_apply(xs); // uses r-value keep_if internally

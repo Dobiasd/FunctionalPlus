@@ -12,8 +12,7 @@
 #include <set>
 #include <unordered_set>
 
-namespace fplus
-{
+namespace fplus {
 
 // API search type: set_includes : (Set a, Set a) -> Bool
 // fwd bind count: 1
@@ -33,11 +32,11 @@ bool set_includes(const SetType& set1, const SetType& set2)
 // Also known as is_subset_of.
 template <typename UnorderSetType>
 bool unordered_set_includes(const UnorderSetType& set1,
-                            const UnorderSetType& set2)
+    const UnorderSetType& set2)
 {
     auto first_not_included = std::find_if(set2.begin(), set2.end(),
         [&](const typename UnorderSetType::value_type& x)
-        -> bool { return set1.find(x) == set1.end();});
+            -> bool { return set1.find(x) == set1.end(); });
     return first_not_included == set2.end();
 }
 
@@ -92,8 +91,7 @@ UnorderSetType unordered_set_intersection(
     UnorderSetType result;
     auto itOut = internal::get_back_inserter(result);
     std::copy_if(std::begin(set2), std::end(set2),
-        itOut, [&](const typename UnorderSetType::value_type &x)
-        -> bool {return set1.find(x) != set1.end();});
+        itOut, [&](const typename UnorderSetType::value_type& x) -> bool { return set1.find(x) != set1.end(); });
     return result;
 }
 
@@ -136,13 +134,12 @@ SetType set_difference(const SetType& set1, const SetType& set2)
 // that are not present in unordered_set2.
 template <typename UnorderSetType>
 UnorderSetType unordered_set_difference(const UnorderSetType& set1,
-const UnorderSetType& set2)
+    const UnorderSetType& set2)
 {
     UnorderSetType result;
     auto itOut = internal::get_back_inserter(result);
     std::copy_if(std::begin(set1), std::end(set1),
-        itOut, [&](const typename UnorderSetType::value_type &x)
-        -> bool {return set2.find(x) == set2.end();});
+        itOut, [&](const typename UnorderSetType::value_type& x) -> bool { return set2.find(x) == set2.end(); });
     return result;
 }
 
@@ -170,11 +167,9 @@ UnorderSetType unordered_set_symmetric_difference(
     UnorderSetType result;
     auto itOut = internal::get_back_inserter(result);
     std::copy_if(std::begin(set1), std::end(set1),
-        itOut, [&](const typename UnorderSetType::value_type &x)
-        -> bool {return set2.find(x) == set2.end();});
+        itOut, [&](const typename UnorderSetType::value_type& x) -> bool { return set2.find(x) == set2.end(); });
     std::copy_if(std::begin(set2), std::end(set2),
-        itOut, [&](const typename UnorderSetType::value_type &x)
-        -> bool {return set1.find(x) == set1.end();});
+        itOut, [&](const typename UnorderSetType::value_type& x) -> bool { return set1.find(x) == set1.end(); });
     return result;
 }
 

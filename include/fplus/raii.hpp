@@ -8,17 +8,15 @@
 
 #include <fplus/shared_ref.hpp>
 
-namespace fplus
-{
+namespace fplus {
 
 // A generic RAII class.
 // It is recommended to use make_raii for constructing an instance.
 template <typename INIT, typename QUIT>
-class raii
-{
+class raii {
 public:
-    raii(INIT init, QUIT quit) :
-        quit_(quit)
+    raii(INIT init, QUIT quit)
+        : quit_(quit)
     {
         init();
     }
@@ -30,6 +28,7 @@ public:
     raii(raii&&) = default;
     raii& operator=(const raii&) = delete;
     raii& operator=(raii&&) = default;
+
 private:
     QUIT quit_;
 };
@@ -39,6 +38,5 @@ shared_ref<raii<INIT, QUIT>> make_raii(INIT init, QUIT quit)
 {
     return make_shared_ref<raii<INIT, QUIT>>(init, quit);
 }
-
 
 } // namespace fplus

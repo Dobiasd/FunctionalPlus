@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include <fplus/container_common.hpp>
 #include <fplus/compare.hpp>
+#include <fplus/composition.hpp>
+#include <fplus/container_common.hpp>
 #include <fplus/generate.hpp>
 #include <fplus/maybe.hpp>
 #include <fplus/numeric.hpp>
 #include <fplus/search.hpp>
-#include <fplus/composition.hpp>
 #include <fplus/sets.hpp>
 
 #include <fplus/internal/invoke.hpp>
@@ -22,8 +22,7 @@
 #include <numeric>
 #include <type_traits>
 
-namespace fplus
-{
+namespace fplus {
 
 // API search type: any_by : ((a -> Bool), [a]) -> Bool
 // fwd bind count: 1
@@ -69,7 +68,6 @@ bool none(const Container& xs)
     return none_by(identity<T>, xs);
 }
 
-
 // API search type: minimum_idx_by : (((a, a) -> Bool), [a]) -> Int
 // fwd bind count: 1
 // Return the index of the first minimum element using a less comparator.
@@ -77,7 +75,7 @@ bool none(const Container& xs)
 // Unsafe! Crashes on an empty sequence.
 template <typename Compare, typename Container>
 typename std::size_t minimum_idx_by(Compare comp,
-        const Container& xs)
+    const Container& xs)
 {
     internal::check_compare_for_container<Compare, Container>();
     assert(is_not_empty(xs));
@@ -93,7 +91,7 @@ typename std::size_t minimum_idx_by(Compare comp,
 // minimum_idx_by_maybe(lessLength, []) -> Nothing
 template <typename Compare, typename Container>
 maybe<typename std::size_t> minimum_idx_by_maybe(Compare comp,
-        const Container& xs)
+    const Container& xs)
 {
     if (is_empty(xs))
         return {};
@@ -108,7 +106,7 @@ maybe<typename std::size_t> minimum_idx_by_maybe(Compare comp,
 // Unsafe! Crashes on an empty sequence.
 template <typename Compare, typename Container>
 typename std::size_t maximum_idx_by(Compare comp,
-        const Container& xs)
+    const Container& xs)
 {
     internal::check_compare_for_container<Compare, Container>();
     assert(is_not_empty(xs));
@@ -124,14 +122,13 @@ typename std::size_t maximum_idx_by(Compare comp,
 // maximum_idx_by_maybe(lessLength, []) == Nothing
 template <typename Compare, typename Container>
 maybe<typename std::size_t> maximum_idx_by_maybe(Compare comp,
-        const Container& xs)
+    const Container& xs)
 {
     if (is_empty(xs))
         return {};
     else
         return maximum_idx_by(comp, xs);
 }
-
 
 // API search type: minimum_idx : [a] -> Int
 // fwd bind count: 0
@@ -182,7 +179,6 @@ maybe<typename std::size_t> maximum_idx_maybe(const Container& xs)
     else
         return maximum_idx(xs);
 }
-
 
 // API search type: minimum_idx_on : ((a -> b), [a]) -> Int
 // fwd bind count: 1
@@ -247,7 +243,7 @@ maybe<typename std::size_t> maximum_idx_on_maybe(F f, const Container& xs)
 // Unsafe! Crashes on an empty sequence.
 template <typename Compare, typename Container>
 typename Container::value_type minimum_by(Compare comp,
-        const Container& xs)
+    const Container& xs)
 {
     internal::check_compare_for_container<Compare, Container>();
     assert(is_not_empty(xs));
@@ -262,7 +258,7 @@ typename Container::value_type minimum_by(Compare comp,
 // minimum_by_maybe(lessLength, []) -> Nothing
 template <typename Compare, typename Container>
 maybe<typename Container::value_type> minimum_by_maybe(Compare comp,
-        const Container& xs)
+    const Container& xs)
 {
     if (is_empty(xs))
         return {};
@@ -277,7 +273,7 @@ maybe<typename Container::value_type> minimum_by_maybe(Compare comp,
 // Unsafe! Crashes on an empty sequence.
 template <typename Compare, typename Container>
 typename Container::value_type maximum_by(Compare comp,
-        const Container& xs)
+    const Container& xs)
 {
     internal::check_compare_for_container<Compare, Container>();
     assert(is_not_empty(xs));
@@ -292,14 +288,13 @@ typename Container::value_type maximum_by(Compare comp,
 // maximum_by_maybe(lessLength, []) == Nothing
 template <typename Compare, typename Container>
 maybe<typename Container::value_type> maximum_by_maybe(Compare comp,
-        const Container& xs)
+    const Container& xs)
 {
     if (is_empty(xs))
         return {};
     else
         return maximum_by(comp, xs);
 }
-
 
 // API search type: minimum : [a] -> a
 // fwd bind count: 0
@@ -352,7 +347,6 @@ maybe<typename Container::value_type> maximum_maybe(const Container& xs)
     else
         return maximum(xs);
 }
-
 
 // API search type: minimum_on : ((a -> b), [a]) -> a
 // fwd bind count: 1
@@ -476,7 +470,7 @@ Result mean_using_doubles(const Container& xs)
 // median([5, 6, 4, 3, 2, 6, 7, 9, 3]) == 5
 // Unsafe! Crashes on an empty sequence.
 template <typename Container,
-        typename Result = typename Container::value_type>
+    typename Result = typename Container::value_type>
 Result median(const Container& xs)
 {
     assert(is_not_empty(xs));
@@ -488,14 +482,11 @@ Result median(const Container& xs)
     // would be faster for random-access containers
     // but not work at all on other containers like std::list.
     auto xsSorted = sort(xs);
-    if (is_odd(size_of_cont(xsSorted)))
-    {
+    if (is_odd(size_of_cont(xsSorted))) {
         auto it = std::begin(xsSorted);
         internal::advance_iterator(it, size_of_cont(xsSorted) / 2);
         return static_cast<Result>(*it);
-    }
-    else
-    {
+    } else {
         auto it1 = std::begin(xsSorted);
         internal::advance_iterator(it1, size_of_cont(xsSorted) / 2 - 1);
         auto it2 = it1;
@@ -550,10 +541,8 @@ bool is_subsequence_of(const Container& seq, const Container& xs)
         return false;
     typedef typename Container::value_type T;
     auto remaining = convert_container_and_elems<std::list<T>>(seq);
-    for (const auto& x : xs)
-    {
-        if (x == remaining.front())
-        {
+    for (const auto& x : xs) {
+        if (x == remaining.front()) {
             remaining.pop_front();
             if (is_empty(remaining))
                 return true;
@@ -576,8 +565,7 @@ std::size_t count_if(UnaryPredicate p, const Container& xs)
 // fwd bind count: 1
 // count(2, [1, 2, 3, 5, 7, 2, 2]) == 3
 template <typename Container>
-std::size_t count
-        (const typename Container::value_type& x, const Container& xs)
+std::size_t count(const typename Container::value_type& x, const Container& xs)
 {
     return size_of_cont(find_all_idxs_of(x, xs));
 }
@@ -587,17 +575,13 @@ std::size_t count
 // is_unique_in_by((==2), [1, 2, 3, 5, 7, 2, 2]) == false
 // is_unique_in_by((==5), [1, 2, 3, 5, 7, 2, 2]) == true
 template <typename UnaryPredicate, typename Container>
-bool is_unique_in_by
-        (UnaryPredicate pred, const Container& xs)
+bool is_unique_in_by(UnaryPredicate pred, const Container& xs)
 {
     std::size_t count = 0;
-    for (const auto& x : xs)
-    {
-        if (internal::invoke(pred, x))
-        {
+    for (const auto& x : xs) {
+        if (internal::invoke(pred, x)) {
             ++count;
-            if (count > 1)
-            {
+            if (count > 1) {
                 return false;
             }
         }
@@ -610,8 +594,7 @@ bool is_unique_in_by
 // is_unique_in(2, [1, 2, 3, 5, 7, 2, 2]) == false
 // is_unique_in(5, [1, 2, 3, 5, 7, 2, 2]) == true
 template <typename Container>
-bool is_unique_in
-        (const typename Container::value_type& x, const Container& xs)
+bool is_unique_in(const typename Container::value_type& x, const Container& xs)
 {
     return is_unique_in_by(is_equal_to(x), xs);
 }
@@ -624,8 +607,7 @@ bool is_unique_in
 template <typename Container>
 bool is_permutation_of(const Container& xs, const Container& ys)
 {
-    return size_of_cont(xs) == size_of_cont(ys) &&
-        sort(xs) == sort(ys);
+    return size_of_cont(xs) == size_of_cont(ys) && sort(xs) == sort(ys);
 }
 
 // API search type: fill_pigeonholes_to : (Int, [Int]) -> [Int]
@@ -646,13 +628,10 @@ ContainerOut fill_pigeonholes_to(std::size_t idx_end, const ContainerIn& xs)
         return {};
 
     ContainerOut result(idx_end, 0);
-    for (const auto& x : xs)
-    {
-        if (x >= 0)
-        {
+    for (const auto& x : xs) {
+        if (x >= 0) {
             const auto idx = static_cast<std::size_t>(x);
-            if (idx < result.size())
-            {
+            if (idx < result.size()) {
                 ++result[idx];
             }
         }
@@ -676,7 +655,7 @@ ContainerOut fill_pigeonholes(const ContainerIn& xs)
     if (is_empty(xs))
         return {};
 
-    return(fill_pigeonholes_to<ContainerIn, ContainerOut>(
+    return (fill_pigeonholes_to<ContainerIn, ContainerOut>(
         maximum(xs) + 1, xs));
 }
 
@@ -698,13 +677,10 @@ ContainerOut fill_pigeonholes_bool_to(std::size_t idx_end, const ContainerIn& xs
         return {};
 
     ContainerOut result(idx_end, 0);
-    for (const auto& x : xs)
-    {
-        if (x >= 0)
-        {
+    for (const auto& x : xs) {
+        if (x >= 0) {
             const auto idx = static_cast<std::size_t>(x);
-            if (idx < result.size())
-            {
+            if (idx < result.size()) {
                 result[idx] = 1;
             }
         }
@@ -728,7 +704,7 @@ ContainerOut fill_pigeonholes_bool(const ContainerIn& xs)
     if (is_empty(xs))
         return {};
 
-    return(fill_pigeonholes_bool_to<ContainerIn, ContainerOut>(
+    return (fill_pigeonholes_bool_to<ContainerIn, ContainerOut>(
         maximum(xs) + 1, xs));
 }
 

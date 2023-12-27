@@ -9,8 +9,8 @@
 #include <fplus/container_common.hpp>
 #include <fplus/function_traits.hpp>
 #include <fplus/generate.hpp>
-#include <fplus/string_tools.hpp>
 #include <fplus/internal/invoke.hpp>
+#include <fplus/string_tools.hpp>
 
 #include <atomic>
 #include <chrono>
@@ -26,8 +26,7 @@
 #include <thread>
 #include <vector>
 
-namespace fplus
-{
+namespace fplus {
 
 // Executes a function f in a fixed interval,
 // i.e. an average timespan between two consecutive calls of f,
@@ -53,17 +52,16 @@ namespace fplus
 //     hi_ticker.start();
 //     std::this_thread::sleep_for(std::chrono::milliseconds(4500));
 // }
-class ticker
-{
+class ticker {
 public:
     typedef std::function<void(std::int64_t)> function;
-    ticker(const function& f, std::int64_t interval_us) :
-        f_(f),
-        interval_us_(interval_us),
-        control_mutex_(),
-        is_running_(false),
-        thread_(),
-        stop_mutex_()
+    ticker(const function& f, std::int64_t interval_us)
+        : f_(f)
+        , interval_us_(interval_us)
+        , control_mutex_()
+        , is_running_(false)
+        , thread_()
+        , stop_mutex_()
     {
     }
     bool is_running()
@@ -87,8 +85,7 @@ public:
         if (!is_running_)
             return false;
         stop_mutex_.unlock();
-        if (thread_.joinable())
-        {
+        if (thread_.joinable()) {
             thread_.join();
             thread_ = std::thread();
         }
@@ -99,20 +96,17 @@ public:
     {
         stop();
     }
+
 private:
     void thread_function()
     {
         auto last_wake_up_time = std::chrono::steady_clock::now();
         auto last_time = last_wake_up_time;
         bool quit = false;
-        while (!quit)
-        {
-            const auto wake_up_time =
-                last_wake_up_time + std::chrono::microseconds{ interval_us_ };
-            const auto sleep_time =
-                wake_up_time - std::chrono::steady_clock::now();
-            if (stop_mutex_.try_lock_for(sleep_time))
-            {
+        while (!quit) {
+            const auto wake_up_time = last_wake_up_time + std::chrono::microseconds { interval_us_ };
+            const auto sleep_time = wake_up_time - std::chrono::steady_clock::now();
+            if (stop_mutex_.try_lock_for(sleep_time)) {
                 stop_mutex_.unlock();
                 quit = true;
             }
@@ -120,15 +114,12 @@ private:
             const auto elapsed = current_time - last_time;
             last_wake_up_time = wake_up_time;
             last_time = current_time;
-            const auto elapsed_us =
-                std::chrono::duration_cast<std::chrono::microseconds>(
-                    elapsed).count();
-            try
-            {
+            const auto elapsed_us = std::chrono::duration_cast<std::chrono::microseconds>(
+                elapsed)
+                                        .count();
+            try {
                 f_(elapsed_us);
-            }
-            catch (...)
-            {
+            } catch (...) {
             }
         }
     }
@@ -140,15 +131,12 @@ private:
     std::timed_mutex stop_mutex_;
 };
 
-
 // API search type: sleep_for_n_seconds : Int -> Io ()
 // Returns a function that suspends
 // the calling thread for n seconds when executed.
-inline
-std::function<void()> sleep_for_n_seconds(std::size_t seconds)
+inline std::function<void()> sleep_for_n_seconds(std::size_t seconds)
 {
-    return [seconds]()
-    {
+    return [seconds]() {
         std::this_thread::sleep_for(std::chrono::seconds(seconds));
     };
 }
@@ -156,11 +144,9 @@ std::function<void()> sleep_for_n_seconds(std::size_t seconds)
 // API search type: sleep_for_n_milliseconds : Int -> Io ()
 // Returns a function that suspends
 // the calling thread for n milliseconds when executed.
-inline
-std::function<void()> sleep_for_n_milliseconds(std::size_t milliseconds)
+inline std::function<void()> sleep_for_n_milliseconds(std::size_t milliseconds)
 {
-    return [milliseconds]()
-    {
+    return [milliseconds]() {
         std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
     };
 }
@@ -168,11 +154,9 @@ std::function<void()> sleep_for_n_milliseconds(std::size_t milliseconds)
 // API search type: sleep_for_n_microseconds : Int -> Io ()
 // Returns a function that suspends
 // the calling thread for n microseconds when executed.
-inline
-std::function<void()> sleep_for_n_microseconds(std::size_t microseconds)
+inline std::function<void()> sleep_for_n_microseconds(std::size_t microseconds)
 {
-    return [microseconds]()
-    {
+    return [microseconds]() {
         std::this_thread::sleep_for(std::chrono::microseconds(microseconds));
     };
 }
@@ -186,11 +170,9 @@ auto execute_serially(const Container& effs)
     using Effect = typename Container::value_type;
     using Result = internal::invoke_result_t<Effect>;
 
-    return [effs]
-    {
+    return [effs] {
         std::vector<std::decay_t<Result>> results;
-        for (const Effect& e : effs)
-        {
+        for (const Effect& e : effs) {
             results.push_back(internal::invoke(e));
         }
         return results;
@@ -206,13 +188,10 @@ auto execute_serially_until_success(const Container& effs)
     using Effect = typename Container::value_type;
     using Result = internal::invoke_result_t<Effect>;
     static_assert(std::is_convertible<Result, bool>::value,
-                  "Effects must return a boolish type.");
-    return [effs]() -> bool
-    {
-        for (const Effect& e : effs)
-        {
-            if (internal::invoke(e))
-            {
+        "Effects must return a boolish type.");
+    return [effs]() -> bool {
+        for (const Effect& e : effs) {
+            if (internal::invoke(e)) {
                 return true;
             }
         }
@@ -225,11 +204,10 @@ auto execute_serially_until_success(const Container& effs)
 // and returns a fixed value when called.
 template <typename Result, typename Effect>
 std::function<Result()> execute_and_return_fixed_value(
-        Result result,
-        Effect eff)
+    Result result,
+    Effect eff)
 {
-    return [eff, result]() -> Result
-    {
+    return [eff, result]() -> Result {
         eff();
         return result;
     };
@@ -237,10 +215,9 @@ std::function<Result()> execute_and_return_fixed_value(
 
 // Converts an arbitrary callable effect to an std::function.
 template <typename Effect>
-std::function<internal::invoke_result_t<Effect> ()> effect_to_std_function(Effect eff)
+std::function<internal::invoke_result_t<Effect>()> effect_to_std_function(Effect eff)
 {
-    return [eff]
-    {
+    return [eff] {
         return internal::invoke(eff);
     };
 }
@@ -251,15 +228,13 @@ std::function<internal::invoke_result_t<Effect> ()> effect_to_std_function(Effec
 // of attempts with an optional pause in between.
 template <typename Effect>
 auto execute_max_n_times_until_success(std::size_t n,
-                                       const Effect& eff,
-                                       std::size_t pause_in_milliseconds = 0)
+    const Effect& eff,
+    std::size_t pause_in_milliseconds = 0)
 {
-    if (pause_in_milliseconds > 0)
-    {
-        auto sleep_and_return_false =
-            execute_and_return_fixed_value(
-                false,
-                sleep_for_n_milliseconds(pause_in_milliseconds));
+    if (pause_in_milliseconds > 0) {
+        auto sleep_and_return_false = execute_and_return_fixed_value(
+            false,
+            sleep_for_n_milliseconds(pause_in_milliseconds));
         return execute_serially_until_success(
             intersperse(
                 sleep_and_return_false,
@@ -271,14 +246,13 @@ auto execute_max_n_times_until_success(std::size_t n,
 
 // API search type: execute_n_times : (Int, Io a) -> Io ()
 // Returns a function that (when called) executes n times
-// the provided side effect function. 
+// the provided side effect function.
 // The return values (if present) are dropped.
-template<typename Effect>
+template <typename Effect>
 auto execute_n_times(std::size_t n, const Effect& eff)
 {
-    for (auto _ : fplus::numbers(static_cast<size_t>(0), n))
-    {
-        (void) _; // suppress warning / unused variable
+    for (auto _ : fplus::numbers(static_cast<size_t>(0), n)) {
+        (void)_; // suppress warning / unused variable
         eff();
     }
 }
@@ -287,7 +261,7 @@ auto execute_n_times(std::size_t n, const Effect& eff)
 // fwd bind count: 1
 // Runs the function `f` on all the container elements.
 // The function will perform its side effects, and nothing is returned.
-template<typename F, typename Container>
+template <typename F, typename Container>
 void for_each(F f, const Container& xs)
 {
     using IdxType = typename Container::value_type;
@@ -302,7 +276,7 @@ void for_each(F f, const Container& xs)
 // fwd bind count: 1
 // Runs the function `f` in parallel on all the container elements.
 // The function will perform its side effects, and nothing is returned.
-template<typename F, typename Container>
+template <typename F, typename Container>
 void parallel_for_each(F f, const Container& xs)
 {
     using IdxType = typename Container::value_type;
@@ -317,7 +291,7 @@ void parallel_for_each(F f, const Container& xs)
 // fwd bind count: 2
 // Runs the function `f` in parallel on all the container elements, using `n_threads` threads.
 // The function will perform its side effects, and nothing is returned.
-template<typename F, typename Container>
+template <typename F, typename Container>
 void parallel_for_each_n_threads(size_t n_threads, F f, const Container& xs)
 {
     using IdxType = typename Container::value_type;
@@ -338,12 +312,9 @@ std::function<bool()> execute_serially_until_failure(const Container& effs)
     using Result = internal::invoke_result_t<Effect>;
     static_assert(std::is_convertible<Result, bool>::value,
         "Effects must return a boolish type.");
-    return [effs]() -> bool
-    {
-        for (const Effect& e : effs)
-        {
-            if (!internal::invoke(e))
-            {
+    return [effs]() -> bool {
+        for (const Effect& e : effs) {
+            if (!internal::invoke(e)) {
                 return false;
             }
         }
@@ -361,7 +332,8 @@ auto execute_parallelly(const Container& effs)
         // Bluntly re-using the transform implementation to execute side effects.
         return transform_parallelly([](const auto& eff) {
             return internal::invoke(eff);
-        }, effs);
+        },
+            effs);
     };
 }
 
@@ -373,9 +345,11 @@ auto execute_parallelly_n_threads(std::size_t n, const Container& effs)
 {
     return [n, effs] {
         // Bluntly re-using the transform implementation to execute side effects.
-        return transform_parallelly_n_threads(n, [](const auto& eff) {
-            return internal::invoke(eff);
-        }, effs);
+        return transform_parallelly_n_threads(
+            n, [](const auto& eff) {
+                return internal::invoke(eff);
+            },
+            effs);
     };
 }
 
@@ -385,8 +359,7 @@ auto execute_parallelly_n_threads(std::size_t n, const Container& effs)
 template <typename Effect>
 std::function<void()> execute_fire_and_forget(Effect eff)
 {
-    return [eff]()
-    {
+    return [eff]() {
         std::thread t(eff);
         t.detach();
     };
@@ -394,29 +367,25 @@ std::function<void()> execute_fire_and_forget(Effect eff)
 
 // API search type: read_text_file_maybe : String -> Io (Maybe String)
 // Returns a function that reads the content of a text file when called.
-inline
-std::function<maybe<std::string>()> read_text_file_maybe(
+inline std::function<maybe<std::string>()> read_text_file_maybe(
     const std::string& filename)
 {
-    return [filename]() -> maybe<std::string>
-    {
+    return [filename]() -> maybe<std::string> {
         std::ifstream input(filename);
         if (!input.good())
             return {};
         return just(std::string(
-                std::istreambuf_iterator<std::string::value_type>(input),
-                std::istreambuf_iterator<std::string::value_type>()));
+            std::istreambuf_iterator<std::string::value_type>(input),
+            std::istreambuf_iterator<std::string::value_type>()));
     };
 }
 
 // API search type: read_text_file : String -> Io String
 // Returns a function that reads the content of a text file when called.
 // This function then returns an empty string if the file could not be read.
-inline
-std::function<std::string()> read_text_file(const std::string& filename)
+inline std::function<std::string()> read_text_file(const std::string& filename)
 {
-    return [filename]() -> std::string
-    {
+    return [filename]() -> std::string {
         return just_with_default(
             std::string(),
 
@@ -426,12 +395,10 @@ std::function<std::string()> read_text_file(const std::string& filename)
 
 // API search type: read_binary_file_maybe : String -> Io (Maybe [Int])
 // Returns a function that reads the content of a binary file when executed.
-inline
-std::function<maybe<std::vector<std::uint8_t>>()> read_binary_file_maybe(
+inline std::function<maybe<std::vector<std::uint8_t>>()> read_binary_file_maybe(
     const std::string& filename)
 {
-    return [filename]() -> maybe<std::vector<std::uint8_t>>
-    {
+    return [filename]() -> maybe<std::vector<std::uint8_t>> {
         std::ifstream file(filename, std::ios::binary);
         if (!file.good())
             return {};
@@ -451,12 +418,10 @@ std::function<maybe<std::vector<std::uint8_t>>()> read_binary_file_maybe(
 // API search type: read_binary_file : String -> Io [Int]
 // Returns a function that reads the content of a binary file when executed.
 // This function then returns an empty vector if the file could not be read.
-inline
-std::function<std::vector<std::uint8_t>()> read_binary_file(
+inline std::function<std::vector<std::uint8_t>()> read_binary_file(
     const std::string& filename)
 {
-    return [filename]() -> std::vector<std::uint8_t>
-    {
+    return [filename]() -> std::vector<std::uint8_t> {
         return just_with_default(
             std::vector<std::uint8_t>(),
             read_binary_file_maybe(filename)());
@@ -466,12 +431,10 @@ std::function<std::vector<std::uint8_t>()> read_binary_file(
 // API search type: read_text_file_lines_maybe : (String, Bool) -> Io (Maybe [String])
 // Returns a function that (when called) reads the content of a text file
 // and returns it line by line.
-inline
-std::function<maybe<std::vector<std::string>>()> read_text_file_lines_maybe(
-        bool allow_empty, const std::string& filename)
+inline std::function<maybe<std::vector<std::string>>()> read_text_file_lines_maybe(
+    bool allow_empty, const std::string& filename)
 {
-    return [filename, allow_empty]() -> maybe<std::vector<std::string>>
-    {
+    return [filename, allow_empty]() -> maybe<std::vector<std::string>> {
         const auto maybe_content = read_text_file_maybe(filename)();
         if (maybe_content.is_nothing())
             return {};
@@ -484,12 +447,10 @@ std::function<maybe<std::vector<std::string>>()> read_text_file_lines_maybe(
 // Returns a function that (when called) reads the content of a text file
 // and returns it line by line.
 // This function then returns an empty vector if the file could not be read.
-inline
-std::function<std::vector<std::string>()> read_text_file_lines(
-        bool allow_empty, const std::string& filename)
+inline std::function<std::vector<std::string>()> read_text_file_lines(
+    bool allow_empty, const std::string& filename)
 {
-    return [filename, allow_empty]() -> std::vector<std::string>
-    {
+    return [filename, allow_empty]() -> std::vector<std::string> {
         return just_with_default(
             std::vector<std::string>(),
             read_text_file_lines_maybe(allow_empty, filename)());
@@ -499,12 +460,10 @@ std::function<std::vector<std::string>()> read_text_file_lines(
 // API search type: write_text_file : (String, String) -> Io Bool
 // Returns a function that (when called) writes content into a text file,
 // replacing it if it already exists.
-inline
-std::function<bool()> write_text_file(const std::string& filename,
-        const std::string& content)
+inline std::function<bool()> write_text_file(const std::string& filename,
+    const std::string& content)
 {
-    return [filename, content]() -> bool
-    {
+    return [filename, content]() -> bool {
         std::ofstream output(filename);
         output << content;
         return output.good();
@@ -514,12 +473,10 @@ std::function<bool()> write_text_file(const std::string& filename,
 // API search type: write_binary_file : (String, [Int]) -> Io Bool
 // Returns a function that (when called) writes content into a binary file,
 // replacing it if it already exists.
-inline
-std::function<bool()> write_binary_file(const std::string& filename,
-        const std::vector<uint8_t>& content)
+inline std::function<bool()> write_binary_file(const std::string& filename,
+    const std::vector<uint8_t>& content)
 {
-    return [filename, content]() -> bool
-    {
+    return [filename, content]() -> bool {
         std::ofstream file(filename, std::ios::binary);
         file.write(reinterpret_cast<const char*>(&content[0]),
             static_cast<std::streamsize>(content.size()));
@@ -530,14 +487,12 @@ std::function<bool()> write_binary_file(const std::string& filename,
 // API search type: write_text_file_lines : (String, [String], Bool) -> Io Bool
 // Returns a function that (when called) writes lines into a text file,
 // replacing it if it already exists.
-inline
-std::function<bool()> write_text_file_lines(bool trailing_newline,
-        const std::string& filename,
-        const std::vector<std::string>& lines)
+inline std::function<bool()> write_text_file_lines(bool trailing_newline,
+    const std::string& filename,
+    const std::vector<std::string>& lines)
 {
     std::string content = join(std::string("\n"), lines);
-    if (trailing_newline)
-    {
+    if (trailing_newline) {
         content += "\n";
     }
     return write_text_file(filename, content);
@@ -562,8 +517,7 @@ auto execute_effect(const F f)
 template <typename F>
 std::function<void()> interact(F f)
 {
-    return [f]() -> void
-    {
+    return [f]() -> void {
         std::cout << f(std::string(
             std::istreambuf_iterator<char>(std::cin.rdbuf()),
             std::istreambuf_iterator<char>()));
@@ -579,10 +533,8 @@ std::function<void()> interact(F f)
 template <typename Effect, typename X>
 std::function<bool()> execute_with_maybe(Effect eff, const maybe<X>& m)
 {
-    return [eff, m]() -> bool
-    {
-        if (m.is_nothing())
-        {
+    return [eff, m]() -> bool {
+        if (m.is_nothing()) {
             return false;
         }
         eff(m.unsafe_get_just());

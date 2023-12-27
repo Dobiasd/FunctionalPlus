@@ -11,11 +11,10 @@
 #include <fplus/transform.hpp>
 
 #include <cctype>
-#include <string>
 #include <locale>
+#include <string>
 
-namespace fplus
-{
+namespace fplus {
 
 // API search type: is_letter_or_digit : Char -> Bool
 // fwd bind count: 0
@@ -23,9 +22,7 @@ namespace fplus
 template <typename String>
 bool is_letter_or_digit(const typename String::value_type& c)
 {
-    return
-        std::isdigit(static_cast<unsigned char>(c)) ||
-        std::isalpha(static_cast<unsigned char>(c));
+    return std::isdigit(static_cast<unsigned char>(c)) || std::isalpha(static_cast<unsigned char>(c));
 }
 
 // API search type: is_whitespace : Char -> Bool
@@ -113,11 +110,11 @@ template <typename String>
 String to_lower_case(const String& str)
 {
     typedef typename String::value_type Char;
-    return transform([](Char c) -> Char
-        {
-            return static_cast<Char>(
-                std::tolower(static_cast<unsigned char>(c)));
-        }, str);
+    return transform([](Char c) -> Char {
+        return static_cast<Char>(
+            std::tolower(static_cast<unsigned char>(c)));
+    },
+        str);
 }
 
 // API search type: to_lower_case_loc : (Locale, String) -> String
@@ -125,14 +122,14 @@ String to_lower_case(const String& str)
 // Convert a string to lowercase characters using specified locale.
 // to_upper_case_loc(locale("ru_RU.utf8"), "cYrIlLiC КиРиЛлИцА") == "cyrillic кириллица"
 template <typename String>
-String to_lower_case_loc(const std::locale &lcl, const String &str)
+String to_lower_case_loc(const std::locale& lcl, const String& str)
 {
-  typedef typename String::value_type Char;
-  return transform([&lcl](Char c) -> Char
-      {
+    typedef typename String::value_type Char;
+    return transform([&lcl](Char c) -> Char {
         return static_cast<Char>(
             std::tolower(c, lcl));
-      }, str);
+    },
+        str);
 }
 
 // API search type: to_upper_case : String -> String
@@ -143,11 +140,11 @@ template <typename String>
 String to_upper_case(const String& str)
 {
     typedef typename String::value_type Char;
-    return transform([](Char c) -> Char
-        {
-            return static_cast<Char>(
-                std::toupper(static_cast<unsigned char>(c)));
-        }, str);
+    return transform([](Char c) -> Char {
+        return static_cast<Char>(
+            std::toupper(static_cast<unsigned char>(c)));
+    },
+        str);
 }
 
 // API search type: to_upper_case_loc : (Locale, String) -> String
@@ -155,14 +152,14 @@ String to_upper_case(const String& str)
 // Convert a string to uppercase characters using specified locale.
 // to_upper_case_loc(locale("ru_RU.utf8"), "cYrIlLiC КиРиЛлИцА") == "CYRILLIC КИРИЛЛИЦА"
 template <typename String>
-String to_upper_case_loc(const std::locale &lcl, const String &str)
+String to_upper_case_loc(const std::locale& lcl, const String& str)
 {
-  typedef typename String::value_type Char;
-  return transform([&lcl](Char c) -> Char
-      {
+    typedef typename String::value_type Char;
+    return transform([&lcl](Char c) -> Char {
         return static_cast<Char>(
             std::toupper(c, lcl));
-      }, str);
+    },
+        str);
 }
 
 // API search type: to_string_fill_left : (Char, Int, a) -> String
@@ -172,7 +169,7 @@ String to_upper_case_loc(const std::locale &lcl, const String &str)
 // to_string_fill_left(' ', 5, 42) == "   42"
 template <typename T>
 std::string to_string_fill_left(const std::string::value_type& filler,
-        std::size_t min_size, const T& x)
+    std::size_t min_size, const T& x)
 {
     return fill_left(filler, min_size, std::to_string(x));
 }
@@ -183,7 +180,7 @@ std::string to_string_fill_left(const std::string::value_type& filler,
 // to_string_fill_right(' ', 5, 42) == "42   "
 template <typename T>
 std::string to_string_fill_right(const std::string::value_type& filler,
-        std::size_t min_size, const T& x)
+    std::size_t min_size, const T& x)
 {
     return fill_right(filler, min_size, std::to_string(x));
 }

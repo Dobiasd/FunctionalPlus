@@ -10,11 +10,11 @@ using namespace fplus;
 typedef std::vector<int> Ints;
 typedef std::vector<Ints> Intss;
 typedef std::vector<std::size_t> Idxs;
-Ints xs = {0,2,2,2,1,3,3,4};
-Intss xss = {{0,1,2},{3,4}};
+Ints xs = { 0, 2, 2, 2, 1, 3, 3, 4 };
+Intss xss = { { 0, 1, 2 }, { 3, 4 } };
 typedef std::pair<std::size_t, int> size_t_int_pair;
 typedef std::vector<size_t_int_pair> size_t_int_pairs;
-size_t_int_pairs xs_run_length_encoded = {{1, 0}, {3, 2}, {1, 1}, {2, 3}, {1, 4}};
+size_t_int_pairs xs_run_length_encoded = { { 1, 0 }, { 3, 2 }, { 1, 1 }, { 2, 3 }, { 1, 4 } };
 
 template <typename T>
 void print_result(const T& x)
@@ -79,8 +79,7 @@ void problem_09()
 // P10 (*) Run-length encoding of a list.
 void problem_10()
 {
-    auto group_to_pair = [](const Ints& group) -> size_t_int_pair
-    {
+    auto group_to_pair = [](const Ints& group) -> size_t_int_pair {
         return std::make_pair(size_of_cont(group), group.front());
     };
     print_result(transform(group_to_pair, group(xs)));
@@ -89,24 +88,20 @@ void problem_10()
 // P11 (*) Modified run-length encoding.
 void problem_11()
 {
-    const auto modify = [](const auto& p) -> Ints
-    {
-        return p.first == 1 ?
-            Ints({p.second})
-            : Ints({static_cast<int>(p.first), p.second});
+    const auto modify = [](const auto& p) -> Ints {
+        return p.first == 1 ? Ints({ p.second })
+                            : Ints({ static_cast<int>(p.first), p.second });
     };
 
     print_result(fwd::apply(xs,
         fwd::run_length_encode(),
-        fwd::transform(modify)
-        ));
+        fwd::transform(modify)));
 }
 
 // P12 (**) Decode a run-length encoded list.
 void problem_12()
 {
-    const auto pair_to_vec = [](const size_t_int_pair& p) -> Ints
-    {
+    const auto pair_to_vec = [](const size_t_int_pair& p) -> Ints {
         return replicate(p.first, p.second);
     };
     print_result(concat(transform(pair_to_vec, xs_run_length_encoded)));
@@ -115,25 +110,16 @@ void problem_12()
 // P13 (**) Run-length encoding of a list (direct solution).
 void problem_13()
 {
-    const auto f = [](const Intss& acc, int x) -> Intss
-    {
-        if (is_empty(acc))
-        {
+    const auto f = [](const Intss& acc, int x) -> Intss {
+        if (is_empty(acc)) {
             return singleton_seq(singleton_seq(x));
-        }
-        else if (size_of_cont(acc.back()) == 1 && acc.back().back() == x)
-        {
-            return replace_elem_at_idx(size_of_cont(acc) - 1, {2, x}, acc);
-        }
-        else
-        {
-            if (acc.back().back() == x)
-            {
+        } else if (size_of_cont(acc.back()) == 1 && acc.back().back() == x) {
+            return replace_elem_at_idx(size_of_cont(acc) - 1, { 2, x }, acc);
+        } else {
+            if (acc.back().back() == x) {
                 return replace_elem_at_idx(
-                    size_of_cont(acc) - 1, {acc.back().front() + 1, x}, acc);
-            }
-            else
-            {
+                    size_of_cont(acc) - 1, { acc.back().front() + 1, x }, acc);
+            } else {
                 return append_elem(singleton_seq(x), acc);
             }
         }
@@ -170,7 +156,7 @@ void problem_17()
 // P18 (**) Extract a slice from a list.
 void problem_18()
 {
-    print_result(get_segment(2, 4+1, xs));
+    print_result(get_segment(2, 4 + 1, xs));
 }
 
 // P19 (**) Rotate a list N places to the left.

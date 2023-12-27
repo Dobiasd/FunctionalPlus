@@ -9,13 +9,12 @@
 #include <fplus/container_common.hpp>
 #include <fplus/function_traits.hpp>
 #include <fplus/generate.hpp>
-#include <fplus/internal/invoke.hpp>
 #include <fplus/internal/asserts/pairs.hpp>
+#include <fplus/internal/invoke.hpp>
 
 #include <utility>
 
-namespace fplus
-{
+namespace fplus {
 // API search type: apply_to_pair : (((a, b) -> c), (a, b)) -> c
 // fwd bind count: 1
 // Apply binary function to parts of a pair.
@@ -31,12 +30,12 @@ auto apply_to_pair(F f, const std::pair<FIn0, FIn1>& p)
 // Zip two sequences using a binary function.
 // zip_with((+), [1, 2, 3], [5, 6]) == [1+5, 2+6] == [6, 8]
 template <typename ContainerIn1,
-          typename ContainerIn2,
-          typename F,
-          typename X = typename ContainerIn1::value_type,
-          typename Y = typename ContainerIn2::value_type,
-          typename TOut = std::decay_t<internal::invoke_result_t<F, X, Y>>,
-          typename ContainerOut = std::vector<TOut>>
+    typename ContainerIn2,
+    typename F,
+    typename X = typename ContainerIn1::value_type,
+    typename Y = typename ContainerIn2::value_type,
+    typename TOut = std::decay_t<internal::invoke_result_t<F, X, Y>>,
+    typename ContainerOut = std::vector<TOut>>
 ContainerOut zip_with(F f, const ContainerIn1& xs, const ContainerIn2& ys)
 {
     internal::trigger_static_asserts<internal::zip_with_tag, F, X, Y>();
@@ -46,13 +45,12 @@ ContainerOut zip_with(F f, const ContainerIn1& xs, const ContainerIn2& ys)
     auto itResult = internal::get_back_inserter(result);
     auto itXs = std::begin(xs);
     auto itYs = std::begin(ys);
-    for (std::size_t i = 0; i < resultSize; ++i)
-    {
+    for (std::size_t i = 0; i < resultSize; ++i) {
         *itResult = internal::invoke(f, *itXs, *itYs);
         ++itXs;
         ++itYs;
     }
-  return result;
+    return result;
 }
 
 // API search type: zip_with_3 : (((a, b, c) -> d), [a], [b], [c]) -> [c]
@@ -70,18 +68,18 @@ template <
     typename TOut = std::decay_t<internal::invoke_result_t<F, X, Y, Z>>,
     typename ContainerOut = typename std::vector<TOut>>
 ContainerOut zip_with_3(F f,
-                        const ContainerIn1& xs,
-                        const ContainerIn2& ys,
-                        const ContainerIn3& zs)
+    const ContainerIn1& xs,
+    const ContainerIn2& ys,
+    const ContainerIn3& zs)
 {
     internal::trigger_static_asserts<internal::zip_with_3_tag, F, X, Y, Z>();
     static_assert(std::is_same<
-        typename internal::same_cont_new_t<ContainerIn1, void>::type,
-        typename internal::same_cont_new_t<ContainerIn2, void>::type>::value,
+                      typename internal::same_cont_new_t<ContainerIn1, void>::type,
+                      typename internal::same_cont_new_t<ContainerIn2, void>::type>::value,
         "All three Containers must be of same outer type.");
     static_assert(std::is_same<
-        typename internal::same_cont_new_t<ContainerIn2, void>::type,
-        typename internal::same_cont_new_t<ContainerIn3, void>::type>::value,
+                      typename internal::same_cont_new_t<ContainerIn2, void>::type,
+                      typename internal::same_cont_new_t<ContainerIn3, void>::type>::value,
         "All three Containers must be of same outer type.");
     ContainerOut result;
     std::size_t resultSize = std::min(size_of_cont(xs), size_of_cont(ys));
@@ -90,8 +88,7 @@ ContainerOut zip_with_3(F f,
     auto itXs = std::begin(xs);
     auto itYs = std::begin(ys);
     auto itZs = std::begin(zs);
-    for (std::size_t i = 0; i < resultSize; ++i)
-    {
+    for (std::size_t i = 0; i < resultSize; ++i) {
         *itResult = internal::invoke(f, *itXs, *itYs, *itZs);
         ++itXs;
         ++itYs;
@@ -121,15 +118,12 @@ auto zip_with_defaults(F f,
     internal::trigger_static_asserts<internal::zip_with_tag, F, X, Y>();
     const auto size_xs = size_of_cont(xs);
     const auto size_ys = size_of_cont(ys);
-    if (size_xs < size_ys)
-    {
+    if (size_xs < size_ys) {
         const auto extended_xs = append(
             xs,
             replicate<X, ContainerIn1>(size_ys - size_xs, default_x));
         return zip_with(f, extended_xs, ys);
-    }
-    else if (size_xs > size_ys)
-    {
+    } else if (size_xs > size_ys) {
         const auto extended_ys = append(
             ys,
             replicate<Y, ContainerIn2>(size_xs - size_ys, default_y));
@@ -147,8 +141,7 @@ template <typename ContainerIn1, typename ContainerIn2,
     typename Y = typename ContainerIn2::value_type>
 auto zip(const ContainerIn1& xs, const ContainerIn2& ys)
 {
-    auto MakePair = [](const X& x, const Y& y)
-        { return std::make_pair(x, y); };
+    auto MakePair = [](const X& x, const Y& y) { return std::make_pair(x, y); };
     return zip_with(MakePair, xs, ys);
 }
 
@@ -162,10 +155,10 @@ auto zip_repeat(const ContainerIn1& xs, const ContainerIn2& ys)
 {
     auto nx = xs.size();
     auto ny = ys.size();
-    auto qx = ny/nx + (ny % nx ?  1 : 0);
-    auto qy = nx/ny + (nx % ny ?  1 : 0);
+    auto qx = ny / nx + (ny % nx ? 1 : 0);
+    auto qy = nx / ny + (nx % ny ? 1 : 0);
     return zip(qx > 1 ? repeat(qx, xs) : xs,
-               qy > 1 ? repeat(qy, ys) : ys);
+        qy > 1 ? repeat(qy, ys) : ys);
 }
 
 // API search type: unzip : [(a, b)] -> ([a], [b])
@@ -186,8 +179,7 @@ std::pair<ContainerOutX, ContainerOutY> unzip(const ContainerIn& pairs)
     internal::prepare_container(seconds, size_of_cont(pairs));
     auto itFirsts = internal::get_back_inserter(firsts);
     auto itSeconds = internal::get_back_inserter(seconds);
-    for (const auto& pair : pairs)
-    {
+    for (const auto& pair : pairs) {
         *itFirsts = pair.first;
         *itSeconds = pair.second;
     }
@@ -250,13 +242,13 @@ template <
     typename ResultFirst = std::decay_t<internal::invoke_result_t<F, X>>,
     typename ResultSecond = std::decay_t<internal::invoke_result_t<G, Y>>>
 std::pair<ResultFirst, ResultSecond> transform_pair(F f,
-                                                    G g,
-                                                    const std::pair<X, Y>& pair)
+    G g,
+    const std::pair<X, Y>& pair)
 {
     internal::trigger_static_asserts<internal::transform_fst_tag, F, X>();
     internal::trigger_static_asserts<internal::transform_snd_tag, G, Y>();
     return std::make_pair(internal::invoke(f, pair.first),
-                          internal::invoke(g, pair.second));
+        internal::invoke(g, pair.second));
 }
 
 // API search type: swap_pair_elems : (a, b) -> (b, a)
@@ -291,13 +283,13 @@ template <typename Container,
         typename internal::same_cont_new_t<Container,
             std::pair<
                 typename Container::value_type,
-                    typename Container::value_type>>::type>
+                typename Container::value_type>>::type>
 ContainerOut adjacent_pairs(const Container& xs)
 {
     typedef typename Container::value_type T;
     static_assert(std::is_convertible<
-            std::pair<T, T>,
-            typename ContainerOut::value_type>::value,
+                      std::pair<T, T>,
+                      typename ContainerOut::value_type>::value,
         "ContainerOut can not store pairs of elements from ContainerIn.");
     ContainerOut result;
     if (size_of_cont(xs) < 2)
@@ -308,10 +300,8 @@ ContainerOut adjacent_pairs(const Container& xs)
     auto it1 = std::begin(xs);
     auto it2 = it1;
     internal::advance_iterator(it2, 1);
-    const auto it_source_end =
-        internal::add_to_iterator(std::begin(xs), out_size + out_size);
-    for (;;)
-    {
+    const auto it_source_end = internal::add_to_iterator(std::begin(xs), out_size + out_size);
+    for (;;) {
         *itOut = std::make_pair(*it1, *it2);
         internal::advance_iterator(it1, 2);
         if (it1 == it_source_end)
@@ -330,13 +320,14 @@ template <typename Container,
         typename internal::same_cont_new_t<Container,
             std::pair<
                 typename Container::value_type,
-                    typename Container::value_type>, -1>::type>
+                typename Container::value_type>,
+            -1>::type>
 ContainerOut overlapping_pairs(const Container& xs)
 {
     typedef typename Container::value_type T;
     static_assert(std::is_convertible<
-            std::pair<T, T>,
-            typename ContainerOut::value_type>::value,
+                      std::pair<T, T>,
+                      typename ContainerOut::value_type>::value,
         "ContainerOut can not store pairs of elements from ContainerIn.");
     ContainerOut result;
     if (size_of_cont(xs) < 2)
@@ -346,8 +337,7 @@ ContainerOut overlapping_pairs(const Container& xs)
     auto it1 = std::begin(xs);
     auto it2 = it1;
     internal::advance_iterator(it2, 1);
-    for (; it2 != std::end(xs); ++it1, ++it2)
-    {
+    for (; it2 != std::end(xs); ++it1, ++it2) {
         *itOut = std::make_pair(*it1, *it2);
     }
     return result;
@@ -363,13 +353,14 @@ template <typename Container,
         typename internal::same_cont_new_t<Container,
             std::pair<
                 typename Container::value_type,
-                    typename Container::value_type>, 0>::type>
+                typename Container::value_type>,
+            0>::type>
 ContainerOut overlapping_pairs_cyclic(const Container& xs)
 {
     typedef typename Container::value_type T;
     static_assert(std::is_convertible<
-            std::pair<T, T>,
-            typename ContainerOut::value_type>::value,
+                      std::pair<T, T>,
+                      typename ContainerOut::value_type>::value,
         "ContainerOut can not store pairs of elements from ContainerIn.");
     ContainerOut result;
     if (size_of_cont(xs) < 2)
@@ -379,8 +370,7 @@ ContainerOut overlapping_pairs_cyclic(const Container& xs)
     auto it1 = std::begin(xs);
     auto it2 = it1;
     internal::advance_iterator(it2, 1);
-    for (; it2 != std::end(xs); ++it1, ++it2)
-    {
+    for (; it2 != std::end(xs); ++it1, ++it2) {
         *itOut = std::make_pair(*it1, *it2);
     }
     *itOut = std::make_pair(*it1, xs.front());
@@ -411,10 +401,10 @@ template <
     typename Y = typename ContainerIn2::value_type,
     typename OP2Out = internal::invoke_result_t<OP2, X, Y>>
 auto inner_product_with(OP1 op1,
-                        OP2 op2,
-                        const Acc& value,
-                        const ContainerIn1& xs,
-                        const ContainerIn2& ys)
+    OP2 op2,
+    const Acc& value,
+    const ContainerIn1& xs,
+    const ContainerIn2& ys)
 {
     internal::trigger_static_asserts<internal::inner_product_with_tag, OP2, X, Y>();
     internal::trigger_static_asserts<internal::inner_product_with_tag, OP1, Acc, OP2Out>();
@@ -430,7 +420,7 @@ auto inner_product_with(OP1 op1,
 template <typename ContainerIn1, typename ContainerIn2,
     typename Z>
 Z inner_product(const Z& value,
-        const ContainerIn1& xs, const ContainerIn2& ys)
+    const ContainerIn1& xs, const ContainerIn2& ys)
 {
     assert(size_of_cont(xs) == size_of_cont(ys));
 
@@ -454,10 +444,8 @@ maybe<std::size_t> first_mismatch_idx_by(BinaryPredicate p,
     auto itXs = std::begin(xs);
     auto itYs = std::begin(ys);
     std::size_t minSize = std::min(size_of_cont(xs), size_of_cont(ys));
-    for (std::size_t i = 0; i < minSize; ++i)
-    {
-        if (!internal::invoke(p, *itXs, *itYs))
-        {
+    for (std::size_t i = 0; i < minSize; ++i) {
+        if (!internal::invoke(p, *itXs, *itYs)) {
             return just(i);
         }
         ++itXs;
@@ -483,12 +471,9 @@ maybe<TOut> first_mismatch_by(BinaryPredicate p,
     const ContainerIn1& xs, const ContainerIn2& ys)
 {
     const auto maybe_idx = first_mismatch_idx_by(p, xs, ys);
-    if (is_nothing(maybe_idx))
-    {
+    if (is_nothing(maybe_idx)) {
         return nothing<TOut>();
-    }
-    else
-    {
+    } else {
         const auto idx = maybe_idx.unsafe_get_just();
         return just(std::make_pair(
             elem_at_idx(idx, xs),
@@ -590,10 +575,8 @@ maybe<std::size_t> first_match_idx_by(F f,
     auto itXs = std::begin(xs);
     auto itYs = std::begin(ys);
     std::size_t minSize = std::min(size_of_cont(xs), size_of_cont(ys));
-    for (std::size_t i = 0; i < minSize; ++i)
-    {
-        if (internal::invoke(f, *itXs, *itYs))
-        {
+    for (std::size_t i = 0; i < minSize; ++i) {
+        if (internal::invoke(f, *itXs, *itYs)) {
             return just(i);
         }
         ++itXs;
@@ -616,12 +599,9 @@ template <typename ContainerIn1, typename ContainerIn2,
 maybe<TOut> first_match_by(F f, const ContainerIn1& xs, const ContainerIn2& ys)
 {
     const auto maybe_idx = first_match_idx_by(f, xs, ys);
-    if (is_nothing(maybe_idx))
-    {
+    if (is_nothing(maybe_idx)) {
         return nothing<TOut>();
-    }
-    else
-    {
+    } else {
         const auto idx = maybe_idx.unsafe_get_just();
         return just(std::make_pair(
             elem_at_idx(idx, xs),

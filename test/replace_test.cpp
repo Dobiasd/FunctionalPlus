@@ -6,38 +6,38 @@
 
 #include <doctest/doctest.h>
 #include <fplus/fplus.hpp>
-#include <vector>
 #include <string>
+#include <vector>
 
 TEST_CASE("replace_test - replace_if")
 {
     auto is_even = [](int value) { return value % 2 == 0; };
     std::vector<int> v = { 1, 3, 4, 6, 7 };
     auto result = fplus::replace_if(is_even, 0, v);
-    REQUIRE_EQ(result, std::vector<int>({1, 3, 0, 0, 7}));
+    REQUIRE_EQ(result, std::vector<int>({ 1, 3, 0, 0, 7 }));
 
     auto result_rvalue = fplus::replace_if(is_even, 0, std::vector<int>({ 1, 3, 4, 6, 7 }));
-    REQUIRE_EQ(result_rvalue, std::vector<int>({1, 3, 0, 0, 7}));
+    REQUIRE_EQ(result_rvalue, std::vector<int>({ 1, 3, 0, 0, 7 }));
 }
 
 TEST_CASE("replace_test - replace_elem_at_idx")
 {
     std::vector<int> v = { 1, 3, 4, 4, 7 };
     auto result = fplus::replace_elem_at_idx(2, 0, v);
-    REQUIRE_EQ(result, std::vector<int>({1, 3, 0, 4, 7}));
+    REQUIRE_EQ(result, std::vector<int>({ 1, 3, 0, 4, 7 }));
 
     auto result_rvalue = fplus::replace_elem_at_idx(2, 0, std::vector<int>({ 1, 3, 4, 4, 7 }));
-    REQUIRE_EQ(result_rvalue, std::vector<int>({1, 3, 0, 4, 7}));
+    REQUIRE_EQ(result_rvalue, std::vector<int>({ 1, 3, 0, 4, 7 }));
 }
 
 TEST_CASE("replace_test - replace_elems")
 {
     std::vector<int> v = { 1, 3, 4, 4, 7 };
     auto result = fplus::replace_elems(4, 0, v);
-    REQUIRE_EQ(result, std::vector<int>({1, 3, 0, 0, 7}));
+    REQUIRE_EQ(result, std::vector<int>({ 1, 3, 0, 0, 7 }));
 
-    auto result_rvalue = fplus::replace_elems(4, 0, std::vector<int>({1, 3, 0, 0, 7}));
-    REQUIRE_EQ(result_rvalue, std::vector<int>({1, 3, 0, 0, 7}));
+    auto result_rvalue = fplus::replace_elems(4, 0, std::vector<int>({ 1, 3, 0, 0, 7 }));
+    REQUIRE_EQ(result_rvalue, std::vector<int>({ 1, 3, 0, 0, 7 }));
 }
 
 TEST_CASE("replace_test - replace_tokens")

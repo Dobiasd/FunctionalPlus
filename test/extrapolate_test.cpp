@@ -8,10 +8,9 @@
 #include <fplus/fplus.hpp>
 #include <vector>
 
-
 namespace {
-    typedef std::vector<int> IntVector;
-    IntVector xs = {1,2,2,3,2};
+typedef std::vector<int> IntVector;
+IntVector xs = { 1, 2, 2, 3, 2 };
 }
 
 TEST_CASE("extrapolate_test - elem_at_idx_or_nothing")
@@ -66,11 +65,11 @@ TEST_CASE("extrapolate_test - elem_at_idx_or_wrap")
 TEST_CASE("extrapolate_test - extrapolate_replicate")
 {
     using namespace fplus;
-    REQUIRE_EQ(extrapolate_replicate(2, 2, xs), IntVector({1,1,1,2,2,3,2,2,2}));
+    REQUIRE_EQ(extrapolate_replicate(2, 2, xs), IntVector({ 1, 1, 1, 2, 2, 3, 2, 2, 2 }));
 }
 
 TEST_CASE("extrapolate_test - extrapolate_wrap")
 {
     using namespace fplus;
-    REQUIRE_EQ(extrapolate_wrap(2, 2, xs), IntVector({3,2,1,2,2,3,2,1,2}));
+    REQUIRE_EQ(extrapolate_wrap(2, 2, xs), IntVector({ 3, 2, 1, 2, 2, 3, 2, 1, 2 }));
 }

@@ -17,8 +17,7 @@
 #include <functional>
 #include <memory>
 
-namespace fplus
-{
+namespace fplus {
 
 template <typename Ok, typename Error>
 class result;
@@ -31,38 +30,48 @@ result<Ok, Error> error(const Error& error);
 
 // Can hold a value of type Ok or an error of type Error.
 template <typename Ok, typename Error>
-class result
-{
+class result {
 public:
     bool is_ok() const { return static_cast<bool>(ptr_ok_); }
     bool is_error() const { return static_cast<bool>(ptr_error_); }
-    const Ok& unsafe_get_ok() const {
-        check_either_or_invariant(); assert(is_ok()); return *ptr_ok_;
+    const Ok& unsafe_get_ok() const
+    {
+        check_either_or_invariant();
+        assert(is_ok());
+        return *ptr_ok_;
     }
-    const Error& unsafe_get_error() const {
-        check_either_or_invariant(); assert(is_error()); return *ptr_error_;
+    const Error& unsafe_get_error() const
+    {
+        check_either_or_invariant();
+        assert(is_error());
+        return *ptr_error_;
     }
     typedef Ok ok_t;
     typedef Error error_t;
 
-    result(const result<Ok, Error>& other) :
-        ptr_ok_(other.is_ok() ? ptr_ok(new Ok(other.unsafe_get_ok())) : ptr_ok()),
-        ptr_error_(other.is_error() ? ptr_error(new Error(other.unsafe_get_error())) : ptr_error())
+    result(const result<Ok, Error>& other)
+        : ptr_ok_(other.is_ok() ? ptr_ok(new Ok(other.unsafe_get_ok())) : ptr_ok())
+        , ptr_error_(other.is_error() ? ptr_error(new Error(other.unsafe_get_error())) : ptr_error())
     {
         check_either_or_invariant();
     }
-    result<Ok, Error>& operator = (const result<Ok, Error>& other)
+    result<Ok, Error>& operator=(const result<Ok, Error>& other)
     {
         ptr_ok_ = other.is_ok() ? ptr_ok(new Ok(other.unsafe_get_ok())) : ptr_ok();
         ptr_error_ = other.is_error() ? ptr_error(new Error(other.unsafe_get_error())) : ptr_error();
         return *this;
     }
+
 private:
     void check_either_or_invariant() const
     {
         assert(is_ok() != is_error());
     }
-    result() : ptr_ok_(ptr_ok()), ptr_error_(ptr_error()) {}
+    result()
+        : ptr_ok_(ptr_ok())
+        , ptr_error_(ptr_error())
+    {
+    }
     typedef std::unique_ptr<Ok> ptr_ok;
     typedef std::unique_ptr<Error> ptr_error;
     friend result<Ok, Error> ok<Ok, Error>(const Ok& ok);
@@ -189,7 +198,7 @@ Ok throw_type_on_error(const result<Ok, Error>& result)
 
 // True if ok values are the same or if errors are the same.
 template <typename Ok, typename Error>
-bool operator == (const result<Ok, Error>& x, const result<Ok, Error>& y)
+bool operator==(const result<Ok, Error>& x, const result<Ok, Error>& y)
 {
     if (is_ok(x) && is_ok(y))
         return unsafe_get_ok(x) == unsafe_get_ok(y);
@@ -200,7 +209,7 @@ bool operator == (const result<Ok, Error>& x, const result<Ok, Error>& y)
 
 // False if ok values are the same or if both errors are the same.
 template <typename Ok, typename Error>
-bool operator != (const result<Ok, Error>& x, const result<Ok, Error>& y)
+bool operator!=(const result<Ok, Error>& x, const result<Ok, Error>& y)
 {
     return !(x == y);
 }
@@ -250,8 +259,8 @@ auto unify_result(F f, G g, const result<A, B>& r)
     internal::trigger_static_asserts<internal::unary_function_tag, F, A>();
     internal::trigger_static_asserts<internal::unary_function_tag, G, B>();
     static_assert(std::is_same<internal::invoke_result_t<F, A>,
-                               internal::invoke_result_t<G, B>>::value,
-                  "Both functions must return the same type.");
+                      internal::invoke_result_t<G, B>>::value,
+        "Both functions must return the same type.");
     if (is_ok(r))
         return internal::invoke(f, unsafe_get_ok(r));
     return internal::invoke(g, unsafe_get_error(r));
@@ -284,7 +293,7 @@ auto and_then_result(F f, const result<Ok, Error>& r)
 
     using FOut = std::decay_t<internal::invoke_result_t<F, Ok>>;
     static_assert(std::is_same<Error, typename FOut::error_t>::value,
-                  "Error type must stay the same.");
+        "Error type must stay the same.");
     if (is_ok(r))
         return internal::invoke(f, unsafe_get_ok(r));
     else
@@ -299,35 +308,35 @@ template <typename... Callables>
 auto compose_result(Callables&&... callables)
 {
     auto bind_result = [](auto f, auto g) {
-        return [f = std::move(f), g = std::move(g)](auto&&... args)
-        {
+        return [f = std::move(f), g = std::move(g)](auto&&... args) {
             internal::trigger_static_asserts<internal::check_arity_tag,
-                                                 decltype(f),
-                                                 decltype(args)...>();
+                decltype(f),
+                decltype(args)...>();
 #if defined(_MSC_VER) && _MSC_VER >= 1920 // in VS2019, compilation with /permissive- breaks with 'using' syntax below
             struct FOut : std::decay_t<
-                internal::invoke_result_t<decltype(f), decltype(args)...>> {};
+                              internal::invoke_result_t<decltype(f), decltype(args)...>> {
+            };
 #else
             using FOut = std::decay_t<
                 internal::invoke_result_t<decltype(f), decltype(args)...>>;
 #endif
 
             internal::trigger_static_asserts<internal::unary_function_tag,
-                                                 decltype(g),
-                                                 typename FOut::ok_t>();
+                decltype(g),
+                typename FOut::ok_t>();
 #if defined(_MSC_VER) && _MSC_VER >= 1920 // in VS2019, compilation with /permissive- breaks with 'using' syntax below
             struct GOut : std::decay_t<
-                internal::invoke_result_t<decltype(g), typename FOut::ok_t>> {};
+                              internal::invoke_result_t<decltype(g), typename FOut::ok_t>> {
+            };
 #else
             using GOut = std::decay_t<
                 internal::invoke_result_t<decltype(g), typename FOut::ok_t>>;
 #endif
             static_assert(std::is_same<typename FOut::error_t,
-                                       typename GOut::error_t>::value,
-                          "Error type must stay the same.");
+                              typename GOut::error_t>::value,
+                "Error type must stay the same.");
 
-            auto resultB =
-                internal::invoke(f, std::forward<decltype(args)>(args)...);
+            auto resultB = internal::invoke(f, std::forward<decltype(args)>(args)...);
             if (is_ok(resultB))
                 return internal::invoke(g, unsafe_get_ok(resultB));
             return error<typename GOut::ok_t, typename GOut::error_t>(
@@ -335,6 +344,6 @@ auto compose_result(Callables&&... callables)
         };
     };
     return internal::compose_binary_lift(bind_result,
-                                       std::forward<Callables>(callables)...);
+        std::forward<Callables>(callables)...);
 }
 } // namespace fplus
