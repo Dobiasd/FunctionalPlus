@@ -13,50 +13,48 @@
 
 namespace fplus
 {
-    namespace internal
-    {
+namespace internal
+{
 
-        template <class InputIt, class T>
-        T accumulate(InputIt first, InputIt last, T init)
-        {
-            for (; first != last; ++first)
-            {
-                init = std::move(init) + *first;
-            }
-            return init;
-        }
-
-        template <class InputIt, class T, class BinaryOperation>
-        T accumulate(InputIt first, InputIt last, T init,
-                     BinaryOperation op)
-        {
-            for (; first != last; ++first)
-            {
-                init = op(std::move(init), *first);
-            }
-            return init;
-        }
-
-        template <typename F,
-                  typename Acc,
-                  typename InputIterator,
-                  typename OutputIterator>
-        void scan_impl(F f,
-                       const Acc &init,
-                       OutputIterator itOut,
-                       InputIterator begin,
-                       InputIterator end)
-        {
-            *itOut = init;
-
-            auto g = [itOut, f](auto acc, auto x) mutable
-            {
-                acc = internal::invoke(f, acc, x);
-                *itOut = acc;
-                return acc;
-            };
-
-            internal::accumulate(begin, end, init, g);
-        }
+template<class InputIt, class T>
+T accumulate(InputIt first, InputIt last, T init)
+{
+    for (; first != last; ++first) {
+        init = std::move(init) + *first;
     }
+    return init;
+}
+
+template<class InputIt, class T, class BinaryOperation>
+T accumulate(InputIt first, InputIt last, T init,
+             BinaryOperation op)
+{
+    for (; first != last; ++first) {
+        init = op(std::move(init), *first);
+    }
+    return init;
+}
+
+template <typename F,
+          typename Acc,
+          typename InputIterator,
+          typename OutputIterator>
+void scan_impl(F f,
+               const Acc& init,
+               OutputIterator itOut,
+               InputIterator begin,
+               InputIterator end)
+{
+    *itOut = init;
+
+    auto g = [itOut, f](auto acc, auto x) mutable
+    {
+        acc = internal::invoke(f, acc, x);
+        *itOut = acc;
+        return acc;
+    };
+
+    internal::accumulate(begin, end, init, g);
+}
+}
 }

@@ -11,7 +11,7 @@ namespace
 {
     std::vector<std::string> logs;
 
-    void log(const std::string &str)
+    void log(const std::string& str)
     {
         logs.push_back(str);
     }
@@ -20,30 +20,15 @@ namespace
     {
         int m_x;
 
-        test(int x) : m_x(x) { log("test(" + fplus::show(m_x) + ")"); }
-        test(const test &t) : m_x(t.m_x) { log("test(const test& " + fplus::show(m_x) + ")"); }
-        test(test &&t) : m_x(std::move(t.m_x)) { log("test(test&& " + fplus::show(m_x) + ")"); }
+        test(int x)         :m_x(x)                 { log("test(" + fplus::show(m_x) + ")"); }
+        test(const test& t) :m_x(t.m_x)             { log("test(const test& " + fplus::show(m_x) + ")"); }
+        test(test&& t)      :m_x(std::move(t.m_x))  { log("test(test&& " + fplus::show(m_x) + ")"); }
 
-        test &operator=(int x)
-        {
-            m_x = x;
-            log("test::operator=(" + fplus::show(m_x) + ")");
-            return *this;
-        }
-        test &operator=(const test &t)
-        {
-            m_x = t.m_x;
-            log("test::operator=(const test& " + fplus::show(m_x) + ")");
-            return *this;
-        }
-        test &operator=(test &&t)
-        {
-            m_x = std::move(t.m_x);
-            log("test::operator=(test&& " + fplus::show(m_x) + ")");
-            return *this;
-        }
+        test& operator=(int x)          { m_x = x;                  log("test::operator=(" + fplus::show(m_x) + ")"); return *this;}
+        test& operator=(const test& t)  { m_x = t.m_x;              log("test::operator=(const test& " + fplus::show(m_x) + ")"); return *this;}
+        test& operator=(test&& t)       { m_x = std::move(t.m_x);   log("test::operator=(test&& " + fplus::show(m_x) + ")"); return *this;}
 
-        ~test() { log("~test(" + fplus::show(m_x) + ")"); }
+        ~test()             { log("~test(" + fplus::show(m_x) + ")"); }
     };
 }
 
@@ -71,7 +56,8 @@ TEST_CASE("shared_ref_test - full")
         "test(2)",
         "test(test&& 2)",
         "~test(2)",
-        "~test(2)"};
+        "~test(2)"
+    };
 
     REQUIRE_EQ(logs, logs_dest);
 }

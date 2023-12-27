@@ -14,8 +14,7 @@ TEST_CASE("queue_test - full")
 
     queue<int> q;
 
-    std::thread producer([&q]
-                         {
+    std::thread producer([&q] {
         q.push(1);
         q.push(2);
         std::this_thread::sleep_for(400ms);
@@ -24,10 +23,10 @@ TEST_CASE("queue_test - full")
         std::this_thread::sleep_for(400ms);
         q.push(5);
         std::this_thread::sleep_for(400ms);
-        q.push(6); });
+        q.push(6);
+    });
 
-    std::thread consumer([&q]
-                         {
+    std::thread consumer([&q] {
         std::this_thread::sleep_for(200ms);
         REQUIRE_EQ(q.pop(), fplus::just(1));
         REQUIRE_EQ(q.pop(), fplus::just(2));
@@ -38,7 +37,8 @@ TEST_CASE("queue_test - full")
         REQUIRE_EQ(q.wait_and_pop_all(), std::vector<int>({5}));
         REQUIRE_EQ(q.wait_for_and_pop_all(200000), std::vector<int>({}));
         REQUIRE_EQ(q.wait_for_and_pop_all(400000), std::vector<int>({6}));
-        REQUIRE_EQ(q.wait_for_and_pop_all(200000), std::vector<int>({})); });
+        REQUIRE_EQ(q.wait_for_and_pop_all(200000), std::vector<int>({}));
+    });
 
     producer.join();
     consumer.join();

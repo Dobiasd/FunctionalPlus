@@ -27,7 +27,7 @@ TEST_CASE("read_test - read_value")
     REQUIRE_EQ(read_value_unsafe<int>("42"), 42);
 
     REQUIRE(is_in_interval(-42.4f, -42.2f, unsafe_get_just(read_value<float>("-42.3"))));
-    REQUIRE(is_in_interval(-42.4, -42.2, unsafe_get_just(read_value<double>("-42.3"))));
+    REQUIRE(is_in_interval(-42.4 , -42.2, unsafe_get_just(read_value<double>("-42.3"))));
     REQUIRE(is_in_interval(-42.4L, -42.2L, unsafe_get_just(read_value<long double>("-42.3"))));
 }
 

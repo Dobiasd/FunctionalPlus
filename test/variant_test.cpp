@@ -7,8 +7,7 @@
 #include <doctest/doctest.h>
 #include <fplus/fplus.hpp>
 
-namespace
-{
+namespace {
     std::string print_output;
 
     bool print_int(int x)
@@ -23,7 +22,7 @@ namespace
         return true;
     }
 
-    bool print_string(const std::string &str)
+    bool print_string(const std::string& str)
     {
         print_output = "string " + str;
         return true;
@@ -34,7 +33,7 @@ namespace
         print_output = "int " + std::to_string(x);
     }
 
-    void print_string_effect(const std::string &str)
+    void print_string_effect(const std::string& str)
     {
         print_output = "string " + str;
     }
@@ -44,7 +43,7 @@ namespace
         return fplus::show(x);
     }
 
-    std::string show_string(const std::string &str)
+    std::string show_string(const std::string& str)
     {
         return fplus::show(str);
     }
@@ -74,11 +73,12 @@ TEST_CASE("variant_test - visit_one")
     REQUIRE_EQ(print_output, "double 23");
     print_output.clear();
 
+
     using float_or_double = fplus::variant<float, double>;
     using nested = fplus::variant<int, float_or_double>;
     nested int_or_float_double_variant(fplus::variant<float, double>(3.0));
 
-    const auto print_nested_double = [&](const float_or_double &f_o_d) -> int
+    const auto print_nested_double = [&](const float_or_double& f_o_d) -> int
     {
         f_o_d.visit_one(print_double);
         return 0;
@@ -112,7 +112,7 @@ TEST_CASE("variant_test - visit")
     using namespace fplus;
 
     // should not compile
-    // int_or_double.visit_one<std::string>(print_string);
+    //int_or_double.visit_one<std::string>(print_string);
 
     fplus::variant<int, std::string> int_or_string(3);
 
@@ -134,16 +134,16 @@ TEST_CASE("variant_test - visit")
     std::cout << fplus::show_maybe(y) << std::endl;
 
     // should not compile
-    // std::cout << int_or_string.visit(show_int, show_float) << std::endl;
+    //std::cout << int_or_string.visit(show_int, show_float) << std::endl;
 
     // should not compile
-    // std::cout << int_or_string.visit(show_int, show_int) << std::endl;
+    //std::cout << int_or_string.visit(show_int, show_int) << std::endl;
 
     // should not compile
-    // std::cout << int_or_string.visit(show_int, show_string, show_double) << std::endl;
+    //std::cout << int_or_string.visit(show_int, show_string, show_double) << std::endl;
 
     // should not compile
-    // std::cout << int_or_string.visit(show_int) << std::endl;
+    //std::cout << int_or_string.visit(show_int) << std::endl;
 }
 
 TEST_CASE("variant_test - effect")
@@ -151,7 +151,7 @@ TEST_CASE("variant_test - effect")
     using namespace fplus;
 
     // should not compile
-    // int_or_double.effect_one(print_string);
+    //int_or_double.effect_one(print_string);
 
     fplus::variant<int, std::string> int_or_string(3);
     //

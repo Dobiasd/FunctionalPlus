@@ -4,6 +4,7 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
+
 // tests for exercise solutions of the Udemy course
 // "Functional Programming using C++"
 // https://www.udemy.com/functional-programming-using-cpp/
@@ -20,7 +21,7 @@ namespace Correctness_follows_from_expressiveness
     }
 
     template <typename Pred, typename Cont>
-    Cont keep_if(Pred pred, const Cont &xs)
+    Cont keep_if(Pred pred, const Cont& xs)
     {
         Cont ys;
         for (const auto x : xs)
@@ -37,14 +38,14 @@ namespace Correctness_follows_from_expressiveness
 TEST_CASE("udemy_course_test - Correctness_follows_from_expressiveness")
 {
     using namespace Correctness_follows_from_expressiveness;
-    std::vector<int> xs = {0, 1, 2, 3, 4};
+    std::vector<int> xs = {0,1,2,3,4};
     const auto ys = keep_if(is_even, xs);
-    REQUIRE_EQ(ys, std::vector<int>({0, 2, 4}));
+    REQUIRE_EQ(ys, std::vector<int>({0,2,4}));
 }
 
 namespace Programming_challenge_parse_and_product
 {
-    double str_to_double(const std::string &str)
+    double str_to_double(const std::string& str)
     {
         double result;
         std::istringstream(str) >> result;
@@ -71,7 +72,7 @@ namespace Programming_challenge_longest_edge_of_polygon
 {
     typedef std::pair<float, float> point;
 
-    float point_distance(const point &p1, const point &p2)
+    float point_distance(const point& p1, const point& p2)
     {
         const float dx = p2.first - p1.first;
         const float dy = p2.second - p1.second;
@@ -85,24 +86,23 @@ TEST_CASE("udemy_course_test - Programming_challenge_longest_edge_of_polygon")
     using namespace Programming_challenge_longest_edge_of_polygon;
 
     vector<point> polygon =
-        {{1.f, 2.f}, {7.f, 3.f}, {6.f, 5.f}, {4.f, 4.f}, {2.f, 9.f}};
+        { {1.f,2.f}, {7.f,3.f}, {6.f,5.f}, {4.f,4.f}, {2.f,9.f} };
 
     const auto edges =
         fplus::overlapping_pairs_cyclic(polygon);
 
     const auto result = fplus::maximum_on(
-        [](const std::pair<point, point> &edge) -> float
+        [](const std::pair<point, point>& edge) -> float
         {
             return point_distance(edge.first, edge.second);
-        },
-        edges);
+        }, edges);
 
     REQUIRE_EQ(fplus::show(result), std::string("((2, 9), (1, 2))"));
 }
 
 namespace The_problem_with_comments
 {
-    int str_to_int(const std::string &str)
+    int str_to_int(const std::string& str)
     {
         int result;
         std::istringstream(str) >> result;
@@ -110,13 +110,13 @@ namespace The_problem_with_comments
     }
 
     template <typename Cont>
-    typename Cont::value_type product(const Cont &xs)
+    typename Cont::value_type product(const Cont& xs)
     {
         return fplus::reduce(std::multiplies<int>(), 1, xs);
     }
 
     template <typename Cont>
-    typename Cont::value_type sum(const Cont &xs)
+    typename Cont::value_type sum(const Cont& xs)
     {
         return fplus::reduce(std::plus<int>(), 1, xs);
     }
@@ -138,19 +138,19 @@ namespace High_level_expressiveness_and_concise_code
     typedef std::pair<point, point> edge;
     typedef std::vector<point> points;
 
-    float point_distance(const point &p1, const point &p2)
+    float point_distance(const point& p1, const point& p2)
     {
         const float dx = p2.first - p1.first;
         const float dy = p2.second - p1.second;
         return std::sqrt(dx * dx + dy * dy);
     }
 
-    float edge_length(const edge &e)
+    float edge_length(const edge& e)
     {
         return point_distance(e.first, e.second);
     }
 
-    std::vector<edge> get_edges(const points &polygon)
+    std::vector<edge> get_edges(const points& polygon)
     {
         return fplus::overlapping_pairs_cyclic(polygon);
     }
@@ -162,7 +162,7 @@ TEST_CASE("udemy_course_test - High_level_expressiveness_and_concise_code")
     using namespace High_level_expressiveness_and_concise_code;
 
     vector<point> polygon =
-        {{1.f, 2.f}, {7.f, 3.f}, {6.f, 5.f}, {4.f, 4.f}, {2.f, 9.f}};
+        { {1.f,2.f}, {7.f,3.f}, {6.f,5.f}, {4.f,4.f}, {2.f,9.f} };
 
     const auto result = fplus::maximum_on(
         edge_length,
@@ -180,7 +180,7 @@ TEST_CASE("udemy_course_test - Currying_and_partial_function_application")
     using namespace Currying_and_partial_function_application;
 
     std::vector<std::vector<int>> xss =
-        {{0, 1, 2}, {3, 4, 5}};
+        {{0,1,2}, {3,4,5}};
 
     // 1
     fplus::transform(fplus::fwd::transform(fplus::square<int>), xss);
@@ -200,7 +200,7 @@ TEST_CASE("udemy_course_test - Currying_and_partial_function_application")
         };
     };
 
-    REQUIRE_EQ(add_four_curried(1)(2)(3)(4), 1 + 2 + 3 + 4);
+    REQUIRE_EQ(add_four_curried(1)(2)(3)(4), 1+2+3+4);
 }
 
 namespace Forward_application
@@ -209,19 +209,19 @@ namespace Forward_application
     typedef std::pair<point, point> edge;
     typedef std::vector<point> points;
 
-    float point_distance(const point &p1, const point &p2)
+    float point_distance(const point& p1, const point& p2)
     {
         const float dx = p2.first - p1.first;
         const float dy = p2.second - p1.second;
         return std::sqrt(dx * dx + dy * dy);
     }
 
-    float edge_length(const edge &e)
+    float edge_length(const edge& e)
     {
         return point_distance(e.first, e.second);
     }
 
-    std::vector<edge> get_edges(const points &polygon)
+    std::vector<edge> get_edges(const points& polygon)
     {
         return fplus::overlapping_pairs_cyclic(polygon);
     }
@@ -233,10 +233,12 @@ TEST_CASE("udemy_course_test - Forward_application")
     using namespace Forward_application;
 
     vector<point> polygon =
-        {{1.f, 2.f}, {7.f, 3.f}, {6.f, 5.f}, {4.f, 4.f}, {2.f, 9.f}};
+        { {1.f,2.f}, {7.f,3.f}, {6.f,5.f}, {4.f,4.f}, {2.f,9.f} };
 
     // 1:
-    const auto result = fplus::fwd::apply(polygon, get_edges, fplus::fwd::maximum_on(edge_length));
+    const auto result = fplus::fwd::apply(polygon
+        , get_edges
+        , fplus::fwd::maximum_on(edge_length));
 
     REQUIRE_EQ(fplus::show(result), std::string("((2, 9), (1, 2))"));
 
@@ -253,14 +255,19 @@ TEST_CASE("udemy_course_test - Forward_application")
 
     // nested function calls
     int f_nested = fplus::max_2(6,
-                                fplus::clamp(1, 4,
-                                             fplus::abs_diff(7,
-                                                             fplus::min_2(2,
-                                                                          fplus::square(a)))));
+        fplus::clamp(1, 4,
+            fplus::abs_diff(7,
+                fplus::min_2(2,
+                    fplus::square(a)))));
     REQUIRE_EQ(f_nested, 6);
 
     // foward-application style
-    int f_fwd = fplus::fwd::apply(a, fplus::fwd::square(), fplus::fwd::min_2(2), fplus::fwd::abs_diff(7), fplus::fwd::clamp(1, 4), fplus::fwd::max_2(6));
+    int f_fwd = fplus::fwd::apply(a
+        , fplus::fwd::square()
+        , fplus::fwd::min_2(2)
+        , fplus::fwd::abs_diff(7)
+        , fplus::fwd::clamp(1, 4)
+        , fplus::fwd::max_2(6));
     REQUIRE_EQ(f_fwd, 6);
 }
 
@@ -292,7 +299,7 @@ TEST_CASE("udemy_course_test - Programming_challenge_Interacting_with_the_comman
 
 namespace Function_composition
 {
-    double str_to_double(const std::string &str)
+    double str_to_double(const std::string& str)
     {
         double result;
         std::istringstream(str) >> result;
@@ -322,12 +329,12 @@ namespace Programming_challenge_an_SQL_analogy
         std::size_t visits;
     };
 
-    std::string get_country(const user &u)
+    std::string get_country(const user& u)
     {
         return u.country;
     }
 
-    std::size_t get_visits(const user &u)
+    std::size_t get_visits(const user& u)
     {
         return u.visits;
     }
@@ -342,31 +349,42 @@ TEST_CASE("udemy_course_test - Programming_challenge_an_SQL_analogy")
         {"Justin", "USA", 1},
         {"Rachel", "USA", 5},
         {"Robert", "USA", 6},
-        {"Stefan", "GER", 4}};
+        {"Stefan", "GER", 4}
+    };
 
-    const auto visit_sum = [](const std::vector<user> &xs) -> std::size_t
+
+    const auto visit_sum = [](const std::vector<user>& xs) -> std::size_t
     {
-        return fplus::fwd::apply(xs, fplus::fwd::transform(get_visits), fplus::fwd::sum());
+        return fplus::fwd::apply(xs
+            , fplus::fwd::transform(get_visits)
+            , fplus::fwd::sum());
     };
 
     // n^2
-    const auto result = fplus::fwd::apply(users, fplus::fwd::group_globally_on_labeled(get_country), fplus::fwd::transform(fplus::fwd::transform_snd(visit_sum)));
+    const auto result = fplus::fwd::apply(users
+        , fplus::fwd::group_globally_on_labeled(get_country)
+        , fplus::fwd::transform(fplus::fwd::transform_snd(visit_sum))
+        );
     REQUIRE_EQ(fplus::show_cont(result),
-               std::string("[(GER, 6), (USA, 12)]"));
+        std::string("[(GER, 6), (USA, 12)]"));
 
     // n * log(n)
-    const auto result_n_log_n = fplus::fwd::apply(users, fplus::fwd::sort_on(get_country), fplus::fwd::group_on_labeled(get_country), fplus::fwd::transform(fplus::fwd::transform_snd(visit_sum)));
+    const auto result_n_log_n = fplus::fwd::apply(users
+        , fplus::fwd::sort_on(get_country)
+        , fplus::fwd::group_on_labeled(get_country)
+        , fplus::fwd::transform(fplus::fwd::transform_snd(visit_sum))
+        );
     REQUIRE_EQ(fplus::show_cont(result_n_log_n),
-               std::string("[(GER, 6), (USA, 12)]"));
+        std::string("[(GER, 6), (USA, 12)]"));
 }
 
 namespace Functors
 {
     template <typename ValOut, typename F, typename Key, typename ValIn>
-    std::map<Key, ValOut> lift_dict(F f, const std::map<Key, ValIn> &dict)
+    std::map<Key, ValOut> lift_dict(F f, const std::map<Key, ValIn>& dict)
     {
         std::map<Key, ValOut> result;
-        for (const auto &key_and_val : dict)
+        for (const auto& key_and_val : dict)
         {
             result[key_and_val.first] = f(key_and_val.second);
         }
@@ -394,7 +412,7 @@ namespace Monads
     typedef vector<int> Ints;
     typedef vector<string> Strings;
 
-    result<string, string> get_input_filepath(const Strings &args)
+    result<string, string> get_input_filepath(const Strings& args)
     {
         assert(args.size() > 0);
         if (args.size() != 2)
@@ -404,22 +422,24 @@ namespace Monads
             return ok<string, string>(args[1]);
     }
 
-    result<string, string> read_file(const string &)
+    result<string, string> read_file(const string&)
     {
         // dummy, no side effects in tests
         return ok<string, string>("1,1,1,4");
     }
 
-    result<Ints, string> parse_content(const string &content)
+    result<Ints, string> parse_content(const string& content)
     {
-        const auto maybe_values = fwd::apply(content, fwd::split(',', false), fwd::transform(read_value<int>));
+        const auto maybe_values = fwd::apply(content
+            , fwd::split(',', false)
+            , fwd::transform(read_value<int>));
         if (all_by(is_just<int>, maybe_values))
             return ok<Ints, string>(justs(maybe_values));
         else
             return error<Ints, string>("Can not parse file.");
     }
 
-    result<int, string> calc_median(const vector<int> &xs)
+    result<int, string> calc_median(const vector<int>& xs)
     {
         if (is_not_empty(xs))
             return ok<int, string>(median(xs));
@@ -431,15 +451,15 @@ namespace Monads
         return "The median is " + show(value);
     }
 
-    string show_error(const string &error)
+    string show_error(const string& error)
     {
         return "ERROR: " + error;
     }
 
     template <typename Res, typename Error,
-              typename F, typename A>
+        typename F, typename A>
     result<Res, Error> my_and_then_result(
-        F f, const result<A, Error> &r)
+        F f, const result<A, Error>& r)
     {
         if (is_ok(r))
             return f(unsafe_get_ok(r));
@@ -475,15 +495,11 @@ TEST_CASE("udemy_course_test - Monads")
 
 namespace Multithreading
 {
-    struct Image
-    {
-    }; // dummy
-    struct FaceImage
-    {
-    }; // dummy
+    struct Image {}; // dummy
+    struct FaceImage {}; // dummy
     std::vector<Image> images;
-    FaceImage extract_face(Image) { return {}; }                   // dummy
-    FaceImage empty_face_image;                                    // dummy
+    FaceImage extract_face(Image) { return {}; } // dummy
+    FaceImage empty_face_image; // dummy
     FaceImage add_face_images(FaceImage, FaceImage) { return {}; } // dummy
     FaceImage divide_values(FaceImage, std::size_t) { return {}; } // dummy
 }
@@ -504,13 +520,13 @@ namespace OOP_Design_patterns_vanishing
 
     // decorate_with_logging : (String, (Int -> Int)) -> (Int -> Int)
     template <typename F>
-    std::function<int(int)> decorate_with_logging(const std::string &str, F f)
+    std::function<int(int)> decorate_with_logging(const std::string& str, F f)
     {
         return [str, f](int x) -> int
         {
             int result = f(x);
             // no side effects in tests
-            // std::cout << str << ": " << x << " => " << result << std::endl;
+            //std::cout << str << ": " << x << " => " << result << std::endl;
             return result;
         };
     }

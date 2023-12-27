@@ -7,23 +7,21 @@
 
 using namespace std::chrono_literals;
 
-template <typename Function>
+template<typename Function>
 auto invoke_n_times(int n, Function f)
 {
-  for (int i = 0; i < n; i++)
-  {
+  for (int i = 0; i < n; i++) {
     f();
   }
 }
 
 TEST_CASE("Timer - test_accuracy")
 {
-#ifdef NDEBUG // only on release builds
+#ifdef NDEBUG  // only on release builds
   using namespace fplus;
   using namespace std::chrono_literals;
 
-  auto measure_delta = []()
-  {
+  auto measure_delta = []() {
     fplus::stopwatch t;
     std::this_thread::sleep_for(0.05s);
     auto duration = t.elapsed();
@@ -45,11 +43,13 @@ TEST_CASE("Timer - test_accuracy")
   // 10 consecutive runs (total duration = 0.5 seconds)
   {
     std::vector<double> deltas;
-    invoke_n_times(10, [&]()
-                   { deltas.push_back(measure_delta()); });
+    invoke_n_times(10, [&]() {
+      deltas.push_back(measure_delta());
+    });
     auto mean_dev = fplus::mean_stddev<double>(deltas);
     REQUIRE_LT(mean_dev.first, 0.1);
     REQUIRE_LT(mean_dev.second, 0.07);
   }
 #endif
 }
+

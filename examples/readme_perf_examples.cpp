@@ -23,7 +23,7 @@ bool is_odd_int(int x) { return x % 2 != 0; }
 void Test_example_KeepIf()
 {
     typedef std::vector<int> Ints;
-    Ints values = {24, 11, 65, 44, 80, 18, 73, 90, 69, 18};
+    Ints values = { 24, 11, 65, 44, 80, 18, 73, 90, 69, 18 };
 
     { // Version 1: hand written range based for loop
         Ints odds;
@@ -35,7 +35,7 @@ void Test_example_KeepIf()
     { // Version 2: STL
         Ints odds;
         std::copy_if(std::begin(values), std::end(values),
-                     std::back_inserter(odds), is_odd_int);
+                std::back_inserter(odds), is_odd_int);
     }
 
     { // Version : FunctionalPlus
@@ -44,7 +44,7 @@ void Test_example_KeepIf()
 }
 
 void run_n_times(std::function<std::vector<int>(std::vector<int>)> f,
-                 std::size_t n, const std::string &name, const std::vector<int> &inList)
+    std::size_t n, const std::string& name, const std::vector<int>& inList)
 {
     typedef std::chrono::time_point<std::chrono::system_clock> Time;
     Time startTime = std::chrono::system_clock::now();
@@ -75,11 +75,11 @@ void Test_example_KeepIf_performance()
     {
         Ints odds;
         std::copy_if(std::begin(values), std::end(values),
-                     std::back_inserter(odds), is_odd_int);
+                std::back_inserter(odds), is_odd_int);
         return odds;
     };
     auto run_FunctionalPlus = [&](const Ints values)
-    { return keep_if(is_odd_int, values); };
+        { return keep_if(is_odd_int, values); };
 
     // make debug runs faster
 #if defined NDEBUG || defined _DEBUG

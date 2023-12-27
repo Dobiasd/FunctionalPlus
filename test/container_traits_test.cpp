@@ -22,25 +22,25 @@ TEST_CASE("container_traits_test - static_asserts")
     };
 
     static_assert(std::is_same<
-                      internal::same_cont_new_t<
-                          std::vector<int>,
-                          double>::type,
-                      std::vector<double>>::value,
-                  "No.");
+            internal::same_cont_new_t<
+                std::vector<int>,
+                double>::type,
+        std::vector<double>>::value,
+        "No.");
 
     static_assert(std::is_same<
-                      internal::same_cont_new_t_from_unary_f<
-                          std::vector<int>,
-                          decltype(unary_f)>::type,
-                      std::vector<double>>::value,
-                  "No.");
+            internal::same_cont_new_t_from_unary_f<
+                std::vector<int>,
+                decltype(unary_f)>::type,
+        std::vector<double>>::value,
+        "No.");
 
     static_assert(std::is_same<
-                      internal::same_cont_new_t_from_binary_f<
-                          std::vector<int>,
-                          decltype(binary_f),
-                          int,
-                          int>::type,
-                      std::vector<double>>::value,
-                  "No.");
+            internal::same_cont_new_t_from_binary_f<
+                std::vector<int>,
+                decltype(binary_f),
+                int,
+                int>::type,
+        std::vector<double>>::value,
+        "No.");
 }

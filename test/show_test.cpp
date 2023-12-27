@@ -7,10 +7,9 @@
 #include <doctest/doctest.h>
 #include <fplus/fplus.hpp>
 
-namespace
-{
+namespace {
     typedef std::vector<int> IntVector;
-    IntVector xs = {1, 2, 2, 3, 2};
+    IntVector xs = {1,2,2,3,2};
     std::string xsShown("[1, 2, 2, 3, 2]");
 
     typedef std::vector<std::string> StringVector;
@@ -18,7 +17,7 @@ namespace
     std::string stringVecShown("[foo, bar]");
 
     typedef std::set<int> IntSet;
-    IntSet xsSet = {1, 2, 3};
+    IntSet xsSet = {1,2,3};
     std::string xsSetShown("[1, 2, 3]");
 
     typedef std::set<std::string> StringSet;
@@ -51,7 +50,7 @@ TEST_CASE("show_test - show")
     REQUIRE_EQ(show_cont_with_frame_and_newlines(",", "(", ")", xs, 2), xsShownNLs);
     REQUIRE_EQ(show<int>(1), "1");
 
-    REQUIRE_EQ(show(std::vector<std::vector<int>>({{1, 2, 3}, {4, 5, 6}})), "[[1, 2, 3], [4, 5, 6]]");
+    REQUIRE_EQ(show(std::vector<std::vector<int>>({{1,2,3},{4,5,6}})), "[[1, 2, 3], [4, 5, 6]]");
 }
 
 TEST_CASE("show_test - show_float")
@@ -86,8 +85,8 @@ TEST_CASE("show_test - show_float")
 
     REQUIRE_EQ(show_fill_right<int>(' ', 4, 3), "3   ");
     REQUIRE_EQ(show_fill_right<int>(' ', 4, 12345), "12345");
-
+    
     std::tuple<int, std::string, float> t1(10, "Test", 3.14);
     std::list<std::string> lt1 = stream(t1);
-    REQUIRE_EQ(show_cont(lt1), "[10, Test, 3.14]");
+    REQUIRE_EQ(show_cont(lt1),"[10, Test, 3.14]");
 }
