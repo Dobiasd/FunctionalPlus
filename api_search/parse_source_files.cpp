@@ -206,7 +206,7 @@ int main(int argc, char* argv[])
     using fplus::transform;
     std::cout << "duplicate help names:" << std::endl;
     print_duplicates(transform(get_function_help_name, functions));
-    //print_duplicates(transform(get_function_help_signature, functions));
+    // print_duplicates(transform(get_function_help_signature, functions));
     std::cout << "duplicate help documentations:" << std::endl;
     print_duplicates(transform(get_function_help_documentation, functions));
     std::cout << "duplicate help declarations:" << std::endl;

@@ -165,8 +165,8 @@ TEST_CASE("composition_test - state")
     stateAdd(state, 2);
     REQUIRE_EQ(state.Get(), 3);
 
-    //auto stateAddBoundFPP = Bind1of2(stateAdd, &state); // crashes VC2015 compiler
-    //stateAddBoundFPP(3);
+    // auto stateAddBoundFPP = Bind1of2(stateAdd, &state); // crashes VC2015 compiler
+    // stateAddBoundFPP(3);
 
     auto stateAddBoundStl = std::bind(&CompositionTestState::Add, std::placeholders::_1, std::placeholders::_2);
     stateAddBoundStl(state, 3);

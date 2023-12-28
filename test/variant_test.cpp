@@ -110,7 +110,7 @@ TEST_CASE("variant_test - visit")
     using namespace fplus;
 
     // should not compile
-    //int_or_double.visit_one<std::string>(print_string);
+    // int_or_double.visit_one<std::string>(print_string);
 
     fplus::variant<int, std::string> int_or_string(3);
 
@@ -131,16 +131,16 @@ TEST_CASE("variant_test - visit")
     std::cout << fplus::show_maybe(y) << std::endl;
 
     // should not compile
-    //std::cout << int_or_string.visit(show_int, show_float) << std::endl;
+    // std::cout << int_or_string.visit(show_int, show_float) << std::endl;
 
     // should not compile
-    //std::cout << int_or_string.visit(show_int, show_int) << std::endl;
+    // std::cout << int_or_string.visit(show_int, show_int) << std::endl;
 
     // should not compile
-    //std::cout << int_or_string.visit(show_int, show_string, show_double) << std::endl;
+    // std::cout << int_or_string.visit(show_int, show_string, show_double) << std::endl;
 
     // should not compile
-    //std::cout << int_or_string.visit(show_int) << std::endl;
+    // std::cout << int_or_string.visit(show_int) << std::endl;
 }
 
 TEST_CASE("variant_test - effect")
@@ -148,7 +148,7 @@ TEST_CASE("variant_test - effect")
     using namespace fplus;
 
     // should not compile
-    //int_or_double.effect_one(print_string);
+    // int_or_double.effect_one(print_string);
 
     fplus::variant<int, std::string> int_or_string(3);
     //
