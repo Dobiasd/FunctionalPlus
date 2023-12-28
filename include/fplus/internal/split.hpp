@@ -14,20 +14,17 @@
 
 #include <fplus/internal/invoke.hpp>
 
-namespace fplus
-{
-namespace internal
-{
-template <typename GroupByCallable, typename F, typename ContainerIn>
-auto group_on_labeled_impl(GroupByCallable group, F f, const ContainerIn& xs)
-{
-    const auto grouped = group(is_equal_by(f), xs);
-    const auto attach_label = [f](const auto& g)
+namespace fplus {
+namespace internal {
+    template <typename GroupByCallable, typename F, typename ContainerIn>
+    auto group_on_labeled_impl(GroupByCallable group, F f, const ContainerIn& xs)
     {
-        using std::begin;
-        return std::make_pair(internal::invoke(f, *begin(g)), g);
-    };
-    return fplus::transform(attach_label, grouped);
-}
+        const auto grouped = group(is_equal_by(f), xs);
+        const auto attach_label = [f](const auto& g) {
+            using std::begin;
+            return std::make_pair(internal::invoke(f, *begin(g)), g);
+        };
+        return fplus::transform(attach_label, grouped);
+    }
 }
 }

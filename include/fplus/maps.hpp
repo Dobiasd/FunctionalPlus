@@ -8,6 +8,7 @@
 
 #include <fplus/composition.hpp>
 #include <fplus/container_common.hpp>
+#include <fplus/container_properties.hpp>
 #include <fplus/pairs.hpp>
 
 #include <fplus/internal/invoke.hpp>
@@ -15,8 +16,7 @@
 #include <map>
 #include <unordered_map>
 
-namespace fplus
-{
+namespace fplus {
 
 // API search type: pairs_to_map : [(key, val)] -> Map key val
 // fwd bind count: 0
@@ -40,8 +40,7 @@ template <typename ContainerIn,
 MapOut pairs_to_map_grouped(const ContainerIn& pairs)
 {
     MapOut result;
-    for (const auto& p : pairs)
-    {
+    for (const auto& p : pairs) {
         result[p.first].push_back(p.second);
     }
     return result;
@@ -60,8 +59,7 @@ template <typename ContainerIn,
 MapOut pairs_to_unordered_map_grouped(const ContainerIn& pairs)
 {
     MapOut result;
-    for (const auto& p : pairs)
-    {
+    for (const auto& p : pairs) {
         result[p.first].push_back(p.second);
     }
     return result;
@@ -111,9 +109,8 @@ auto map_union_with(F f, const MapIn& dict1, const MapIn& dict2)
     using Key = typename decltype(both)::value_type::first_type;
     using SingleValue = typename decltype(both)::value_type::second_type;
     auto full_map = pairs_to_map_grouped<decltype(both), Key, SingleValue,
-            typename internal::SameMapTypeNewTypes<MapIn, Key, std::vector<SingleValue>>::type>(both);
-    const auto group_f = [f](const auto& vals)
-    {
+        typename internal::SameMapTypeNewTypes<MapIn, Key, std::vector<SingleValue>>::type>(both);
+    const auto group_f = [f](const auto& vals) {
         return fold_left_1(f, vals);
     };
     return transform_map_values(group_f, full_map);
@@ -129,8 +126,7 @@ MapType map_union(const MapType& dict1, const MapType& dict2)
 {
     using Value = typename MapType::value_type::second_type;
 
-    const auto get_first = [](const Value& a, const Value&) -> Value
-    {
+    const auto get_first = [](const Value& a, const Value&) -> Value {
         return a;
     };
     return map_union_with(get_first, dict1, dict2);
@@ -142,16 +138,15 @@ MapType map_union(const MapType& dict1, const MapType& dict2)
 // Inverse operation of pairs_to_map_grouped.
 // map_grouped_to_pairs({"a": [1, 2, 4], "b": [6]})
 //     -> [("a", 1), ("a", 2), ("a", 4), ("b", 6)]
-template<typename MapType>
-auto map_grouped_to_pairs(const MapType &dict)
+template <typename MapType>
+auto map_grouped_to_pairs(const MapType& dict)
 {
     using Key = typename MapType::key_type;
     using Group = typename MapType::mapped_type;
 
-    auto fn = [](const auto &pair)
-    {
+    auto fn = [](const auto& pair) {
         const auto f = zip_repeat<std::vector<Key>, Group>;
-        return apply_to_pair(f, transform_fst(singleton_seq < Key > , pair));
+        return apply_to_pair(f, transform_fst(singleton_seq<Key>, pair));
     };
     return concat(transform(fn, map_to_pairs(dict)));
 }
@@ -160,8 +155,7 @@ auto map_grouped_to_pairs(const MapType &dict)
 // fwd bind count: 0
 // Returns all keys used in a map.
 template <typename MapType,
-    typename ContainerOut =
-        std::vector<typename std::remove_const<typename MapType::key_type>::type>>
+    typename ContainerOut = std::vector<typename std::remove_const<typename MapType::key_type>::type>>
 ContainerOut get_map_keys(const MapType& dict)
 {
     auto pairs = map_to_pairs(dict);
@@ -175,8 +169,7 @@ ContainerOut get_map_keys(const MapType& dict)
 // fwd bind count: 0
 // Returns all values present in a map.
 template <typename MapType,
-    typename ContainerOut =
-        std::vector<typename std::remove_const<typename MapType::mapped_type>::type>>
+    typename ContainerOut = std::vector<typename std::remove_const<typename MapType::mapped_type>::type>>
 ContainerOut get_map_values(const MapType& dict)
 {
     auto pairs = map_to_pairs(dict);
@@ -248,7 +241,7 @@ auto create_map_grouped(F f, const ContainerIn& values)
 template <typename ContainerIn1, typename ContainerIn2,
     typename Key = typename std::remove_const<typename ContainerIn1::value_type>::type,
     typename Val = typename std::remove_const<typename ContainerIn2::value_type>::type,
-    typename MapOut = std::unordered_map<Key, Val >>
+    typename MapOut = std::unordered_map<Key, Val>>
 MapOut create_unordered_map(
     const ContainerIn1& keys,
     const ContainerIn2& values)
@@ -333,8 +326,7 @@ maybe<Val> get_first_from_map(const MapType& map, const KeysContainer& keys)
 {
     static_assert(std::is_same<typename KeysContainer::value_type, Key>::value,
         "Key type does not match.");
-    for (const auto& key: keys)
-    {
+    for (const auto& key : keys) {
         auto it = map.find(key);
         if (it != std::end(map))
             return just(it->second);
@@ -388,10 +380,8 @@ template <typename MapType, typename Pred>
 MapType map_keep_if(Pred pred, const MapType& map)
 {
     MapType result;
-    for (const auto& key_and_value : map)
-    {
-        if (internal::invoke(pred, key_and_value.first))
-        {
+    for (const auto& key_and_value : map) {
+        if (internal::invoke(pred, key_and_value.first)) {
             result.insert(key_and_value);
         }
     }
@@ -419,8 +409,8 @@ template <typename MapType, typename KeyContainer>
 MapType map_keep(const KeyContainer& keys, const MapType& map)
 {
     static_assert(std::is_same<
-        typename KeyContainer::value_type,
-        typename MapType::key_type>::value,
+                      typename KeyContainer::value_type,
+                      typename MapType::key_type>::value,
         "Key types do not match.");
     return map_keep_if(bind_2nd_of_2(is_elem_of<KeyContainer>, keys), map);
 }
@@ -434,8 +424,8 @@ template <typename MapType, typename KeyContainer>
 MapType map_drop(const KeyContainer& keys, const MapType& map)
 {
     static_assert(std::is_same<
-        typename KeyContainer::value_type,
-        typename MapType::key_type>::value,
+                      typename KeyContainer::value_type,
+                      typename MapType::key_type>::value,
         "Key types do not match.");
     return map_drop_if(bind_2nd_of_2(is_elem_of<KeyContainer>, keys), map);
 }
@@ -449,10 +439,8 @@ template <typename MapType, typename Pred>
 MapType map_keep_if_value(Pred pred, const MapType& map)
 {
     MapType result;
-    for (const auto& key_and_value : map)
-    {
-        if (internal::invoke(pred, key_and_value.second))
-        {
+    for (const auto& key_and_value : map) {
+        if (internal::invoke(pred, key_and_value.second)) {
             result.insert(key_and_value);
         }
     }
@@ -479,8 +467,8 @@ template <typename MapType, typename ValueContainer>
 MapType map_keep_values(const ValueContainer& values, const MapType& map)
 {
     static_assert(std::is_same<
-        typename ValueContainer::value_type,
-        typename MapType::mapped_type>::value,
+                      typename ValueContainer::value_type,
+                      typename MapType::mapped_type>::value,
         "Value types do not match.");
     return map_keep_if_value(
         bind_2nd_of_2(is_elem_of<ValueContainer>, values), map);
@@ -495,8 +483,8 @@ template <typename MapType, typename ValueContainer>
 MapType map_drop_values(const ValueContainer& values, const MapType& map)
 {
     static_assert(std::is_same<
-        typename ValueContainer::value_type,
-        typename MapType::mapped_type>::value,
+                      typename ValueContainer::value_type,
+                      typename MapType::mapped_type>::value,
         "Value types do not match.");
     return map_drop_if_value(
         bind_2nd_of_2(is_elem_of<ValueContainer>, values), map);
@@ -507,8 +495,7 @@ MapType map_drop_values(const ValueContainer& values, const MapType& map)
 // Extracts values to a specific key from a list of maps.
 // map_pluck('a', [{a: 1, b: 2}, {a: 3}, {c: 4}]) == [Just 1, Just 3, Nothing]
 template <typename MapContainer,
-    typename ContainerOut =
-        std::vector<maybe<typename MapContainer::value_type::mapped_type>>,
+    typename ContainerOut = std::vector<maybe<typename MapContainer::value_type::mapped_type>>,
     typename MapType = typename MapContainer::value_type,
     typename Key = typename MapType::key_type,
     typename Val = typename MapType::mapped_type>
@@ -524,7 +511,7 @@ ContainerOut map_pluck(const Key& key, const MapContainer& maps)
 // choose([(1,a), (2,b)], 2) == Just b;
 // choose([(1,a), (1,b)], 2) == Nothing;
 // choose([(1,a), (2,b)], 3) == Nothing;
-template<typename Key, typename Val>
+template <typename Key, typename Val>
 maybe<Val> choose(const std::vector<std::pair<Key, Val>>& pairs, const Key& x)
 {
     if (count(x, transform(fst<Key, Val>, pairs)) != 1)
@@ -540,18 +527,15 @@ maybe<Val> choose(const std::vector<std::pair<Key, Val>>& pairs, const Key& x)
 // choose_by([(is_even,a), (is_bigger_than_3,b)], 5) == Just b;
 // choose_by([(is_even,a), (is_bigger_than_3,b)], 1) == Nothing;
 // choose_by([(is_even,a), (is_bigger_than_3,b)], 4) == Nothing;
-template<typename Key, typename Val>
+template <typename Key, typename Val>
 maybe<Val> choose_by(
     const std::vector<std::pair<std::function<bool(const Key&)>, Val>>& pairs,
     const Key& x)
 {
     maybe<Val> result;
-    for (const auto& p : pairs)
-    {
-        if (internal::invoke(p.first, x))
-        {
-            if (is_just(result))
-            {
+    for (const auto& p : pairs) {
+        if (internal::invoke(p.first, x)) {
+            if (is_just(result)) {
                 return nothing<Val>();
             }
             result = p.second;
@@ -568,14 +552,14 @@ maybe<Val> choose_by(
 // choose_lazy([(1,a), (2,b)], 3) == Nothing;
 template <typename Key, typename ValStub>
 auto choose_lazy(const std::vector<std::pair<Key, ValStub>>& pairs,
-                 const Key& x)
+    const Key& x)
 {
     using Ret = maybe<std::decay_t<internal::invoke_result_t<ValStub>>>;
     const auto res = choose(pairs, x);
     if (res.is_nothing())
-        return Ret{};
+        return Ret {};
     else
-        return Ret{res.unsafe_get_just()()};
+        return Ret { res.unsafe_get_just()() };
 }
 
 // API search type: choose_by_lazy : ([((a -> Bool), (() -> b))], a) -> Maybe b
@@ -595,9 +579,9 @@ auto choose_by_lazy(
 
     const auto res = choose_by(pairs, x);
     if (res.is_nothing())
-        return Ret{};
+        return Ret {};
     else
-        return Ret{res.unsafe_get_just()()};
+        return Ret { res.unsafe_get_just()() };
 }
 
 // API search type: choose_def : (b, [(a, b)], a) -> b
@@ -607,7 +591,7 @@ auto choose_by_lazy(
 // choose_def(c, [(1,a), (2,b)], 2) == b;
 // choose_def(c, [(1,a), (1,b)], 2) == c;
 // choose_def(c, [(1,a), (2,b)], 3) == c;
-template<typename Key, typename Val>
+template <typename Key, typename Val>
 Val choose_def(const Val& def,
     const std::vector<std::pair<Key, Val>>& pairs, const Key& x)
 {
@@ -626,7 +610,7 @@ Val choose_def(const Val& def,
 // choose_by_def(c, [(is_even,a), (is_bigger_than_3,b)], 5) == Just b;
 // choose_by_def(c, [(is_even,a), (is_bigger_than_3,b)], 1) == c;
 // choose_by_def(c, [(is_even,a), (is_bigger_than_3,b)], 4) == c;
-template<typename Key, typename Val>
+template <typename Key, typename Val>
 Val choose_by_def(const Val& def,
     const std::vector<std::pair<std::function<bool(const Key&)>, Val>>& pairs,
     const Key& x)
@@ -643,8 +627,8 @@ Val choose_by_def(const Val& def,
 // choose_def_lazy(c, [(1,a), (2,b)], 3) == c();
 template <typename Key, typename ValStub>
 auto choose_def_lazy(const ValStub& def,
-                     const std::vector<std::pair<Key, ValStub>>& pairs,
-                     const Key& x)
+    const std::vector<std::pair<Key, ValStub>>& pairs,
+    const Key& x)
 {
     return choose_def(def, pairs, x)();
 }

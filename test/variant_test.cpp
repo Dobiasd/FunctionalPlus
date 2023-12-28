@@ -8,45 +8,45 @@
 #include <fplus/fplus.hpp>
 
 namespace {
-    std::string print_output;
+std::string print_output;
 
-    bool print_int(int x)
-    {
-        print_output = "int " + std::to_string(x);
-        return true;
-    }
+bool print_int(int x)
+{
+    print_output = "int " + std::to_string(x);
+    return true;
+}
 
-    bool print_double(double x)
-    {
-        print_output = "double " + std::to_string(fplus::round(x));
-        return true;
-    }
+bool print_double(double x)
+{
+    print_output = "double " + std::to_string(fplus::round(x));
+    return true;
+}
 
-    bool print_string(const std::string& str)
-    {
-        print_output = "string " + str;
-        return true;
-    }
+bool print_string(const std::string& str)
+{
+    print_output = "string " + str;
+    return true;
+}
 
-    void print_int_effect(int x)
-    {
-        print_output = "int " + std::to_string(x);
-    }
+void print_int_effect(int x)
+{
+    print_output = "int " + std::to_string(x);
+}
 
-    void print_string_effect(const std::string& str)
-    {
-        print_output = "string " + str;
-    }
+void print_string_effect(const std::string& str)
+{
+    print_output = "string " + str;
+}
 
-    std::string show_int(int x)
-    {
-        return fplus::show(x);
-    }
+std::string show_int(int x)
+{
+    return fplus::show(x);
+}
 
-    std::string show_string(const std::string& str)
-    {
-        return fplus::show(str);
-    }
+std::string show_string(const std::string& str)
+{
+    return fplus::show(str);
+}
 }
 
 TEST_CASE("variant_test - visit_one")
@@ -73,13 +73,11 @@ TEST_CASE("variant_test - visit_one")
     REQUIRE_EQ(print_output, "double 23");
     print_output.clear();
 
-
     using float_or_double = fplus::variant<float, double>;
     using nested = fplus::variant<int, float_or_double>;
     nested int_or_float_double_variant(fplus::variant<float, double>(3.0));
 
-    const auto print_nested_double = [&](const float_or_double& f_o_d) -> int
-    {
+    const auto print_nested_double = [&](const float_or_double& f_o_d) -> int {
         f_o_d.visit_one(print_double);
         return 0;
     };
@@ -123,8 +121,7 @@ TEST_CASE("variant_test - visit")
     REQUIRE_EQ(print_output, "int 3");
     print_output.clear();
 
-    const auto transform_result =
-        int_or_string.transform(show_int, show_string);
+    const auto transform_result = int_or_string.transform(show_int, show_string);
     transform_result.visit_one(print_string);
     REQUIRE_EQ(print_output, "string 3");
     print_output.clear();
@@ -162,8 +159,7 @@ TEST_CASE("variant_test - effect")
     REQUIRE_EQ(print_output, "int 3");
     print_output.clear();
 
-    const auto transform_result =
-        int_or_string.transform(show_int, show_string);
+    const auto transform_result = int_or_string.transform(show_int, show_string);
     transform_result.effect_one(print_string_effect);
     REQUIRE_EQ(print_output, "string 3");
     print_output.clear();

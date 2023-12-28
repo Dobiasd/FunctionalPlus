@@ -12,11 +12,9 @@
 #include <memory>
 #include <tuple>
 
-namespace fplus
-{
+namespace fplus {
 
-namespace internal
-{
+namespace internal {
 
     // http://stackoverflow.com/a/18987405/1866775
 
@@ -24,21 +22,18 @@ namespace internal
     struct is_one_of;
 
     template <typename F>
-    struct is_one_of<F>
-    {
+    struct is_one_of<F> {
         static constexpr bool value = false;
     };
 
     template <typename F, typename S, typename... T>
-    struct is_one_of<F, S, T...>
-    {
+    struct is_one_of<F, S, T...> {
         static constexpr bool value = std::is_same<F, S>::value
             || is_one_of<F, T...>::value;
     };
 
     template <typename F, typename... T>
-    struct is_one_of<F, std::tuple<T...>>
-    {
+    struct is_one_of<F, std::tuple<T...>> {
         static constexpr bool value = is_one_of<F, T...>::value;
     };
 
@@ -50,16 +45,14 @@ namespace internal
         static constexpr bool value = true;
     };
 
-    template<typename F, typename... T>
-    struct is_unique<F, T...>
-    {
+    template <typename F, typename... T>
+    struct is_unique<F, T...> {
         static constexpr bool value = is_unique<T...>::value
             && !is_one_of<F, T...>::value;
     };
 
-    template<typename... T>
-    struct is_unique<std::tuple<T...>>
-    {
+    template <typename... T>
+    struct is_unique<std::tuple<T...>> {
         static constexpr bool value = is_unique<T...>::value;
     };
 
@@ -71,70 +64,61 @@ namespace internal
         static constexpr bool value = true;
     };
 
-    template<typename F1, typename F2>
-    struct are_same<F1, F2>
-    {
+    template <typename F1, typename F2>
+    struct are_same<F1, F2> {
         static constexpr bool value = std::is_same<F1, F2>::value;
     };
 
-    template<typename F1, typename F2, typename... T>
-    struct are_same<F1, F2, T...>
-    {
+    template <typename F1, typename F2, typename... T>
+    struct are_same<F1, F2, T...> {
         static constexpr bool value = are_same<F2, T...>::value
             && std::is_same<F1, F2>::value;
     };
 
-    template<typename... T>
-    struct are_same<std::tuple<T...>>
-    {
+    template <typename... T>
+    struct are_same<std::tuple<T...>> {
         static constexpr bool value = are_same<T...>::value;
     };
 
     // http://stackoverflow.com/a/3273571/1866775
-    template<template<typename...> class List,
-        template<typename> class Mod,
-        typename ...Args>
+    template <template <typename...> class List,
+        template <typename> class Mod,
+        typename... Args>
     struct transform_parameter_pack {
         typedef List<typename Mod<Args>::type...> type;
     };
 
-    template<typename T>
-    struct as_shared_pointer
-    {
+    template <typename T>
+    struct as_shared_pointer {
         typedef std::shared_ptr<T> type;
     };
 
-
-
     // http://stackoverflow.com/a/27588263/1866775
 
-    template <typename T, typename... Ts> struct get_index;
+    template <typename T, typename... Ts>
+    struct get_index;
 
     template <typename T, typename... Ts>
-    struct get_index<T, T, Ts...> : std::integral_constant<std::size_t, 0> {};
+    struct get_index<T, T, Ts...> : std::integral_constant<std::size_t, 0> {
+    };
 
     template <typename T, typename Tail, typename... Ts>
-    struct get_index<T, Tail, Ts...> :
-        std::integral_constant<std::size_t, 1 + get_index<T, Ts...>::value> {};
+    struct get_index<T, Tail, Ts...> : std::integral_constant<std::size_t, 1 + get_index<T, Ts...>::value> {
+    };
 
     template <typename T>
-    struct get_index<T>
-    {
+    struct get_index<T> {
         // condition is always false, but should be dependant of T
         static_assert(sizeof(T) == 0, "element not found");
     };
 
-
-    template <typename T, typename ... Ts>
-    struct parameter_pack_head
-    {
+    template <typename T, typename... Ts>
+    struct parameter_pack_head {
         typedef T type;
     };
 
-
     template <typename F>
-    struct function_first_input_type
-    {
+    struct function_first_input_type {
         typedef typename std::remove_const<
             typename std::remove_reference<
                 typename utils::function_traits<
@@ -143,36 +127,37 @@ namespace internal
     };
 
     template <typename F>
-    struct unary_function_result_type
-    {
+    struct unary_function_result_type {
         static_assert(utils::function_traits<F>::arity == 1,
-                "Wrong arity.");
+            "Wrong arity.");
         typedef typename function_first_input_type<F>::type T;
         typedef std::decay_t<internal::invoke_result_t<F, T>> type;
     };
 
-
     // http://stackoverflow.com/a/42493805/1866775
 
     template <typename T>
-    struct tag { };
+    struct tag {
+    };
 
     template <typename... Ts>
-    struct type_set_eq_helper: tag<Ts>... { };
+    struct type_set_eq_helper : tag<Ts>... {
+    };
 
     template <typename, typename, typename = void>
-    struct type_set_eq: std::false_type { };
+    struct type_set_eq : std::false_type {
+    };
 
     template <bool...>
-    struct bool_pack { };
+    struct bool_pack {
+    };
 
     template <bool... Bs>
     using my_and = std::is_same<bool_pack<Bs..., true>, bool_pack<true, Bs...>>;
 
     template <typename... Ts1, typename... Ts2>
-    struct type_set_eq<std::tuple<Ts1...>, std::tuple<Ts2...>, typename std::enable_if< (sizeof...(Ts1) == sizeof...(Ts2)) && my_and< std::is_base_of<tag<Ts2>, type_set_eq_helper<Ts1...>>::value...  >::value  >::type  >:
-       std::true_type { };
-
+    struct type_set_eq<std::tuple<Ts1...>, std::tuple<Ts2...>, typename std::enable_if<(sizeof...(Ts1) == sizeof...(Ts2)) && my_and<std::is_base_of<tag<Ts2>, type_set_eq_helper<Ts1...>>::value...>::value>::type> : std::true_type {
+    };
 
     // http://stackoverflow.com/a/42581257/1866775
 
@@ -180,60 +165,53 @@ namespace internal
     struct is_superset_of;
 
     template <typename Tuple, typename T, typename... Ts>
-    struct is_superset_of<Tuple, std::tuple<T, Ts...>>
-    {
+    struct is_superset_of<Tuple, std::tuple<T, Ts...>> {
         static const bool value = is_one_of<T, Tuple>::value && is_superset_of<Tuple, std::tuple<Ts...>>::value;
     };
 
     template <typename Tuple>
-    struct is_superset_of<Tuple, std::tuple<>>
-    {
+    struct is_superset_of<Tuple, std::tuple<>> {
         static const bool value = true;
     };
 
-
     // http://stackoverflow.com/a/36934374/1866775
-    template<bool... bs>
+    template <bool... bs>
     using all_true = std::is_same<bool_pack<bs..., true>, bool_pack<true, bs...>>;
 
 } // namespace internal
 
-
-template<typename ... Types>
-struct variant
-{
+template <typename... Types>
+struct variant {
     static_assert(internal::is_unique<Types...>::value, "Types must be unique.");
     static_assert(internal::all_true<(!std::is_reference<Types>::value)...>::value, "No reference types allowed.");
     static_assert(internal::all_true<(!std::is_const<Types>::value)...>::value, "No const types allowed.");
     static_assert(sizeof...(Types) >= 1, "Please provide at least one type.");
 
     template <typename T>
-    variant(const T& val) : shared_ptrs_({})
+    variant(const T& val)
+        : shared_ptrs_({})
     {
-        std::get<internal::get_index<T, Types...>::value>(shared_ptrs_) =
-            std::make_shared<T>(val);
+        std::get<internal::get_index<T, Types...>::value>(shared_ptrs_) = std::make_shared<T>(val);
     }
 
     template <typename T>
     bool is() const
     {
         static_assert(
-            internal::is_one_of<T, Types...>::value
-            , "Type must match one possible variant type.");
+            internal::is_one_of<T, Types...>::value, "Type must match one possible variant type.");
 
-        const auto ptr =
-            std::get<internal::get_index<T, Types...>::value>(shared_ptrs_);
+        const auto ptr = std::get<internal::get_index<T, Types...>::value>(shared_ptrs_);
 
         return static_cast<bool>(ptr);
     }
 
-    friend bool operator== (
+    friend bool operator==(
         const variant<Types...>& a, const variant<Types...>& b)
     {
         return a.shared_ptrs_ == b.shared_ptrs_;
     }
 
-    friend bool operator!= (
+    friend bool operator!=(
         const variant<Types...>& a, const variant<Types...>& b)
     {
         return a.shared_ptrs_ != b.shared_ptrs_;
@@ -249,17 +227,15 @@ struct variant
         static_assert(
             internal::is_one_of<
                 typename internal::function_first_input_type<F>::type,
-                Types...>::value
-            , "Function input must match one variant type.");
+                Types...>::value,
+            "Function input must match one variant type.");
 
         static_assert(!std::is_same<std::decay_t<Ret>, void>::value,
-                      "Function must return non-void type.");
+            "Function must return non-void type.");
 
-        const auto ptr =
-            std::get<internal::get_index<T, Types...>::value>(shared_ptrs_);
+        const auto ptr = std::get<internal::get_index<T, Types...>::value>(shared_ptrs_);
 
-        if (ptr)
-        {
+        if (ptr) {
             return just(internal::invoke(f, *ptr));
         }
 
@@ -276,22 +252,20 @@ struct variant
         static_assert(
             internal::is_one_of<
                 typename internal::function_first_input_type<F>::type,
-                Types...>::value
-            , "Function input must match one variant type.");
+                Types...>::value,
+            "Function input must match one variant type.");
 
         static_assert(std::is_same<std::decay_t<Ret>, void>::value,
-                     "Function must return void type.");
+            "Function must return void type.");
 
-        const auto ptr =
-            std::get<internal::get_index<T, Types...>::value>(shared_ptrs_);
-        if (ptr)
-        {
+        const auto ptr = std::get<internal::get_index<T, Types...>::value>(shared_ptrs_);
+        if (ptr) {
             internal::invoke(f, *ptr);
         }
     }
 
-    template <typename ...Fs>
-    auto visit(Fs ... fs) const ->
+    template <typename... Fs>
+    auto visit(Fs... fs) const ->
         typename internal::unary_function_result_type<
             typename internal::parameter_pack_head<Fs...>::type>::type
     {
@@ -310,14 +284,12 @@ struct variant
         typedef typename internal::transform_parameter_pack<
             std::tuple,
             internal::unary_function_result_type,
-            Fs...
-            >::type return_types_tuple;
+            Fs...>::type return_types_tuple;
 
         typedef typename internal::transform_parameter_pack<
             std::tuple,
             internal::function_first_input_type,
-            Fs...
-            >::type function_first_input_types_tuple;
+            Fs...>::type function_first_input_types_tuple;
 
         static_assert(
             internal::is_unique<function_first_input_types_tuple>::value,
@@ -332,15 +304,15 @@ struct variant
             "Functions do not cover all possible types.");
 
         static_assert(!std::is_same<std::decay_t<Res>, void>::value,
-                      "Function must return non-void type.");
+            "Function must return non-void type.");
 
         const auto results = justs(go_visit_one<Res>(fs...));
         assert(size_of_cont(results) == 1);
         return head(results);
     }
 
-    template <typename ...Fs>
-    void effect(Fs ... fs) const
+    template <typename... Fs>
+    void effect(Fs... fs) const
     {
 
         static_assert(
@@ -351,18 +323,15 @@ struct variant
             sizeof...(Fs) <= std::tuple_size<shared_ptr_pack>::value,
             "Too many functions provided.");
 
-
         typedef typename internal::transform_parameter_pack<
             std::tuple,
             internal::unary_function_result_type,
-            Fs...
-            >::type return_types_tuple;
+            Fs...>::type return_types_tuple;
 
         typedef typename internal::transform_parameter_pack<
             std::tuple,
             internal::function_first_input_type,
-            Fs...
-            >::type function_first_input_types_tuple;
+            Fs...>::type function_first_input_types_tuple;
 
         static_assert(
             internal::is_unique<function_first_input_types_tuple>::value,
@@ -379,8 +348,8 @@ struct variant
         go_effect_one(fs...);
     }
 
-    template <typename ...Fs>
-    variant<Types...> transform(Fs ... fs) const
+    template <typename... Fs>
+    variant<Types...> transform(Fs... fs) const
     {
         static_assert(
             sizeof...(Fs) >= std::tuple_size<shared_ptr_pack>::value,
@@ -393,14 +362,12 @@ struct variant
         typedef typename internal::transform_parameter_pack<
             std::tuple,
             internal::unary_function_result_type,
-            Fs...
-            >::type return_types_tuple;
+            Fs...>::type return_types_tuple;
 
         typedef typename internal::transform_parameter_pack<
             std::tuple,
             internal::function_first_input_type,
-            Fs...
-            >::type function_first_input_types_tuple;
+            Fs...>::type function_first_input_types_tuple;
 
         static_assert(
             internal::type_set_eq<function_first_input_types_tuple, std::tuple<Types...>>::value,
@@ -423,11 +390,11 @@ private:
     template <typename Res, typename F>
     std::vector<fplus::maybe<Res>> go_visit_one(F f) const
     {
-        return {visit_one(f)};
+        return { visit_one(f) };
     }
 
-    template <typename Res, typename F, typename ...Fs>
-    std::vector<fplus::maybe<Res>> go_visit_one(F f, Fs ... fs) const
+    template <typename Res, typename F, typename... Fs>
+    std::vector<fplus::maybe<Res>> go_visit_one(F f, Fs... fs) const
     {
         return fplus::append(go_visit_one<Res>(f), go_visit_one<Res>(fs...));
     }
@@ -438,8 +405,8 @@ private:
         effect_one(f);
     }
 
-    template <typename F, typename ...Fs>
-    void go_effect_one(F f, Fs ... fs) const
+    template <typename F, typename... Fs>
+    void go_effect_one(F f, Fs... fs) const
     {
         go_effect_one(f);
         go_effect_one(fs...);
@@ -448,8 +415,7 @@ private:
     typedef typename internal::transform_parameter_pack<
         std::tuple,
         internal::as_shared_pointer,
-        Types...
-    >::type shared_ptr_pack;
+        Types...>::type shared_ptr_pack;
     shared_ptr_pack shared_ptrs_;
 };
 

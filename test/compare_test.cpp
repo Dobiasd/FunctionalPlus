@@ -10,27 +10,26 @@
 
 namespace {
 
-    bool int_less(int x, int y)
-    {
-        return x < y;
-    }
-
-    bool int_less_eq(int x, int y)
-    {
-        return x <= y;
-    }
-
-    auto generic_less = [](auto x, auto y) {
-      return x < y;
-    };
-
-    auto generic_less_eq = [](auto x, auto y) {
-      return x <= y;
-    };
-
-    auto squareGeneric = [](auto x) { return x * x; };
+bool int_less(int x, int y)
+{
+    return x < y;
 }
 
+bool int_less_eq(int x, int y)
+{
+    return x <= y;
+}
+
+auto generic_less = [](auto x, auto y) {
+    return x < y;
+};
+
+auto generic_less_eq = [](auto x, auto y) {
+    return x <= y;
+};
+
+auto squareGeneric = [](auto x) { return x * x; };
+}
 
 TEST_CASE("compare_test - is_equal_to")
 {
@@ -175,9 +174,9 @@ TEST_CASE("compare_test - ord_eq_to_not_eq")
 TEST_CASE("compare_test - lexicographical_less")
 {
     using namespace fplus;
-    REQUIRE(lexicographical_less(std::vector<int>{0,1,2,2,4,5}, std::vector<int>{0,1,2,3,4,5}));
-    REQUIRE(lexicographical_less(std::vector<int>{}, std::vector<int>{1}));
-    REQUIRE_FALSE(lexicographical_less(std::vector<int>{1}, std::vector<int>{}));
+    REQUIRE(lexicographical_less(std::vector<int> { 0, 1, 2, 2, 4, 5 }, std::vector<int> { 0, 1, 2, 3, 4, 5 }));
+    REQUIRE(lexicographical_less(std::vector<int> {}, std::vector<int> { 1 }));
+    REQUIRE_FALSE(lexicographical_less(std::vector<int> { 1 }, std::vector<int> {}));
     REQUIRE(lexicographical_less(std::string("012245"), std::string("012345")));
     REQUIRE(lexicographical_less(std::string("012245"), std::string("01234")));
     REQUIRE(lexicographical_less(std::string("01234"), std::string("012345")));
@@ -189,7 +188,7 @@ TEST_CASE("compare_test - lexicographical_less")
 TEST_CASE("compare_test - lexicographical_sort")
 {
     using namespace fplus;
-    std::vector<std::string> xs = {"012245", "012345", "01234"};
-    std::vector<std::string> xs_lex_sorted = {"012245", "01234", "012345"};
+    std::vector<std::string> xs = { "012245", "012345", "01234" };
+    std::vector<std::string> xs_lex_sorted = { "012245", "01234", "012345" };
     REQUIRE_EQ(lexicographical_sort(xs), xs_lex_sorted);
 }

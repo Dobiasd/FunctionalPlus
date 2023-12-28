@@ -6,37 +6,36 @@
 
 #pragma once
 
+#include <fplus/container_common.hpp>
 #include <fplus/maybe.hpp>
 #include <fplus/result.hpp>
-#include <fplus/container_common.hpp>
 
 #include <algorithm>
 
-namespace fplus
-{
+namespace fplus {
 
-namespace internal
-{
+namespace internal {
 
-template <typename Pred, typename Container>
-Container keep_if(internal::reuse_container_t, Pred pred, Container&& xs)
-{
-    internal::check_unary_predicate_for_container<Pred, Container>();
-    xs.erase(std::remove_if(
-        std::begin(xs), std::end(xs), logical_not(pred)), std::end(xs));
-    return std::forward<Container>(xs);
-}
+    template <typename Pred, typename Container>
+    Container keep_if(internal::reuse_container_t, Pred pred, Container&& xs)
+    {
+        internal::check_unary_predicate_for_container<Pred, Container>();
+        xs.erase(std::remove_if(
+                     std::begin(xs), std::end(xs), logical_not(pred)),
+            std::end(xs));
+        return std::forward<Container>(xs);
+    }
 
-template <typename Pred, typename Container>
-Container keep_if(internal::create_new_container_t, Pred pred,
-    const Container& xs)
-{
-    internal::check_unary_predicate_for_container<Pred, Container>();
-    Container result;
-    auto it = internal::get_back_inserter<Container>(result);
-    std::copy_if(std::begin(xs), std::end(xs), it, pred);
-    return result;
-}
+    template <typename Pred, typename Container>
+    Container keep_if(internal::create_new_container_t, Pred pred,
+        const Container& xs)
+    {
+        internal::check_unary_predicate_for_container<Pred, Container>();
+        Container result;
+        auto it = internal::get_back_inserter<Container>(result);
+        std::copy_if(std::begin(xs), std::end(xs), it, pred);
+        return result;
+    }
 
 } // namespace internal
 
@@ -49,7 +48,7 @@ template <typename Pred, typename Container,
     typename ContainerOut = internal::remove_const_and_ref_t<Container>>
 ContainerOut keep_if(Pred pred, Container&& xs)
 {
-    return internal::keep_if(internal::can_reuse_v<Container>{},
+    return internal::keep_if(internal::can_reuse_v<Container> {},
         pred, std::forward<Container>(xs));
 }
 
@@ -86,8 +85,8 @@ template <typename Container, typename ContainerElems,
 ContainerOut without_any(const ContainerElems& elems, Container&& xs)
 {
     static_assert(std::is_same<
-        typename ContainerElems::value_type,
-        typename std::remove_reference<Container>::type::value_type>::value,
+                      typename ContainerElems::value_type,
+                      typename std::remove_reference<Container>::type::value_type>::value,
         "Container values must be of the same type.");
     const auto pred = bind_2nd_of_2(is_elem_of<ContainerElems>, elems);
     return drop_if(pred, std::forward<Container>(xs));
@@ -105,8 +104,7 @@ Container keep_if_with_idx(Pred pred, const Container& xs)
     Container ys;
     auto it = internal::get_back_inserter<Container>(ys);
     std::size_t idx = 0;
-    for (const auto& x : xs)
-    {
+    for (const auto& x : xs) {
         if (internal::invoke(pred, idx++, x))
             *it = x;
     }
@@ -122,39 +120,36 @@ template <typename Pred, typename Container>
 Container drop_if_with_idx(Pred pred, const Container& xs)
 {
     internal::check_index_with_type_predicate_for_container<Pred, Container>();
-    const auto inverse_pred = [pred](auto idx, const auto& x)
-    {
+    const auto inverse_pred = [pred](auto idx, const auto& x) {
         return !internal::invoke(pred, idx, x);
     };
     return keep_if_with_idx(inverse_pred, xs);
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename UnaryPredicate, typename Container>
-Container keep_by_idx(internal::reuse_container_t,
-    UnaryPredicate pred, Container&& xs)
-{
-    auto itOut = std::begin(xs);
-    std::size_t i = 0;
-    for (auto it = std::begin(xs); it != std::end(xs); ++it)
+    template <typename UnaryPredicate, typename Container>
+    Container keep_by_idx(internal::reuse_container_t,
+        UnaryPredicate pred, Container&& xs)
     {
-        if (internal::invoke(pred, i++))
-            assign(*itOut++, std::move(*it));
+        auto itOut = std::begin(xs);
+        std::size_t i = 0;
+        for (auto it = std::begin(xs); it != std::end(xs); ++it) {
+            if (internal::invoke(pred, i++))
+                assign(*itOut++, std::move(*it));
+        }
+        xs.erase(itOut, std::end(xs));
+        return std::forward<Container>(xs);
     }
-    xs.erase(itOut, std::end(xs));
-    return std::forward<Container>(xs);
-}
 
-template <typename UnaryPredicate, typename Container>
-Container keep_by_idx(internal::create_new_container_t,
-    UnaryPredicate pred, const Container& xs)
-{
-    Container ys = xs;
-    return internal::keep_by_idx(internal::reuse_container_t(),
-        pred, std::move(ys));
-}
+    template <typename UnaryPredicate, typename Container>
+    Container keep_by_idx(internal::create_new_container_t,
+        UnaryPredicate pred, const Container& xs)
+    {
+        Container ys = xs;
+        return internal::keep_by_idx(internal::reuse_container_t(),
+            pred, std::move(ys));
+    }
 
 } // namespace internal
 
@@ -167,7 +162,7 @@ template <typename UnaryPredicate, typename Container,
 ContainerOut keep_by_idx(UnaryPredicate pred, Container&& xs)
 {
     internal::check_unary_predicate_for_type<UnaryPredicate, std::size_t>();
-    return internal::keep_by_idx(internal::can_reuse_v<Container>{},
+    return internal::keep_by_idx(internal::can_reuse_v<Container> {},
         pred, std::forward<Container>(xs));
 }
 
@@ -197,10 +192,8 @@ Container keep_idxs(const ContainerIdxs& idxs_to_keep, const Container& xs)
     Container ys;
     auto it = internal::get_back_inserter<Container>(ys);
     std::size_t idx = 0;
-    for (const auto& x : xs)
-    {
-        if (!idxs_left.empty() && idxs_left.front() == idx)
-        {
+    for (const auto& x : xs) {
+        if (!idxs_left.empty() && idxs_left.front() == idx) {
             idxs_left.pop_front();
             *it = x;
         }
@@ -223,16 +216,11 @@ Container drop_idxs(const ContainerIdxs& idxs_to_drop, const Container& xs)
     Container ys;
     auto it = internal::get_back_inserter<Container>(ys);
     std::size_t idx = 0;
-    for (const auto& x : xs)
-    {
-        if (idxs_left.empty() || idxs_left.front() != idx)
-        {
+    for (const auto& x : xs) {
+        if (idxs_left.empty() || idxs_left.front() != idx) {
             *it = x;
-        }
-        else
-        {
-            if (!idxs_left.empty())
-            {
+        } else {
+            if (!idxs_left.empty()) {
                 idxs_left.pop_front();
             }
         }
@@ -319,7 +307,7 @@ ContainerOut errors(const ContainerIn& xs)
 // trim_left('_', "___abc__") == "abc__"
 // trim_left(0, [0,0,0,5,6,7,8,6,4]) == [5,6,7,8,6,4]
 template <typename Container,
-        typename T = typename Container::value_type>
+    typename T = typename Container::value_type>
 Container trim_left(const T& x, const Container& xs)
 {
     return drop_while(is_equal_to(x), xs);
@@ -333,8 +321,7 @@ template <typename Container>
 Container trim_token_left(const Container& token, const Container& xs)
 {
     auto result = xs;
-    while (is_prefix_of(token, result))
-    {
+    while (is_prefix_of(token, result)) {
         result = get_segment(size_of_cont(token), size_of_cont(result), result);
     }
     return result;
@@ -357,7 +344,7 @@ Container trim_right_by(UnaryPredicate p, const Container& xs)
 // trim_right('_', "___abc__") == "___abc"
 // trim_right(4, [0,2,4,5,6,7,8,4,4]) == [0,2,4,5,6,7,8]
 template <typename Container,
-        typename T = typename Container::value_type>
+    typename T = typename Container::value_type>
 Container trim_right(const T& x, const Container& xs)
 {
     return trim_right_by(is_equal_to(x), xs);
@@ -390,7 +377,7 @@ Container trim_by(UnaryPredicate p, const Container& xs)
 // trim('_', "___abc__") == "abc"
 // trim(0, [0,2,4,5,6,7,8,0,0]) == [2,4,5,6,7,8]
 template <typename Container,
-        typename T = typename Container::value_type>
+    typename T = typename Container::value_type>
 Container trim(const T& x, const Container& xs)
 {
     return trim_right(x, trim_left(x, xs));
@@ -418,8 +405,7 @@ Container trim_token(const Container& token, const Container& xs)
 template <typename BinaryPredicate, typename Container>
 Container adjacent_keep_snd_if(BinaryPredicate p, const Container& xs)
 {
-    if (is_empty(xs))
-    {
+    if (is_empty(xs)) {
         return {};
     }
     internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
@@ -427,10 +413,8 @@ Container adjacent_keep_snd_if(BinaryPredicate p, const Container& xs)
     auto it = internal::get_back_inserter<Container>(result);
     auto it_in = std::begin(xs);
     *it = *it_in;
-    while (internal::add_to_iterator(it_in) != std::end(xs))
-    {
-        if (p(*it_in, *internal::add_to_iterator(it_in)))
-        {
+    while (internal::add_to_iterator(it_in) != std::end(xs)) {
+        if (p(*it_in, *internal::add_to_iterator(it_in))) {
             *it = *internal::add_to_iterator(it_in);
         }
         internal::advance_iterator(it_in, 1);
@@ -450,18 +434,15 @@ Container adjacent_keep_snd_if(BinaryPredicate p, const Container& xs)
 template <typename BinaryPredicate, typename Container>
 Container adjacent_drop_fst_if(BinaryPredicate p, const Container& xs)
 {
-    if (is_empty(xs))
-    {
+    if (is_empty(xs)) {
         return {};
     }
     internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
     Container result;
     auto it = internal::get_back_inserter<Container>(result);
     auto it_in = std::begin(xs);
-    while (internal::add_to_iterator(it_in) != std::end(xs))
-    {
-        if (!internal::invoke(p, *it_in, *internal::add_to_iterator(it_in)))
-        {
+    while (internal::add_to_iterator(it_in) != std::end(xs)) {
+        if (!internal::invoke(p, *it_in, *internal::add_to_iterator(it_in))) {
             *it = *it_in;
         }
         internal::advance_iterator(it_in, 1);
@@ -482,8 +463,7 @@ template <typename BinaryPredicate, typename Container>
 Container adjacent_drop_snd_if(BinaryPredicate p, const Container& xs)
 {
     typedef typename Container::value_type T;
-    const auto not_p = [&p](const T& x, const T& y) -> bool
-    {
+    const auto not_p = [&p](const T& x, const T& y) -> bool {
         return !internal::invoke(p, x, y);
     };
     return adjacent_keep_snd_if(not_p, xs);
@@ -501,8 +481,7 @@ template <typename BinaryPredicate, typename Container>
 Container adjacent_keep_fst_if(BinaryPredicate p, const Container& xs)
 {
     typedef typename Container::value_type T;
-    const auto not_p = [&p](const T& x, const T& y) -> bool
-    {
+    const auto not_p = [&p](const T& x, const T& y) -> bool {
         return !internal::invoke(p, x, y);
     };
     return adjacent_drop_fst_if(not_p, xs);

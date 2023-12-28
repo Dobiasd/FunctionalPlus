@@ -6,49 +6,47 @@
 
 #include <doctest/doctest.h>
 
-#include <vector>
-#include <cmath>
 #include <chrono>
+#include <cmath>
 #include <fplus/fplus.hpp>
+#include <vector>
 
 // Utility functions
-namespace
+namespace {
+void require_are_execution_times_close(double t1, double t2)
 {
-    void require_are_execution_times_close(double t1, double t2)
-    {
-        // up to 30 ms difference, since the cpu scheduler might switch to another process during a sleep
-        double max_acceptable_delta__task_scheduler = 0.03;
-        #if defined(__APPLE__)
-            max_acceptable_delta__task_scheduler = 0.2;
-        #endif
-        REQUIRE(fabs(t1 - t2) < max_acceptable_delta__task_scheduler);
-    }
-
-    template<typename T>
-    void require_are_timed_equal(const fplus::timed<T> & a, const fplus::timed<T> & b)
-    {
-        REQUIRE(a.get() == b.get());
-        require_are_execution_times_close(a.time_in_s(), b.time_in_s());
-    }
-
-    void sleep_seconds(double sleep_seconds)
-    {
-        long long sleep_ns = static_cast<long long>(sleep_seconds * 1E9);
-        std::this_thread::sleep_for(std::chrono::nanoseconds(sleep_ns));
-    }
-
-    int add(int a, int b)  // a simple function that will be decorated
-    {
-        sleep_seconds(0.002);
-        return a + b;
-    }
-
-    void void_function()
-    {
-        sleep_seconds(0.002);
-    }
+    // up to 30 ms difference, since the cpu scheduler might switch to another process during a sleep
+    double max_acceptable_delta__task_scheduler = 0.03;
+#if defined(__APPLE__)
+    max_acceptable_delta__task_scheduler = 0.2;
+#endif
+    REQUIRE(fabs(t1 - t2) < max_acceptable_delta__task_scheduler);
 }
 
+template <typename T>
+void require_are_timed_equal(const fplus::timed<T>& a, const fplus::timed<T>& b)
+{
+    REQUIRE(a.get() == b.get());
+    require_are_execution_times_close(a.time_in_s(), b.time_in_s());
+}
+
+void sleep_seconds(double sleep_seconds)
+{
+    long long sleep_ns = static_cast<long long>(sleep_seconds * 1E9);
+    std::this_thread::sleep_for(std::chrono::nanoseconds(sleep_ns));
+}
+
+int add(int a, int b) // a simple function that will be decorated
+{
+    sleep_seconds(0.002);
+    return a + b;
+}
+
+void void_function()
+{
+    sleep_seconds(0.002);
+}
+}
 
 // Test timed class
 TEST_CASE("timed - ctor")
@@ -86,7 +84,6 @@ TEST_CASE("timed - operator=")
     }
 }
 
-
 TEST_CASE("timed - show_timed")
 {
     {
@@ -102,10 +99,9 @@ TEST_CASE("timed - duration_in_s")
         fplus::timed<int> v(42, 1.2345);
         auto d = v.duration_in_s();
         double seconds = d.count();
-        REQUIRE( seconds == doctest::Approx(1.2345) );
+        REQUIRE(seconds == doctest::Approx(1.2345));
     }
 }
-
 
 // Test make_timed_function
 TEST_CASE("make_timed_function")
@@ -155,7 +151,7 @@ TEST_CASE("make_timed_function")
             sleep_seconds(0.03);
             return a - b;
         };
-        std::function<int(int,int)> sub = sub_lambda;
+        std::function<int(int, int)> sub = sub_lambda;
         auto sub_timed = make_timed_function(sub);
         auto result = sub_timed(45, 3);
         auto expected = timed<int>(42, 0.03);
@@ -177,7 +173,6 @@ TEST_CASE("make_timed_function")
         REQUIRE_LT(sorted_numbers.time_in_s(), 0.1);
     }
 }
-
 
 //
 // The test below asserts that variadic arguments containing modifiable references are correctly forwarded

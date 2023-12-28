@@ -8,12 +8,11 @@
 #include <fplus/fplus.hpp>
 #include <vector>
 
-namespace
+namespace {
+bool is_even(int value)
 {
-    bool is_even(int value)
-    {
-        return value % 2 == 0;
-    }
+    return value % 2 == 0;
+}
 }
 
 TEST_CASE("search_test - find_first_by")
@@ -104,7 +103,7 @@ TEST_CASE("search_test - find_all_idxs_by")
 {
     std::vector<int> v = { 1, 3, 4, 6, 9 };
     auto result = fplus::find_all_idxs_by(is_even, v);
-    REQUIRE_EQ(result, std::vector<std::size_t>({2, 3}));
+    REQUIRE_EQ(result, std::vector<std::size_t>({ 2, 3 }));
 }
 
 TEST_CASE("search_test - find_last_idxs_by_nothing_found")
@@ -118,7 +117,7 @@ TEST_CASE("search_test - find_all_idxs_of")
 {
     std::vector<int> v = { 1, 3, 4, 4, 9 };
     auto result = fplus::find_all_idxs_of(4, v);
-    REQUIRE_EQ(result, std::vector<size_t>({2, 3}));
+    REQUIRE_EQ(result, std::vector<size_t>({ 2, 3 }));
 }
 
 TEST_CASE("search_test - find_all_instances_of_token")
@@ -126,7 +125,7 @@ TEST_CASE("search_test - find_all_instances_of_token")
     const std::string token = "haha";
     const std::string input = "oh, hahaha!";
     auto result = fplus::find_all_instances_of_token(token, input);
-    REQUIRE_EQ(result, std::vector<std::size_t>({4, 6}));
+    REQUIRE_EQ(result, std::vector<std::size_t>({ 4, 6 }));
 }
 
 TEST_CASE("search_test - find_last_idxs_of_nothing_found")
@@ -149,7 +148,7 @@ TEST_CASE("search_test - find_all_instances_of_token_non_overlapping")
     const std::string token = "haha";
     const std::string input = "oh, hahaha!";
     auto result = fplus::find_all_instances_of_token_non_overlapping(token, input);
-    REQUIRE_EQ(result, std::vector<std::size_t>({4}));
+    REQUIRE_EQ(result, std::vector<std::size_t>({ 4 }));
 }
 
 TEST_CASE("search_test - find_first_instance_of_token")

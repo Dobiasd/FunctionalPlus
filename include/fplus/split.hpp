@@ -9,15 +9,14 @@
 #include <fplus/container_common.hpp>
 #include <fplus/container_properties.hpp>
 #include <fplus/generate.hpp>
-#include <fplus/pairs.hpp>
 #include <fplus/numeric.hpp>
+#include <fplus/pairs.hpp>
 #include <fplus/search.hpp>
 
 #include <fplus/internal/invoke.hpp>
 #include <fplus/internal/split.hpp>
 
-namespace fplus
-{
+namespace fplus {
 
 // API search type: group_by : (((a, a) -> Bool), [a]) -> [[a]]
 // fwd bind count: 1
@@ -28,7 +27,7 @@ namespace fplus
 // BinaryPredicate p is a (not neccessarily transitive) connectivity check.
 // O(n)
 template <typename BinaryPredicate, typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
+    typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
 {
     // ContainerOut is not deduced to
@@ -36,15 +35,14 @@ ContainerOut group_by(BinaryPredicate p, const ContainerIn& xs)
     // here, since ContainerIn could be a std::string.
     internal::check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
     ContainerOut result;
     if (is_empty(xs))
         return result;
     typedef typename ContainerOut::value_type InnerContainerOut;
     *internal::get_back_inserter(result) = InnerContainerOut(1, xs.front());
-    for (auto it = ++std::begin(xs); it != std::end(xs); ++it)
-    {
+    for (auto it = ++std::begin(xs); it != std::end(xs); ++it) {
         if (internal::invoke(p, result.back().back(), *it))
             *internal::get_back_inserter(result.back()) = *it;
         else
@@ -77,8 +75,7 @@ auto group_on(F f, const ContainerIn& xs)
 template <typename F, typename ContainerIn>
 auto group_on_labeled(F f, const ContainerIn& xs)
 {
-    const auto group = [](auto f1, const auto& xs1)
-    {
+    const auto group = [](auto f1, const auto& xs1) {
         return group_by(f1, xs1);
     };
 
@@ -93,11 +90,11 @@ auto group_on_labeled(F f, const ContainerIn& xs)
 // group([1,2,2,2,3,2,2,4,5,5]) == [[1],[2,2,2],[3],[2,2],[4],[5,5]]
 // O(n)
 template <typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
+    typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group(const ContainerIn& xs)
 {
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
     typedef typename ContainerIn::value_type T;
     auto pred = [](const T& x, const T& y) { return x == y; };
@@ -114,29 +111,25 @@ ContainerOut group(const ContainerIn& xs)
 // O(n^2)
 // If you need O(n*log(n)), sort and then use group_by
 template <typename BinaryPredicate, typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
+    typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group_globally_by(BinaryPredicate p, const ContainerIn& xs)
 {
     internal::check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
     typedef typename ContainerOut::value_type InnerContainerOut;
     ContainerOut result;
-    for (const auto& x : xs)
-    {
+    for (const auto& x : xs) {
         bool found = false;
-        for (auto& ys : result)
-        {
-            if (internal::invoke(p, x, ys.back()))
-            {
+        for (auto& ys : result) {
+            if (internal::invoke(p, x, ys.back())) {
                 *internal::get_back_inserter(ys) = x;
                 found = true;
                 break;
             }
         }
-        if (!found)
-        {
+        if (!found) {
             *internal::get_back_inserter(result) = InnerContainerOut(1, x);
         }
     }
@@ -165,8 +158,7 @@ auto group_globally_on(F f, const ContainerIn& xs)
 template <typename F, typename ContainerIn>
 auto group_globally_on_labeled(F f, const ContainerIn& xs)
 {
-    const auto group = [](auto f1, const auto& xs1)
-    {
+    const auto group = [](auto f1, const auto& xs1) {
         return group_globally_by(f1, xs1);
     };
 
@@ -180,11 +172,11 @@ auto group_globally_on_labeled(F f, const ContainerIn& xs)
 // O(n^2)
 // If you need O(n*log(n)), sort and then use group
 template <typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
+    typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut group_globally(const ContainerIn& xs)
 {
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
     typedef typename ContainerIn::value_type T;
     auto pred = [](const T& x, const T& y) { return x == y; };
@@ -202,12 +194,12 @@ ContainerOut group_globally(const ContainerIn& xs)
 //  c) not neccessarily transitive, but can be
 // O(n^2), memory complexity also O(n^2)
 template <typename BinaryPredicate, typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
+    typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
 {
     internal::check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
 
     typedef std::vector<unsigned char> bools;
@@ -217,65 +209,53 @@ ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
     typedef std::vector<bools> boolss;
     boolss adj_mat(size_of_cont(xs), zero_filled_row);
 
-    for (const auto& idx_and_val_y : enumerate(xs))
-    {
+    for (const auto& idx_and_val_y : enumerate(xs)) {
         auto idx_y = idx_and_val_y.first;
         auto val_y = idx_and_val_y.second;
-        for (const auto& idx_and_val_x : enumerate(xs))
-        {
+        for (const auto& idx_and_val_x : enumerate(xs)) {
             auto idx_x = idx_and_val_x.first;
             auto val_x = idx_and_val_x.second;
-            if (internal::invoke(p, val_y, val_x))
-            {
+            if (internal::invoke(p, val_y, val_x)) {
                 adj_mat[idx_y][idx_x] = 1;
             }
         }
     }
 
     bools already_used = zero_filled_row;
-    auto is_already_used = [&](std::size_t i) -> bool
-    {
+    auto is_already_used = [&](std::size_t i) -> bool {
         return already_used[i] != 0;
     };
 
     typedef std::vector<std::size_t> idxs;
     typedef std::vector<idxs> idxss;
 
-    auto bools_to_idxs = [](const bools& activations) -> idxs
-    {
-        auto unsigned_char_to_bool = [](unsigned char x)
-        {
+    auto bools_to_idxs = [](const bools& activations) -> idxs {
+        auto unsigned_char_to_bool = [](unsigned char x) {
             return x != 0;
         };
         return find_all_idxs_by(unsigned_char_to_bool, activations);
     };
 
     idxss idx_clusters;
-    std::function<void(std::size_t)> process_idx = [&](std::size_t idx) -> void
-    {
+    std::function<void(std::size_t)> process_idx = [&](std::size_t idx) -> void {
         auto connected_idxs = bools_to_idxs(adj_mat[idx]);
         auto new_connected_idxs = drop_if(is_already_used, connected_idxs);
-        if (is_empty(new_connected_idxs))
-        {
+        if (is_empty(new_connected_idxs)) {
             return;
         }
         idx_clusters.back() = append(idx_clusters.back(), new_connected_idxs);
-        for (const auto& new_idx : new_connected_idxs)
-        {
+        for (const auto& new_idx : new_connected_idxs) {
             already_used[new_idx] = 1;
         }
-        for (const auto& new_idx : new_connected_idxs)
-        {
+        for (const auto& new_idx : new_connected_idxs) {
             process_idx(new_idx);
         }
     };
 
     typedef typename ContainerOut::value_type InnerContainerOut;
 
-    for (const auto& idx : all_idxs(xs))
-    {
-        if (is_already_used(idx))
-        {
+    for (const auto& idx : all_idxs(xs)) {
+        if (is_already_used(idx)) {
             continue;
         }
         *internal::get_back_inserter(idx_clusters) = idxs();
@@ -286,13 +266,11 @@ ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
 
     typedef typename ContainerIn::value_type T;
 
-    auto idx_to_val = [&](std::size_t idx) -> T
-    {
+    auto idx_to_val = [&](std::size_t idx) -> T {
         return elem_at_idx(idx, xs);
     };
 
-    auto idxs_to_vals = [&](const idxs& val_idxs) -> InnerContainerOut
-    {
+    auto idxs_to_vals = [&](const idxs& val_idxs) -> InnerContainerOut {
         return transform_convert<InnerContainerOut>(idx_to_val, sort(val_idxs));
     };
 
@@ -307,38 +285,32 @@ ContainerOut cluster_by(BinaryPredicate p, const ContainerIn& xs)
 // also known as split_when
 // O(n)
 template <typename UnaryPredicate, typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
-ContainerOut split_by
-        (UnaryPredicate pred, bool allow_empty, const ContainerIn& xs)
+    typename ContainerOut = typename std::vector<ContainerIn>>
+ContainerOut split_by(UnaryPredicate pred, bool allow_empty, const ContainerIn& xs)
 {
     internal::check_unary_predicate_for_container<UnaryPredicate, ContainerIn>();
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
 
-    if (allow_empty && is_empty(xs))
-    {
-        return {{}};
+    if (allow_empty && is_empty(xs)) {
+        return { {} };
     }
 
     ContainerOut result;
     auto itOut = internal::get_back_inserter(result);
     auto start = std::begin(xs);
 
-    while (start != std::end(xs))
-    {
+    while (start != std::end(xs)) {
         const auto stop = std::find_if(start, std::end(xs), pred);
-        if (start != stop || allow_empty)
-        {
+        if (start != stop || allow_empty) {
             *itOut = { start, stop };
         }
-        if (stop == std::end(xs))
-        {
+        if (stop == std::end(xs)) {
             break;
         }
         start = internal::add_to_iterator(stop);
-        if (allow_empty && start == std::end(xs))
-        {
+        if (allow_empty && start == std::end(xs)) {
             *itOut = typename ContainerOut::value_type();
         }
     }
@@ -353,26 +325,23 @@ ContainerOut split_by
 // == [[1,3],[2],[2,5,5,3],[6,7,9]]
 // O(n)
 template <typename UnaryPredicate, typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
-ContainerOut split_by_keep_separators
-        (UnaryPredicate pred, const ContainerIn& xs)
+    typename ContainerOut = typename std::vector<ContainerIn>>
+ContainerOut split_by_keep_separators(UnaryPredicate pred, const ContainerIn& xs)
 {
     internal::check_unary_predicate_for_container<UnaryPredicate, ContainerIn>();
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
     ContainerOut result;
     if (is_empty(xs))
         return result;
     auto itOut = internal::get_back_inserter(result);
     auto start = std::begin(xs);
-    while (start != std::end(xs))
-    {
+    while (start != std::end(xs)) {
         const auto stop = std::find_if(
             internal::add_to_iterator(start), std::end(xs), pred);
         *itOut = { start, stop };
-        if (stop == std::end(xs))
-        {
+        if (stop == std::end(xs)) {
             break;
         }
         start = stop;
@@ -387,7 +356,7 @@ ContainerOut split_by_keep_separators
 // split(0, true, [1,3,2,0,0,6,0,7,5]) == [[1,3,2],[],[6],[7,5]]
 // O(n)
 template <typename ContainerIn,
-        typename T = typename ContainerIn::value_type>
+    typename T = typename ContainerIn::value_type>
 auto split(const T& x, bool allow_empty, const ContainerIn& xs)
 {
     return split_by(is_equal_to(x), allow_empty, xs);
@@ -402,12 +371,11 @@ auto split(const T& x, bool allow_empty, const ContainerIn& xs)
 // split_one_of(" o", false, "How are u?") == ["H","w","are","u?"]
 // O(n)
 template <typename ContainerIn,
-        typename ContainerDelims>
+    typename ContainerDelims>
 auto split_one_of(
     const ContainerDelims delimiters, bool allow_empty, const ContainerIn& xs)
 {
-    const auto pred = [&](const typename ContainerIn::value_type& x) -> bool
-    {
+    const auto pred = [&](const typename ContainerIn::value_type& x) -> bool {
         return is_elem_of(x, delimiters);
     };
     return split_by(pred, allow_empty, xs);
@@ -421,7 +389,7 @@ auto split_one_of(
 // == [[1,3],[2],[2,5,5,3],[6,7,9]]
 // O(n)
 template <typename ContainerIn,
-        typename T = typename ContainerIn::value_type>
+    typename T = typename ContainerIn::value_type>
 auto split_keep_separators(const T& x, const ContainerIn& xs)
 {
     return split_by_keep_separators(is_equal_to(x), xs);
@@ -432,8 +400,7 @@ auto split_keep_separators(const T& x, const ContainerIn& xs)
 // Split a sequence at a specific position.
 // split_at_idx(2, [0,1,2,3,4]) == ([0,1],[2,3,4])
 template <typename Container>
-std::pair<Container, Container> split_at_idx
-        (std::size_t idx, const Container& xs)
+std::pair<Container, Container> split_at_idx(std::size_t idx, const Container& xs)
 {
     assert(idx <= size_of_cont(xs));
     return make_pair(get_segment(0, idx, xs),
@@ -445,16 +412,14 @@ std::pair<Container, Container> split_at_idx
 // Insert an element into a sequence at a specific position.
 // insert_at_idx(2, 0, [1,2,3,4]) == [1,2,0,3,4].
 template <typename Container,
-        typename T = typename Container::value_type>
+    typename T = typename Container::value_type>
 Container insert_at_idx(std::size_t idx, const T& x, const Container& xs)
 {
     const auto splitted = split_at_idx(idx, xs);
     return concat(std::vector<Container>(
-        {
-            splitted.first,
+        { splitted.first,
             singleton_seq<T, Container>(x),
-            splitted.second
-        }));
+            splitted.second }));
 }
 
 // API search type: partition : ((a -> Bool), [a]) -> ([a], [a])
@@ -464,16 +429,14 @@ Container insert_at_idx(std::size_t idx, const T& x, const Container& xs)
 // The second group contains the remaining elements.
 // partition(is_even, [0,1,1,3,7,2,3,4]) == ([0,2,4],[1,1,3,7,3])
 template <typename UnaryPredicate, typename Container>
-std::pair<Container, Container> partition
-        (UnaryPredicate pred, const Container& xs)
+std::pair<Container, Container> partition(UnaryPredicate pred, const Container& xs)
 {
     internal::check_unary_predicate_for_container<UnaryPredicate, Container>();
     Container matching;
     Container notMatching;
     auto itOutMatching = internal::get_back_inserter(matching);
     auto itOutNotMatching = internal::get_back_inserter(notMatching);
-    for (const auto& x : xs)
-    {
+    for (const auto& x : xs) {
         if (internal::invoke(pred, x))
             *itOutMatching = x;
         else
@@ -488,25 +451,24 @@ std::pair<Container, Container> partition
 // split_at_idxs([2,5], [0,1,2,3,4,5,6,7]) == [[0,1],[2,3,4],[5,6,7]]
 // split_at_idxs([2,5,5], [0,1,2,3,4,5,6,7]) == [[0,1],[2,3,4],[],[5,6,7]]
 template <typename ContainerIdxs, typename ContainerIn,
-        typename ContainerOut = std::vector<ContainerIn>>
+    typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut split_at_idxs(const ContainerIdxs& idxsIn, const ContainerIn& xs)
 {
     static_assert(std::is_same<typename ContainerIdxs::value_type, std::size_t>::value,
         "Indices must be std::size_t");
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
-    ContainerIdxs idxStartC = {0};
-    ContainerIdxs idxEndC = {size_of_cont(xs)};
-    std::vector<ContainerIdxs> containerIdxss = {idxStartC, idxsIn, idxEndC};
+    ContainerIdxs idxStartC = { 0 };
+    ContainerIdxs idxEndC = { size_of_cont(xs) };
+    std::vector<ContainerIdxs> containerIdxss = { idxStartC, idxsIn, idxEndC };
     auto idxs = concat(containerIdxss);
     auto idxsClean = sort(idxs);
     ContainerOut result;
     internal::prepare_container(result, size_of_cont(idxsClean) - 1);
     auto itOut = internal::get_back_inserter(result);
     auto idxPairs = overlapping_pairs(idxsClean);
-    for (const auto& idxPair : idxPairs)
-    {
+    for (const auto& idxPair : idxPairs) {
         *itOut = get_segment(idxPair.first, idxPair.second, xs);
     }
     return result;
@@ -518,16 +480,16 @@ ContainerOut split_at_idxs(const ContainerIdxs& idxsIn, const ContainerIn& xs)
 // split_every(3, [0,1,2,3,4,5,6,7]) == [[0,1,2],[3,4,5],[6,7]]
 // Also known as chunk or chunks.
 template <typename ContainerIn,
-        typename ContainerOut = std::vector<ContainerIn>>
+    typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut split_every(std::size_t n, const ContainerIn& xs)
 {
     return split_at_idxs<
         std::vector<std::size_t>,
         ContainerIn,
         ContainerOut>(
-            numbers_step<std::size_t>(
-                n, size_of_cont(xs), n),
-            xs);
+        numbers_step<std::size_t>(
+            n, size_of_cont(xs), n),
+        xs);
 }
 
 // API search type: split_by_token : ([a], Bool, [a]) -> [[a]]
@@ -535,17 +497,15 @@ ContainerOut split_every(std::size_t n, const ContainerIn& xs)
 // Split a sequence at every segment matching a token.
 // split_by_token(", ", true, "foo, bar, baz") == ["foo", "bar", "baz"]
 template <typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
+    typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut split_by_token(const ContainerIn& token,
-        bool allow_empty, const ContainerIn& xs)
+    bool allow_empty, const ContainerIn& xs)
 {
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
-    const auto token_begins =
-        find_all_instances_of_token_non_overlapping(token, xs);
-    const auto token_ends =
-        transform(add_to<std::size_t>(size_of_cont(token)), token_begins);
+    const auto token_begins = find_all_instances_of_token_non_overlapping(token, xs);
+    const auto token_ends = transform(add_to<std::size_t>(size_of_cont(token)), token_begins);
     assert(is_sorted(interweave(token_begins, token_ends)));
 
     typedef std::vector<std::size_t> idx_vec;
@@ -555,10 +515,9 @@ ContainerOut split_by_token(const ContainerIn& token,
 
     ContainerOut result;
     auto itOut = internal::get_back_inserter(result);
-    for (const auto& segment : segments)
-    {
+    for (const auto& segment : segments) {
         if (segment.first != segment.second || allow_empty)
-        *itOut = get_segment(segment.first, segment.second, xs);
+            *itOut = get_segment(segment.first, segment.second, xs);
     }
     return result;
 }
@@ -568,17 +527,16 @@ ContainerOut split_by_token(const ContainerIn& token,
 // RLE using a specific binary predicate as equality check.
 // run_length_encode_by((==),[1,2,2,2,2,3,3,2)) == [(1,1),(4,2),(2,3),(1,2)]
 template <typename BinaryPredicate,
-        typename ContainerIn,
-        typename T = typename ContainerIn::value_type,
-        typename ContainerOut =
-            typename std::vector<std::pair<std::size_t, T>>>
+    typename ContainerIn,
+    typename T = typename ContainerIn::value_type,
+    typename ContainerOut =
+        typename std::vector<std::pair<std::size_t, T>>>
 ContainerOut run_length_encode_by(BinaryPredicate pred, const ContainerIn& xs)
 {
     internal::check_binary_predicate_for_container<BinaryPredicate, ContainerIn>();
     ContainerOut result;
     auto groups = group_by(pred, xs);
-    auto group_to_pair = [](const ContainerIn& group) -> std::pair<std::size_t, T>
-    {
+    auto group_to_pair = [](const ContainerIn& group) -> std::pair<std::size_t, T> {
         return std::make_pair(size_of_cont(group), group.front());
     };
     return transform(group_to_pair, groups);
@@ -589,7 +547,7 @@ ContainerOut run_length_encode_by(BinaryPredicate pred, const ContainerIn& xs)
 // RLE.
 // run_length_encode([1,2,2,2,2,3,3,2)) == [(1,1),(4,2),(2,3),(1,2)]
 template <typename ContainerIn,
-        typename T = typename ContainerIn::value_type>
+    typename T = typename ContainerIn::value_type>
 auto run_length_encode(const ContainerIn& xs)
 {
     return run_length_encode_by(is_equal<T>, xs);
@@ -600,17 +558,16 @@ auto run_length_encode(const ContainerIn& xs)
 // Inverse operation to run_length_encode.
 // run_length_decode([(1,1),(4,2),(2,3),(1,2)]) == [1,2,2,2,2,3,3,2)
 template <typename ContainerIn,
-        typename Pair = typename ContainerIn::value_type,
-        typename Cnt = typename Pair::first_type>
+    typename Pair = typename ContainerIn::value_type,
+    typename Cnt = typename Pair::first_type>
 auto run_length_decode(const ContainerIn& pairs)
 {
     static_assert(std::is_convertible<Cnt, std::size_t>::value,
         "Count type must be convertible to std::size_t.");
     const auto pair_to_vec =
-        [](const Pair& p)
-    {
-        return replicate(p.first, p.second);
-    };
+        [](const Pair& p) {
+            return replicate(p.first, p.second);
+        };
     return concat(transform(pair_to_vec, pairs));
 }
 
@@ -639,21 +596,19 @@ std::pair<Container, Container> span(UnaryPredicate pred, const Container& xs)
 // divvy(1, step, xs) is also known as stride
 //     (but withouts the nested lists in the result)
 template <typename ContainerIn,
-        typename ContainerOut = std::vector<ContainerIn>>
+    typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut divvy(std::size_t length, std::size_t step, const ContainerIn& xs)
 {
     assert(length > 0);
     assert(step > 0);
-    const auto start_idxs =
-        numbers_step<std::size_t>(
-            0, size_of_cont(xs) - (length - 1), step);
+    const auto start_idxs = numbers_step<std::size_t>(
+        0, size_of_cont(xs) - (length - 1), step);
 
     ContainerOut result;
     internal::prepare_container(result, size_of_cont(start_idxs));
     auto itOut = internal::get_back_inserter(result);
 
-    for (const auto start_idx : start_idxs)
-    {
+    for (const auto start_idx : start_idxs) {
         *itOut = get_segment(start_idx, start_idx + length, xs);
     }
     return result;
@@ -664,20 +619,18 @@ ContainerOut divvy(std::size_t length, std::size_t step, const ContainerIn& xs)
 // Generates overlapping subsequences.
 // aperture(5, [0,1,2,3,4,5,6]) == [[0,1,2,3,4],[1,2,3,4,5],[2,3,4,5,6]]
 template <typename ContainerIn,
-        typename ContainerOut = std::vector<ContainerIn>>
+    typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut aperture(std::size_t length, const ContainerIn& xs)
 {
     assert(length > 0);
-    const auto start_idxs =
-        numbers<std::size_t>(
-            0, size_of_cont(xs) - (length - 1));
+    const auto start_idxs = numbers<std::size_t>(
+        0, size_of_cont(xs) - (length - 1));
 
     ContainerOut result;
     internal::prepare_container(result, size_of_cont(start_idxs));
     auto itOut = internal::get_back_inserter(result);
 
-    for (const auto start_idx : start_idxs)
-    {
+    for (const auto start_idx : start_idxs) {
         *itOut = get_segment(start_idx, start_idx + length, xs);
     }
     return result;
@@ -696,8 +649,7 @@ Container stride(std::size_t step, const Container& xs)
     auto it_in = std::begin(xs);
     std::size_t i = 0;
     const auto xs_size = size_of_cont(xs);
-    while(it_in != std::end(xs))
-    {
+    while (it_in != std::end(xs)) {
         *it = *it_in;
         std::size_t increment = std::min(step, xs_size - i);
         internal::advance_iterator(it_in, increment);
@@ -713,33 +665,27 @@ Container stride(std::size_t step, const Container& xs)
 template <typename Container>
 Container winsorize(double trim_ratio, const Container& xs)
 {
-    if (size_of_cont(xs) == 1 || size_of_cont(xs) == 0)
-    {
+    if (size_of_cont(xs) == 1 || size_of_cont(xs) == 0) {
         return xs;
     }
     trim_ratio = std::max(trim_ratio, 0.0);
     const auto xs_sorted = sort(xs);
-    std::size_t amount =
-        floor<double, std::size_t>(
-            trim_ratio * static_cast<double>(size_of_cont(xs_sorted)));
+    std::size_t amount = floor<double, std::size_t>(
+        trim_ratio * static_cast<double>(size_of_cont(xs_sorted)));
     amount = std::min(size_of_cont(xs_sorted) / 2, amount);
     const auto parts = split_at_idxs(
-        std::vector<std::size_t>({amount, size_of_cont(xs_sorted) - amount}),
+        std::vector<std::size_t>({ amount, size_of_cont(xs_sorted) - amount }),
         xs_sorted);
     assert(size_of_cont(parts) == 3);
     typedef typename Container::value_type T;
-    if (is_empty(parts[1]))
-    {
+    if (is_empty(parts[1])) {
         return Container(size_of_cont(xs_sorted), median(xs_sorted));
-    }
-    else
-    {
+    } else {
         const T lower = parts[1].front();
         const T upper = parts[1].back();
-        const auto result = concat(std::vector<Container>({
-            Container(amount, lower),
+        const auto result = concat(std::vector<Container>({ Container(amount, lower),
             parts[1],
-            Container(amount, upper)}));
+            Container(amount, upper) }));
         assert(size_of_cont(result) == size_of_cont(xs_sorted));
         return result;
     }
@@ -750,11 +696,11 @@ Container winsorize(double trim_ratio, const Container& xs)
 // Separate elements equal after applying a transformer into groups.
 // separate_on((mod 10), [12,22,34]) == [[12,34],[22]]
 template <typename F, typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
+    typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut separate_on(F f, const ContainerIn& xs)
 {
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
 
     ContainerOut result;
@@ -770,9 +716,8 @@ ContainerOut separate_on(F f, const ContainerIn& xs)
         typename ContainerOut::value_type sub_result;
         found = false;
         auto itOutInner = internal::get_back_inserter(sub_result);
-        for (auto& group: groups) {
-            if (size_of_cont(group) > index)
-            {
+        for (auto& group : groups) {
+            if (size_of_cont(group) > index) {
                 *itOutInner = group[index];
                 found = true;
             }
@@ -790,11 +735,11 @@ ContainerOut separate_on(F f, const ContainerIn& xs)
 // Separate equal elements into groups.
 // separate([1, 2, 2, 3, 3, 4, 4, 4]) == [[1, 2, 3, 4], [2, 3, 4], [4]]
 template <typename ContainerIn,
-        typename ContainerOut = typename std::vector<ContainerIn>>
+    typename ContainerOut = typename std::vector<ContainerIn>>
 ContainerOut separate(const ContainerIn& xs)
 {
     static_assert(std::is_same<ContainerIn,
-        typename ContainerOut::value_type>::value,
+                      typename ContainerOut::value_type>::value,
         "Containers do not match.");
     typedef typename ContainerIn::value_type T;
     return separate_on(identity<T>, xs);

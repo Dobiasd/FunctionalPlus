@@ -1,31 +1,36 @@
 #pragma once
 
 #include <chrono>
-#include <type_traits>
-#include <fplus/function_traits.hpp>
 #include <fplus/container_common.hpp>
+#include <fplus/function_traits.hpp>
+#include <fplus/internal/asserts/composition.hpp>
+#include <fplus/internal/composition.hpp>
 #include <fplus/show.hpp>
 #include <fplus/stopwatch.hpp>
-#include <fplus/internal/composition.hpp>
-#include <fplus/internal/asserts/composition.hpp>
+#include <type_traits>
 
 #include <cassert>
 #include <exception>
 #include <functional>
 #include <memory>
 
-namespace fplus
-{
+namespace fplus {
 using ExecutionTime = double; // in seconds
 
 // Holds a value of type T plus an execution time
 template <typename T>
-class timed : public std::pair<T, ExecutionTime>
-{
+class timed : public std::pair<T, ExecutionTime> {
     using base_pair = std::pair<T, ExecutionTime>;
+
 public:
-    timed() : base_pair() {}
-    timed(const T& val, ExecutionTime t = 0.) : base_pair(val, t) {}
+    timed()
+        : base_pair()
+    {
+    }
+    timed(const T& val, ExecutionTime t = 0.)
+        : base_pair(val, t)
+    {
+    }
 
     // Execution time in seconds (returns a double)
     ExecutionTime time_in_s() const { return base_pair::second; }
@@ -37,8 +42,8 @@ public:
     }
 
     // Inner value
-    const T& get() const            { return base_pair::first; }
-    T& get()                        { return base_pair::first; }
+    const T& get() const { return base_pair::first; }
+    T& get() { return base_pair::first; }
 };
 
 // API search type: show_timed : Timed a -> String
@@ -47,25 +52,24 @@ public:
 template <typename T>
 std::string show_timed(const fplus::timed<T>& v)
 {
-    std::string result =
-        fplus::show(v.get()) + " (" + fplus::show(v.time_in_s() * 1000.) + "ms)";
+    std::string result = fplus::show(v.get()) + " (" + fplus::show(v.time_in_s() * 1000.) + "ms)";
     return result;
 }
 
-namespace internal
-{
-    template<typename Fn>
-    class timed_function_impl
-    {
+namespace internal {
+    template <typename Fn>
+    class timed_function_impl {
     public:
-        explicit timed_function_impl(Fn fn) : _fn(fn) {};
-        template<typename ...Args> auto operator()(Args&&... args) 
-        { 
-            return _timed_result(std::forward<Args>(args)...); 
+        explicit timed_function_impl(Fn fn)
+            : _fn(fn) {};
+        template <typename... Args>
+        auto operator()(Args&&... args)
+        {
+            return _timed_result(std::forward<Args>(args)...);
         }
 
     private:
-        template<typename ...Args>
+        template <typename... Args>
         auto _timed_result(Args&&... args)
         {
             fplus::stopwatch timer;
@@ -92,26 +96,26 @@ namespace internal
 // auto sorted_numbers = sort_bench(shuffled_numbers);
 // assert(sorted_numbers.get() == ascending_numbers); // sorted_numbers.get() <=> actual output
 // assert(sorted_numbers.time_in_s() < 0.1); // // sorted_numbers.time_in_s() <=> execution time
-template<class Fn>
+template <class Fn>
 auto make_timed_function(Fn f)
 {
     return internal::timed_function_impl<decltype(f)>(f);
 }
 
-namespace internal
-{
-    template<typename Fn>
-    class timed_void_function_impl
-    {
+namespace internal {
+    template <typename Fn>
+    class timed_void_function_impl {
     public:
-        explicit timed_void_function_impl(Fn fn) : _fn(fn) {};
-        template<typename ...Args> auto operator()(Args&&... args)
+        explicit timed_void_function_impl(Fn fn)
+            : _fn(fn) {};
+        template <typename... Args>
+        auto operator()(Args&&... args)
         {
             return _timed_result(std::forward<Args>(args)...);
         }
 
     private:
-        template<typename ...Args>
+        template <typename... Args>
         auto _timed_result(Args&&... args)
         {
             fplus::stopwatch timer;
@@ -135,7 +139,7 @@ namespace internal
 // auto foo_bench = make_timed_void_function(foo);
 // auto r = foo_bench();
 // double run_time = foo_bench(); // in seconds
-template<class Fn>
+template <class Fn>
 auto make_timed_void_function(Fn f)
 {
     return internal::timed_void_function_impl<decltype(f)>(f);

@@ -6,24 +6,22 @@
 
 #pragma once
 
-#include <fplus/function_traits.hpp>
 #include <fplus/composition.hpp>
+#include <fplus/function_traits.hpp>
 
-#include <fplus/internal/invoke.hpp>
-#include <fplus/internal/compare.hpp>
 #include <fplus/internal/asserts/functions.hpp>
+#include <fplus/internal/compare.hpp>
+#include <fplus/internal/invoke.hpp>
 
-namespace fplus
-{
+namespace fplus {
 
-namespace internal
-{
+namespace internal {
     template <typename UnaryPredicate, typename T>
     void check_unary_predicate_for_type()
     {
         internal::trigger_static_asserts<internal::unary_function_tag, UnaryPredicate, T>();
         static_assert(std::is_convertible<
-            internal::invoke_result_t<UnaryPredicate, T>, bool>::value,
+                          internal::invoke_result_t<UnaryPredicate, T>, bool>::value,
             "Predicate must return bool.");
     }
     template <typename F, typename G, typename X, typename Y>
@@ -32,8 +30,8 @@ namespace internal
         internal::trigger_static_asserts<internal::unary_function_tag, F, X>();
         internal::trigger_static_asserts<internal::unary_function_tag, G, Y>();
         static_assert(std::is_same<
-            std::decay_t<internal::invoke_result_t<F, X>>,
-            std::decay_t<internal::invoke_result_t<G, Y>>>::value,
+                          std::decay_t<internal::invoke_result_t<F, X>>,
+                          std::decay_t<internal::invoke_result_t<G, Y>>>::value,
             "Both functions must return the same type.");
     }
 } // namespace internal
@@ -90,11 +88,11 @@ auto is_equal_by_and_by(F f, G g)
 {
     return [f, g](const auto& x, const auto& y) {
         internal::trigger_static_asserts<internal::unary_function_tag,
-                                             F,
-                                             decltype(x)>();
+            F,
+            decltype(x)>();
         internal::trigger_static_asserts<internal::unary_function_tag,
-                                             G,
-                                             decltype(y)>();
+            G,
+            decltype(y)>();
         return is_equal(internal::invoke(f, x), internal::invoke(g, y));
     };
 }
@@ -116,11 +114,10 @@ auto is_equal_by(F f)
 template <typename F, typename X>
 auto is_equal_by_to(F f, const X& x)
 {
-    return [f, x](const auto& y)
-    {
+    return [f, x](const auto& y) {
         internal::trigger_static_asserts<internal::unary_function_tag,
-                                             F,
-                                             decltype(y)>();
+            F,
+            decltype(y)>();
         return is_equal(internal::invoke(f, y), x);
     };
 }
@@ -154,15 +151,15 @@ auto is_not_equal_by_and_by(F f, G g)
 {
     return [f, g](const auto& x, const auto& y) {
         internal::trigger_static_asserts<internal::unary_function_tag,
-                                             F,
-                                             decltype(x)>();
+            F,
+            decltype(x)>();
         internal::trigger_static_asserts<internal::unary_function_tag,
-                                             G,
-                                             decltype(y)>();
+            G,
+            decltype(y)>();
         using FOut = std::decay_t<internal::invoke_result_t<F, decltype(x)>>;
         using GOut = std::decay_t<internal::invoke_result_t<G, decltype(y)>>;
         static_assert(std::is_same<FOut, GOut>::value,
-                      "Functions must return the same type.");
+            "Functions must return the same type.");
         return is_not_equal(internal::invoke(f, x), internal::invoke(g, y));
     };
 }
@@ -186,8 +183,8 @@ auto is_not_equal_by_to(F f, const X& x)
 {
     return [f, x](const auto& y) {
         internal::trigger_static_asserts<internal::unary_function_tag,
-                                             F,
-                                             decltype(y)>();
+            F,
+            decltype(y)>();
         return is_not_equal(internal::invoke(f, y), x);
     };
 }
@@ -219,18 +216,17 @@ bool is_less(const T& x, const T& y)
 template <typename F, typename G>
 auto is_less_by_and_by(F f, G g)
 {
-    return [f, g](const auto& x, const auto& y)
-    {
+    return [f, g](const auto& x, const auto& y) {
         internal::trigger_static_asserts<internal::unary_function_tag,
-                                             F,
-                                             decltype(x)>();
+            F,
+            decltype(x)>();
         internal::trigger_static_asserts<internal::unary_function_tag,
-                                             G,
-                                             decltype(y)>();
+            G,
+            decltype(y)>();
         using FOut = std::decay_t<internal::invoke_result_t<F, decltype(x)>>;
         using GOut = std::decay_t<internal::invoke_result_t<G, decltype(y)>>;
         static_assert(std::is_same<FOut, GOut>::value,
-                      "Functions must return the same type.");
+            "Functions must return the same type.");
         return is_less(internal::invoke(f, x), internal::invoke(g, y));
     };
 }
@@ -252,11 +248,10 @@ auto is_less_by(F f)
 template <typename F, typename X>
 auto is_less_by_than(F f, const X& x)
 {
-    return [f, x](const auto& y)
-    {
+    return [f, x](const auto& y) {
         internal::trigger_static_asserts<internal::unary_function_tag,
-                                             F,
-                                             decltype(y)>();
+            F,
+            decltype(y)>();
         return is_less(internal::invoke(f, y), x);
     };
 }
@@ -288,8 +283,7 @@ bool is_less_or_equal(const T& x, const T& y)
 template <typename F, typename G>
 auto is_less_or_equal_by_and_by(F f, G g)
 {
-    return [f, g](const auto& x, const auto& y)
-    {
+    return [f, g](const auto& x, const auto& y) {
         using FIn = decltype(x);
         using GIn = decltype(y);
         internal::check_compare_preprocessors_for_types<F, G, FIn, GIn>();
@@ -314,8 +308,7 @@ auto is_less_or_equal_by(F f)
 template <typename F, typename X>
 auto is_less_or_equal_by_than(F f, const X& x)
 {
-    return [f, x](const auto& y)
-    {
+    return [f, x](const auto& y) {
         internal::
             trigger_static_asserts<internal::unary_function_tag, F, decltype(y)>();
         return is_less_or_equal(internal::invoke(f, y), x);
@@ -349,8 +342,7 @@ bool is_greater(const T& x, const T& y)
 template <typename F, typename G>
 auto is_greater_by_and_by(F f, G g)
 {
-    return [f, g](const auto& x, const auto& y)
-    {
+    return [f, g](const auto& x, const auto& y) {
         using FIn = decltype(x);
         using GIn = decltype(y);
 
@@ -376,8 +368,7 @@ auto is_greater_by(F f)
 template <typename F, typename X>
 auto is_greater_by_than(F f, const X& x)
 {
-    return [f, x](const auto& y)
-    {
+    return [f, x](const auto& y) {
         return is_greater(internal::invoke(f, y), x);
     };
 }
@@ -409,8 +400,7 @@ bool is_greater_or_equal(const T& x, const T& y)
 template <typename F, typename G>
 auto is_greater_or_equal_by_and_by(F f, G g)
 {
-    return [f, g](const auto& x, const auto& y)
-    {
+    return [f, g](const auto& x, const auto& y) {
         using FIn = decltype(x);
         using GIn = decltype(y);
         internal::check_compare_preprocessors_for_types<F, G, FIn, GIn>();
@@ -435,8 +425,7 @@ auto is_greater_or_equal_by(F f)
 template <typename F, typename X>
 auto is_greater_or_equal_by_than(F f, const X& x)
 {
-    return [f, x](const auto& y)
-    {
+    return [f, x](const auto& y) {
         internal::trigger_static_asserts<internal::unary_function_tag, F, decltype(y)>();
         return is_greater_or_equal(internal::invoke(f, y), x);
     };
@@ -471,8 +460,7 @@ bool xor_bools(const T& x, const T& y)
 template <typename Compare>
 auto ord_to_eq(Compare comp)
 {
-    return [comp](auto x, auto y)
-    {
+    return [comp](auto x, auto y) {
         static_assert(std::is_same<decltype(x), decltype(y)>::value,
             "Argument types must be the same");
         auto p = internal::ord_to_impl(comp)(x, y);
@@ -500,8 +488,7 @@ auto ord_to_not_eq(Compare comp)
 template <typename Compare>
 auto ord_eq_to_eq(Compare comp)
 {
-    return [comp](auto x, auto y)
-    {
+    return [comp](auto x, auto y) {
         static_assert(std::is_same<decltype(x), decltype(y)>::value,
             "Argument types must be the same");
         auto p = internal::ord_to_impl(comp)(x, y);
@@ -517,7 +504,7 @@ auto ord_eq_to_eq(Compare comp)
 template <typename Compare>
 auto ord_eq_to_not_eq(Compare comp)
 {
-  return logical_not(ord_eq_to_eq(comp));
+    return logical_not(ord_eq_to_eq(comp));
 }
 
 } // namespace fplus

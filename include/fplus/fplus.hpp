@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <fplus/benchmark_session.hpp>
 #include <fplus/compare.hpp>
 #include <fplus/composition.hpp>
 #include <fplus/container_common.hpp>
@@ -29,15 +30,14 @@
 #include <fplus/sets.hpp>
 #include <fplus/shared_ref.hpp>
 #include <fplus/show.hpp>
+#include <fplus/side_effects.hpp>
 #include <fplus/split.hpp>
+#include <fplus/stopwatch.hpp>
 #include <fplus/string_tools.hpp>
+#include <fplus/timed.hpp>
 #include <fplus/transform.hpp>
 #include <fplus/tree.hpp>
-#include <fplus/side_effects.hpp>
-#include <fplus/stopwatch.hpp>
 #include <fplus/variant.hpp>
-#include <fplus/timed.hpp>
-#include <fplus/benchmark_session.hpp>
 
 #include <fplus/curry.hpp>
 #include <fplus/fwd.hpp>

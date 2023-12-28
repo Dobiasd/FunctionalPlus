@@ -6,39 +6,34 @@
 
 #pragma once
 
-#include <fplus/function_traits.hpp>
 #include <fplus/compare.hpp>
-#include <fplus/internal/composition.hpp>
+#include <fplus/function_traits.hpp>
 #include <fplus/internal/asserts/composition.hpp>
+#include <fplus/internal/composition.hpp>
 
 #include <cassert>
 #include <exception>
 #include <functional>
 #include <memory>
 
-namespace fplus
-{
+namespace fplus {
 
 // Can hold a value of type T or nothing.
 template <typename T>
 class maybe;
 
-namespace internal
-{
-template <typename>
-struct is_maybe : std::false_type
-{
-};
+namespace internal {
+    template <typename>
+    struct is_maybe : std::false_type {
+    };
 
-template <typename T>
-struct is_maybe<maybe<T>> : std::true_type
-{
-};
+    template <typename T>
+    struct is_maybe<maybe<T>> : std::true_type {
+    };
 }
 
 template <typename T>
-class maybe
-{
+class maybe {
 public:
     using value_type = T;
     bool is_just() const { return is_present_; }
@@ -54,60 +49,69 @@ public:
         return *reinterpret_cast<T*>(&value_);
     }
     typedef T type;
-    maybe() : is_present_(false), value_() {};
+    maybe()
+        : is_present_(false)
+        , value_() {};
     ~maybe()
     {
         destruct_content();
     }
-    maybe(const T& val_just) : is_present_(true), value_()
+    maybe(const T& val_just)
+        : is_present_(true)
+        , value_()
     {
         new (&value_) T(val_just);
     }
-    maybe(T&& val_just) : is_present_(true), value_() {
+    maybe(T&& val_just)
+        : is_present_(true)
+        , value_()
+    {
         new (&value_) T(std::move(val_just));
     }
-    maybe(const maybe<T>& other) : is_present_(other.is_just()), value_()
+    maybe(const maybe<T>& other)
+        : is_present_(other.is_just())
+        , value_()
     {
-        if (is_present_)
-        {
+        if (is_present_) {
             new (&value_) T(other.unsafe_get_just());
         }
     }
-    maybe(maybe<T>&& other) : is_present_(std::move(other.is_present_)), value_()
+    maybe(maybe<T>&& other)
+        : is_present_(std::move(other.is_present_))
+        , value_()
     {
-        if (is_present_)
-        {
+        if (is_present_) {
             new (&value_) T(std::move(other.unsafe_get_just()));
         }
     }
-    maybe<T>& operator = (const T& other)
+    maybe<T>& operator=(const T& other)
     {
         destruct_content();
         is_present_ = true;
         new (&value_) T(other);
         return *this;
     }
-    maybe& operator = (T&& other) {
+    maybe& operator=(T&& other)
+    {
         destruct_content();
         is_present_ = true;
         new (&value_) T(std::move(other));
         return *this;
     }
-    maybe<T>& operator = (const maybe<T>& other)
+    maybe<T>& operator=(const maybe<T>& other)
     {
         destruct_content();
-        if (other.is_just())
-        {
+        if (other.is_just()) {
             is_present_ = true;
             new (&value_) T(other.unsafe_get_just());
         }
         return *this;
     }
-    maybe& operator = (maybe<T>&& other) {
+    maybe& operator=(maybe<T>&& other)
+    {
         destruct_content();
         is_present_ = std::move(other.is_present_);
-        if (is_present_)
-        {
+        if (is_present_) {
             new (&value_) T(std::move(other.unsafe_get_just()));
         }
         return *this;
@@ -133,7 +137,7 @@ public:
     {
         if (is_just() && pred(unsafe_get_just()))
             return *this;
-        return maybe<T>{};
+        return maybe<T> {};
     }
 
     template <typename ContainerOut = std::vector<T>>
@@ -152,7 +156,7 @@ public:
         using B = std::decay_t<internal::invoke_result_t<F, T>>;
         if (is_just())
             return maybe<B>(internal::invoke(f, unsafe_get_just()));
-        return maybe<B>{};
+        return maybe<B> {};
     }
 
     template <typename Default, typename F>
@@ -170,23 +174,22 @@ public:
     }
 
     template <typename F, typename B>
-    auto lift_2(F f,  const maybe<B>& m_b) const
+    auto lift_2(F f, const maybe<B>& m_b) const
     {
         internal::trigger_static_asserts<internal::check_arity_tag, F, T, B>();
 
         using FOut = std::decay_t<internal::invoke_result_t<F, T, B>>;
-        if (is_just() && m_b.is_just())
-        {
+        if (is_just() && m_b.is_just()) {
             return maybe<FOut>(
                 internal::invoke(f, unsafe_get_just(), m_b.unsafe_get_just()));
         }
-        return maybe<FOut>{};
+        return maybe<FOut> {};
     }
 
     template <typename F, typename B, typename Default>
     auto lift_2_def(const Default& def,
-                      F f,
-                      const maybe<B>& m_b) const
+        F f,
+        const maybe<B>& m_b) const
     {
         internal::trigger_static_asserts<internal::check_arity_tag, F, T, B>();
 
@@ -203,12 +206,11 @@ public:
     {
         static_assert(
             internal::is_maybe<T>::value,
-            "Cannot join when value type is not also a maybe"
-            );
+            "Cannot join when value type is not also a maybe");
         if (is_just())
             return unsafe_get_just();
         else
-            return maybe<typename T::value_type>{};
+            return maybe<typename T::value_type> {};
     }
 
     auto flatten() const
@@ -222,19 +224,17 @@ public:
         internal::trigger_static_asserts<internal::check_arity_tag, F, T>();
         using FOut = std::decay_t<internal::invoke_result_t<F, T>>;
         static_assert(internal::is_maybe<FOut>::value,
-                      "Function must return a maybe<> type");
+            "Function must return a maybe<> type");
         if (is_just())
             return internal::invoke(f, unsafe_get_just());
         else
-            return maybe<typename FOut::type>{};
+            return maybe<typename FOut::type> {};
     }
-
 
 private:
     void destruct_content()
     {
-        if (is_present_)
-        {
+        if (is_present_) {
             is_present_ = false;
             (*reinterpret_cast<const T*>(&value_)).~T();
         }
@@ -318,7 +318,7 @@ maybe<T> as_just_if(Pred pred, const T& val)
 template <typename Pred, typename T>
 maybe<T> just_if(Pred pred, const maybe<T>& maybe)
 {
-     return maybe.just_if(pred);
+    return maybe.just_if(pred);
 }
 
 // API search type: maybe_to_seq : Maybe a -> [a]
@@ -357,7 +357,7 @@ maybe<T> nothing()
 
 // True if just values are the same or if both are nothing.
 template <typename T>
-bool operator == (const maybe<T>& x, const maybe<T>& y)
+bool operator==(const maybe<T>& x, const maybe<T>& y)
 {
     if (is_just(x) && is_just(y))
         return unsafe_get_just(x) == unsafe_get_just(y);
@@ -366,7 +366,7 @@ bool operator == (const maybe<T>& x, const maybe<T>& y)
 
 // False if just values are the same or if both are nothing.
 template <typename T>
-bool operator != (const maybe<T>& x, const maybe<T>& y)
+bool operator!=(const maybe<T>& x, const maybe<T>& y)
 {
     return !(x == y);
 }
@@ -417,9 +417,9 @@ auto lift_maybe_2(F f, const maybe<A>& m_a, const maybe<B>& m_b)
 // and returns the result of this application.
 template <typename F, typename A, typename B, typename Default>
 auto lift_maybe_2_def(const Default& def,
-                      F f,
-                      const maybe<A>& m_a,
-                      const maybe<B>& m_b)
+    F f,
+    const maybe<A>& m_a,
+    const maybe<B>& m_b)
 {
     return m_a.lift_2_def(def, f, m_b);
 }
@@ -460,27 +460,25 @@ auto compose_maybe(Callables&&... callables)
     auto bind_maybe = [](auto f, auto g) {
         // next step would be to perfectly forward callables, as shown here:
         // https://vittorioromeo.info/index/blog/capturing_perfectly_forwarded_objects_in_lambdas.html
-        return [f = std::move(f), g = std::move(g)](auto&&... args)
-        {
+        return [f = std::move(f), g = std::move(g)](auto&&... args) {
             using FOut = std::decay_t<
                 internal::invoke_result_t<decltype(f), decltype(args)...>>;
             static_assert(internal::is_maybe<FOut>::value,
-                          "Functions must return a maybe<> type");
+                "Functions must return a maybe<> type");
             using GOut = std::decay_t<
                 internal::invoke_result_t<decltype(g), typename FOut::type>>;
             static_assert(internal::is_maybe<GOut>::value,
-                          "Functions must return a maybe<> type");
+                "Functions must return a maybe<> type");
 
-            auto maybeB =
-                internal::invoke(f, std::forward<decltype(args)>(args)...);
+            auto maybeB = internal::invoke(f, std::forward<decltype(args)>(args)...);
             if (is_just(maybeB))
                 return internal::invoke(g, unsafe_get_just(maybeB));
-            return GOut{};
+            return GOut {};
         };
     };
 
     return internal::compose_binary_lift(bind_maybe,
-                                       std::forward<Callables>(callables)...);
+        std::forward<Callables>(callables)...);
 }
 
 // API search type: flatten_maybe : (Maybe (Maybe a)) -> Maybe a

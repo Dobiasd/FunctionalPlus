@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <fplus/function_traits.hpp>
 #include <fplus/container_common.hpp>
-#include <fplus/pairs.hpp>
+#include <fplus/function_traits.hpp>
 #include <fplus/internal/invoke.hpp>
+#include <fplus/pairs.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -19,8 +19,7 @@
 #include <stdexcept>
 #include <type_traits>
 
-namespace fplus
-{
+namespace fplus {
 
 // API search type: is_in_interval : (a, a, a) -> Bool
 // fwd bind count: 2
@@ -122,8 +121,7 @@ bool is_positive(X x)
     return !is_negative(x);
 }
 
-namespace internal
-{
+namespace internal {
     template <typename X>
     typename std::enable_if<std::is_unsigned<X>::value, X>::type
     abs_helper(X x)
@@ -208,66 +206,45 @@ template <typename Out, typename X>
 Out integral_cast_throw(X x)
 {
 #ifdef _MSC_VER
-__pragma(warning(push))
-__pragma(warning(disable:4127))
+    __pragma(warning(push))
+        __pragma(warning(disable : 4127))
 #endif
-    static_assert(std::is_integral<X>::value, "type must be integral");
+            static_assert(std::is_integral<X>::value, "type must be integral");
     static_assert(std::is_integral<Out>::value, "type must be integral");
-    if (std::is_signed<X>::value && std::is_signed<Out>::value)
-    {
-        if (static_cast<std::int64_t>(x) <
-            static_cast<std::int64_t>(std::numeric_limits<Out>::lowest()))
-        {
+    if (std::is_signed<X>::value && std::is_signed<Out>::value) {
+        if (static_cast<std::int64_t>(x) < static_cast<std::int64_t>(std::numeric_limits<Out>::lowest())) {
             throw std::underflow_error("");
         }
-        if (static_cast<std::int64_t>(x) >
-            static_cast<std::int64_t>(std::numeric_limits<Out>::max()))
-        {
+        if (static_cast<std::int64_t>(x) > static_cast<std::int64_t>(std::numeric_limits<Out>::max())) {
             throw std::overflow_error("");
         }
         return static_cast<Out>(x);
-    }
-    else if (!std::is_signed<X>::value && !std::is_signed<Out>::value)
-    {
-        if (static_cast<std::uint64_t>(x) <
-            static_cast<std::uint64_t>(std::numeric_limits<Out>::lowest()))
-        {
+    } else if (!std::is_signed<X>::value && !std::is_signed<Out>::value) {
+        if (static_cast<std::uint64_t>(x) < static_cast<std::uint64_t>(std::numeric_limits<Out>::lowest())) {
             throw std::underflow_error("");
         }
-        if (static_cast<std::uint64_t>(x) >
-            static_cast<std::uint64_t>(std::numeric_limits<Out>::max()))
-        {
+        if (static_cast<std::uint64_t>(x) > static_cast<std::uint64_t>(std::numeric_limits<Out>::max())) {
             throw std::overflow_error("");
         }
         return static_cast<Out>(x);
-    }
-    else if (std::is_signed<X>::value && !std::is_signed<Out>::value)
-    {
+    } else if (std::is_signed<X>::value && !std::is_signed<Out>::value) {
         if (x < 0)
             return 0;
-        if (static_cast<std::uint64_t>(x) >
-            static_cast<std::uint64_t>(std::numeric_limits<Out>::max()))
-        {
+        if (static_cast<std::uint64_t>(x) > static_cast<std::uint64_t>(std::numeric_limits<Out>::max())) {
             throw std::overflow_error("");
         }
         return static_cast<Out>(x);
-    }
-    else if (!std::is_signed<X>::value && std::is_signed<Out>::value)
-    {
-        if (static_cast<std::uint64_t>(x) >
-            static_cast<std::uint64_t>(std::numeric_limits<Out>::max()))
-        {
+    } else if (!std::is_signed<X>::value && std::is_signed<Out>::value) {
+        if (static_cast<std::uint64_t>(x) > static_cast<std::uint64_t>(std::numeric_limits<Out>::max())) {
             throw std::overflow_error("");
         }
         return static_cast<Out>(x);
-    }
-    else
-    {
+    } else {
         assert(false);
         return static_cast<Out>(x);
     }
 #ifdef _MSC_VER
-__pragma(warning(pop))
+    __pragma(warning(pop))
 #endif
 }
 
@@ -282,56 +259,35 @@ Out integral_cast_clamp(X x)
 {
     static_assert(std::is_integral<X>::value, "type must be integral");
     static_assert(std::is_integral<Out>::value, "type must be integral");
-    if (std::is_signed<X>::value && std::is_signed<Out>::value)
-    {
-        if (static_cast<std::int64_t>(x) <
-            static_cast<std::int64_t>(std::numeric_limits<Out>::lowest()))
-        {
+    if (std::is_signed<X>::value && std::is_signed<Out>::value) {
+        if (static_cast<std::int64_t>(x) < static_cast<std::int64_t>(std::numeric_limits<Out>::lowest())) {
             return std::numeric_limits<Out>::lowest();
         }
-        if (static_cast<std::int64_t>(x) >
-            static_cast<std::int64_t>(std::numeric_limits<Out>::max()))
-        {
+        if (static_cast<std::int64_t>(x) > static_cast<std::int64_t>(std::numeric_limits<Out>::max())) {
             return std::numeric_limits<Out>::max();
         }
         return static_cast<Out>(x);
-    }
-    else if (!std::is_signed<X>::value && !std::is_signed<Out>::value)
-    {
-        if (static_cast<std::uint64_t>(x) <
-            static_cast<std::uint64_t>(std::numeric_limits<Out>::lowest()))
-        {
+    } else if (!std::is_signed<X>::value && !std::is_signed<Out>::value) {
+        if (static_cast<std::uint64_t>(x) < static_cast<std::uint64_t>(std::numeric_limits<Out>::lowest())) {
             return std::numeric_limits<Out>::lowest();
         }
-        if (static_cast<std::uint64_t>(x) >
-            static_cast<std::uint64_t>(std::numeric_limits<Out>::max()))
-        {
+        if (static_cast<std::uint64_t>(x) > static_cast<std::uint64_t>(std::numeric_limits<Out>::max())) {
             return std::numeric_limits<Out>::max();
         }
         return static_cast<Out>(x);
-    }
-    else if (std::is_signed<X>::value && !std::is_signed<Out>::value)
-    {
+    } else if (std::is_signed<X>::value && !std::is_signed<Out>::value) {
         if (x < 0)
             return 0;
-        if (static_cast<std::uint64_t>(x) >
-            static_cast<std::uint64_t>(std::numeric_limits<Out>::max()))
-        {
+        if (static_cast<std::uint64_t>(x) > static_cast<std::uint64_t>(std::numeric_limits<Out>::max())) {
             return std::numeric_limits<Out>::max();
         }
         return static_cast<Out>(x);
-    }
-    else if (!std::is_signed<X>::value && std::is_signed<Out>::value)
-    {
-        if (static_cast<std::uint64_t>(x) >
-            static_cast<std::uint64_t>(std::numeric_limits<Out>::max()))
-        {
+    } else if (!std::is_signed<X>::value && std::is_signed<Out>::value) {
+        if (static_cast<std::uint64_t>(x) > static_cast<std::uint64_t>(std::numeric_limits<Out>::max())) {
             return std::numeric_limits<Out>::max();
         }
         return static_cast<Out>(x);
-    }
-    else
-    {
+    } else {
         assert(false);
         return static_cast<Out>(x);
     }
@@ -420,8 +376,7 @@ X int_power(X base, X exp)
     return base * int_power(base, exp - 1);
 }
 
-namespace internal
-{
+namespace internal {
     // minimum of x values after transformation
     // (has an overload for non-POD types)
     // min_on(mod2, 4, 3) == 4
@@ -430,31 +385,35 @@ namespace internal
     auto helper_min_on(F f, const FirstT& first, const FIn&... v) ->
         typename std::common_type<FirstT, FIn...>::type
     {
-      using rettype = typename std::common_type<FirstT, FIn...>::type;
-      using f_rettype = std::decay_t<internal::invoke_result_t<F, decltype(first)>>;
+        using rettype = typename std::common_type<FirstT, FIn...>::type;
+        using f_rettype = std::decay_t<internal::invoke_result_t<F, decltype(first)>>;
 
-      rettype result = first;
-      f_rettype result_trans = internal::invoke(f, first);
-      f_rettype v_trans;
-      unused(result_trans);
-      unused(v_trans);
+        rettype result = first;
+        f_rettype result_trans = internal::invoke(f, first);
+        f_rettype v_trans;
+        unused(result_trans);
+        unused(v_trans);
 
-      (void)std::initializer_list<int>{
-          ((v_trans = internal::invoke(f, v), v_trans < result_trans)
-               ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
-               : 0)...};
-      return result;
+        (void)std::initializer_list<int> {
+            ((v_trans = internal::invoke(f, v), v_trans < result_trans)
+                    ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
+                    : 0)...
+        };
+        return result;
     }
 
     template <typename F>
-    struct helper_min_on_t
-    {
-        helper_min_on_t(F _f) : f(_f) {}
+    struct helper_min_on_t {
+        helper_min_on_t(F _f)
+            : f(_f)
+        {
+        }
         template <typename T, typename... Ts>
         auto operator()(T&& x, Ts&&... xs) -> typename std::common_type<T, Ts...>::type
         {
             return helper_min_on(std::forward<F>(f), std::forward<T>(x), std::forward<Ts>(xs)...);
         }
+
     private:
         F f;
     };
@@ -467,7 +426,7 @@ namespace internal
 template <typename F>
 auto min_on(F f) -> internal::helper_min_on_t<F>
 {
-    return internal::helper_min_on_t<F>{f};
+    return internal::helper_min_on_t<F> { f };
 }
 
 // API search type: min_2_on : ((a -> b), a, a) -> a
@@ -480,8 +439,7 @@ T min_2_on(F f, const T& x, const T& y)
     return internal::invoke(f, y) < internal::invoke(f, x) ? y : x;
 }
 
-namespace internal
-{
+namespace internal {
     // maximum of x values after transformation
     // (has an overload for non-POD types)
     // max_on(mod2, 4, 3) == 3
@@ -490,31 +448,35 @@ namespace internal
     auto helper_max_on(F f, const FirstT& first, const FIn&... v) ->
         typename std::common_type<FirstT, FIn...>::type
     {
-      using rettype = typename std::common_type<FirstT, FIn...>::type;
-      using f_rettype = decltype(f(first));
+        using rettype = typename std::common_type<FirstT, FIn...>::type;
+        using f_rettype = decltype(f(first));
 
-      rettype result = first;
-      f_rettype result_trans = internal::invoke(f, first);
-      f_rettype v_trans;
-      unused(result_trans);
-      unused(v_trans);
+        rettype result = first;
+        f_rettype result_trans = internal::invoke(f, first);
+        f_rettype v_trans;
+        unused(result_trans);
+        unused(v_trans);
 
-      (void)std::initializer_list<int>{
-          ((v_trans = internal::invoke(f, v), v_trans > result_trans)
-               ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
-               : 0)...};
-      return result;
+        (void)std::initializer_list<int> {
+            ((v_trans = internal::invoke(f, v), v_trans > result_trans)
+                    ? (result = static_cast<rettype>(v), result_trans = v_trans, 0)
+                    : 0)...
+        };
+        return result;
     }
 
     template <typename F>
-    struct helper_max_on_t
-    {
-        helper_max_on_t(F _f) : f(_f) {}
+    struct helper_max_on_t {
+        helper_max_on_t(F _f)
+            : f(_f)
+        {
+        }
         template <typename T, typename... Ts>
         auto operator()(T&& x, Ts&&... xs) -> typename std::common_type<T, Ts...>::type
         {
             return helper_max_on(std::forward<F>(f), std::forward<T>(x), std::forward<Ts>(xs)...);
         }
+
     private:
         F f;
     };
@@ -528,7 +490,7 @@ namespace internal
 template <typename F>
 auto max_on(F f) -> internal::helper_max_on_t<F>
 {
-    return internal::helper_max_on_t<F>{f};
+    return internal::helper_max_on_t<F> { f };
 }
 
 // API search type: max_2_on : ((a -> b), a, a) -> a
@@ -548,10 +510,10 @@ T max_2_on(F f, const T& x, const T& y)
 template <typename U, typename... V>
 auto min(const U& u, const V&... v) -> typename std::common_type<U, V...>::type
 {
-  using rettype = typename std::common_type<U, V...>::type;
-  rettype result = static_cast<rettype>(u);
-  (void)std::initializer_list<int>{((v < result) ? (result = static_cast<rettype>(v), 0) : 0)...};
-  return result;
+    using rettype = typename std::common_type<U, V...>::type;
+    rettype result = static_cast<rettype>(u);
+    (void)std::initializer_list<int> { ((v < result) ? (result = static_cast<rettype>(v), 0) : 0)... };
+    return result;
 }
 
 // API search type: min_2 : (a, a) -> a
@@ -571,10 +533,10 @@ T min_2(const T& x, const T& y)
 template <typename U, typename... V>
 auto max(const U& u, const V&... v) -> typename std::common_type<U, V...>::type
 {
-  using rettype = typename std::common_type<U, V...>::type;
-  rettype result = static_cast<rettype>(u);
-  (void)std::initializer_list<int>{((v > result) ? (result = static_cast<rettype>(v), 0) : 0)...};
-  return result;
+    using rettype = typename std::common_type<U, V...>::type;
+    rettype result = static_cast<rettype>(u);
+    (void)std::initializer_list<int> { ((v > result) ? (result = static_cast<rettype>(v), 0) : 0)... };
+    return result;
 }
 
 // API search type: max_2 : (a, a) -> a
@@ -587,8 +549,7 @@ T max_2(const T& x, const T& y)
     return y > x ? y : x;
 }
 
-namespace internal
-{
+namespace internal {
     template <typename X>
     typename std::enable_if<std::is_floating_point<X>::value, X>::type
     cyclic_value_helper_mod(X x, X y)
@@ -619,11 +580,9 @@ template <typename X>
 std::function<X(X)> cyclic_value(X circumfence)
 {
     assert(circumfence > 0);
-    return [circumfence](X x) -> X
-    {
+    return [circumfence](X x) -> X {
         if (sign(x) < 0)
-            return circumfence - internal::cyclic_value_helper_mod(
-                abs(x), abs(circumfence));
+            return circumfence - internal::cyclic_value_helper_mod(abs(x), abs(circumfence));
         else
             return internal::cyclic_value_helper_mod(
                 abs(x), abs(circumfence));
@@ -644,14 +603,11 @@ template <typename X>
 std::function<X(X, X)> cyclic_difference(X circumfence)
 {
     assert(circumfence > 0);
-    return [circumfence](X a, X b) -> X
-    {
+    return [circumfence](X a, X b) -> X {
         auto cyclic_value_f = cyclic_value(circumfence);
         const auto c_v_a = cyclic_value_f(a);
         const auto c_v_b = cyclic_value_f(b);
-        return c_v_a > c_v_b ?
-            c_v_a - c_v_b :
-            circumfence + c_v_a - c_v_b;
+        return c_v_a > c_v_b ? c_v_a - c_v_b : circumfence + c_v_a - c_v_b;
     };
 }
 
@@ -669,8 +625,7 @@ template <typename X>
 std::function<X(X, X)> cyclic_shortest_difference(X circumfence)
 {
     assert(circumfence > 0);
-    return [circumfence](X a, X b) -> X
-    {
+    return [circumfence](X a, X b) -> X {
         auto diff_func = cyclic_difference(circumfence);
         auto a_minus_b = diff_func(a, b);
         auto b_minus_a = diff_func(b, a);
@@ -693,8 +648,7 @@ template <typename X>
 std::function<X(X, X)> cyclic_distance(X circumfence)
 {
     assert(circumfence > 0);
-    return [circumfence](X a, X b) -> X
-    {
+    return [circumfence](X a, X b) -> X {
         auto diff_func = cyclic_difference(circumfence);
         auto a_minus_b = diff_func(a, b);
         auto b_minus_a = diff_func(b, a);
@@ -729,34 +683,32 @@ T rad_to_deg(T x)
     return static_cast<T>(x * 180.0 / pi());
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename Container, typename T>
-Container normalize_min_max(internal::reuse_container_t,
-    const T& lower, const T& upper, Container&& xs)
-{
-    assert(size_of_cont(xs) != 0);
-    assert(lower <= upper);
-    const auto minmax_it_p = std::minmax_element(std::begin(xs), std::end(xs));
-    const T x_min = *minmax_it_p.first;
-    const T x_max = *minmax_it_p.second;
-    const auto f = [&](const T& x) -> T
+    template <typename Container, typename T>
+    Container normalize_min_max(internal::reuse_container_t,
+        const T& lower, const T& upper, Container&& xs)
     {
-        return lower + (upper - lower) * (x - x_min) / (x_max - x_min);
-    };
-    std::transform(std::begin(xs), std::end(xs), std::begin(xs), f);
-    return std::forward<Container>(xs);
-}
+        assert(size_of_cont(xs) != 0);
+        assert(lower <= upper);
+        const auto minmax_it_p = std::minmax_element(std::begin(xs), std::end(xs));
+        const T x_min = *minmax_it_p.first;
+        const T x_max = *minmax_it_p.second;
+        const auto f = [&](const T& x) -> T {
+            return lower + (upper - lower) * (x - x_min) / (x_max - x_min);
+        };
+        std::transform(std::begin(xs), std::end(xs), std::begin(xs), f);
+        return std::forward<Container>(xs);
+    }
 
-template <typename Container, typename T>
-Container normalize_min_max(internal::create_new_container_t,
-    const T& lower, const T& upper, const Container& xs)
-{
-    auto ys = xs;
-    return normalize_min_max(internal::reuse_container_t(),
-        lower, upper, std::move(ys));
-}
+    template <typename Container, typename T>
+    Container normalize_min_max(internal::create_new_container_t,
+        const T& lower, const T& upper, const Container& xs)
+    {
+        auto ys = xs;
+        return normalize_min_max(internal::reuse_container_t(),
+            lower, upper, std::move(ys));
+    }
 
 } // namespace internal
 
@@ -769,36 +721,33 @@ template <typename Container,
     typename T = typename internal::remove_const_and_ref_t<Container>::value_type>
 auto normalize_min_max(const T& lower, const T& upper, Container&& xs)
 {
-    return internal::normalize_min_max(internal::can_reuse_v<Container>{},
+    return internal::normalize_min_max(internal::can_reuse_v<Container> {},
         lower, upper, std::forward<Container>(xs));
 }
 
-namespace internal
-{
+namespace internal {
 
-template <typename Container, typename T>
-Container normalize_mean_stddev(internal::reuse_container_t,
-    const T& mean, const T& stddev, Container&& xs)
-{
-    assert(size_of_cont(xs) != 0);
-    const auto mean_and_stddev = fplus::mean_stddev<T>(xs);
-    const auto f = [&](const T& x) -> T
+    template <typename Container, typename T>
+    Container normalize_mean_stddev(internal::reuse_container_t,
+        const T& mean, const T& stddev, Container&& xs)
     {
-        return mean +
-            stddev * (x - mean_and_stddev.first) / mean_and_stddev.second;
-    };
-    std::transform(std::begin(xs), std::end(xs), std::begin(xs), f);
-    return std::forward<Container>(xs);
-}
+        assert(size_of_cont(xs) != 0);
+        const auto mean_and_stddev = fplus::mean_stddev<T>(xs);
+        const auto f = [&](const T& x) -> T {
+            return mean + stddev * (x - mean_and_stddev.first) / mean_and_stddev.second;
+        };
+        std::transform(std::begin(xs), std::end(xs), std::begin(xs), f);
+        return std::forward<Container>(xs);
+    }
 
-template <typename Container, typename T>
-Container normalize_mean_stddev(internal::create_new_container_t,
-    const T& mean, const T& stddev, const Container& xs)
-{
-    auto ys = xs;
-    return normalize_mean_stddev(internal::reuse_container_t(),
-        mean, stddev, std::move(ys));
-}
+    template <typename Container, typename T>
+    Container normalize_mean_stddev(internal::create_new_container_t,
+        const T& mean, const T& stddev, const Container& xs)
+    {
+        auto ys = xs;
+        return normalize_mean_stddev(internal::reuse_container_t(),
+            mean, stddev, std::move(ys));
+    }
 
 } // namespace internal
 
@@ -812,7 +761,7 @@ template <typename Container,
 auto normalize_mean_stddev(
     const T& mean, const T& stddev, Container&& xs)
 {
-    return internal::normalize_mean_stddev(internal::can_reuse_v<Container>{},
+    return internal::normalize_mean_stddev(internal::can_reuse_v<Container> {},
         mean, stddev, std::forward<Container>(xs));
 }
 
@@ -835,8 +784,7 @@ auto standardize(Container&& xs)
 template <typename X>
 std::function<X(X)> add_to(const X& x)
 {
-    return [x](X y) -> X
-    {
+    return [x](X y) -> X {
         return x + y;
     };
 }
@@ -847,8 +795,7 @@ std::function<X(X)> add_to(const X& x)
 template <typename X>
 std::function<X(X)> subtract_from(const X& x)
 {
-    return [x](X y) -> X
-    {
+    return [x](X y) -> X {
         return x - y;
     };
 }
@@ -859,8 +806,7 @@ std::function<X(X)> subtract_from(const X& x)
 template <typename X>
 std::function<X(X)> subtract(const X& x)
 {
-    return [x](X y) -> X
-    {
+    return [x](X y) -> X {
         return y - x;
     };
 }
@@ -871,8 +817,7 @@ std::function<X(X)> subtract(const X& x)
 template <typename X>
 std::function<X(X)> multiply_with(const X& x)
 {
-    return [x](X y) -> X
-    {
+    return [x](X y) -> X {
         return y * x;
     };
 }
@@ -883,8 +828,7 @@ std::function<X(X)> multiply_with(const X& x)
 template <typename X>
 std::function<X(X)> divide_by(const X& x)
 {
-    return [x](X y) -> X
-    {
+    return [x](X y) -> X {
         return y / x;
     };
 }
@@ -895,29 +839,24 @@ std::function<X(X)> divide_by(const X& x)
 // histogram_using_intervals([(0,4), (4,5), (6,8)], [0,1,4,5,6,7,8,9]) ==
 //     [((0, 4), 2), ((4, 5), 1), ((6, 8), 2)]
 template <typename ContainerIn,
-        typename ContainerIntervals,
-        typename ContainerOut =
-            std::vector<
-                std::pair<
-                    typename ContainerIntervals::value_type,
-                    std::size_t>>,
-        typename T = typename ContainerIn::value_type>
+    typename ContainerIntervals,
+    typename ContainerOut = std::vector<
+        std::pair<
+            typename ContainerIntervals::value_type,
+            std::size_t>>,
+    typename T = typename ContainerIn::value_type>
 ContainerOut histogram_using_intervals(
-        const ContainerIntervals& intervals, const ContainerIn& xs)
+    const ContainerIntervals& intervals, const ContainerIn& xs)
 {
     ContainerOut bins;
     internal::prepare_container(bins, size_of_cont(intervals));
     auto itOut = internal::get_back_inserter(bins);
-    for (const auto& interval : intervals)
-    {
+    for (const auto& interval : intervals) {
         *itOut = std::make_pair(interval, 0);
     }
-    for (const auto& x : xs)
-    {
-        for (auto& bin : bins)
-        {
-            if (x >= bin.first.first && x < bin.first.second)
-            {
+    for (const auto& x : xs) {
+        for (auto& bin : bins) {
+            if (x >= bin.first.first && x < bin.first.second) {
                 ++bin.second;
             }
         }
@@ -931,7 +870,7 @@ ContainerOut histogram_using_intervals(
 // generate_consecutive_intervals(0, 2, 4) == [(0,2), (2,4), (4,6), (6,8)]
 template <typename T>
 std::vector<std::pair<T, T>> generate_consecutive_intervals(
-        const T& first_lower_bound, const T& step, std::size_t count)
+    const T& first_lower_bound, const T& step, std::size_t count)
 {
     const auto count_as_T = static_cast<T>(count);
     return zip(
@@ -950,15 +889,14 @@ std::vector<std::pair<T, T>> generate_consecutive_intervals(
 // Calculate the histogram of a sequence using a given bin width.
 // histogram(1, 2, 4, [0,1,4,5,7,8,9]) == [(1, 2), (3, 0), (5, 2), (7, 1)]
 template <typename ContainerIn,
-        typename ContainerOut =
-            std::vector<
-                std::pair<
-                    typename ContainerIn::value_type,
-                    std::size_t>>,
-        typename T = typename ContainerIn::value_type>
+    typename ContainerOut = std::vector<
+        std::pair<
+            typename ContainerIn::value_type,
+            std::size_t>>,
+    typename T = typename ContainerIn::value_type>
 ContainerOut histogram(
-        const T& first_center, const T& bin_width, std::size_t count,
-        const ContainerIn& xs)
+    const T& first_center, const T& bin_width, std::size_t count,
+    const ContainerIn& xs)
 {
     const auto interval_histogram = histogram_using_intervals(
         generate_consecutive_intervals(
@@ -972,8 +910,7 @@ ContainerOut histogram(
     ContainerOut histo;
     internal::prepare_container(histo, count);
     auto itOut = internal::get_back_inserter(histo);
-    for (const auto& bin : interval_histogram)
-    {
+    for (const auto& bin : interval_histogram) {
         const auto current_center = (bin.first.first + bin.first.second) / 2;
         *itOut = std::make_pair(current_center, bin.second);
     }
@@ -993,8 +930,7 @@ std::vector<T> modulo_chain(const std::vector<T>& factors, T val)
     std::vector<T> result;
     result.reserve(factors.size());
     const auto factors_reversed = reverse(factors);
-    for (const auto& factor : factors_reversed)
-    {
+    for (const auto& factor : factors_reversed) {
         result.push_back(val % factor);
         val /= factor;
     }

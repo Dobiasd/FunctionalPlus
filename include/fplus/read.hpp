@@ -12,17 +12,15 @@
 #include <string>
 #include <type_traits>
 
-namespace fplus
-{
+namespace fplus {
 
-namespace internal
-{
+namespace internal {
     template <typename T>
-    struct helper_read_value_struct {};
+    struct helper_read_value_struct {
+    };
 
     template <>
-    struct helper_read_value_struct <int>
-    {
+    struct helper_read_value_struct<int> {
         static void read(const std::string& str,
             int& result, std::size_t& num_chars_used)
         {
@@ -31,8 +29,7 @@ namespace internal
     };
 
     template <>
-    struct helper_read_value_struct <long>
-    {
+    struct helper_read_value_struct<long> {
         static void read(const std::string& str,
             long& result, std::size_t& num_chars_used)
         {
@@ -41,8 +38,7 @@ namespace internal
     };
 
     template <>
-    struct helper_read_value_struct <long long>
-    {
+    struct helper_read_value_struct<long long> {
         static void read(const std::string& str,
             long long& result, std::size_t& num_chars_used)
         {
@@ -51,8 +47,7 @@ namespace internal
     };
 
     template <>
-    struct helper_read_value_struct <unsigned int>
-    {
+    struct helper_read_value_struct<unsigned int> {
         static void read(const std::string& str,
             unsigned int& result, std::size_t& num_chars_used)
         {
@@ -62,8 +57,7 @@ namespace internal
     };
 
     template <>
-    struct helper_read_value_struct <unsigned long>
-    {
+    struct helper_read_value_struct<unsigned long> {
         static void read(const std::string& str,
             unsigned long& result, std::size_t& num_chars_used)
         {
@@ -72,8 +66,7 @@ namespace internal
     };
 
     template <>
-    struct helper_read_value_struct <unsigned long long>
-    {
+    struct helper_read_value_struct<unsigned long long> {
         static void read(const std::string& str,
             unsigned long long& result, std::size_t& num_chars_used)
         {
@@ -82,8 +75,7 @@ namespace internal
     };
 
     template <>
-    struct helper_read_value_struct <float>
-    {
+    struct helper_read_value_struct<float> {
         static void read(const std::string& str,
             float& result, std::size_t& num_chars_used)
         {
@@ -92,8 +84,7 @@ namespace internal
     };
 
     template <>
-    struct helper_read_value_struct <double>
-    {
+    struct helper_read_value_struct<double> {
         static void read(const std::string& str,
             double& result, std::size_t& num_chars_used)
         {
@@ -102,8 +93,7 @@ namespace internal
     };
 
     template <>
-    struct helper_read_value_struct <long double>
-    {
+    struct helper_read_value_struct<long double> {
         static void read(const std::string& str,
             long double& result, std::size_t& num_chars_used)
         {
@@ -112,8 +102,7 @@ namespace internal
     };
 
     template <>
-    struct helper_read_value_struct <std::string>
-    {
+    struct helper_read_value_struct<std::string> {
         static void read(const std::string& str,
             std::string& result, std::size_t& num_chars_used)
         {
@@ -128,20 +117,18 @@ namespace internal
 template <typename T>
 result<T, std::string> read_value_result(const std::string& str)
 {
-    try
-    {
+    try {
         T result;
         std::size_t num_chars_used = 0;
         internal::helper_read_value_struct<T>::read(str,
             result, num_chars_used);
-        if (num_chars_used != str.size())
-        {
+        if (num_chars_used != str.size()) {
             return error<T>(std::string("String not fully parsable."));
         }
         return ok<T, std::string>(result);
-    } catch(const std::invalid_argument& e) {
+    } catch (const std::invalid_argument& e) {
         return error<T, std::string>(e.what());
-    } catch(const std::out_of_range& e) {
+    } catch (const std::out_of_range& e) {
         return error<T, std::string>(e.what());
     }
 }

@@ -32,11 +32,11 @@ TEST_CASE("queue_test - full")
         REQUIRE_EQ(q.pop(), fplus::just(2));
         REQUIRE_EQ(q.pop(), fplus::nothing<int>());
         std::this_thread::sleep_for(400ms);
-        REQUIRE_EQ(q.pop_all(), std::vector<int>({3, 4}));
+        REQUIRE_EQ(q.pop_all(), std::vector<int>({ 3, 4 }));
         REQUIRE_EQ(q.pop_all(), std::vector<int>({}));
-        REQUIRE_EQ(q.wait_and_pop_all(), std::vector<int>({5}));
+        REQUIRE_EQ(q.wait_and_pop_all(), std::vector<int>({ 5 }));
         REQUIRE_EQ(q.wait_for_and_pop_all(200000), std::vector<int>({}));
-        REQUIRE_EQ(q.wait_for_and_pop_all(400000), std::vector<int>({6}));
+        REQUIRE_EQ(q.wait_for_and_pop_all(400000), std::vector<int>({ 6 }));
         REQUIRE_EQ(q.wait_for_and_pop_all(200000), std::vector<int>({}));
     });
 

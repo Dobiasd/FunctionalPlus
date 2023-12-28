@@ -9,88 +9,76 @@
 #include <fplus/container_common.hpp>
 #include <fplus/maybe.hpp>
 
-#include <vector>
 #include <queue>
+#include <vector>
 
-namespace fplus
-{
+namespace fplus {
 
 template <typename T>
-struct tree
-{
-    tree (const T& value, const std::vector<tree<T>>& children) :
-        value_(value), children_(children) {}
+struct tree {
+    tree(const T& value, const std::vector<tree<T>>& children)
+        : value_(value)
+        , children_(children)
+    {
+    }
     T value_;
     std::vector<tree<T>> children_;
 };
 
-namespace internal
-{
-template <typename T>
-tree<T> make_singleton_tree(const T& x)
-{
-    return {x, {}};
-}
+namespace internal {
+    template <typename T>
+    tree<T> make_singleton_tree(const T& x)
+    {
+        return { x, {} };
+    }
 } // namespace internal
 
-namespace internal
-{
+namespace internal {
 
-template <typename BinaryPredicate, typename T>
-std::vector<tree<T>> presort_trees(BinaryPredicate tree_is_child_of,
-    std::vector<tree<T>> xs_orig)
-{
-    auto xs = fplus::convert_container<std::list<tree<T>>>(xs_orig);
-    std::vector<tree<T>> result;
-    while (!xs.empty())
+    template <typename BinaryPredicate, typename T>
+    std::vector<tree<T>> presort_trees(BinaryPredicate tree_is_child_of,
+        std::vector<tree<T>> xs_orig)
     {
-        for (auto it = std::begin(xs); it != std::end(xs);)
-        {
-            bool has_children = false;
-            for (auto it_rest = std::begin(xs); it_rest != std::end(xs); ++it_rest)
-            {
-                if (it_rest != it && tree_is_child_of(*it_rest, *it))
-                {
-                    has_children = true;
+        auto xs = fplus::convert_container<std::list<tree<T>>>(xs_orig);
+        std::vector<tree<T>> result;
+        while (!xs.empty()) {
+            for (auto it = std::begin(xs); it != std::end(xs);) {
+                bool has_children = false;
+                for (auto it_rest = std::begin(xs); it_rest != std::end(xs); ++it_rest) {
+                    if (it_rest != it && tree_is_child_of(*it_rest, *it)) {
+                        has_children = true;
+                    }
+                }
+                if (!has_children) {
+                    result.push_back(*it);
+                    it = xs.erase(it);
+                } else {
+                    ++it;
                 }
             }
-            if (!has_children)
-            {
-                result.push_back(*it);
-                it = xs.erase(it);
-            }
-            else
-            {
-                ++it;
-            }
         }
+        return result;
     }
-    return result;
-}
 
-template <typename BinaryPredicate, typename TreeCont> // todo: name?
-TreeCont trees_from_sequence_helper(
-    BinaryPredicate tree_is_child_of, TreeCont xs_unsorted)
-{
-    TreeCont result;
-    auto xs = presort_trees(tree_is_child_of, xs_unsorted);
-    for (auto it = std::begin(xs); it != std::end(xs); ++it)
+    template <typename BinaryPredicate, typename TreeCont> // todo: name?
+    TreeCont trees_from_sequence_helper(
+        BinaryPredicate tree_is_child_of, TreeCont xs_unsorted)
     {
-        const auto find_pred = bind_1st_of_2(tree_is_child_of, *it);
-        auto it_find_begin = it;
-        internal::advance_iterator(it_find_begin, 1);
-        auto parent_it = std::find_if(it_find_begin, std::end(xs), find_pred);
-        if (parent_it != std::end(xs))
-        {
-            parent_it->children_.push_back(*it);
+        TreeCont result;
+        auto xs = presort_trees(tree_is_child_of, xs_unsorted);
+        for (auto it = std::begin(xs); it != std::end(xs); ++it) {
+            const auto find_pred = bind_1st_of_2(tree_is_child_of, *it);
+            auto it_find_begin = it;
+            internal::advance_iterator(it_find_begin, 1);
+            auto parent_it = std::find_if(it_find_begin, std::end(xs), find_pred);
+            if (parent_it != std::end(xs)) {
+                parent_it->children_.push_back(*it);
+            } else {
+                result.push_back(*it);
+            }
         }
-        else
-        {
-            result.push_back(*it);
-        }
+        return result;
     }
-    return result;
-}
 
 } // namespace internal
 
@@ -107,75 +95,62 @@ std::vector<tree<typename Container::value_type>> trees_from_sequence(
     const auto singletons = transform_convert<std::vector<Tree>>(
         internal::make_singleton_tree<T>, xs);
     const auto tree_is_child_of =
-        [is_child_of](const tree<T>& a, const tree<T>& b) -> bool
-    {
+        [is_child_of](const tree<T>& a, const tree<T>& b) -> bool {
         return is_child_of(a.value_, b.value_);
     };
     return internal::trees_from_sequence_helper(
         tree_is_child_of, std::move(singletons));
 }
 
-namespace internal
-{
+namespace internal {
 
-// -1 = a < b
-//  0 = a == b
-//  1 = b < a
-template <typename T>
-int tree_cmp(const tree<T>& a, const tree<T>& b)
-{
-    if(a.value_ < b.value_)
+    // -1 = a < b
+    //  0 = a == b
+    //  1 = b < a
+    template <typename T>
+    int tree_cmp(const tree<T>& a, const tree<T>& b)
     {
-        return -1;
+        if (a.value_ < b.value_) {
+            return -1;
+        } else if (b.value_ < a.value_) {
+            return 1;
+        } else {
+            const auto results = zip_with(tree_cmp<T>,
+                sort_by(tree_cmp<T>, a.children_),
+                sort_by(tree_cmp<T>, b.children_));
+            return just_with_default(0, find_first_by(bind_1st_of_2(is_not_equal<int>, 0), results));
+        }
     }
-    else if(b.value_ < a.value_)
-    {
-        return 1;
-    }
-    else
-    {
-        const auto results = zip_with(tree_cmp<T>,
-            sort_by(tree_cmp<T>, a.children_),
-            sort_by(tree_cmp<T>, b.children_));
-        return just_with_default(0, find_first_by(
-                bind_1st_of_2(is_not_equal<int>, 0),
-                results));
-    }
-}
 
-template <typename T>
-bool tree_less(const tree<T>& a, const tree<T>& b)
-{
-    return tree_cmp(a, b) < 0;
-}
+    template <typename T>
+    bool tree_less(const tree<T>& a, const tree<T>& b)
+    {
+        return tree_cmp(a, b) < 0;
+    }
 
 } // namespace internal
 
-namespace internal
-{
+namespace internal {
 
-template <typename T>
-bool are_normalized_trees_equal(const tree<T>& a, const tree<T>& b)
-{
-    if (a.value_ != b.value_ || a.children_.size() != b.children_.size())
+    template <typename T>
+    bool are_normalized_trees_equal(const tree<T>& a, const tree<T>& b)
     {
-        return false;
+        if (a.value_ != b.value_ || a.children_.size() != b.children_.size()) {
+            return false;
+        } else {
+            return all(zip_with(are_normalized_trees_equal<T>,
+                a.children_, b.children_));
+        }
     }
-    else
-    {
-        return all(zip_with(are_normalized_trees_equal<T>,
-            a.children_, b.children_));
-    }
-}
 
-template <typename T>
-tree<T> normalize_tree(tree<T> x)
-{
-    x.children_ = sort_by(
-        internal::tree_less<T>,
-        transform(normalize_tree<T>, x.children_));
-    return x;
-}
+    template <typename T>
+    tree<T> normalize_tree(tree<T> x)
+    {
+        x.children_ = sort_by(
+            internal::tree_less<T>,
+            transform(normalize_tree<T>, x.children_));
+        return x;
+    }
 
 } // namespace internal
 
@@ -203,8 +178,7 @@ std::size_t tree_size(const tree<T>& x)
 template <typename T>
 std::size_t tree_depth(const tree<T>& x)
 {
-    return 1 + just_with_default<std::size_t>(0,
-        maximum_maybe(transform(tree_depth<T>, x.children_)));
+    return 1 + just_with_default<std::size_t>(0, maximum_maybe(transform(tree_depth<T>, x.children_)));
 }
 
 // API search type: flatten_tree_depth_first : Tree a -> [a]
@@ -225,13 +199,11 @@ std::vector<T> flatten_tree_breadth_first(const tree<T>& x)
     result.reserve(tree_size(x));
     std::queue<const tree<T>*> q;
     q.push(&x);
-    while (!q.empty())
-    {
+    while (!q.empty()) {
         const auto current = q.front();
         q.pop();
         result.push_back(current->value_);
-        for (const auto& c : current->children_)
-        {
+        for (const auto& c : current->children_) {
             q.push(&c);
         }
     }

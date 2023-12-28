@@ -11,36 +11,34 @@ TEST_CASE("container_traits_test - static_asserts")
 {
     using namespace fplus;
 
-    const auto unary_f = [](int x) -> double
-    {
+    const auto unary_f = [](int x) -> double {
         return static_cast<double>(x);
     };
 
-    const auto binary_f = [](int x, int y) -> double
-    {
+    const auto binary_f = [](int x, int y) -> double {
         return static_cast<double>(x + y);
     };
 
     static_assert(std::is_same<
-            internal::same_cont_new_t<
-                std::vector<int>,
-                double>::type,
-        std::vector<double>>::value,
+                      internal::same_cont_new_t<
+                          std::vector<int>,
+                          double>::type,
+                      std::vector<double>>::value,
         "No.");
 
     static_assert(std::is_same<
-            internal::same_cont_new_t_from_unary_f<
-                std::vector<int>,
-                decltype(unary_f)>::type,
-        std::vector<double>>::value,
+                      internal::same_cont_new_t_from_unary_f<
+                          std::vector<int>,
+                          decltype(unary_f)>::type,
+                      std::vector<double>>::value,
         "No.");
 
     static_assert(std::is_same<
-            internal::same_cont_new_t_from_binary_f<
-                std::vector<int>,
-                decltype(binary_f),
-                int,
-                int>::type,
-        std::vector<double>>::value,
+                      internal::same_cont_new_t_from_binary_f<
+                          std::vector<int>,
+                          decltype(binary_f),
+                          int,
+                          int>::type,
+                      std::vector<double>>::value,
         "No.");
 }
