@@ -183,6 +183,7 @@ std::size_t tree_depth(const tree<T>& x)
 
 // API search type: flatten_tree_depth_first : Tree a -> [a]
 // fwd bind count: 0
+// Like in DFS.
 template <typename T>
 std::vector<T> flatten_tree_depth_first(const tree<T>& x)
 {
@@ -192,6 +193,7 @@ std::vector<T> flatten_tree_depth_first(const tree<T>& x)
 
 // API search type: flatten_tree_breadth_first : Tree a -> [a]
 // fwd bind count: 0
+// Like in BFS.
 template <typename T>
 std::vector<T> flatten_tree_breadth_first(const tree<T>& x)
 {

@@ -56,7 +56,7 @@ SetType set_merge(const SetType& set1, const SetType& set2)
 
 // API search type: unordered_set_merge : (Unordered_Set a, Unordered_Set a) -> Unordered_Set a
 // fwd bind count: 1
-// Returns the union of two given sets.
+// Returns the union of two given unordered sets.
 template <typename UnorderSetType>
 UnorderSetType unordered_set_merge(const UnorderSetType& set1, const UnorderSetType& set2)
 {

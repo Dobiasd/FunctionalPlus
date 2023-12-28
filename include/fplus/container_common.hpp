@@ -1843,7 +1843,7 @@ bool is_sorted_by(Compare comp, const Container& xs)
 
 // API search type: is_sorted_on : ((a -> b), [a]) -> Bool
 // fwd bind count: 1
-// Checks if a container already is strictly sorted using a transformer.
+// Checks if a container already is sorted using a transformer.
 // O(n)
 template <typename Container, typename F>
 bool is_sorted_on(F f, const Container& xs)

@@ -81,7 +81,7 @@ auto bind_1st_and_2nd_of_3(F f, X x, Y y)
 }
 
 // API search type: bind_2nd_and_3rd_of_3 : (((a, b, c) -> d), b, c) -> (a -> d)
-// Bind first and second parameter of ternary function.
+// Bind second and third parameter of ternary function.
 template <typename F, typename Y, typename Z>
 auto bind_2nd_and_3rd_of_3(F f, Y y, Z z)
 {
