@@ -172,7 +172,7 @@ namespace internal {
 #ifndef PROVIDE_IS_FUNCTION_POLYFILL
     template <class... Any>
     using is_function = std::is_function<Any...>;
-#else //PROVIDE_IS_FUNCTION_POLYFILL
+#else // PROVIDE_IS_FUNCTION_POLYFILL
     // primary template
     template <class>
     struct is_function : std::false_type {
@@ -257,7 +257,7 @@ namespace internal {
     template <class Ret, class... Args>
     struct is_function<Ret(Args..., ...) const volatile&&> : std::true_type {
     };
-#endif //PROVIDE_IS_FUNCTION_POLYFILL
+#endif // PROVIDE_IS_FUNCTION_POLYFILL
 
     template <typename>
     struct reverse_integer_sequence_impl;
@@ -1384,7 +1384,7 @@ auto bind_1st_and_2nd_of_3(F f, X x, Y y)
 }
 
 // API search type: bind_2nd_and_3rd_of_3 : (((a, b, c) -> d), b, c) -> (a -> d)
-// Bind first and second parameter of ternary function.
+// Bind second and third parameter of ternary function.
 template <typename F, typename Y, typename Z>
 auto bind_2nd_and_3rd_of_3(F f, Y y, Z z)
 {
@@ -4804,7 +4804,7 @@ bool is_sorted_by(Compare comp, const Container& xs)
 
 // API search type: is_sorted_on : ((a -> b), [a]) -> Bool
 // fwd bind count: 1
-// Checks if a container already is strictly sorted using a transformer.
+// Checks if a container already is sorted using a transformer.
 // O(n)
 template <typename Container, typename F>
 bool is_sorted_on(F f, const Container& xs)
@@ -8613,7 +8613,7 @@ SetType set_merge(const SetType& set1, const SetType& set2)
 
 // API search type: unordered_set_merge : (Unordered_Set a, Unordered_Set a) -> Unordered_Set a
 // fwd bind count: 1
-// Returns the union of two given sets.
+// Returns the union of two given unordered sets.
 template <typename UnorderSetType>
 UnorderSetType unordered_set_merge(const UnorderSetType& set1, const UnorderSetType& set2)
 {
@@ -13639,7 +13639,7 @@ auto execute_parallelly(const Container& effs)
 
 // API search type: execute_parallelly_n_threads : (Int, [Io a]) -> Io [a]
 // Returns a function that (when called) executes the given side effects
-// in parallel (one thread each) and returns the collected results.
+// in parallel (one thread each, n threads) and returns the collected results.
 template <typename Container>
 auto execute_parallelly_n_threads(std::size_t n, const Container& effs)
 {
@@ -14030,6 +14030,7 @@ std::size_t tree_depth(const tree<T>& x)
 
 // API search type: flatten_tree_depth_first : Tree a -> [a]
 // fwd bind count: 0
+// Like in DFS.
 template <typename T>
 std::vector<T> flatten_tree_depth_first(const tree<T>& x)
 {
@@ -14039,6 +14040,7 @@ std::vector<T> flatten_tree_depth_first(const tree<T>& x)
 
 // API search type: flatten_tree_breadth_first : Tree a -> [a]
 // fwd bind count: 0
+// Like in BFS.
 template <typename T>
 std::vector<T> flatten_tree_breadth_first(const tree<T>& x)
 {

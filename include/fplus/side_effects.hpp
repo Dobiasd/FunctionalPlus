@@ -339,7 +339,7 @@ auto execute_parallelly(const Container& effs)
 
 // API search type: execute_parallelly_n_threads : (Int, [Io a]) -> Io [a]
 // Returns a function that (when called) executes the given side effects
-// in parallel (one thread each) and returns the collected results.
+// in parallel (one thread each, n threads) and returns the collected results.
 template <typename Container>
 auto execute_parallelly_n_threads(std::size_t n, const Container& effs)
 {
