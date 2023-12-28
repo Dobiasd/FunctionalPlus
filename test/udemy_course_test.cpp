@@ -473,7 +473,7 @@ std::function<int(int)> decorate_with_logging(const std::string& str, F f)
     return [str, f](int x) -> int {
         int result = f(x);
         // no side effects in tests
-        //std::cout << str << ": " << x << " => " << result << std::endl;
+        // std::cout << str << ": " << x << " => " << result << std::endl;
         return result;
     };
 }

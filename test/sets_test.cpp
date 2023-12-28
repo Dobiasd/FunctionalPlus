@@ -16,7 +16,7 @@ TEST_CASE("set_test - set functions")
     using unordSetVector = std::vector<IntUnordSet>;
     using StringUnordSet = std::unordered_set<std::string>;
 
-    //std::set tests
+    // std::set tests
     REQUIRE(set_includes(IntSet({ 0, 1, 2, 3 }), IntSet({ 0, 2 })));
     REQUIRE_FALSE(set_includes(IntSet({ 0, 2 }), IntSet({ 0, 1, 2, 3 })));
     REQUIRE_FALSE(set_includes(IntSet({ 0, 1, 2, 3 }), IntSet({ 2, 3, 4, 5 })));
@@ -28,7 +28,7 @@ TEST_CASE("set_test - set functions")
     REQUIRE_EQ(set_intersection(IntSet({ 0, 1, 2, 3 }), IntSet({ 2, 3, 4, 5 })), IntSet({ 2, 3 }));
     REQUIRE_EQ(sets_intersection(setVector({ IntSet({ 0, 1, 2, 3 }), IntSet({ 2, 3, 4, 5 }), IntSet({ 0, 2 }) })), IntSet({ 2 }));
 
-    //set::unordered_set tests
+    // set::unordered_set tests
     REQUIRE(unordered_set_includes(IntUnordSet({ 0, 1, 2, 3 }), IntUnordSet({ 0, 2 })));
     REQUIRE_FALSE(unordered_set_includes(IntUnordSet({ 0, 2 }), IntUnordSet({ 0, 1, 2, 3 })));
     REQUIRE_FALSE(unordered_set_includes(IntUnordSet({ 0, 1, 2, 3 }), IntUnordSet({ 2, 3, 4, 5 })));
