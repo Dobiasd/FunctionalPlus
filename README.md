@@ -287,7 +287,7 @@ By the way, in case you need the parameters of a binary function in different or
 
 Finding the functions you need
 ------------------------------
-If you are looking for a specific FunctionalPlus function you do not know the name of yet, you can of course use the auto-complete feature of your IDE to browse the content of the `namespace fplus`. But the recommended way is to simply use the **[FunctionalPlus API search website](http://www.editgym.com/fplus-api-search/)**. You can quickly search by keywords or function type signatures with it. If you prefer, you can also simply [browse the source code using Sourcegraph](https://sourcegraph.com/github.com/Dobiasd/FunctionalPlus/-/tree/include/fplus).
+If you are looking for a specific FunctionalPlus function you do not know the name of yet, you can of course use the auto-complete feature of your IDE to browse the content of the `namespace fplus`. But the recommended way is to use the **[FunctionalPlus API search website](http://www.editgym.com/fplus-api-search/)**. You can quickly search by keywords or function type signatures with it. If you prefer, you can also just [browse the source code using Sourcegraph](https://sourcegraph.com/github.com/Dobiasd/FunctionalPlus/-/tree/include/fplus).
 
 
 Performance
