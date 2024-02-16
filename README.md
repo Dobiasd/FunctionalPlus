@@ -313,7 +313,7 @@ FunctionalPlus internally often can operate in-place if a given container is an 
 Comparison with range-v3
 ------------------------
 
-[Range-v3](https://github.com/ericniebler/range-v3) and FunctionalPlus do have things in common, as the following code snippet shows.
+FunctionalPlus and [range-v3](https://github.com/ericniebler/range-v3) ([basis](https://ericniebler.github.io/std/wg21/D4128.html) for `ranges` [in C++-20](https://en.cppreference.com/w/cpp/ranges)) do have things in common, as the following code snippet shows.
 
 ```c++
 const auto times_3 = [](int i){return 3 * i;};
@@ -340,7 +340,7 @@ const auto result_range_v3 =
         , 0);
 ```
 
-There are some differences though. Range-v3 ranges are lazy, which means no intermediate memory is allocated during the single steps of a processing chain like above. Also range-v3 will probably be [part of the C++ standard](https://ericniebler.github.io/std/wg21/D4128.html) at some point in the future.
+There are some differences though. Range-v3 ranges are lazy, which means no intermediate memory is allocated during the single steps of a processing chain like above.
 When using FunctionalPlus on the other hand you work with normal STL-containers. Also [implementing a new function](https://github.com/Dobiasd/FunctionalPlus/blob/a17fc716d40a4370eed13f16e7d9105c4cc75e26/include/fplus/generate.hpp#L19) is simpler compared to [writing a new range adaptor](https://github.com/ericniebler/range-v3/blob/4cfcb59c3db1c279d72c64ccf15de3c724a0362d/include/range/v3/algorithm/generate.hpp#L32). Additionally FunctionalPlus provides much more functions out of the box and has the [API search website](http://www.editgym.com/fplus-api-search/). So the choice between the two libraries depends on your preferences and project's needs.
 
 
