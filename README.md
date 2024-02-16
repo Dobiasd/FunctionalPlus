@@ -74,7 +74,7 @@ And if you still think the hand-written for loop is easier to understand, also c
 
 Usage examples
 --------------
-Below you find some short examples showing nice things you can do with functions and containers using FunctionalPlus.
+Below are some short examples showing nice things you can do with functions and containers using FunctionalPlus.
 
 ### The same old song
 You can test the content of a container for various properties, e.g.
@@ -151,7 +151,7 @@ Output:
 Muffin is happy and sleepy. *purr* *purr* *purr*
 ```
 
-### Function composition, binding and map creation
+### Function composition, binding, and map creation
 Let's say you have the following function [given](https://gist.github.com/Dobiasd/17f5eeab2ba0ee6631394f149fc61ce2).
 ```c++
 std::list<int> collatz_seq(int x);
@@ -194,7 +194,7 @@ Output:
 [17 => 52 => 26 => 13 => 40 => 20 => 10 => 5 => 16 => 8 => 4 => 2 => 1]
 ```
 
-The functions shown not only work with default STL containers like `std::vector`, `std::list`, `std::deque`, `std::string` etc., but also with custom containers providing a similar interface.
+The functions shown not only work with default STL containers like `std::vector`, `std::list`, `std::deque`, `std::string` etc. but also with custom containers providing a similar interface.
 
 
 Type deduction and useful error messages
@@ -209,7 +209,7 @@ FunctionalPlus deduces types for you where possible. Let's take one line of code
 
 If two functions whose "connecting types" do not match are passed in, an unambiguous error message describing the issue will be generated. FunctionalPlus uses compile time assertions to avoid the confusingly long error messages compilers generate when faced with type errors in function templates.
 
-Changing the way you program from "writing your own loops and nested ifs" to "composing and using small functions" will result in more errors at compile time but will pay out by having fewer errors at runtime. Also, more precise compile time errors will reduce the time spent debugging.
+Changing the way you program from "writing your own loops and nested ifs" to "composing and using small functions" will result in more errors at compile time but will pay out by having fewer errors at runtime. Also, more precise compile-time errors will reduce the time spent debugging.
 
 Tutorial
 --------
@@ -282,12 +282,12 @@ const auto gemstone_count_fwd_compose = fwd::compose(
 );
 ```
 
-By the way, in case you need the parameters of a binary function in different order, `namespace fplus::fwd::flip` also exists. `fplus::bar : (a, b) -> c` does not only have its analogue in `fplus::fwd::bar : a -> b -> c` but also in `fplus::fwd::flip::bar : b -> a -> c`.
+By the way, in case you need the parameters of a binary function in reverse order, `namespace fplus::fwd::flip` also exists. `fplus::bar : (a, b) -> c` does not only have its analog in `fplus::fwd::bar : a -> b -> c` but also in `fplus::fwd::flip::bar : b -> a -> c`.
 
 
 Finding the functions you need
 ------------------------------
-If you are looking for a specific FunctionalPlus function you do not know the name of yet, you can of course use the auto-complete feature of your IDE to browse the content of the `namespace fplus`. But the recommended way is to use the **[FunctionalPlus API search website](http://www.editgym.com/fplus-api-search/)**. You can quickly search by keywords or function type signatures with it. If you prefer, you can also just [browse the source code using Sourcegraph](https://sourcegraph.com/github.com/Dobiasd/FunctionalPlus/-/tree/include/fplus).
+If you are looking for a specific FunctionalPlus function you do not know the name of yet, you can of course use the auto-complete feature of your IDE to browse the content of the `namespace fplus`. But the recommended way is to use the **[FunctionalPlus API search website](http://www.editgym.com/fplus-api-search/)**. You can quickly search by keywords or function type signatures with it. If you prefer, you can also [browse the source code using Sourcegraph](https://sourcegraph.com/github.com/Dobiasd/FunctionalPlus/-/tree/include/fplus).
 
 
 Performance
@@ -303,11 +303,11 @@ The basic functions are fast, thanks to C++'s concept of abstraction without ove
 |               0.632 s |      0.641 s |        0.627 s |
 ```
 
-So the compiler seems to do a very good job in optimizing and inlining everything to basically equal machine code performance-wise.
+So the compiler seems to do a very good job optimizing and inlining everything to basically equal machine code performance-wise.
 
 The more complex functions though sometimes could be written in a more optimized way. If you use FunctionalPlus in a performance-critical scenario and profiling shows you need a faster version of a function [please let me know](https://github.com/Dobiasd/FunctionalPlus/issues) or [even help improving FunctionalPlus](https://github.com/Dobiasd/FunctionalPlus/pulls).
 
-FunctionalPlus internally often can operate in-place if a given container is an r-value (e.g. in chained calls) and thus avoid many unnecessary allocations and copies. But this is not the case in all situations. However, thanks to working with a multi-paradigm language one easily can combine manually optimized imperative code with `fplus` functions. Luckily experience (aka. profiling) shows that in most cases the vast majority of code in an application is not relevant for overall performance and memory consumption. So initially focusing on developer productivity and readability of code is a good idea.
+FunctionalPlus internally often can operate in-place if a given container is an r-value (e.g. in chained calls) and thus avoids many unnecessary allocations and copies. But this is not the case in all situations. However, thanks to working with a multi-paradigm language one easily can combine manually optimized imperative code with `fplus` functions. Luckily experience (aka. profiling) shows that in most cases the vast majority of code in an application is not relevant for overall performance and memory consumption. So initially focusing on developer productivity and readability of code is a good idea.
 
 
 Comparison with range-v3
@@ -340,8 +340,8 @@ const auto result_range_v3 =
         , 0);
 ```
 
-There are some differences though. Range-v3 ranges are lazy, which means no intermediate memory is allocated during the single steps of a processing chain like above.
-When using FunctionalPlus on the other hand you work with normal STL-containers. Also [implementing a new function](https://github.com/Dobiasd/FunctionalPlus/blob/a17fc716d40a4370eed13f16e7d9105c4cc75e26/include/fplus/generate.hpp#L19) is simpler compared to [writing a new range adaptor](https://github.com/ericniebler/range-v3/blob/4cfcb59c3db1c279d72c64ccf15de3c724a0362d/include/range/v3/algorithm/generate.hpp#L32). Additionally FunctionalPlus provides much more functions out of the box and has the [API search website](http://www.editgym.com/fplus-api-search/). So the choice between the two libraries depends on your preferences and project's needs.
+There are some differences though. Range-v3 ranges are lazy, which means no intermediate memory is allocated during the single steps of a processing chain like the above.
+When using FunctionalPlus on the other hand you work with normal STL containers. Also [implementing a new function](https://github.com/Dobiasd/FunctionalPlus/blob/a17fc716d40a4370eed13f16e7d9105c4cc75e26/include/fplus/generate.hpp#L19) is simpler compared to [writing a new range adaptor](https://github.com/ericniebler/range-v3/blob/4cfcb59c3db1c279d72c64ccf15de3c724a0362d/include/range/v3/algorithm/generate.hpp#L32). Additionally FunctionalPlus provides much more functions out of the box and has the [API search website](http://www.editgym.com/fplus-api-search/). So the choice between the two libraries depends on your preferences and the project's needs.
 
 
 Requirements and Installation
@@ -358,7 +358,7 @@ Guides for different ways to install FunctionalPlus can be found in [INSTALL.md]
 
 Disclaimer
 ----------
-The functionality in this library initially grew due to my personal need for it while using C++ on a regular basis. I try my best to make it error free and as comfortable to use as I can. The API still might change in the future. If you have any suggestions, find errors, miss some functions or want to give general feedback/criticism, I'd [love to hear from you](https://github.com/Dobiasd/FunctionalPlus/issues). Of course, [contributions](CONTRIBUTING.md) are also very welcome.
+The functionality in this library initially grew due to my personal need for it while using C++ regularly. I try my best to make it error-free and as comfortable to use as I can. The API still might change in the future. If you have any suggestions, find errors, miss some functions, or want to give general feedback/criticism, I'd [love to hear from you](https://github.com/Dobiasd/FunctionalPlus/issues). Of course, [contributions](CONTRIBUTING.md) are also very welcome.
 
 
 License
