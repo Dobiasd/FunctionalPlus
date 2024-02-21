@@ -3462,7 +3462,7 @@ namespace internal {
 
 // API search type: remove_segment : (Int, Int, [a]) -> [a]
 // fwd bind count: 2
-// Cuts our a  defined segment from the sequence.
+// Cuts our a defined segment from the sequence.
 // remove_segment(2, 5, [0,1,2,3,4,5,6,7]) == [0,1,5,6,7]
 // crashes on invalid indices
 template <typename Container,
