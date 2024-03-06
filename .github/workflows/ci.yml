@@ -13,8 +13,6 @@ jobs:
           - { version: 11 }
           - { version: 10 }
           - { version: 9 }
-          - { version: 8 }
-          - { version: 7 }
     container:
       image: gcc:${{ matrix.build_config.version }}
       options: -v /usr/local:/host_usr_local
