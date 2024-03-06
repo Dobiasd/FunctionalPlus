@@ -57,9 +57,6 @@ jobs:
           script/ci_setup_linux.sh
       - name: Setup libc++
         run: |
-          if [ "${{ matrix.build_config.version }}" -le "6" ]; then
-            script/ci_setup_libcxx.sh ${{ matrix.build_config.version }}
-          fi
           if [ "${{ matrix.build_config.version }}" -ge "12" ]; then
             apt-get install -y --no-install-recommends libunwind-${{ matrix.build_config.version }}-dev;
           fi
