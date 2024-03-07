@@ -1,5 +1,5 @@
 [requires]
-doctest/2.4.9
+doctest/2.4.11
 
 [generators]
 CMakeToolchain
