@@ -332,12 +332,11 @@ const auto result_fplus = fwd::apply(
 // range-v3
 const auto result_range_v3 =
     accumulate(
-        view::ints(0)
-        | view::take(15000000)
-        | view::transform(times_3)
-        | view::remove_if(is_odd_int)
-        | view::transform(as_string_length)
-        , 0);
+        views::ints(0, ranges::unreachable)
+        | views::take(15000000)
+        | views::transform(times_3)
+        | views::remove_if(is_odd_int)
+        | views::transform(as_string_length), 0);
 ```
 
 There are some differences though. Range-v3 ranges are lazy, which means no intermediate memory is allocated during the single steps of a processing chain like the above.
