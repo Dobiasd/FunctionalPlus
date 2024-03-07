@@ -12,7 +12,7 @@ set(
 include(../cmake/root-project.cmake)
 include(../cmake/warnings.cmake)
 
-find_package(doctest 2.4.9 CONFIG REQUIRED)
+find_package(doctest 2.4.11 CONFIG REQUIRED)
 # for doctest_discover_tests
 include(doctest)
 
