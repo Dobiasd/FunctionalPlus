@@ -145,10 +145,14 @@ namespace utils {
         };
     };
 
+#if ((defined(__GNUC__) && __GNUC__ >= 11) || (defined(__clang__) && __clang_major__ >= 16)) && !defined(_MSC_VER)
+
     template <typename ReturnType, typename... Args>
     struct function_traits<ReturnType(Args...) noexcept>
         : public function_traits<ReturnType(Args...)> {
     };
+
+#endif
 
     template <typename ReturnType, typename... Args>
     struct function_traits<ReturnType (*)(Args...)>
@@ -179,6 +183,8 @@ namespace utils {
         typedef const volatile ClassType& owner_type;
     };
 
+#if ((defined(__GNUC__) && __GNUC__ >= 11) || (defined(__clang__) && __clang_major__ >= 16)) && !defined(_MSC_VER)
+
     template <typename ReturnType, typename... Args>
     struct function_traits<ReturnType (*)(Args...) noexcept>
         : public function_traits<ReturnType(Args...)> {
@@ -207,6 +213,8 @@ namespace utils {
         : public function_traits<ReturnType(Args...)> {
         typedef const volatile ClassType& owner_type;
     };
+
+#endif
 
     template <typename FunctionType>
     struct function_traits<std::function<FunctionType>>
@@ -241,6 +249,7 @@ namespace utils {
     struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R (C::*)(A...) const volatile>>
         : public function_traits<R(const volatile C*, A...)> {
     };
+#if ((defined(__GNUC__) && __GNUC__ >= 11) || (defined(__clang__) && __clang_major__ >= 16)) && !defined(_MSC_VER)
     template <typename R, typename C>
     struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R (C::*)() noexcept>>
         : public function_traits<R(C*)> {
@@ -261,6 +270,7 @@ namespace utils {
     struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R (C::*)(A...) const volatile noexcept>>
         : public function_traits<R(const volatile C*, A...)> {
     };
+#endif
 
 #undef MEM_FN_SYMBOL_XX0SL7G4Z0J
 #endif
@@ -473,6 +483,8 @@ namespace internal {
     struct has_function_traits<std::function<FunctionType>> : std::true_type {
     };
 
+#if ((defined(__GNUC__) && __GNUC__ >= 11) || (defined(__clang__) && __clang_major__ >= 16)) && !defined(_MSC_VER)
+
     template <typename ReturnType, typename... Args>
     struct has_function_traits<ReturnType(Args...) noexcept> : std::true_type {
     };
@@ -501,21 +513,21 @@ namespace internal {
     };
 
     template <typename ReturnType, typename ClassType, typename... Args>
-    struct has_function_traits<ReturnType (ClassType::*)(Args...)& noexcept> : std::true_type {
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) & noexcept> : std::true_type {
     };
 
     template <typename ReturnType, typename ClassType, typename... Args>
-    struct has_function_traits<ReturnType (ClassType::*)(Args...) const& noexcept>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) const & noexcept>
         : std::true_type {
     };
 
     template <typename ReturnType, typename ClassType, typename... Args>
-    struct has_function_traits<ReturnType (ClassType::*)(Args...) volatile& noexcept>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) volatile & noexcept>
         : std::true_type {
     };
 
     template <typename ReturnType, typename ClassType, typename... Args>
-    struct has_function_traits<ReturnType (ClassType::*)(Args...) const volatile& noexcept>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) const volatile & noexcept>
         : std::true_type {
     };
 
@@ -525,19 +537,21 @@ namespace internal {
     };
 
     template <typename ReturnType, typename ClassType, typename... Args>
-    struct has_function_traits<ReturnType (ClassType::*)(Args...) const&& noexcept>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) const && noexcept>
         : std::true_type {
     };
 
     template <typename ReturnType, typename ClassType, typename... Args>
-    struct has_function_traits<ReturnType (ClassType::*)(Args...) volatile&& noexcept>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) volatile && noexcept>
         : std::true_type {
     };
 
     template <typename ReturnType, typename ClassType, typename... Args>
-    struct has_function_traits<ReturnType (ClassType::*)(Args...) const volatile&& noexcept>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) const volatile && noexcept>
         : std::true_type {
     };
+
+#endif
 }
 }
 
