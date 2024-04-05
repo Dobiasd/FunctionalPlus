@@ -145,6 +145,15 @@ namespace utils {
         };
     };
 
+#if __cplusplus > 201510L
+
+    template <typename ReturnType, typename... Args>
+    struct function_traits<ReturnType(Args...) noexcept>
+        : public function_traits<ReturnType(Args...)> {
+    };
+
+#endif
+
     template <typename ReturnType, typename... Args>
     struct function_traits<ReturnType (*)(Args...)>
         : public function_traits<ReturnType(Args...)> {
@@ -174,6 +183,39 @@ namespace utils {
         typedef const volatile ClassType& owner_type;
     };
 
+#if __cplusplus > 201510L
+
+    template <typename ReturnType, typename... Args>
+    struct function_traits<ReturnType (*)(Args...) noexcept>
+        : public function_traits<ReturnType(Args...)> {
+    };
+
+    template <typename ClassType, typename ReturnType, typename... Args>
+    struct function_traits<ReturnType (ClassType::*)(Args...) noexcept>
+        : public function_traits<ReturnType(Args...)> {
+        typedef ClassType& owner_type;
+    };
+
+    template <typename ClassType, typename ReturnType, typename... Args>
+    struct function_traits<ReturnType (ClassType::*)(Args...) const noexcept>
+        : public function_traits<ReturnType(Args...)> {
+        typedef const ClassType& owner_type;
+    };
+
+    template <typename ClassType, typename ReturnType, typename... Args>
+    struct function_traits<ReturnType (ClassType::*)(Args...) volatile noexcept>
+        : public function_traits<ReturnType(Args...)> {
+        typedef volatile ClassType& owner_type;
+    };
+
+    template <typename ClassType, typename ReturnType, typename... Args>
+    struct function_traits<ReturnType (ClassType::*)(Args...) const volatile noexcept>
+        : public function_traits<ReturnType(Args...)> {
+        typedef const volatile ClassType& owner_type;
+    };
+
+#endif
+
     template <typename FunctionType>
     struct function_traits<std::function<FunctionType>>
         : public function_traits<FunctionType> {
@@ -188,7 +230,7 @@ namespace utils {
 #ifdef MEM_FN_SYMBOL_XX0SL7G4Z0J
 
     template <typename R, typename C>
-    struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R C::*>>
+    struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R (C::*)()>>
         : public function_traits<R(C*)> {
     };
     template <typename R, typename C, typename... A>
@@ -207,6 +249,28 @@ namespace utils {
     struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R (C::*)(A...) const volatile>>
         : public function_traits<R(const volatile C*, A...)> {
     };
+#if __cplusplus > 201510L
+    template <typename R, typename C>
+    struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R (C::*)() noexcept>>
+        : public function_traits<R(C*)> {
+    };
+    template <typename R, typename C, typename... A>
+    struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R (C::*)(A...) noexcept>>
+        : public function_traits<R(C*, A...)> {
+    };
+    template <typename R, typename C, typename... A>
+    struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R (C::*)(A...) const noexcept>>
+        : public function_traits<R(const C*, A...)> {
+    };
+    template <typename R, typename C, typename... A>
+    struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R (C::*)(A...) volatile noexcept>>
+        : public function_traits<R(volatile C*, A...)> {
+    };
+    template <typename R, typename C, typename... A>
+    struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R (C::*)(A...) const volatile noexcept>>
+        : public function_traits<R(const volatile C*, A...)> {
+    };
+#endif
 
 #undef MEM_FN_SYMBOL_XX0SL7G4Z0J
 #endif
@@ -418,6 +482,76 @@ namespace internal {
     template <typename FunctionType>
     struct has_function_traits<std::function<FunctionType>> : std::true_type {
     };
+
+#if __cplusplus > 201510L
+
+    template <typename ReturnType, typename... Args>
+    struct has_function_traits<ReturnType(Args...) noexcept> : std::true_type {
+    };
+
+    template <typename ReturnType, typename... Args>
+    struct has_function_traits<ReturnType (*)(Args...) noexcept> : std::true_type {
+    };
+
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) noexcept> : std::true_type {
+    };
+
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) const noexcept>
+        : std::true_type {
+    };
+
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) volatile noexcept>
+        : std::true_type {
+    };
+
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) const volatile noexcept>
+        : std::true_type {
+    };
+
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) & noexcept> : std::true_type {
+    };
+
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) const & noexcept>
+        : std::true_type {
+    };
+
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) volatile & noexcept>
+        : std::true_type {
+    };
+
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) const volatile & noexcept>
+        : std::true_type {
+    };
+
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) && noexcept>
+        : std::true_type {
+    };
+
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) const && noexcept>
+        : std::true_type {
+    };
+
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) volatile && noexcept>
+        : std::true_type {
+    };
+
+    template <typename ReturnType, typename ClassType, typename... Args>
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) const volatile && noexcept>
+        : std::true_type {
+    };
+
+#endif
 }
 }
 
