@@ -145,7 +145,7 @@ namespace utils {
         };
     };
 
-#if ((defined(__GNUC__) && __GNUC__ >= 11) || (defined(__clang__) && __clang_major__ >= 16)) && !defined(_MSC_VER)
+#if __cplusplus > 201510L
 
     template <typename ReturnType, typename... Args>
     struct function_traits<ReturnType(Args...) noexcept>
@@ -183,7 +183,7 @@ namespace utils {
         typedef const volatile ClassType& owner_type;
     };
 
-#if ((defined(__GNUC__) && __GNUC__ >= 11) || (defined(__clang__) && __clang_major__ >= 16)) && !defined(_MSC_VER)
+#if __cplusplus > 201510L
 
     template <typename ReturnType, typename... Args>
     struct function_traits<ReturnType (*)(Args...) noexcept>
@@ -249,7 +249,7 @@ namespace utils {
     struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R (C::*)(A...) const volatile>>
         : public function_traits<R(const volatile C*, A...)> {
     };
-#if ((defined(__GNUC__) && __GNUC__ >= 11) || (defined(__clang__) && __clang_major__ >= 16)) && !defined(_MSC_VER)
+#if __cplusplus > 201510L
     template <typename R, typename C>
     struct function_traits<MEM_FN_SYMBOL_XX0SL7G4Z0J<R (C::*)() noexcept>>
         : public function_traits<R(C*)> {
@@ -483,7 +483,7 @@ namespace internal {
     struct has_function_traits<std::function<FunctionType>> : std::true_type {
     };
 
-#if ((defined(__GNUC__) && __GNUC__ >= 11) || (defined(__clang__) && __clang_major__ >= 16)) && !defined(_MSC_VER)
+#if __cplusplus > 201510L
 
     template <typename ReturnType, typename... Args>
     struct has_function_traits<ReturnType(Args...) noexcept> : std::true_type {
