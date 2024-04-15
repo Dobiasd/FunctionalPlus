@@ -500,7 +500,7 @@ template <typename ContainerIn,
     typename ContainerOut = std::vector<ContainerIn>>
 ContainerOut split_evenly(std::size_t n, const ContainerIn& xs)
 {
-    const std::size_t every_n = size_of_cont(xs) / n;
+    const std::size_t every_n = div_pos_int_ceil(size_of_cont(xs), n);
     return split_at_idxs<
         std::vector<std::size_t>,
         ContainerIn,

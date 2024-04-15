@@ -833,6 +833,14 @@ std::function<X(X)> divide_by(const X& x)
     };
 }
 
+// API search type: div_pos_int_ceil : (a, a) -> a
+// Integer division, but rounding up instead of down.
+// div_pos_int_ceil(5, 3) == 2
+template<typename X>
+static auto div_pos_int_ceil(X numerator, X denominator) {
+    return numerator / denominator + (numerator % denominator != 0);
+}
+
 // API search type: histogram_using_intervals : ([(a, a)], [a]) -> [((a, a), Int)]
 // fwd bind count: 1
 // Generate a histogram of a sequence with given bins.
