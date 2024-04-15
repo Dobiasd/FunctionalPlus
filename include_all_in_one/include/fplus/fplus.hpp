@@ -8351,6 +8351,17 @@ std::function<X(X)> divide_by(const X& x)
     };
 }
 
+// API search type: div_pos_int_ceil : (a, a) -> a
+// Positive integer division, but rounding up instead of down.
+// div_pos_int_ceil(5, 3) == 2
+template <typename X>
+static auto div_pos_int_ceil(X numerator, X denominator)
+{
+    static_assert(std::is_integral<X>::value, "type must be integral");
+    static_assert(!std::is_signed<X>::value, "type must be unsigned");
+    return numerator / denominator + (numerator % denominator != 0);
+}
+
 // API search type: histogram_using_intervals : ([(a, a)], [a]) -> [((a, a), Int)]
 // fwd bind count: 1
 // Generate a histogram of a sequence with given bins.
@@ -10759,6 +10770,24 @@ ContainerOut split_every(std::size_t n, const ContainerIn& xs)
         ContainerOut>(
         numbers_step<std::size_t>(
             n, size_of_cont(xs), n),
+        xs);
+}
+
+// API search type: split_evenly : (Int, [a]) -> [[a]]
+// fwd bind count: 1
+// Split a sequence into n similarly-sized chunks.
+// split_evenly(2, [0,1,2,3,4]) == [[0,1,2],[3,4]]
+template <typename ContainerIn,
+    typename ContainerOut = std::vector<ContainerIn>>
+ContainerOut split_evenly(std::size_t n, const ContainerIn& xs)
+{
+    const std::size_t every_n = div_pos_int_ceil(size_of_cont(xs), n);
+    return split_at_idxs<
+        std::vector<std::size_t>,
+        ContainerIn,
+        ContainerOut>(
+        numbers_step<std::size_t>(
+            every_n, size_of_cont(xs), every_n),
         xs);
 }
 
@@ -15094,6 +15123,7 @@ fplus_curry_define_fn_2(insert_at_idx)
 fplus_curry_define_fn_1(partition)
 fplus_curry_define_fn_1(split_at_idxs)
 fplus_curry_define_fn_1(split_every)
+fplus_curry_define_fn_1(split_evenly)
 fplus_curry_define_fn_2(split_by_token)
 fplus_curry_define_fn_1(run_length_encode_by)
 fplus_curry_define_fn_0(run_length_encode)
@@ -15702,6 +15732,7 @@ fplus_fwd_define_fn_2(insert_at_idx)
 fplus_fwd_define_fn_1(partition)
 fplus_fwd_define_fn_1(split_at_idxs)
 fplus_fwd_define_fn_1(split_every)
+fplus_fwd_define_fn_1(split_evenly)
 fplus_fwd_define_fn_2(split_by_token)
 fplus_fwd_define_fn_1(run_length_encode_by)
 fplus_fwd_define_fn_0(run_length_encode)
@@ -16001,6 +16032,7 @@ fplus_fwd_flip_define_fn_1(split_at_idx)
 fplus_fwd_flip_define_fn_1(partition)
 fplus_fwd_flip_define_fn_1(split_at_idxs)
 fplus_fwd_flip_define_fn_1(split_every)
+fplus_fwd_flip_define_fn_1(split_evenly)
 fplus_fwd_flip_define_fn_1(run_length_encode_by)
 fplus_fwd_flip_define_fn_1(span)
 fplus_fwd_flip_define_fn_1(aperture)
