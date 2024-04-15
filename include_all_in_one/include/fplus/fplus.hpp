@@ -8354,8 +8354,9 @@ std::function<X(X)> divide_by(const X& x)
 // API search type: div_pos_int_ceil : (a, a) -> a
 // Positive integer division, but rounding up instead of down.
 // div_pos_int_ceil(5, 3) == 2
-template<typename X>
-static auto div_pos_int_ceil(X numerator, X denominator) {
+template <typename X>
+static auto div_pos_int_ceil(X numerator, X denominator)
+{
     static_assert(std::is_integral<X>::value, "type must be integral");
     static_assert(!std::is_signed<X>::value, "type must be unsigned");
     return numerator / denominator + (numerator % denominator != 0);

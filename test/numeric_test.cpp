@@ -289,7 +289,9 @@ TEST_CASE("numeric_test - ceil_to_int_mult")
 TEST_CASE("numeric_test - div_pos_int_ceil")
 {
     using namespace fplus;
-    REQUIRE_EQ(div_pos_int_ceil(5, 3), 2);
+    const std::uint64_t numerator = 5;
+    const std::uint64_t denominator = 3;
+    REQUIRE_EQ(div_pos_int_ceil(numerator, denominator), 2);
 }
 
 TEST_CASE("numeric_test - reference_interval")
