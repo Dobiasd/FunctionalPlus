@@ -91,6 +91,9 @@ TEST_CASE("split_test - split functions")
     REQUIRE_EQ(split_at_idx(2, xs), std::make_pair(IntVector({ 1, 2 }), IntVector({ 2, 3, 2 })));
     REQUIRE_EQ(partition(is_even_int, xs), std::make_pair(IntVector({ 2, 2, 2 }), IntVector({ 1, 3 })));
     REQUIRE_EQ(split_every(2, xs), IntVectors({ { 1, 2 }, { 2, 3 }, { 2 } }));
+    REQUIRE_EQ(split_evenly(1, xs), IntVectors({ { 1, 2, 2, 3, 2 } }));
+    REQUIRE_EQ(split_evenly(2, xs), IntVectors({ { 1, 2, 2 }, { 3, 2 } }));
+    REQUIRE_EQ(split_evenly(3, xs), IntVectors({ { 1, 2 }, { 2, 3 }, { 2 } }));
     auto splittedAt1And3 = split_at_idxs(IdxVector({ 1, 3 }), xs);
     IntVectors splittedAt1And3Dest = { IntVector({ 1 }), IntVector({ 2, 2 }), IntVector({ 3, 2 }) };
     REQUIRE_EQ(splittedAt1And3, splittedAt1And3Dest);

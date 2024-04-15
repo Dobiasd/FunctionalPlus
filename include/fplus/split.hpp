@@ -492,6 +492,24 @@ ContainerOut split_every(std::size_t n, const ContainerIn& xs)
         xs);
 }
 
+// API search type: split_evenly : (Int, [a]) -> [[a]]
+// fwd bind count: 1
+// Split a sequence into n similarly-sized chunks.
+// split_evenly(2, [0,1,2,3,4]) == [[0,1,2],[3,4]]
+template <typename ContainerIn,
+    typename ContainerOut = std::vector<ContainerIn>>
+ContainerOut split_evenly(std::size_t n, const ContainerIn& xs)
+{
+    const std::size_t every_n = size_of_cont(xs) / n;
+    return split_at_idxs<
+        std::vector<std::size_t>,
+        ContainerIn,
+        ContainerOut>(
+        numbers_step<std::size_t>(
+            every_n, size_of_cont(xs), every_n),
+        xs);
+}
+
 // API search type: split_by_token : ([a], Bool, [a]) -> [[a]]
 // fwd bind count: 2
 // Split a sequence at every segment matching a token.
