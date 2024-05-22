@@ -76,7 +76,7 @@ jobs:
     steps:
       - uses: actions/checkout@main
       - name: Setup
-        run: script/ci_setup_dependencies.sh
+        run: sudo script/ci_setup_dependencies.sh
       - name: Build
         run: script/ci_build.sh
 
