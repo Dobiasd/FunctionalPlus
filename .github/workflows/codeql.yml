@@ -25,6 +25,8 @@ jobs:
           queries: +security-and-quality
       - name: Build
         run: |
+          echo $CC
+          echo $CXX
           cmake -S test -B build
           cmake --build build -j 4
       - name: CodeQL Analysis
