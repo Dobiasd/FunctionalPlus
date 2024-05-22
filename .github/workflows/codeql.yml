@@ -19,6 +19,8 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt install -y gcc g++
+          gcc --version
+          g++ --version
           sudo script/ci_setup_dependencies.sh
       - name: CodeQL Initialization
         uses: github/codeql-action/init@v3
@@ -27,10 +29,6 @@ jobs:
           queries: +security-and-quality
       - name: Build
         run: |
-          echo $CC
-          echo $CXX
-          gcc --version
-          g++ --version
           cmake -S test -B build
           cmake --build build -j 4
       - name: CodeQL Analysis
