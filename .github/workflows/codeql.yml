@@ -17,11 +17,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@main
       - name: Install dependencies
-        run: |
-          cat /etc/os-release
-          gcc --version
-          g++ --version
-          sudo script/ci_setup_dependencies.sh
+        run: sudo script/ci_setup_dependencies.sh
       - name: CodeQL Initialization
         uses: github/codeql-action/init@v3
         with:
