@@ -27,6 +27,8 @@ jobs:
         run: |
           echo $CC
           echo $CXX
+          gcc-13 --version
+          g++-13 --version
           cmake -S test -B build
           cmake --build build -j 4
       - name: CodeQL Analysis
