@@ -18,7 +18,6 @@ jobs:
         uses: actions/checkout@main
       - name: Install dependencies
         run: |
-          sudo apt install -y gcc g++
           gcc --version
           g++ --version
           sudo script/ci_setup_dependencies.sh
