@@ -11,13 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     name: "CodeQL"
     env:
-      CC: gcc-13
-      CXX: g++-13
+      CC: gcc
+      CXX: g++
     steps:
       - name: Checkout
         uses: actions/checkout@main
       - name: Install dependencies
-        run: sudo script/ci_setup_dependencies.sh
+        run: |
+          sudo apt install -y gcc g++
+          sudo script/ci_setup_dependencies.sh
       - name: CodeQL Initialization
         uses: github/codeql-action/init@v3
         with:
@@ -27,8 +29,8 @@ jobs:
         run: |
           echo $CC
           echo $CXX
-          gcc-13 --version
-          g++-13 --version
+          gcc --version
+          g++ --version
           cmake -S test -B build
           cmake --build build -j 4
       - name: CodeQL Analysis
