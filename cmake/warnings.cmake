@@ -34,6 +34,7 @@ else ()
             -Wall
             -Wextra
             -pedantic
+            -Wshadow
             -Werror
             -Weffc++
             -Wconversion
