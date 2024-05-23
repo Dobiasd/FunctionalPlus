@@ -1638,7 +1638,7 @@ Container intersperse(const X& value, const Container& xs)
     if (xs.empty())
         return Container();
     if (size_of_cont(xs) == 1)
-        return Container({xs.front()}); // workaround for array-bounds false positive in GCC 14
+        return Container({ xs.front() }); // workaround for array-bounds false positive in GCC 14
     Container result;
     internal::prepare_container(result, std::max<std::size_t>(0, size_of_cont(xs) * 2 - 1));
     auto it = internal::get_back_inserter(result);
