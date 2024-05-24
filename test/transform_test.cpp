@@ -241,6 +241,6 @@ using special_vector = std::vector<T, mallocator<T>>;
 TEST_CASE("transform_test - custom_allocator")
 {
     using namespace fplus;
-    special_vector<int> xs = { 1, 2, 2, 3, 2 };
-    special_vector<std::string> ys = fplus::transform([](auto x) { return std::to_string(x); }, xs);
+    special_vector<int> cust = { 1, 2, 2, 3, 2 };
+    special_vector<std::string> ys = fplus::transform([](auto x) { return std::to_string(x); }, cust);
 }
