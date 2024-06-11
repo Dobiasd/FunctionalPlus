@@ -1278,10 +1278,11 @@ std::pair<Container, Container> unweave(const Container& xs)
     auto it_odd = internal::get_back_inserter<Container>(result.second);
     std::size_t counter = 0;
     for (const auto& x : xs) {
-        if (counter++ % 2 == 0)
+        if (counter % 2 == 0)
             *it_even = x;
         else
             *it_odd = x;
+        counter++;
     }
     return result;
 }
