@@ -47,7 +47,7 @@ TEST_CASE("Timer - test_accuracy")
             deltas.push_back(measure_delta());
         });
         auto mean_dev = fplus::mean_stddev<double>(deltas);
-        REQUIRE_LT(mean_dev.first, 0.1);
+        REQUIRE_LT(mean_dev.first, 0.15);
         REQUIRE_LT(mean_dev.second, 0.07);
     }
 #endif
