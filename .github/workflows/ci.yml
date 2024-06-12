@@ -24,10 +24,8 @@ jobs:
         run: |
           echo "/host_usr_local/bin" >> $GITHUB_PATH
           script/ci_setup_linux.sh
-      - name: Setup Dependencies
-        run: script/ci_setup_dependencies.sh
-      - name: Build
-        run: script/ci_build.sh
+      - name: Build and Test
+        run: script/ci.sh run_tests
 
 
   build_clang:
@@ -62,10 +60,8 @@ jobs:
             apt-get install -y --no-install-recommends libunwind-${{ matrix.build_config.version }}-dev;
           fi
           echo "CXXFLAGS=-stdlib=libc++" >> $GITHUB_ENV
-      - name: Setup Dependencies
-        run: script/ci_setup_dependencies.sh
-      - name: Build
-        run: script/ci_build.sh
+      - name: Build and Test
+        run: script/ci.sh run_tests
 
 
   build_osx:
@@ -76,10 +72,8 @@ jobs:
       CXX: clang++
     steps:
       - uses: actions/checkout@main
-      - name: Setup
-        run: sudo script/ci_setup_dependencies.sh
-      - name: Build
-        run: script/ci_build.sh
+      - name: Build and Test
+        run: script/ci.sh run_tests
 
 
   build_windows_msvc:
@@ -93,12 +87,9 @@ jobs:
     steps:
       - uses: actions/checkout@main
       - uses: ilammy/msvc-dev-cmd@v1
-      - name: Setup
+      - name: Build and Test
         shell: bash
-        run: script/ci_setup_dependencies.sh
-      - name: Build
-        shell: bash
-        run: script/ci_build.sh
+        run: script/ci.sh run_tests
 
 
   formatting-check:

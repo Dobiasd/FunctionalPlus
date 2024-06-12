@@ -16,16 +16,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@main
-      - name: Install dependencies
-        run: sudo script/ci_setup_dependencies.sh
       - name: CodeQL Initialization
         uses: github/codeql-action/init@v3
         with:
           languages: cpp
           queries: +security-and-quality
       - name: Build
-        run: |
-          cmake -S test -B build
-          cmake --build build -j 4
+        shell: bash
+        run: script/ci.sh run_build
       - name: CodeQL Analysis
         uses: github/codeql-action/analyze@v3
