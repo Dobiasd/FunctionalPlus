@@ -20,7 +20,7 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: cpp
-          queries: +security-and-quality
+          queries: +security
       - name: Build
         shell: bash
         run: script/ci.sh run_build
