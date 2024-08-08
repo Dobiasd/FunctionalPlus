@@ -240,7 +240,14 @@ private:
         }
     }
     bool is_present_;
+#ifdef _MSC_VER
+    __pragma(warning(push))
+        __pragma(warning(disable : 4127))
+#endif
     alignas(T) unsigned char value_[sizeof(T)];
+#ifdef _MSC_VER
+    __pragma(warning(pop))
+#endif
 };
 
 // API search type: is_just : Maybe a -> Bool
