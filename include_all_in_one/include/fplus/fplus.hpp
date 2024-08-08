@@ -2797,7 +2797,7 @@ private:
         }
     }
     bool is_present_;
-    typename std::aligned_storage<sizeof(T), alignof(T)>::type value_;
+    alignas(T) std::byte value_[sizeof(T)];
 };
 
 // API search type: is_just : Maybe a -> Bool
