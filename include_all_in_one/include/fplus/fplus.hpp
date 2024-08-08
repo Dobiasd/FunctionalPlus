@@ -2797,7 +2797,7 @@ private:
         }
     }
     bool is_present_;
-    alignas(T) std::byte value_[sizeof(T)];
+    alignas(T) unsigned char value_[sizeof(T)];
 };
 
 // API search type: is_just : Maybe a -> Bool
