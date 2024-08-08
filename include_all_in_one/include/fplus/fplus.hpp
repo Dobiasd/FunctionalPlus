@@ -868,8 +868,7 @@ namespace internal {
     static std::false_type is_refwrap_test(const U&);
 
     template <typename T>
-    struct is_reference_wrapper : decltype(is_refwrap_test(std::declval<T>())) {
-    };
+    struct is_reference_wrapper : decltype(is_refwrap_test(std::declval<T>())) {};
 
     template <typename T, typename U = typename std::decay<T>::type>
     struct unwrap_reference_wrapper {
@@ -2801,7 +2800,7 @@ private:
     __pragma(warning(push))
         __pragma(warning(disable : 4127))
 #endif
-    alignas(T) unsigned char value_[sizeof(T)];
+            alignas(T) unsigned char value_[sizeof(T)];
 #ifdef _MSC_VER
     __pragma(warning(pop))
 #endif

@@ -244,7 +244,7 @@ private:
     __pragma(warning(push))
         __pragma(warning(disable : 4127))
 #endif
-    alignas(T) unsigned char value_[sizeof(T)];
+            alignas(T) unsigned char value_[sizeof(T)];
 #ifdef _MSC_VER
     __pragma(warning(pop))
 #endif
