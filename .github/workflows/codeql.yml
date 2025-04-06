@@ -23,8 +23,6 @@ jobs:
           queries: +security-and-quality
       - name: Build
         shell: bash
-        run: |
-          script/ci_setup_linux.sh
-          script/ci.sh run_build
+        run: script/ci.sh run_build
       - name: CodeQL Analysis
         uses: github/codeql-action/analyze@v3
