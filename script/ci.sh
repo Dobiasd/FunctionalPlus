@@ -37,7 +37,7 @@ _build_impl() {
     cd "$REPO_DIR"
     JOBS=4
     BUILD_TYPE=Release
-    cmake -S test -B build -D CMAKE_BUILD_TYPE=${BUILD_TYPE}
+    cmake -S test -B build -D CMAKE_BUILD_TYPE=${BUILD_TYPE} -D CMAKE_PREFIX_PATH="$INSTALL_PREFIX"
     cmake --build build --config ${BUILD_TYPE} -j ${JOBS}
 }
 
