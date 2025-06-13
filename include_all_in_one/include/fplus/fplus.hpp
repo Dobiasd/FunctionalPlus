@@ -3295,7 +3295,7 @@ namespace internal {
         std::size_t pos_;
     };
 
-#if defined(_MSC_VER) && _MSC_VER >= 1900
+#if defined(_MSC_VER) && _MSC_VER >= 1900 && _MSC_VER < 1915
     template <typename T, std::size_t N>
     struct std::_Is_checked_helper<array_back_insert_iterator<T, N>>
         : public true_type { // mark array_back_insert_iterator as checked
@@ -14329,23 +14329,20 @@ namespace internal {
         typedef std::shared_ptr<T> type;
     };
 
-    // http://stackoverflow.com/a/27588263/1866775
-
     template <typename T, typename... Ts>
-    struct get_index;
-
-    template <typename T, typename... Ts>
-    struct get_index<T, T, Ts...> : std::integral_constant<std::size_t, 0> {
+    struct contains {
+        /// True if T is in Ts...
+        constexpr static bool value = (std::is_same_v<T, Ts> || ...);
     };
 
-    template <typename T, typename Tail, typename... Ts>
-    struct get_index<T, Tail, Ts...> : std::integral_constant<std::size_t, 1 + get_index<T, Ts...>::value> {
-    };
-
-    template <typename T>
-    struct get_index<T> {
-        // condition is always false, but should be dependant of T
-        static_assert(sizeof(T) == 0, "element not found");
+    template <typename What, typename... Ts>
+    struct get_index {
+        /// Index of type T in List.
+        constexpr static auto index = []() {
+            return (contains<What, Ts...>::value ? []() {signed i = 0;
+            (... && (!std::is_same_v<What, Ts...> && ++i));
+            return i; }() : -1);
+        }();
     };
 
     template <typename T, typename... Ts>
