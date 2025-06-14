@@ -14329,10 +14329,10 @@ namespace internal {
         typedef std::shared_ptr<T> type;
     };
 
-    template <typename T, typename... Ts>
+    template <typename What, typename... Ts>
     struct contains {
         /// True if T is in Ts...
-        constexpr static bool value = (std::is_same_v<T, Ts> || ...);
+        constexpr static bool value = (std::is_same_v<What, Ts> || ...);
     };
 
     template <typename What, typename... Ts>

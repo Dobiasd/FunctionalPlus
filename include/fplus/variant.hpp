@@ -104,7 +104,7 @@ namespace internal {
         /// Index of type T in List.
         constexpr static auto index = []() {
             return (contains<What, Ts...>::value ? []() {signed i = 0;
-            (... && (!std::is_same_v<What, Ts...> && ++i));
+            (... && (!std::is_same_v<What, Ts> && ++i));
             return i; }() : -1);
         }();
     };
