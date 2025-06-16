@@ -3295,7 +3295,7 @@ namespace internal {
         std::size_t pos_;
     };
 
-#if defined(_MSC_VER) && _MSC_VER >= 1900
+#if defined(_MSC_VER) && _MSC_VER >= 1900 && _MSC_VER < 1915
     template <typename T, std::size_t N>
     struct std::_Is_checked_helper<array_back_insert_iterator<T, N>>
         : public true_type { // mark array_back_insert_iterator as checked
