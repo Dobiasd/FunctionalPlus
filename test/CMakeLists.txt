@@ -75,6 +75,6 @@ foreach (name IN LISTS tests)
             FunctionalPlus::fplus
             doctest::doctest
     )
-    target_compile_features("${name}" PRIVATE cxx_std_14)
+    target_compile_features("${name}" PRIVATE cxx_std_17)
     doctest_discover_tests("${name}")
 endforeach ()
