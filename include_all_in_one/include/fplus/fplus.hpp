@@ -14338,10 +14338,11 @@ namespace internal {
     template <typename What, typename... Ts>
     struct get_index {
         /// Index of type T in List.
-        constexpr static auto index = []() {
-            return (contains<What, Ts...>::value ? []() {signed i = 0;
-            (... && (!std::is_same_v<What, Ts...> && ++i));
-            return i; }() : -1);
+        static_assert(contains<What, Ts...>::value, "element is not in list");
+        constexpr static auto value = []() {
+            return ([]() {std::size_t i = 0;
+            (... && (!std::is_same_v<What, Ts> && ++i));
+            return i; }());
         }();
     };
 
