@@ -344,22 +344,6 @@ namespace utils {
         : public function_traits<decltype(&T::operator())> {
     };
 
-    namespace xx_impl {
-        template <typename C, typename R, typename... A>
-        struct memfn_type {
-            typedef typename std::conditional<
-                std::is_const<C>::value,
-                typename std::conditional<
-                    std::is_volatile<C>::value,
-                    R (C::*)(A...) const volatile,
-                    R (C::*)(A...) const>::type,
-                typename std::conditional<
-                    std::is_volatile<C>::value,
-                    R (C::*)(A...) volatile,
-                    R (C::*)(A...)>::type>::type type;
-        };
-    }
-
     template <typename ReturnType, typename... Args>
     struct function_traits<ReturnType(Args...)> {
         /**
@@ -403,6 +387,22 @@ namespace utils {
             typedef typename std::tuple_element<i, std::tuple<Args...>>::type type;
         };
     };
+
+    namespace xx_impl {
+        template <typename C, typename R, typename... A>
+        struct memfn_type {
+            typedef typename std::conditional<
+                std::is_const<C>::value,
+                typename std::conditional<
+                    std::is_volatile<C>::value,
+                    R (C::*)(A...) const volatile,
+                    R (C::*)(A...) const>::type,
+                typename std::conditional<
+                    std::is_volatile<C>::value,
+                    R (C::*)(A...) volatile,
+                    R (C::*)(A...)>::type>::type type;
+        };
+    }
 
 #if __cplusplus > 201510L
 
@@ -700,7 +700,7 @@ namespace internal {
     };
 
     template <typename ReturnType, typename ClassType, typename... Args>
-    struct has_function_traits<ReturnType (ClassType::*)(Args...)&> : std::true_type {
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) &> : std::true_type {
     };
 
     template <typename ReturnType, typename ClassType, typename... Args>

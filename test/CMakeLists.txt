@@ -15,9 +15,7 @@ include(../cmake/warnings.cmake)
 find_package(doctest 2.4.11 CONFIG REQUIRED)
 # for doctest_discover_tests
 include(doctest)
-
 enable_testing()
-
 set(
         tests
         show_versions
@@ -75,6 +73,6 @@ foreach (name IN LISTS tests)
             FunctionalPlus::fplus
             doctest::doctest
     )
-    target_compile_features("${name}" PRIVATE cxx_std_14)
+    target_compile_features("${name}" PRIVATE cxx_std_17)
     doctest_discover_tests("${name}")
 endforeach ()
