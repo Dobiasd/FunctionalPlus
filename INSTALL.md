@@ -80,7 +80,7 @@ The benefits of this:
   - Or get the specific version by setting it to a specific commit point
 
 ```cmake
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.14)
 project(FplusMinimalExternalExample)
 
 include(ExternalProject)
@@ -206,7 +206,7 @@ g++ --std=c++14 src/main.cpp -Iexternal/fplus/include
 
 or, with CMake:
 ````cmake
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.14)
 project(YourProjectName)
 add_executable(main src/main.cpp)
 target_compile_features(main PRIVATE cxx_std_14)
