@@ -193,7 +193,7 @@ template <typename MapIn,
 MapOut swap_keys_and_values(const MapIn& dict)
 {
     auto inAsPairs = map_to_pairs(dict);
-    auto outAsPairs = transform(swap_pair_elems<InKey, InVal>, inAsPairs);
+    auto outAsPairs = transform(swap_pair_elems<OutVal, InVal>, inAsPairs);
     return pairs_to_map<MapOut>(outAsPairs);
 }
 

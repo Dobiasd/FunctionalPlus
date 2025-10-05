@@ -40,7 +40,7 @@ ContainerOut transform_with_idx(F f, const ContainerIn& xs)
     internal::trigger_static_asserts<internal::binary_function_tag, F>();
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
-    auto it = internal::get_back_inserter<ContainerOut>(ys);
+    auto it = internal::get_back_inserter(ys);
     std::size_t idx = 0;
     for (const auto& x : xs) {
         *it = internal::invoke(f, idx++, x);
@@ -127,7 +127,7 @@ ContainerOut interleave(const ContainerIn& xss)
     ContainerOut result;
     const std::size_t length = sum(transform(size_of_cont<inner_t>, xss));
     internal::prepare_container(result, length);
-    auto it_out = internal::get_back_inserter<ContainerOut>(result);
+    auto it_out = internal::get_back_inserter(result);
     bool still_appending = true;
     while (still_appending) {
         still_appending = false;
@@ -256,7 +256,7 @@ auto apply_functions(const FunctionContainer& functions, const FIn& x)
 
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(functions));
-    auto it = internal::get_back_inserter<ContainerOut>(ys);
+    auto it = internal::get_back_inserter(ys);
     for (const auto& f : functions) {
         *it = internal::invoke(f, x);
     }
@@ -307,7 +307,7 @@ auto transform_parallelly(F f, const ContainerIn& xs)
 
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
-    auto it = internal::get_back_inserter<ContainerOut>(ys);
+    auto it = internal::get_back_inserter(ys);
     for (auto& handle : handles) {
         *it = handle.get();
     }

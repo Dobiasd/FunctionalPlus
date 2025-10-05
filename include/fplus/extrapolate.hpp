@@ -104,7 +104,7 @@ Container extrapolate_replicate(std::size_t count_begin, std::size_t count_end,
     Container ys;
     const auto xs_size = size_of_cont(xs);
     internal::prepare_container(ys, xs_size + count_begin + count_end);
-    auto it = internal::get_back_inserter<Container>(ys);
+    auto it = internal::get_back_inserter(ys);
     const signed int idx_end = static_cast<signed int>(xs_size + count_end);
     const signed int idx_start = -static_cast<signed int>(count_begin);
     for (signed int idx = idx_start; idx < idx_end; ++idx) {
@@ -129,7 +129,7 @@ Container extrapolate_wrap(std::size_t count_begin, std::size_t count_end,
     Container ys;
     const auto xs_size = size_of_cont(xs);
     internal::prepare_container(ys, xs_size + count_begin + count_end);
-    auto it = internal::get_back_inserter<Container>(ys);
+    auto it = internal::get_back_inserter(ys);
     const signed int idx_end = static_cast<signed int>(xs_size + count_end);
     const signed int idx_start = -static_cast<signed int>(count_begin);
     for (signed int idx = idx_start; idx < idx_end; ++idx) {

@@ -663,7 +663,7 @@ Container stride(std::size_t step, const Container& xs)
 {
     assert(step > 0);
     Container ys;
-    auto it = internal::get_back_inserter<Container>(ys);
+    auto it = internal::get_back_inserter(ys);
     auto it_in = std::begin(xs);
     std::size_t i = 0;
     const auto xs_size = size_of_cont(xs);

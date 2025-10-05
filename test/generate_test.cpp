@@ -243,9 +243,9 @@ TEST_CASE("generate_test - adjecent_difference")
 
 TEST_CASE("generate_test - rotate_left")
 {
-    const std::vector<char> v = { 'x', 'y', 'z' };
+    const std::array<char, 3> v = { 'x', 'y', 'z' };
     auto result = fplus::rotate_left(v);
-    REQUIRE_EQ(result, std::vector<char>({ 'y', 'z', 'x' }));
+    REQUIRE_EQ(result, std::array<char, 3>({ 'y', 'z', 'x' }));
 }
 
 TEST_CASE("generate_test - rotate_left_with_empty")

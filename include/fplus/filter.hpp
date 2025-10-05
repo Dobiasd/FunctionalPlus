@@ -32,7 +32,7 @@ namespace internal {
     {
         internal::check_unary_predicate_for_container<Pred, Container>();
         Container result;
-        auto it = internal::get_back_inserter<Container>(result);
+        auto it = internal::get_back_inserter(result);
         std::copy_if(std::begin(xs), std::end(xs), it, pred);
         return result;
     }
@@ -102,7 +102,7 @@ Container keep_if_with_idx(Pred pred, const Container& xs)
 {
     internal::check_index_with_type_predicate_for_container<Pred, Container>();
     Container ys;
-    auto it = internal::get_back_inserter<Container>(ys);
+    auto it = internal::get_back_inserter(ys);
     std::size_t idx = 0;
     for (const auto& x : xs) {
         if (internal::invoke(pred, idx++, x))
@@ -190,7 +190,7 @@ Container keep_idxs(const ContainerIdxs& idxs_to_keep, const Container& xs)
     auto idxs_left = convert_container<std::list<std::size_t>>(
         unique(sort(idxs_to_keep)));
     Container ys;
-    auto it = internal::get_back_inserter<Container>(ys);
+    auto it = internal::get_back_inserter(ys);
     std::size_t idx = 0;
     for (const auto& x : xs) {
         if (!idxs_left.empty() && idxs_left.front() == idx) {
@@ -214,7 +214,7 @@ Container drop_idxs(const ContainerIdxs& idxs_to_drop, const Container& xs)
     auto idxs_left = convert_container<std::list<std::size_t>>(
         unique(sort(idxs_to_drop)));
     Container ys;
-    auto it = internal::get_back_inserter<Container>(ys);
+    auto it = internal::get_back_inserter(ys);
     std::size_t idx = 0;
     for (const auto& x : xs) {
         if (idxs_left.empty() || idxs_left.front() != idx) {
@@ -253,7 +253,7 @@ ContainerOut justs(const ContainerIn& xs)
     auto justsInMaybes = keep_if(is_just<T>, xs);
     ContainerOut ys;
     internal::prepare_container(ys, fplus::size_of_cont(justsInMaybes));
-    auto itOut = internal::get_back_inserter<ContainerOut>(ys);
+    auto itOut = internal::get_back_inserter(ys);
     std::transform(std::begin(justsInMaybes), std::end(justsInMaybes),
         itOut, unsafe_get_just<T>);
     return ys;
@@ -274,7 +274,7 @@ ContainerOut oks(const ContainerIn& xs)
     auto oksInResults = keep_if(is_ok<Ok, Error>, xs);
     ContainerOut ys;
     internal::prepare_container(ys, fplus::size_of_cont(oksInResults));
-    auto itOut = internal::get_back_inserter<ContainerOut>(ys);
+    auto itOut = internal::get_back_inserter(ys);
     std::transform(std::begin(oksInResults), std::end(oksInResults),
         itOut, unsafe_get_ok<Ok, Error>);
     return ys;
@@ -295,7 +295,7 @@ ContainerOut errors(const ContainerIn& xs)
     auto errorsInResults = keep_if(is_error<Ok, Error>, xs);
     ContainerOut ys;
     internal::prepare_container(ys, fplus::size_of_cont(errorsInResults));
-    auto itOut = internal::get_back_inserter<ContainerOut>(ys);
+    auto itOut = internal::get_back_inserter(ys);
     std::transform(std::begin(errorsInResults), std::end(errorsInResults),
         itOut, unsafe_get_error<Ok, Error>);
     return ys;
@@ -410,7 +410,7 @@ Container adjacent_keep_snd_if(BinaryPredicate p, const Container& xs)
     }
     internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
     Container result;
-    auto it = internal::get_back_inserter<Container>(result);
+    auto it = internal::get_back_inserter(result);
     auto it_in = std::begin(xs);
     *it = *it_in;
     while (internal::add_to_iterator(it_in) != std::end(xs)) {
@@ -439,7 +439,7 @@ Container adjacent_drop_fst_if(BinaryPredicate p, const Container& xs)
     }
     internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
     Container result;
-    auto it = internal::get_back_inserter<Container>(result);
+    auto it = internal::get_back_inserter(result);
     auto it_in = std::begin(xs);
     while (internal::add_to_iterator(it_in) != std::end(xs)) {
         if (!internal::invoke(p, *it_in, *internal::add_to_iterator(it_in))) {
