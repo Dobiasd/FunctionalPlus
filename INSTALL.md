@@ -154,7 +154,7 @@ Just add a *conanfile.txt* with FunctionalPlus as a requirement and chose the ge
 
 ```
 [requires]
-functionalplus/0.2.25
+functionalplus/0.2.26
 
 [generators]
 cmake
