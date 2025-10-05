@@ -3302,7 +3302,7 @@ namespace internal {
     };
 #endif
 
-    template <typename Container, typename Y, std::size_t N>
+    template <typename Y, std::size_t N>
     array_back_insert_iterator<Y, N> get_back_inserter(std::array<Y, N>& ys)
     {
         return array_back_insert_iterator<Y, N>(ys);
@@ -3415,7 +3415,7 @@ ContainerOut convert_elems(const ContainerIn& xs)
         "Elements not convertible.");
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
-    auto it = internal::get_back_inserter<ContainerOut>(ys);
+    auto it = internal::get_back_inserter(ys);
     // using 'for (const auto& x ...)' is even for ints as fast as
     // using 'for (int x ...)' (GCC, O3), so there is no need to
     // check if the type is fundamental and then dispatch accordingly.
@@ -3440,7 +3440,7 @@ ContainerOut convert_container(const ContainerIn& xs)
         "Source and dest container must have the same value_type");
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
-    auto itOut = internal::get_back_inserter<ContainerOut>(ys);
+    auto itOut = internal::get_back_inserter(ys);
     std::copy(std::begin(xs), std::end(xs), itOut);
     return ys;
 }
@@ -3459,7 +3459,7 @@ ContainerOut convert_container_and_elems(const ContainerIn& xs)
     typedef typename ContainerOut::value_type DestElem;
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
-    auto it = internal::get_back_inserter<ContainerOut>(ys);
+    auto it = internal::get_back_inserter(ys);
     for (const auto& x : xs) {
         *it = convert<DestElem>(x);
     }
@@ -3712,7 +3712,7 @@ namespace internal {
             decltype(*std::begin(xs))>();
         ContainerOut ys;
         internal::prepare_container(ys, size_of_cont(xs));
-        auto it = internal::get_back_inserter<ContainerOut>(ys);
+        auto it = internal::get_back_inserter(ys);
         std::transform(std::begin(xs), std::end(xs), it, f);
         return ys;
     }
@@ -3756,7 +3756,7 @@ ContainerOut transform_convert(F f, const ContainerIn& xs)
     internal::trigger_static_asserts<internal::unary_function_tag, F, typename ContainerIn::value_type>();
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
-    auto it = internal::get_back_inserter<ContainerOut>(ys);
+    auto it = internal::get_back_inserter(ys);
     std::transform(std::begin(xs), std::end(xs), it, f);
     return ys;
 }
@@ -4348,7 +4348,7 @@ Container interweave(const Container& xs, const Container& ys)
 {
     Container result;
     internal::prepare_container(result, size_of_cont(xs) + size_of_cont(ys));
-    auto it = internal::get_back_inserter<Container>(result);
+    auto it = internal::get_back_inserter(result);
     auto it_xs = std::begin(xs);
     auto it_ys = std::begin(ys);
     while (it_xs != std::end(xs) || it_ys != std::end(ys)) {
@@ -4376,8 +4376,8 @@ std::pair<Container, Container> unweave(const Container& xs)
     else
         internal::prepare_container(result.first, size_of_cont(xs) / 2 + 1);
     internal::prepare_container(result.second, size_of_cont(xs) / 2);
-    auto it_even = internal::get_back_inserter<Container>(result.first);
-    auto it_odd = internal::get_back_inserter<Container>(result.second);
+    auto it_even = internal::get_back_inserter(result.first);
+    auto it_odd = internal::get_back_inserter(result.second);
     std::size_t counter = 0;
     for (const auto& x : xs) {
         if (counter % 2 == 0)
@@ -5071,7 +5071,7 @@ ContainerOut numbers_step(const T start, const T end, const T step)
     }
     std::size_t size = static_cast<std::size_t>((end - start) / step);
     internal::prepare_container(result, size);
-    auto it = internal::get_back_inserter<ContainerOut>(result);
+    auto it = internal::get_back_inserter(result);
     for (T x = start; x < end; x += step)
         *it = x;
     return result;
@@ -5743,7 +5743,7 @@ namespace internal {
     {
         internal::check_unary_predicate_for_container<Pred, Container>();
         Container result;
-        auto it = internal::get_back_inserter<Container>(result);
+        auto it = internal::get_back_inserter(result);
         std::copy_if(std::begin(xs), std::end(xs), it, pred);
         return result;
     }
@@ -5813,7 +5813,7 @@ Container keep_if_with_idx(Pred pred, const Container& xs)
 {
     internal::check_index_with_type_predicate_for_container<Pred, Container>();
     Container ys;
-    auto it = internal::get_back_inserter<Container>(ys);
+    auto it = internal::get_back_inserter(ys);
     std::size_t idx = 0;
     for (const auto& x : xs) {
         if (internal::invoke(pred, idx++, x))
@@ -5901,7 +5901,7 @@ Container keep_idxs(const ContainerIdxs& idxs_to_keep, const Container& xs)
     auto idxs_left = convert_container<std::list<std::size_t>>(
         unique(sort(idxs_to_keep)));
     Container ys;
-    auto it = internal::get_back_inserter<Container>(ys);
+    auto it = internal::get_back_inserter(ys);
     std::size_t idx = 0;
     for (const auto& x : xs) {
         if (!idxs_left.empty() && idxs_left.front() == idx) {
@@ -5925,7 +5925,7 @@ Container drop_idxs(const ContainerIdxs& idxs_to_drop, const Container& xs)
     auto idxs_left = convert_container<std::list<std::size_t>>(
         unique(sort(idxs_to_drop)));
     Container ys;
-    auto it = internal::get_back_inserter<Container>(ys);
+    auto it = internal::get_back_inserter(ys);
     std::size_t idx = 0;
     for (const auto& x : xs) {
         if (idxs_left.empty() || idxs_left.front() != idx) {
@@ -5964,7 +5964,7 @@ ContainerOut justs(const ContainerIn& xs)
     auto justsInMaybes = keep_if(is_just<T>, xs);
     ContainerOut ys;
     internal::prepare_container(ys, fplus::size_of_cont(justsInMaybes));
-    auto itOut = internal::get_back_inserter<ContainerOut>(ys);
+    auto itOut = internal::get_back_inserter(ys);
     std::transform(std::begin(justsInMaybes), std::end(justsInMaybes),
         itOut, unsafe_get_just<T>);
     return ys;
@@ -5985,7 +5985,7 @@ ContainerOut oks(const ContainerIn& xs)
     auto oksInResults = keep_if(is_ok<Ok, Error>, xs);
     ContainerOut ys;
     internal::prepare_container(ys, fplus::size_of_cont(oksInResults));
-    auto itOut = internal::get_back_inserter<ContainerOut>(ys);
+    auto itOut = internal::get_back_inserter(ys);
     std::transform(std::begin(oksInResults), std::end(oksInResults),
         itOut, unsafe_get_ok<Ok, Error>);
     return ys;
@@ -6006,7 +6006,7 @@ ContainerOut errors(const ContainerIn& xs)
     auto errorsInResults = keep_if(is_error<Ok, Error>, xs);
     ContainerOut ys;
     internal::prepare_container(ys, fplus::size_of_cont(errorsInResults));
-    auto itOut = internal::get_back_inserter<ContainerOut>(ys);
+    auto itOut = internal::get_back_inserter(ys);
     std::transform(std::begin(errorsInResults), std::end(errorsInResults),
         itOut, unsafe_get_error<Ok, Error>);
     return ys;
@@ -6121,7 +6121,7 @@ Container adjacent_keep_snd_if(BinaryPredicate p, const Container& xs)
     }
     internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
     Container result;
-    auto it = internal::get_back_inserter<Container>(result);
+    auto it = internal::get_back_inserter(result);
     auto it_in = std::begin(xs);
     *it = *it_in;
     while (internal::add_to_iterator(it_in) != std::end(xs)) {
@@ -6150,7 +6150,7 @@ Container adjacent_drop_fst_if(BinaryPredicate p, const Container& xs)
     }
     internal::check_binary_predicate_for_container<BinaryPredicate, Container>();
     Container result;
-    auto it = internal::get_back_inserter<Container>(result);
+    auto it = internal::get_back_inserter(result);
     auto it_in = std::begin(xs);
     while (internal::add_to_iterator(it_in) != std::end(xs)) {
         if (!internal::invoke(p, *it_in, *internal::add_to_iterator(it_in))) {
@@ -6214,7 +6214,7 @@ ContainerOut generate(F f, std::size_t amount)
     internal::trigger_static_asserts<internal::nullary_function_tag, F>();
     ContainerOut ys;
     internal::prepare_container(ys, amount);
-    auto it = internal::get_back_inserter<ContainerOut>(ys);
+    auto it = internal::get_back_inserter(ys);
     for (std::size_t i = 0; i < amount; ++i) {
         *it = internal::invoke(f);
     }
@@ -6234,7 +6234,7 @@ ContainerOut generate_by_idx(F f, std::size_t amount)
 
     ContainerOut ys;
     internal::prepare_container(ys, amount);
-    auto it = internal::get_back_inserter<ContainerOut>(ys);
+    auto it = internal::get_back_inserter(ys);
     for (std::size_t i = 0; i < amount; ++i) {
         *it = internal::invoke(f, i);
     }
@@ -9802,7 +9802,7 @@ template <typename MapIn,
 MapOut swap_keys_and_values(const MapIn& dict)
 {
     auto inAsPairs = map_to_pairs(dict);
-    auto outAsPairs = transform(swap_pair_elems<InKey, InVal>, inAsPairs);
+    auto outAsPairs = transform(swap_pair_elems<OutVal, InVal>, inAsPairs);
     return pairs_to_map<MapOut>(outAsPairs);
 }
 
@@ -10953,7 +10953,7 @@ Container stride(std::size_t step, const Container& xs)
 {
     assert(step > 0);
     Container ys;
-    auto it = internal::get_back_inserter<Container>(ys);
+    auto it = internal::get_back_inserter(ys);
     auto it_in = std::begin(xs);
     std::size_t i = 0;
     const auto xs_size = size_of_cont(xs);
@@ -11077,7 +11077,7 @@ ContainerOut transform_with_idx(F f, const ContainerIn& xs)
     internal::trigger_static_asserts<internal::binary_function_tag, F>();
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
-    auto it = internal::get_back_inserter<ContainerOut>(ys);
+    auto it = internal::get_back_inserter(ys);
     std::size_t idx = 0;
     for (const auto& x : xs) {
         *it = internal::invoke(f, idx++, x);
@@ -11164,7 +11164,7 @@ ContainerOut interleave(const ContainerIn& xss)
     ContainerOut result;
     const std::size_t length = sum(transform(size_of_cont<inner_t>, xss));
     internal::prepare_container(result, length);
-    auto it_out = internal::get_back_inserter<ContainerOut>(result);
+    auto it_out = internal::get_back_inserter(result);
     bool still_appending = true;
     while (still_appending) {
         still_appending = false;
@@ -11293,7 +11293,7 @@ auto apply_functions(const FunctionContainer& functions, const FIn& x)
 
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(functions));
-    auto it = internal::get_back_inserter<ContainerOut>(ys);
+    auto it = internal::get_back_inserter(ys);
     for (const auto& f : functions) {
         *it = internal::invoke(f, x);
     }
@@ -11344,7 +11344,7 @@ auto transform_parallelly(F f, const ContainerIn& xs)
 
     ContainerOut ys;
     internal::prepare_container(ys, size_of_cont(xs));
-    auto it = internal::get_back_inserter<ContainerOut>(ys);
+    auto it = internal::get_back_inserter(ys);
     for (auto& handle : handles) {
         *it = handle.get();
     }
@@ -12568,7 +12568,7 @@ Container extrapolate_replicate(std::size_t count_begin, std::size_t count_end,
     Container ys;
     const auto xs_size = size_of_cont(xs);
     internal::prepare_container(ys, xs_size + count_begin + count_end);
-    auto it = internal::get_back_inserter<Container>(ys);
+    auto it = internal::get_back_inserter(ys);
     const signed int idx_end = static_cast<signed int>(xs_size + count_end);
     const signed int idx_start = -static_cast<signed int>(count_begin);
     for (signed int idx = idx_start; idx < idx_end; ++idx) {
@@ -12593,7 +12593,7 @@ Container extrapolate_wrap(std::size_t count_begin, std::size_t count_end,
     Container ys;
     const auto xs_size = size_of_cont(xs);
     internal::prepare_container(ys, xs_size + count_begin + count_end);
-    auto it = internal::get_back_inserter<Container>(ys);
+    auto it = internal::get_back_inserter(ys);
     const signed int idx_end = static_cast<signed int>(xs_size + count_end);
     const signed int idx_start = -static_cast<signed int>(count_begin);
     for (signed int idx = idx_start; idx < idx_end; ++idx) {

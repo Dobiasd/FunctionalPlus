@@ -24,7 +24,7 @@ ContainerOut generate(F f, std::size_t amount)
     internal::trigger_static_asserts<internal::nullary_function_tag, F>();
     ContainerOut ys;
     internal::prepare_container(ys, amount);
-    auto it = internal::get_back_inserter<ContainerOut>(ys);
+    auto it = internal::get_back_inserter(ys);
     for (std::size_t i = 0; i < amount; ++i) {
         *it = internal::invoke(f);
     }
@@ -44,7 +44,7 @@ ContainerOut generate_by_idx(F f, std::size_t amount)
 
     ContainerOut ys;
     internal::prepare_container(ys, amount);
-    auto it = internal::get_back_inserter<ContainerOut>(ys);
+    auto it = internal::get_back_inserter(ys);
     for (std::size_t i = 0; i < amount; ++i) {
         *it = internal::invoke(f, i);
     }
