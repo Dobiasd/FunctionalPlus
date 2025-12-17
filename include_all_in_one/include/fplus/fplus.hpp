@@ -11414,6 +11414,35 @@ auto transform_parallelly_n_threads(std::size_t n, F f, const ContainerIn& xs)
         thread_results);
 }
 
+// API search type: transform_convert_parallelly : ((a -> b), [a]) -> [b]
+// fwd bind count: 1
+// transform_convert_parallelly((*2), [1, 3, 4]) == [2, 6, 8]
+// Same as transform_convert, but can utilize multiple CPUs by using std::launch::async.
+// Only makes sense if one run of the provided function
+// takes enough time to justify the synchronization overhead.
+// One thread per container element is spawned.
+template <typename ContainerOut, typename F, typename ContainerIn>
+ContainerOut transform_convert_parallelly(F f, const ContainerIn& xs)
+{
+    using X = typename ContainerIn::value_type;
+    internal::trigger_static_asserts<internal::unary_function_tag, F, X>();
+    auto handles = transform([&f](const X& x) {
+        return std::async(std::launch::async, [&x, &f]() {
+            return internal::invoke(f, x);
+        });
+    },
+        xs);
+
+    internal::trigger_static_asserts<internal::unary_function_tag, F, typename ContainerIn::value_type>();
+    ContainerOut ys;
+    internal::prepare_container(ys, size_of_cont(xs));
+    auto it = internal::get_back_inserter<ContainerOut>(ys);
+    for (auto& handle : handles) {
+        *it = handle.get();
+    }
+    return ys;
+}
+
 // API search type: reduce_parallelly : (((a, a) -> a), a, [a]) -> a
 // fwd bind count: 2
 // reduce_parallelly((+), 0, [1, 2, 3]) == (0+1+2+3) == 6
@@ -15159,6 +15188,7 @@ fplus_curry_define_fn_1(apply_functions)
 fplus_curry_define_fn_2(apply_function_n_times)
 fplus_curry_define_fn_1(transform_parallelly)
 fplus_curry_define_fn_2(transform_parallelly_n_threads)
+fplus_curry_define_fn_1(transform_convert_parallelly)
 fplus_curry_define_fn_2(reduce_parallelly)
 fplus_curry_define_fn_3(reduce_parallelly_n_threads)
 fplus_curry_define_fn_1(reduce_1_parallelly)
@@ -15768,6 +15798,7 @@ fplus_fwd_define_fn_1(apply_functions)
 fplus_fwd_define_fn_2(apply_function_n_times)
 fplus_fwd_define_fn_1(transform_parallelly)
 fplus_fwd_define_fn_2(transform_parallelly_n_threads)
+fplus_fwd_define_fn_1(transform_convert_parallelly)
 fplus_fwd_define_fn_2(reduce_parallelly)
 fplus_fwd_define_fn_3(reduce_parallelly_n_threads)
 fplus_fwd_define_fn_1(reduce_1_parallelly)
@@ -16057,6 +16088,7 @@ fplus_fwd_flip_define_fn_1(shuffle)
 fplus_fwd_flip_define_fn_1(random_element)
 fplus_fwd_flip_define_fn_1(apply_functions)
 fplus_fwd_flip_define_fn_1(transform_parallelly)
+fplus_fwd_flip_define_fn_1(transform_convert_parallelly)
 fplus_fwd_flip_define_fn_1(reduce_1_parallelly)
 fplus_fwd_flip_define_fn_1(keep_if_parallelly)
 fplus_fwd_flip_define_fn_1(show_cont_with)

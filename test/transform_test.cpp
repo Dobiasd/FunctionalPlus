@@ -126,6 +126,7 @@ TEST_CASE("transform_test - transform")
     REQUIRE_EQ(transform_parallelly(squareLambda, intList), IntList({ 1, 4, 4, 9, 4 }));
     REQUIRE_EQ(transform_parallelly_n_threads(3, squareLambda, intList), IntList({ 1, 4, 4, 9, 4 }));
     REQUIRE_EQ(transform_convert<IntList>(squareLambda, xs), IntList({ 1, 4, 4, 9, 4 }));
+    REQUIRE_EQ(transform_convert_parallelly<IntList>(squareLambda, xs), IntList({ 1, 4, 4, 9, 4 }));
 
     REQUIRE_EQ(transform(squareLambda, std::set<int>({ 1, 2, 3, -3 })), std::set<int>({ 1, 4, 9 }));
     REQUIRE_EQ(transform_inner(intTimes2, IntVectors({ { 1, 3, 4 }, { 1, 2 } })), IntVectors({ { 2, 6, 8 }, { 2, 4 } }));
