@@ -100,7 +100,6 @@ namespace utils {
                     R (C::*)(A...)>::type>::type type;
         };
     }
-
     template <typename ReturnType, typename... Args>
     struct function_traits<ReturnType(Args...)> {
         /**
@@ -441,7 +440,7 @@ namespace internal {
     };
 
     template <typename ReturnType, typename ClassType, typename... Args>
-    struct has_function_traits<ReturnType (ClassType::*)(Args...)&> : std::true_type {
+    struct has_function_traits<ReturnType (ClassType::*)(Args...) &> : std::true_type {
     };
 
     template <typename ReturnType, typename ClassType, typename... Args>
