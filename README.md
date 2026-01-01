@@ -287,7 +287,7 @@ By the way, in case you need the parameters of a binary function in reverse orde
 
 Finding the functions you need
 ------------------------------
-If you are looking for a specific FunctionalPlus function you do not know the name of yet, you can of course use the auto-complete feature of your IDE to browse the content of the `namespace fplus`. But the recommended way is to use the **[FunctionalPlus API search website](http://www.editgym.com/fplus-api-search/)**. You can quickly search by keywords or function type signatures with it. If you prefer, you can also [browse the source code using Sourcegraph](https://sourcegraph.com/github.com/Dobiasd/FunctionalPlus/-/tree/include/fplus).
+If you are looking for a specific FunctionalPlus function you do not know the name of yet, you can of course use the auto-complete feature of your IDE to browse the content of the `namespace fplus`. But the recommended way is to use the **[FunctionalPlus API search website](http://www.daiw.de/fplus-api-search/)**. You can quickly search by keywords or function type signatures with it. If you prefer, you can also [browse the source code using Sourcegraph](https://sourcegraph.com/github.com/Dobiasd/FunctionalPlus/-/tree/include/fplus).
 
 
 Performance
@@ -340,7 +340,7 @@ const auto result_range_v3 =
 ```
 
 There are some differences though. Range-v3 ranges are lazy, which means no intermediate memory is allocated during the single steps of a processing chain like the above.
-When using FunctionalPlus on the other hand you work with normal STL containers. Also [implementing a new function](https://github.com/Dobiasd/FunctionalPlus/blob/a17fc716d40a4370eed13f16e7d9105c4cc75e26/include/fplus/generate.hpp#L19) is simpler compared to [writing a new range adaptor](https://github.com/ericniebler/range-v3/blob/4cfcb59c3db1c279d72c64ccf15de3c724a0362d/include/range/v3/algorithm/generate.hpp#L32). Additionally FunctionalPlus provides much more functions out of the box and has the [API search website](http://www.editgym.com/fplus-api-search/). So the choice between the two libraries depends on your preferences and the project's needs.
+When using FunctionalPlus on the other hand you work with normal STL containers. Also [implementing a new function](https://github.com/Dobiasd/FunctionalPlus/blob/a17fc716d40a4370eed13f16e7d9105c4cc75e26/include/fplus/generate.hpp#L19) is simpler compared to [writing a new range adaptor](https://github.com/ericniebler/range-v3/blob/4cfcb59c3db1c279d72c64ccf15de3c724a0362d/include/range/v3/algorithm/generate.hpp#L32). Additionally FunctionalPlus provides much more functions out of the box and has the [API search website](http://www.daiw.de/fplus-api-search/). So the choice between the two libraries depends on your preferences and the project's needs.
 
 
 Requirements and Installation
