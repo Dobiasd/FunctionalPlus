@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Central script called by the CI
 # Usage: 
 #    ci.sh {run_build|run_tests}
