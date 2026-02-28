@@ -19,7 +19,7 @@ if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
     # Windows path handling is a never ending source of ...
     INSTALL_PREFIX="$USERPROFILE\\.local"
     INSTALL_PREFIX=$(cygpath -u "$INSTALL_PREFIX")  # Make CMake happy when using git bash under windows
-    export CMAKE_PREFIX_PATH=$INSTALL_PREFIX;$CMAKE_PREFIX_PATH  # Notice the ";" instead of ":"
+    export CMAKE_PREFIX_PATH="${INSTALL_PREFIX}${CMAKE_PREFIX_PATH:+;${CMAKE_PREFIX_PATH}}" # Notice the ";" instead of ":"
 else
     INSTALL_PREFIX="$HOME/.local"
     export CMAKE_PREFIX_PATH=$INSTALL_PREFIX:$CMAKE_PREFIX_PATH
