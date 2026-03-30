@@ -291,18 +291,18 @@ TEST_CASE("udemy_course_test - Function_composition")
 }
 
 namespace Programming_challenge_an_SQL_analogy {
-struct user {
+struct User {
     std::string name;
     std::string country;
     std::size_t visits;
 };
 
-std::string get_country(const user& u)
+std::string get_country(const User& u)
 {
     return u.country;
 }
 
-std::size_t get_visits(const user& u)
+std::size_t get_visits(const User& u)
 {
     return u.visits;
 }
@@ -312,7 +312,7 @@ TEST_CASE("udemy_course_test - Programming_challenge_an_SQL_analogy")
 {
     using namespace Programming_challenge_an_SQL_analogy;
 
-    const std::vector<user> users = {
+    const std::vector<User> users = {
         { "Nicole", "GER", 2 },
         { "Justin", "USA", 1 },
         { "Rachel", "USA", 5 },
@@ -320,7 +320,7 @@ TEST_CASE("udemy_course_test - Programming_challenge_an_SQL_analogy")
         { "Stefan", "GER", 4 }
     };
 
-    const auto visit_sum = [](const std::vector<user>& xs) -> std::size_t {
+    const auto visit_sum = [](const std::vector<User>& xs) -> std::size_t {
         return fplus::fwd::apply(xs, fplus::fwd::transform(get_visits), fplus::fwd::sum());
     };
 
