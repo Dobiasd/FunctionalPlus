@@ -6,7 +6,6 @@
 
 #include <doctest/doctest.h>
 #include <fplus/fplus.hpp>
-#include <variant>
 #include <vector>
 
 namespace {
@@ -122,10 +121,10 @@ TEST_CASE("result_test - compose_first_error_and_result")
     using namespace fplus;
 
     const auto check_ok = [](int) {
-        return ok<std::monostate, std::string>({});
+        return ok<int, std::string>(0);
     };
     const auto check_fail = [](int) {
-        return error<std::monostate, std::string>("check failed");
+        return error<int, std::string>("check failed");
     };
     const auto run = [](int x) {
         return x < 0
