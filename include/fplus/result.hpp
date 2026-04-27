@@ -346,4 +346,24 @@ auto compose_result(Callables&&... callables)
     return internal::compose_binary_lift(bind_result,
         std::forward<Callables>(callables)...);
 }
+
+// API search type: compose_log_and_result : ((a -> Result b c), (a -> Result d e)) -> (a -> (Maybe c, Result d e))
+// Pair a possibly-failing side-effecting function (e.g. logging) with a
+// regular result-returning function. Both are called with the same input,
+// and the second is called regardless of whether the first one failed.
+// The Ok value of the first function is discarded; only its potential
+// error is preserved, as a Maybe (nothing if the side effect succeeded).
+// The result of the second function is forwarded unchanged.
+template <typename Log, typename Func>
+auto compose_log_and_result(Log log, Func func)
+{
+    return [log = std::move(log), func = std::move(func)](const auto& x) {
+        auto log_result = internal::invoke(log, x);
+        using LogErr = typename std::decay_t<decltype(log_result)>::error_t;
+        auto log_err = is_error(log_result)
+            ? just<LogErr>(unsafe_get_error(log_result))
+            : nothing<LogErr>();
+        return std::make_pair(std::move(log_err), internal::invoke(func, x));
+    };
+}
 } // namespace fplus

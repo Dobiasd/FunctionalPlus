@@ -6,6 +6,7 @@
 
 #include <doctest/doctest.h>
 #include <fplus/fplus.hpp>
+#include <variant>
 #include <vector>
 
 namespace {
@@ -114,6 +115,34 @@ TEST_CASE("result_test - compose_result")
     });
 
     REQUIRE_EQ(squareSumResult(5, 5), (ok<int, std::string>(100)));
+}
+
+TEST_CASE("result_test - compose_log_and_result")
+{
+    using namespace fplus;
+
+    const auto log_ok = [](int) {
+        return ok<std::monostate, std::string>({});
+    };
+    const auto log_fail = [](int) {
+        return error<std::monostate, std::string>("log failed");
+    };
+    const auto run = [](int x) {
+        return x < 0
+            ? error<int, std::string>("negative input")
+            : ok<int, std::string>(x * x);
+    };
+
+    using Pair = std::pair<maybe<std::string>, result<int, std::string>>;
+
+    REQUIRE_EQ(compose_log_and_result(log_ok, run)(3),
+        Pair(nothing<std::string>(), ok<int, std::string>(9)));
+    REQUIRE_EQ(compose_log_and_result(log_ok, run)(-1),
+        Pair(nothing<std::string>(), error<int, std::string>("negative input")));
+    REQUIRE_EQ(compose_log_and_result(log_fail, run)(3),
+        Pair(just<std::string>("log failed"), ok<int, std::string>(9)));
+    REQUIRE_EQ(compose_log_and_result(log_fail, run)(-1),
+        Pair(just<std::string>("log failed"), error<int, std::string>("negative input")));
 }
 
 TEST_CASE("result_test - lift")
