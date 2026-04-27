@@ -347,23 +347,24 @@ auto compose_result(Callables&&... callables)
         std::forward<Callables>(callables)...);
 }
 
-// API search type: compose_log_and_result : ((a -> Result b c), (a -> Result d e)) -> (a -> (Maybe c, Result d e))
-// Pair a possibly-failing side-effecting function (e.g. logging) with a
-// regular result-returning function. Both are called with the same input,
-// and the second is called regardless of whether the first one failed.
-// The Ok value of the first function is discarded; only its potential
-// error is preserved, as a Maybe (nothing if the side effect succeeded).
-// The result of the second function is forwarded unchanged.
-template <typename Log, typename Func>
-auto compose_log_and_result(Log log, Func func)
+// API search type: compose_first_error_and_result : ((a -> Result b c), (a -> Result d e)) -> (a -> (Maybe c, Result d e))
+// Run two result-returning functions on the same input independently.
+// The first contributes only its potential error (as a Maybe), its Ok
+// value is discarded. The second's result is forwarded unchanged.
+// The second function is always called, regardless of whether the first
+// one failed. Useful for ancillary checks (logging, metrics, validation,
+// audit, cache lookup, ...) that may fail but should not block the main
+// computation.
+template <typename First, typename Second>
+auto compose_first_error_and_result(First first, Second second)
 {
-    return [log = std::move(log), func = std::move(func)](const auto& x) {
-        auto log_result = internal::invoke(log, x);
-        using LogErr = typename std::decay_t<decltype(log_result)>::error_t;
-        auto log_err = is_error(log_result)
-            ? just<LogErr>(unsafe_get_error(log_result))
-            : nothing<LogErr>();
-        return std::make_pair(std::move(log_err), internal::invoke(func, x));
+    return [first = std::move(first), second = std::move(second)](const auto& x) {
+        auto first_result = internal::invoke(first, x);
+        using FirstErr = typename std::decay_t<decltype(first_result)>::error_t;
+        auto first_err = is_error(first_result)
+            ? just<FirstErr>(unsafe_get_error(first_result))
+            : nothing<FirstErr>();
+        return std::make_pair(std::move(first_err), internal::invoke(second, x));
     };
 }
 } // namespace fplus
