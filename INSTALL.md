@@ -229,3 +229,34 @@ You can download and install FunctionalPlus using the [vcpkg](https://github.com
     ./vcpkg install fplus
 
 The fplus port in vcpkg is kept up to date by Microsoft team members and community contributors. If the version is out of date, please [create an issue or pull request](https://github.com/Microsoft/vcpkg) on the vcpkg repository.
+
+
+Avoiding include-path collisions on shared install prefixes
+-----------------------------------------------------------
+
+A system install via [way 1](#way-1-using-cmake) places the headers in
+`<prefix>/include/fplus/` (for example `/usr/local/include/fplus/`). If the
+same prefix later ends up on the include path of a project that also pulls
+in another copy of FunctionalPlus from a different prefix (e.g. via Conan or
+vcpkg), `#include <fplus/fplus.hpp>` will resolve based on the order of `-I`
+flags and may silently pick the wrong copy. See
+[#222](https://github.com/Dobiasd/FunctionalPlus/issues/222) for background.
+
+Consumers using the CMake package (`find_package(FunctionalPlus)` together
+with `target_link_libraries(... FunctionalPlus::fplus)`) are unaffected,
+because the package config carries the exact include directory.
+
+Distro/system packagers and anyone wanting the headers under a uniquely
+named subdirectory can install with:
+
+```bash
+cmake -S FunctionalPlus -B FunctionalPlus/build \
+    -D CMAKE_INSTALL_INCLUDEDIR=include/FunctionalPlus
+cmake --build FunctionalPlus/build
+sudo cmake --install FunctionalPlus/build
+```
+
+The headers then land in `<prefix>/include/FunctionalPlus/fplus/`. The
+CMake package keeps working unchanged; consumers not using the CMake
+package need to add `<prefix>/include/FunctionalPlus` to their include
+path.
