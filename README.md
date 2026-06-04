@@ -216,7 +216,7 @@ Tutorial
 
 The article "[Functional programming in C++ with the FunctionalPlus library; today: HackerRank challenge Gemstones](https://github.com/Dobiasd/articles/blob/master/functional_programming_in_cpp_with_the_functionalplus_library_today_hackerrank_challange_gemstones.md)" provides a smooth introduction into the library by showing how one could develop an elegant solution to a problem using the FunctionalPlus approach.
 
-Also on Udemy there is a [course "Functional Programming using C++"](https://www.udemy.com/functional-programming-using-cpp/) that makes heavy use of FunctionalPlus to explain general functional concepts.
+Also on YouTube there is a [course "Functional Programming using C++"](https://www.youtube.com/playlist?list=PLdfK3diUY7dviQNtGBFCHY5izxjENC80F) that makes heavy use of FunctionalPlus to explain general functional concepts.
 
 
 Forward application and composition
