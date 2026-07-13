@@ -92,7 +92,9 @@ jobs:
     name: "Windows ${{ matrix.msvc_version }} MSVC"
     steps:
       - uses: actions/checkout@main
-      - uses: ilammy/msvc-dev-cmd@v1
+      - uses: TheMrMilchmann/setup-msvc-dev@v4
+        with:
+          arch: x64
       - name: Build and Test
         shell: bash
         run: script/ci.sh run_tests
