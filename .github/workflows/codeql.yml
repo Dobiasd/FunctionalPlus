@@ -15,7 +15,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@main
       - name: CodeQL Initialization
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: cpp
           queries: +security-and-quality
@@ -23,4 +23,4 @@ jobs:
         shell: bash
         run: script/ci.sh run_build
       - name: CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
