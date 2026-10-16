@@ -130,7 +130,7 @@ struct cat
     double fur_amount_;
 };
 
-void main()
+int main()
 {
     std::vector<cat> cats = {
         {"Tigger",   5, 5, 5, 5, 5},
@@ -170,7 +170,7 @@ int main()
     typedef std::list<int> Ints;
 
     // [1, 2, 3 ... 29]
-    auto xs = fplus::numbers<Ints>(1, 30);
+    auto xs = fplus::numbers<int, Ints>(1, 30);
 
     // A function that does [1, 2, 3, 4, 5] -> "[1 => 2 => 3 => 4 => 5]"
     auto show_ints = fplus::bind_1st_of_2(fplus::show_cont_with<Ints>, " => ");
