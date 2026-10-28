@@ -104,7 +104,7 @@ ExternalProject_Get_Property(functional_plus SOURCE_DIR)
 add_executable(main src/main.cpp)
 add_dependencies(main functional_plus)
 target_compile_features(main PRIVATE cxx_std_14)
-target_include_directories(main PRIVATE "${SOURCE_DIR}")
+target_include_directories(main PRIVATE "${SOURCE_DIR}/include")
 ```
 
 
